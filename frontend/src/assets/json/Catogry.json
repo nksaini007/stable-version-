@@ -1,0 +1,196 @@
+{
+  "homeCategories": [
+    {
+      "id": "home_textile",
+      "name": "Home Textile",
+      "image": "https://pngimg.com/uploads/pillow/pillow_PNG102983.png",
+      "subcategories": ["Bedsheets", "Pillows", "Curtains", "Blankets", "Towels", "Carpets", "Rugs"]
+    },
+    {
+      "id": "sanitaryware",
+      "name": "Sanitaryware",
+      "image": "https://static.vecteezy.com/system/resources/thumbnails/054/311/205/small_2x/modern-faucet-pouring-water-into-a-minimalist-white-bowl-sink-in-a-bright-indoor-setting-png.png",
+      "subcategories": ["Wash Basins", "Toilets", "Taps", "Showers", "Urinals", "Flush Tanks"]
+    },
+    {
+      "id": "hardware",
+      "name": "Hardware",
+      "image": "https://www.kindpng.com/picc/m/160-1607025_hardware-tools-png-handyman-tools-transparent-png.png",
+      "subcategories": ["Locks", "Hinges", "Screws", "Nails", "Brackets", "Clamps", "Handles"]
+    },
+    {
+      "id": "security",
+      "name": "Security & Surveillance",
+      "image": "https://www.pngmart.com/files/7/CCTV-Camera-PNG-Transparent-HD-Photo.png",
+      "subcategories": ["CCTV", "Smart Locks", "Alarms", "Motion Sensors", "Door Phones", "Fire Alarms"]
+    },
+    {
+      "id": "lighting",
+      "name": "Lighting",
+      "image": "https://th.bing.com/th/id/R.eaca32060d28ad4b5e6fbeafa6882c95?rik=Er7wg5y2aIT3oQ&riu=http%3a%2f%2fae01.alicdn.com%2fkf%2fHTB11ljOcVHM8KJjSZJiq6zx3FXa8.jpg&ehk=wjeYd0w7PEn%2b66IGHb9o2yzKw%2bEk582F6ToAfinLjoE%3d&risl=&pid=ImgRaw&r=0",
+      "subcategories": ["Ceiling Lights", "Bulbs", "LED Panels", "Lamps", "Smart Lights", "Outdoor Lights"]
+    },
+    {
+      "id": "furniture",
+      "name": "Furniture",
+      "image": "https://tse2.mm.bing.net/th/id/OIP.Sjw2ZhEYeVSuUdACoM9vOwHaE8?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Sofas", "Beds", "Chairs", "Tables", "Wardrobes", "TV Units", "Cabinets"]
+    },
+    {
+      "id": "kitchen_essentials",
+      "name": "Kitchen Essentials",
+      "image": "https://th.bing.com/th/id/R.f3432885c75cd146e41031a8e0ce6453?rik=R1sd9DWytXNbkQ&riu=http%3a%2f%2fstudentessentials.co%2fcdn%2fshop%2ffiles%2fEssentials_KP_details_stainless_steel_lifestyle_background_kitchen.jpg%3fv%3d1684847428&ehk=mhAlK%2bG0lhnhZ4lUW%2bqBskjEkd%2fkoixluE9lZSdM4CU%3d&risl=&pid=ImgRaw&r=0",
+      "subcategories": ["Cookware", "Utensils", "Storage Jars", "Cutlery", "Spice Racks"]
+    },
+    {
+      "id": "kitchen_appliances",
+      "name": "Kitchen Appliances",
+      "image": "https://www.corleydesigns.com/wp-content/uploads/2023/11/kitchen-designs-with-black-appliances.jpg",
+      "subcategories": ["Microwaves", "Mixers", "Toasters", "Water Purifiers", "Air Fryers"]
+    },
+    {
+      "id": "bathroom_accessories",
+      "name": "Bathroom Accessories",
+      "image": "https://dolphy.in/blog/media/01.jpg",
+      "subcategories": ["Towel Rods", "Soap Dishes", "Toothbrush Holders", "Shower Curtains"]
+    },
+    {
+      "id": "cleaning",
+      "name": "Cleaning Supplies",
+      "image": "https://nelsonacehardware.com/client_media/crops/Default.a934e78a.cleaning_supplies.jpg",
+      "subcategories": ["Mops", "Buckets", "Detergents", "Scrubbers", "Wipes", "Toilet Cleaners"]
+    },
+    {
+      "id": "home_decor",
+      "name": "Home Decor",
+      "image": "https://i.pinimg.com/736x/ee/1e/55/ee1e55782d4689a27e127f673bea4cb7.jpg?nii=t",
+      "subcategories": ["Wall Art", "Photo Frames", "Candles", "Mirrors", "Vases", "Clocks"]
+    },
+    {
+      "id": "paint",
+      "name": "Paint & Supplies",
+      "image": "https://tse3.mm.bing.net/th/id/OIP.P2bYIVcj256PmcPGU-o9FgAAAA?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Wall Paint", "Brushes", "Rollers", "Primers", "Putty"]
+    },
+    {
+      "id": "flooring",
+      "name": "Flooring",
+      "image": "https://th.bing.com/th/id/OIP.vBeOVczOPNUAjUsu1kByYQHaE8?w=260&h=180&c=7&r=0&o=7&pid=1.7&rm=3",
+      "subcategories": ["Tiles", "Vinyl Flooring", "Wooden Flooring", "Carpets", "Mats"]
+    },
+    {
+      "id": "ceiling",
+      "name": "Ceiling & Roofing",
+      "image": "https://tse1.explicit.bing.net/th/id/OIP.NAIF8UL0lDeaivBaxJwB6wHaFj?w=550&h=412&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["False Ceiling", "POP Sheets", "Roof Tiles", "Ceiling Fans"]
+    },
+    {
+      "id": "garden",
+      "name": "Garden & Outdoor",
+      "image": "https://www.lifeinminnesota.com/wp-content/uploads/2023/03/Backyard-Patio-Ideas.jpg",
+      "subcategories": ["Garden Tools", "Planters", "Seeds", "Lawn Mowers", "Hoses"]
+    },
+    {
+      "id": "tools",
+      "name": "Power & Hand Tools",
+      "image": "https://elektronikindo.com/wp-content/uploads/2023/09/Screenshot_1190.png",
+      "subcategories": ["Drills", "Screwdrivers", "Hammers", "Wrenches", "Tool Kits"]
+    },
+    {
+      "id": "storage",
+      "name": "Storage & Organization",
+      "image": "https://tse4.mm.bing.net/th/id/OIP.uV9d-ZjKXQfZxFyahx0J0wHaE5?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Racks", "Shelves", "Boxes", "Drawers", "Closet Organizers"]
+    },
+    {
+      "id": "curtains_blinds",
+      "name": "Curtains & Blinds",
+      "image": "https://london-curtains.com/img/vertical-blind/PID-368_CID-2928_Vertical-Blinds_Brown_Tan_R.jpg",
+      "subcategories": ["Window Curtains", "Roller Blinds", "Shades", "Curtain Rods"]
+    },
+    {
+      "id": "bedding",
+      "name": "Bedding",
+      "image": "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=400&q=80",
+      "subcategories": ["Mattresses", "Pillows", "Bedsheets", "Blankets", "Duvets"]
+    },
+    {
+      "id": "air_quality",
+      "name": "Air Quality Appliances",
+      "image": "https://www.andatechdistribution.com.au/cdn/shop/collections/ionmax_brand_banner.jpg?v=1694415073",
+      "subcategories": ["Air Purifiers", "Humidifiers", "Dehumidifiers"]
+    },
+    {
+      "id": "climate_control",
+      "name": "Climate Control",
+      "image": "https://tse4.mm.bing.net/th/id/OIP.1tPFlEEBcrecFUBvwb8FQAHaFj?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Heaters", "Coolers", "ACs", "Thermostats"]
+    },
+    {
+      "id": "windows_doors",
+      "name": "Windows & Doors",
+      "image": "https://th.bing.com/th/id/OIP.Jdt101wP8l4PqdqqFpmvvAHaE8?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["UPVC Windows", "Wooden Doors", "Glass Panels", "Door Closers"]
+    },
+    {
+      "id": "construction_materials",
+      "name": "Construction Materials",
+      "image": "https://th.bing.com/th/id/OIP.mrY69-qAoz5QCzICR4RW7wHaFj?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Cement", "Sand", "Bricks", "Steel", "Pipes"]
+    },
+    {
+      "id": "switches",
+      "name": "Electricals & Switches",
+      "image": "https://havells.com/media/mageplaza/blog/post/t/y/types-of-electrical-switches-_1.jpg",
+      "subcategories": ["Switch Boards", "Sockets", "Wiring", "Circuit Breakers", "Adapters"]
+    },
+    {
+      "id": "bath_fixtures",
+      "name": "Bathroom Fixtures",
+      "image": "https://th.bing.com/th/id/OIP.eYePw6gGPzn_t7b_XlwhHgHaF4?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Shower Panels", "Bathtubs", "Jacuzzis", "Vanity Units"]
+    },
+    {
+      "id": "plumbing",
+      "name": "Plumbing Supplies",
+      "image": "https://th.bing.com/th/id/OIP.7BCHVnCNRPvK-jChjjJu7QHaE8?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["PVC Pipes", "Fittings", "Taps", "Valves", "Wrenches"]
+    },
+    {
+      "id": "laundry",
+      "name": "Laundry",
+      "image": "https://tse2.mm.bing.net/th/id/OIP.uggRUrezOSLGrRZ7BMG4tAHaFj?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Laundry Baskets", "Ironing Boards", "Drying Racks", "Washing Machines"]
+    },
+    {
+      "id": "smart_home",
+      "name": "Smart Home",
+      "image": "https://th.bing.com/th/id/OIP.jUqArX8S8KdeadcntolqHwHaEJ?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Smart Plugs", "Voice Assistants", "Smart Bulbs", "IoT Sensors"]
+    },
+    {
+      "id": "home_office",
+      "name": "Home Office",
+      "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80",
+      "subcategories": ["Desks", "Office Chairs", "Organizers", "Lighting", "Stationery"]
+    },
+    {
+      "id": "pets",
+      "name": "Pet Supplies",
+      "image": "https://tse1.explicit.bing.net/th/id/OIP.JtOLexQlHyOP-0ferXOEkAHaE8?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Pet Beds", "Feeding Bowls", "Leashes", "Pet Grooming", "Toys"]
+    },
+    {
+      "id": "kids_room",
+      "name": "Kids Room",
+      "image": "https://th.bing.com/th/id/OIP.ydWmhpSnlRrorHdLpm7fzQHaE7?w=307&h=180&c=7&r=0&o=7&pid=1.7&rm=3",
+      "subcategories": ["Bunk Beds", "Toys", "Study Tables", "Soft Furnishings", "Storage Boxes"]
+    },
+    {
+      "id": "decorative_hardware",
+      "name": "Decorative Hardware",
+      "image": "https://tse4.mm.bing.net/th/id/OIP.m-rLW-LPfBMsa6NVf9YFeAHaFm?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "subcategories": ["Designer Handles", "Knobs", "Cabinet Accessories"]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+import React, { useContext } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { AuthContext } from "../../../context/AuthContext";
+
+const ProtectedRoute = ({ children, allowedRoles }) => {
+    const { user, token } = useContext(AuthContext);
+    const location = useLocation();
+
+    if (!token || !user) {
+        // Not logged in, redirect to login page with the return url
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
+        // Role not authorized, redirect to home page
+        return <Navigate to="/home" replace />;
+    }
+
+    return children;
+};
+
+export default ProtectedRoute;

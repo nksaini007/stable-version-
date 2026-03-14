@@ -1,0 +1,5 @@
+TypeError: (p.reviews || []).forEach is not a function
+    at C:\Users\akhil\Desktop\main stinchar\version ai build\backend\testAnalytics3.js:34:31
+    at Array.forEach (<anonymous>)
+    at C:\Users\akhil\Desktop\main stinchar\version ai build\backend\testAnalytics3.js:33:26
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)

@@ -1,0 +1,79 @@
+[
+  {
+    "_id": "home_textile",
+    "name": "Home Textile",
+    "subcategories": [
+      { "_id": "home_textile_0", "name": "Bedsheets" },
+      { "_id": "home_textile_1", "name": "Pillows" },
+      { "_id": "home_textile_2", "name": "Curtains" },
+      { "_id": "home_textile_3", "name": "Blankets" },
+      { "_id": "home_textile_4", "name": "Towels" },
+      { "_id": "home_textile_5", "name": "Carpets" },
+      { "_id": "home_textile_6", "name": "Rugs" }
+    ],
+    "createdAt": "2025-10-17T15:00:00.000Z",
+    "updatedAt": "2025-10-17T15:00:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "sanitaryware",
+    "name": "Sanitaryware",
+    "subcategories": [
+      { "_id": "sanitaryware_0", "name": "Wash Basins" },
+      { "_id": "sanitaryware_1", "name": "Toilets" },
+      { "_id": "sanitaryware_2", "name": "Taps" },
+      { "_id": "sanitaryware_3", "name": "Showers" },
+      { "_id": "sanitaryware_4", "name": "Urinals" },
+      { "_id": "sanitaryware_5", "name": "Flush Tanks" }
+    ],
+    "createdAt": "2025-10-17T15:00:00.000Z",
+    "updatedAt": "2025-10-17T15:00:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "hardware",
+    "name": "Hardware",
+    "subcategories": [
+      { "_id": "hardware_0", "name": "Locks" },
+      { "_id": "hardware_1", "name": "Hinges" },
+      { "_id": "hardware_2", "name": "Screws" },
+      { "_id": "hardware_3", "name": "Nails" },
+      { "_id": "hardware_4", "name": "Brackets" },
+      { "_id": "hardware_5", "name": "Clamps" },
+      { "_id": "hardware_6", "name": "Handles" }
+    ],
+    "createdAt": "2025-10-17T15:00:00.000Z",
+    "updatedAt": "2025-10-17T15:00:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "security",
+    "name": "Security & Surveillance",
+    "subcategories": [
+      { "_id": "security_0", "name": "CCTV" },
+      { "_id": "security_1", "name": "Smart Locks" },
+      { "_id": "security_2", "name": "Alarms" },
+      { "_id": "security_3", "name": "Motion Sensors" },
+      { "_id": "security_4", "name": "Door Phones" },
+      { "_id": "security_5", "name": "Fire Alarms" }
+    ],
+    "createdAt": "2025-10-17T15:00:00.000Z",
+    "updatedAt": "2025-10-17T15:00:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "lighting",
+    "name": "Lighting",
+    "subcategories": [
+      { "_id": "lighting_0", "name": "Ceiling Lights" },
+      { "_id": "lighting_1", "name": "Bulbs" },
+      { "_id": "lighting_2", "name": "LED Panels" },
+      { "_id": "lighting_3", "name": "Lamps" },
+      { "_id": "lighting_4", "name": "Smart Lights" },
+      { "_id": "lighting_5", "name": "Outdoor Lights" }
+    ],
+    "createdAt": "2025-10-17T15:00:00.000Z",
+    "updatedAt": "2025-10-17T15:00:00.000Z",
+    "__v": 0
+  }
+]
