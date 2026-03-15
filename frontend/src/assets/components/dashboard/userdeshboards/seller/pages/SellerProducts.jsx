@@ -12,7 +12,8 @@ const SellerProducts = () => {
     const [search, setSearch] = useState("");
     const [form, setForm] = useState({
         name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "",
-        material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "", image: null,
+        material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "", 
+        image: null, imageLink: ""
     });
 
     const fetchProducts = async () => {
@@ -40,7 +41,11 @@ const SellerProducts = () => {
     };
 
     const resetForm = () => {
-        setForm({ name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "", material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "", image: null });
+        setForm({ 
+            name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", 
+            brand: "", material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", 
+            features: "", care_instructions: "", image: null, imageLink: "" 
+        });
         setEditing(null); setPreview(null); setShowForm(false);
     };
 
@@ -62,7 +67,14 @@ const SellerProducts = () => {
     };
 
     const handleEdit = (p) => {
-        setForm({ name: p.name || "", description: p.description || "", price: p.price || "", stock: p.stock || "", category: p.category || "", subcategory: p.subcategory || "", type: p.type || "", brand: p.brand || "", material: p.material || "", color: p.color || "", dimensions: p.dimensions || "", weight: p.weight || "", warranty: p.warranty || "", origin: p.origin || "", features: (p.features || []).join(", "), care_instructions: p.care_instructions || "", image: null });
+        setForm({ 
+            name: p.name || "", description: p.description || "", price: p.price || "", stock: p.stock || "", 
+            category: p.category || "", subcategory: p.subcategory || "", type: p.type || "", 
+            brand: p.brand || "", material: p.material || "", color: p.color || "", dimensions: p.dimensions || "", 
+            weight: p.weight || "", warranty: p.warranty || "", origin: p.origin || "", 
+            features: (p.features || []).join(", "), care_instructions: p.care_instructions || "", 
+            image: null, imageLink: p.images?.[0]?.public_id === 'external' ? p.images[0].url : ""
+        });
         setEditing(p);
         setPreview(p.images?.[0]?.url ? `${p.images[0].url}` : null);
         setShowForm(true);
@@ -119,9 +131,32 @@ const SellerProducts = () => {
                         </div>
                         <input name="features" placeholder="Features (comma separated)" value={form.features} onChange={handleChange} className={inputCls} />
                         <textarea name="care_instructions" placeholder="Care Instructions" value={form.care_instructions} onChange={handleChange} rows={2} className={inputCls} />
-                        <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 text-sm text-gray-600"><FaImage className="text-orange-500" /> Upload Image <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} /></label>
-                            {preview && <img src={preview} alt="" className="w-16 h-16 rounded-lg object-cover border" />}
+                        <div className="grid sm:grid-cols-2 gap-4 items-end">
+                            <div className="space-y-2">
+                                <label className="text-xs text-gray-500 font-medium ml-1">Product Image (File or URL)</label>
+                                <div className="flex items-center gap-3">
+                                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 text-sm text-gray-600">
+                                        <FaImage className="text-orange-500" /> Upload
+                                        <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                                    </label>
+                                    <input 
+                                        name="imageLink" 
+                                        placeholder="Or paste Image URL..." 
+                                        value={form.imageLink} 
+                                        onChange={(e) => {
+                                            const url = e.target.value;
+                                            setForm({ ...form, imageLink: url, image: null });
+                                            if (url) setPreview(url);
+                                        }} 
+                                        className={inputCls} 
+                                    />
+                                </div>
+                            </div>
+                            {preview && (
+                                <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                                    <img src={preview} alt="" className="w-full h-full object-cover" />
+                                </div>
+                            )}
                         </div>
                         <div className="flex gap-3">
                             <button type="submit" className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold text-sm transition">{editing ? "Update" : "Add Product"}</button>

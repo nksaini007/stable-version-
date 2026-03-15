@@ -5,7 +5,8 @@ const path = require("path");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const connectDB = require("./config/db");
-
+const dns = require("dns");
+dns.setServers(["[1.1.1.1]", "[8.8.8.8]"]);
 // Load env variables
 dotenv.config();
 

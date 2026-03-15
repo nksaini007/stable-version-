@@ -7,13 +7,21 @@ exports.createWork = async (req, res) => {
         const {
             title, category, description, location,
             estimatedCost, area, features, materialsUsed,
-            progress, status, isPublic,
+            progress, status, isPublic, imageLinks,
         } = req.body;
 
         // Collect uploaded image paths
         let images = [];
         if (req.files && req.files.length > 0) {
             images = req.files.map(f => "/" + f.path.replace(/\\/g, "/"));
+        }
+
+        // Add external image links if provided
+        if (imageLinks) {
+            const links = typeof imageLinks === "string"
+                ? imageLinks.split(",").map(l => l.trim()).filter(Boolean)
+                : imageLinks;
+            images.push(...links);
         }
 
         // Attach architect info snapshot
@@ -118,7 +126,7 @@ exports.updateWork = async (req, res) => {
         const {
             title, category, description, location,
             estimatedCost, area, features, materialsUsed,
-            progress, status, isPublic,
+            progress, status, isPublic, imageLinks,
         } = req.body;
 
         if (title) work.title = title;
@@ -146,6 +154,14 @@ exports.updateWork = async (req, res) => {
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map(f => "/" + f.path.replace(/\\/g, "/"));
             work.images.push(...newImages);
+        }
+
+        // Add external image links if provided
+        if (imageLinks) {
+            const links = typeof imageLinks === "string"
+                ? imageLinks.split(",").map(l => l.trim()).filter(Boolean)
+                : imageLinks;
+            work.images.push(...links);
         }
 
         // Update architect info snapshot

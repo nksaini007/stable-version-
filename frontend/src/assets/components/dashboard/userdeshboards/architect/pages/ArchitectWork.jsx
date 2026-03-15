@@ -35,6 +35,7 @@ const ArchitectWork = () => {
         location: "", estimatedCost: "", area: "",
         features: "", materialsUsed: "",
         progress: 0, status: "Draft", isPublic: false,
+        imageLinks: "", // Added for external URLs
     });
     const [imageFiles, setImageFiles] = useState([]);
 
@@ -62,6 +63,7 @@ const ArchitectWork = () => {
             location: "", estimatedCost: "", area: "",
             features: "", materialsUsed: "",
             progress: 0, status: "Draft", isPublic: false,
+            imageLinks: "",
         });
         setImageFiles([]);
         setEditingWork(null);
@@ -86,6 +88,7 @@ const ArchitectWork = () => {
             progress: work.progress || 0,
             status: work.status,
             isPublic: work.isPublic,
+            imageLinks: "", // Links will be handled as additions
         });
         setImageFiles([]);
         setShowModal(true);
@@ -96,7 +99,15 @@ const ArchitectWork = () => {
         setSubmitting(true);
         try {
             const formData = new FormData();
-            Object.entries(form).forEach(([key, val]) => formData.append(key, val));
+            Object.entries(form).forEach(([key, val]) => {
+                if (key === "imageLinks") {
+                    // Split by comma or newline and filter empty
+                    const links = val.split(/[\n,]/).map(l => l.trim()).filter(Boolean);
+                    links.forEach(link => formData.append("imageLinks", link));
+                } else {
+                    formData.append(key, val);
+                }
+            });
             imageFiles.forEach(file => formData.append("images", file));
 
             if (editingWork) {
@@ -273,7 +284,11 @@ const ArchitectWork = () => {
                             {/* Image */}
                             <div className="h-48 bg-gray-800 relative overflow-hidden">
                                 {work.images && work.images.length > 0 ? (
-                                    <img src={`${API_BASE}${work.images[0]}`} alt={work.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    <img 
+                                        src={work.images[0].startsWith('http') ? work.images[0] : `${API_BASE}${work.images[0]}`} 
+                                        alt={work.title} 
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                    />
                                 ) : (
                                     <div className="absolute inset-0 flex items-center justify-center text-gray-600"><FaImage className="text-4xl" /></div>
                                 )}
@@ -413,6 +428,17 @@ const ArchitectWork = () => {
                                             className="w-full bg-[#0f172a] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-teal-500 transition-all" placeholder="3 Bedrooms, Open Kitchen, Swimming Pool" />
                                     </div>
 
+                                    <div className="md:col-span-2">
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">External Image Links (one per line or comma-separated)</label>
+                                        <textarea 
+                                            value={form.imageLinks} 
+                                            onChange={(e) => setForm({ ...form, imageLinks: e.target.value })}
+                                            rows={2}
+                                            className="w-full bg-[#0f172a] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all resize-none" 
+                                            placeholder="https://example.com/image1.jpg" 
+                                        />
+                                    </div>
+
                                     <div>
                                         <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Materials Used (comma-separated)</label>
                                         <input type="text" value={form.materialsUsed} onChange={(e) => setForm({ ...form, materialsUsed: e.target.value })}
@@ -430,7 +456,11 @@ const ArchitectWork = () => {
                                             <div className="flex gap-2 mt-3 flex-wrap">
                                                 {editingWork.images.map((img, i) => (
                                                     <div key={i} className="relative group">
-                                                        <img src={`${API_BASE}${img}`} alt="" className="w-20 h-16 object-cover rounded-lg border border-white/10" />
+                                                        <img 
+                                                            src={img.startsWith('http') ? img : `${API_BASE}${img}`} 
+                                                            alt="" 
+                                                            className="w-20 h-16 object-cover rounded-lg border border-white/10" 
+                                                        />
                                                         <button type="button" onClick={() => handleRemoveImage(editingWork._id, img)}
                                                             className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-[9px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <FaTimes />

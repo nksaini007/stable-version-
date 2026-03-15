@@ -77,7 +77,7 @@ const PublicProjectPage = () => {
                         <div className="mb-10">
                             <div className="relative rounded-3xl overflow-hidden bg-[#1e293b] border border-white/10 shadow-2xl" style={{ height: "clamp(300px, 50vw, 500px)" }}>
                                 <img
-                                    src={`${API_BASE}${work.images[activeImage]}`}
+                                    src={work.images[activeImage].startsWith('http') ? work.images[activeImage] : `${API_BASE}${work.images[activeImage]}`}
                                     alt={work.title}
                                     className="w-full h-full object-cover transition-all duration-500"
                                 />
@@ -110,7 +110,11 @@ const PublicProjectPage = () => {
                                                 : "border-white/10 opacity-60 hover:opacity-100"
                                                 }`}
                                         >
-                                            <img src={`${API_BASE}${img}`} alt="" className="w-full h-full object-cover" />
+                                            <img 
+                                                src={img.startsWith('http') ? img : `${API_BASE}${img}`} 
+                                                alt="" 
+                                                className="w-full h-full object-cover" 
+                                            />
                                         </button>
                                     ))}
                                 </div>

@@ -70,7 +70,7 @@ exports.assignRolesToProject = async (req, res) => {
 // Create a task/milestone for a project (Admin or assigned Architect)
 exports.createTask = async (req, res) => {
     try {
-        const { projectId, title, description, assignedTo, dueDate } = req.body;
+        const { projectId, title, description, assignedTo, dueDate, images } = req.body;
 
         const project = await ConstructionProject.findById(projectId);
         if (!project) return res.status(404).json({ success: false, message: "Project not found" });
@@ -90,6 +90,7 @@ exports.createTask = async (req, res) => {
             description,
             assignedTo: assignedTo || req.user.id, // Default assign to creator
             dueDate: dueDate || undefined,
+            images: images || [],
         });
 
         await newTask.save();

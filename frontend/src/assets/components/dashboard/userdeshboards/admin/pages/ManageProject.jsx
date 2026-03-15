@@ -25,6 +25,7 @@ const ManageProject = () => {
         description: "",
         assignedTo: "",
         dueDate: "",
+        imageLinks: "", // Added for milestone images
     });
 
     const [assignmentData, setAssignmentData] = useState({
@@ -89,15 +90,20 @@ const ManageProject = () => {
     const handleCreateTask = async (e) => {
         e.preventDefault();
         try {
+            const images = taskData.imageLinks
+                ? taskData.imageLinks.split(",").map(link => link.trim()).filter(link => link !== "")
+                : [];
+
             await axios.post("/api/construction/task", {
                 projectId,
                 ...taskData,
+                images,
             }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             toast.success("Task created successfully");
             setShowTaskModal(false);
-            setTaskData({ title: "", description: "", assignedTo: "", dueDate: "" });
+            setTaskData({ title: "", description: "", assignedTo: "", dueDate: "", imageLinks: "" });
             fetchData();
         } catch (error) {
             toast.error("Failed to create task");
@@ -181,23 +187,41 @@ const ManageProject = () => {
                                 </div>
                             ) : (
                                 tasks.map(task => (
-                                    <div key={task._id} className="bg-gray-50 p-4 rounded-xl border border-gray-100 flex justify-between items-start">
-                                        <div className="flex-1">
-                                            <h4 className="font-semibold text-gray-800 mb-1">{task.title}</h4>
-                                            <p className="text-sm text-gray-500 mb-2">{task.description}</p>
-                                            {task.dueDate && (
-                                                <p className="text-xs text-blue-600 flex items-center gap-1 mb-1">
-                                                    <FaCalendarAlt /> Due: {new Date(task.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(task.dueDate).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                                                </p>
-                                            )}
-                                            {task.assignedTo && (
-                                                <p className="text-xs text-gray-400 flex items-center gap-1"><FaUserTie /> Assigned to: {task.assignedTo.name}</p>
-                                            )}
+                                    <div key={task._id} className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-4">
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex-1">
+                                                <h4 className="font-semibold text-gray-800 mb-1">{task.title}</h4>
+                                                <p className="text-sm text-gray-500 mb-2">{task.description}</p>
+                                                {task.dueDate && (
+                                                    <p className="text-xs text-blue-600 flex items-center gap-1 mb-1">
+                                                        <FaCalendarAlt /> Due: {new Date(task.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(task.dueDate).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                                                    </p>
+                                                )}
+                                                {task.assignedTo && (
+                                                    <p className="text-xs text-gray-400 flex items-center gap-1"><FaUserTie /> Assigned to: {task.assignedTo.name}</p>
+                                                )}
+                                            </div>
+                                            <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border flex items-center gap-1 ${statusColor(task.status)}`}>
+                                                {task.status === "Completed" ? <FaCheckCircle /> : <FaSpinner className={task.status === "In Progress" ? "animate-spin" : ""} />}
+                                                {task.status}
+                                            </span>
                                         </div>
-                                        <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border flex items-center gap-1 ${statusColor(task.status)}`}>
-                                            {task.status === "Completed" ? <FaCheckCircle /> : <FaSpinner className={task.status === "In Progress" ? "animate-spin" : ""} />}
-                                            {task.status}
-                                        </span>
+
+                                        {/* Task Images Display */}
+                                        {task.images && task.images.length > 0 && (
+                                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                                {task.images.map((img, i) => (
+                                                    <div key={i} className="relative h-20 w-32 shrink-0 rounded-xl overflow-hidden border border-gray-200 bg-white">
+                                                        <img 
+                                                            src={img.startsWith('http') ? img : `${API}${img}`} 
+                                                            alt="" 
+                                                            className="w-full h-full object-cover"
+                                                            onError={(e) => { e.target.src = 'https://placehold.co/400x300/e2e8f0/64748b?text=Missing+Image'; }}
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 ))
                             )}
@@ -338,6 +362,17 @@ const ManageProject = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Due Date & Time</label>
                                 <input type="datetime-local" value={taskData.dueDate} onChange={(e) => setTaskData({ ...taskData, dueDate: e.target.value })} className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-blue-400 outline-none" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Image Links (Comma-separated URLs)</label>
+                                <textarea 
+                                    value={taskData.imageLinks} 
+                                    onChange={(e) => setTaskData({ ...taskData, imageLinks: e.target.value })} 
+                                    rows="2" 
+                                    className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-blue-400 outline-none" 
+                                    placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+                                ></textarea>
+                                <p className="text-[10px] text-gray-400 mt-1">Provide external image URLs to show as milestone banners.</p>
                             </div>
                             <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold mt-4 transition">
                                 Save Task

@@ -151,7 +151,7 @@ const PublicArchitectProfile = () => {
                             >
                                 <div className="h-56 overflow-hidden relative">
                                     <img
-                                        src={work.images?.[0] ? `${API}${work.images[0]}` : "https://via.placeholder.com/600x400?text=Project"}
+                                        src={work.images?.[0] ? (work.images[0].startsWith('http') ? work.images[0] : `${API}${work.images[0]}`) : "https://via.placeholder.com/600x400?text=Project"}
                                         alt={work.title}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     />

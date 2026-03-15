@@ -103,9 +103,15 @@ const createProduct = async (req, res) => {
       origin,
       features,
       care_instructions,
+      imageLink, // New field for external URL
     } = req.body;
 
-    const image = req.file ? `/uploads/${req.file.filename}` : null;
+    let image = req.file ? `/uploads/${req.file.filename}` : null;
+    
+    // If no file, but a link is provided, use the link
+    if (!image && imageLink) {
+        image = imageLink;
+    }
 
     // Convert features from text → array if needed
     const featuresArray =
@@ -130,7 +136,7 @@ const createProduct = async (req, res) => {
       features: featuresArray,
       care_instructions,
       stock,
-      images: image ? [{ public_id: 'local', url: image }] : [],
+      images: image ? [{ public_id: image.startsWith('http') ? 'external' : 'local', url: image }] : [],
       seller: req.user._id,
     });
 
@@ -150,7 +156,12 @@ const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+    let image = req.file ? `/uploads/${req.file.filename}` : undefined;
+
+    // If no file but imageLink provided in updates
+    if (!image && updates.imageLink) {
+        image = updates.imageLink;
+    }
 
     // Admin override: Admin can update any product, seller can only update their own
     const query = req.user.role === 'admin' ? { _id: id } : { _id: id, seller: req.user._id };
@@ -161,12 +172,17 @@ const updateProduct = async (req, res) => {
     Object.keys(updates).forEach((key) => {
       if (key === 'features' && typeof updates[key] === 'string') {
         product[key] = updates[key].split(',').map((f) => f.trim());
-      } else {
+      } else if (key !== 'imageLink') { // Don't directly map imageLink to product
         product[key] = updates[key] || product[key];
       }
     });
 
-    if (image) product.images = [{ public_id: 'local', url: image }];
+    if (image) {
+        product.images = [{ 
+            public_id: image.startsWith('http') ? 'external' : 'local', 
+            url: image 
+        }];
+    }
 
     await product.save();
     res.json(product);
