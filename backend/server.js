@@ -19,8 +19,8 @@ app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); // Allow serving /uploads
 app.use(cors({
   origin: process.env.NODE_ENV === "production"
-    ? ["https://stinchar.com", "http://192.168.29.252:5173"]
-    : ["http://localhost:5173", "http://192.168.29.252:5173"],
+    ? ["https://stinchar.com"]
+    : ["http://localhost:5173", "http://127.0.0.1:5173", /^http:\/\/192\.168\.\d+\.\d+:5173$/],
   credentials: true
 }));
 app.use(express.json({ limit: "10kb" }));

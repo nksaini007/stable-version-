@@ -299,6 +299,11 @@ const Nev = () => {
 
   const getPath = (link) => {
     if (link === "Construction") return "/my-construction";
+    if (isAdmin) {
+      if (link === "ordertraking") return "/admin/orders";
+      if (link === "query") return "/admin/support";
+      return `/admin/${link.toLowerCase()}`;
+    }
     return `/${link.toLowerCase()}`;
   };
 

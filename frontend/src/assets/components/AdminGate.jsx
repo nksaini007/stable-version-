@@ -35,7 +35,7 @@ const AdminGate = () => {
         setLoading(true);
         try {
             const { data } = await axios.post(
-                `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/users/x-admin-auth`,
+                `${import.meta.env.VITE_API_URL || ""}/api/users/x-admin-auth`,
                 { adminKey, email, password }
             );
             login(data.user, data.token);

@@ -3,7 +3,7 @@ import { FaChevronLeft, FaChevronRight, FaHeart, FaShoppingCart, FaFire } from "
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import fallbackItems from "../json/Itom.json";
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
 const TrendingItems = ({ title = "what are you looking for?\t deals are here", autoplay = true }) => {
   const nav = useNavigate();

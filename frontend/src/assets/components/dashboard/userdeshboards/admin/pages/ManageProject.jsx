@@ -16,7 +16,7 @@ const ManageProject = () => {
     const [showTaskModal, setShowTaskModal] = useState(false);
 
     // Base API URL for images
-    const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const API = import.meta.env.VITE_API_URL || "";
 
     const [users, setUsers] = useState([]);
 

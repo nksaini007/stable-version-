@@ -7,7 +7,7 @@ import {
 import axios from "axios";
 import { AuthContext } from "../../../../../context/AuthContext";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 export default function SellerPayments() {
     const { token, user } = useContext(AuthContext);

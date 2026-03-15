@@ -7,7 +7,7 @@ import {
 import axios from "axios";
 import { AuthContext } from "../../../../../context/AuthContext";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 const STATUS_COLORS = {
     draft: "bg-gray-500/20 text-gray-400",

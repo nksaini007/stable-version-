@@ -5,7 +5,7 @@ import { AuthContext } from "../../../../../context/AuthContext";
 import { FaArrowLeft, FaFileAlt, FaUpload, FaTasks, FaPlus, FaCheck, FaSpinner, FaMapMarkerAlt, FaFilePdf, FaImage } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 const ArchitectActiveProjectDetails = () => {
     const { projectId } = useParams();

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaMapMarkerAlt, FaEnvelope, FaPhone, FaBuilding, FaCheckCircle, FaTools } from "react-icons/fa";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "";
 
 const PublicArchitectProfile = () => {
     const { id } = useParams();

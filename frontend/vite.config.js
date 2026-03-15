@@ -13,12 +13,12 @@ export default defineConfig({
     proxy: {
       // Forward /api requests to the backend server
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true,
       },
       // Forward /uploads requests to the backend server
       '/uploads': {
-        target: 'http://localhost:5000',
+        target: 'http://127.0.0.1:5000',
         changeOrigin: true,
       }
     }

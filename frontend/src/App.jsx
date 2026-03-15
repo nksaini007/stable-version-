@@ -165,6 +165,12 @@ import ArchitectMaterials from "./assets/components/dashboard/userdeshboards/arc
 import ArchitectSupport from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectSupport";
 import ArchitectActiveProjectDetails from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectActiveProjectDetails";
 import ArchitectOffice from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectOffice";
+import CustomerLayout from "./assets/components/dashboard/userdeshboards/customer/CustomerLayout";
+import CustomerOverview from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerOverview";
+import CustomerOrders from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerOrders";
+import CustomerProfile from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerProfile";
+import CustomerWishlist from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerWishlist";
+import CustomerSupportPage from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerSupport";
 
 // Services UI
 import ServiceSearch from "./assets/components/ServiceSearch";
@@ -227,6 +233,15 @@ function App() {
           {/* User / Seller Dashboard Dropback */}
           <Route path="/dashboard" element={<Dashboardloader />} />
           <Route path="/orders" element={<SellerOrders />} />
+
+          {/* Customer Dashboard Routes */}
+          <Route path="/customer" element={<CustomerLayout />}>
+            <Route index element={<CustomerOverview />} />
+            <Route path="orders" element={<CustomerOrders />} />
+            <Route path="profile" element={<CustomerProfile />} />
+            <Route path="wishlist" element={<CustomerWishlist />} />
+            <Route path="support" element={<CustomerSupportPage />} />
+          </Route>
 
           {/* Seller Dashboard Routes */}
           <Route path="/seller" element={<SellerLayout />}>
