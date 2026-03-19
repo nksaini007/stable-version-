@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaSearch, FaArrowRight, FaShieldAlt, FaStore, FaTruck, FaHardHat, FaWrench, FaTags, FaRulerCombined, FaPalette, FaBuilding } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
+import API from "../api/api";
 
 const AnimatedCard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,9 +101,8 @@ const AnimatedCard = () => {
     setLoadingMore(true);
     const nextPage = page + 1;
     try {
-      const response = await fetch(`/api/products/public?search=${searchQuery}&page=${nextPage}&limit=10`);
-      if (!response.ok) throw new Error("Search failed");
-      const data = await response.json();
+      const response = await API.get(`/products/public?search=${searchQuery}&page=${nextPage}&limit=10`);
+      const data = response.data;
       const newProducts = data.products || [];
       setResults(prev => [...prev, ...newProducts]);
       setPage(nextPage);
@@ -123,9 +123,8 @@ const AnimatedCard = () => {
     setHasSearched(true);
     setPage(1);
     try {
-      const response = await fetch(`/api/products/public?search=${searchQuery}&page=1&limit=10`);
-      if (!response.ok) throw new Error("Search failed");
-      const data = await response.json();
+      const response = await API.get(`/products/public?search=${searchQuery}&page=1&limit=10`);
+      const data = response.data;
       setResults(data.products || []);
       setHasMore(data.hasMore || false);
     } catch (err) {

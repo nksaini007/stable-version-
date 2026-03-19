@@ -269,7 +269,7 @@ import Nev from "./Nev";
 import Footer from "./Footer";
 import { Trash2 } from "lucide-react";
 import img from "../img/dance2.gif";
-import axios from "axios";
+import API from "../api/api";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -330,8 +330,8 @@ const Cart = () => {
     try {
       setCalcLoading(true);
       const token = localStorage.getItem("token");
-      const { data } = await axios.post(
-        `/api/delivery-pricing/calculate`,
+      const { data } = await API.post(
+        `/delivery-pricing/calculate`,
         { pincode: shippingAddress.postalCode, weightKg: totalWeightKg },
         { headers: { Authorization: `Bearer ${token}` } }
       );

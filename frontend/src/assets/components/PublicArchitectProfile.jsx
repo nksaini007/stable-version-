@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { FaMapMarkerAlt, FaEnvelope, FaPhone, FaBuilding, FaCheckCircle, FaTools } from "react-icons/fa";
-
-const API = import.meta.env.VITE_API_URL || "";
+import API from "../api/api";
 
 const PublicArchitectProfile = () => {
     const { id } = useParams();
@@ -16,7 +13,7 @@ const PublicArchitectProfile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const { data } = await axios.get(`${API}/api/users/architect/${id}`);
+                const { data } = await API.get(`/users/architect/${id}`);
                 setArchitect(data.architect);
                 setPortfolio(data.portfolio);
             } catch (err) {
@@ -64,7 +61,7 @@ const PublicArchitectProfile = () => {
                     {/* Avatar */}
                     <div className="flex-shrink-0 mx-auto md:mx-0 -mt-16 md:-mt-20">
                         <img
-                            src={architect.profileImage ? `${API}${architect.profileImage}` : "https://via.placeholder.com/200?text=Architect"}
+                            src={architect.profileImage ? (architect.profileImage.startsWith('http') ? architect.profileImage : `${architect.profileImage}`) : "https://via.placeholder.com/200?text=Architect"}
                             alt={architect.name}
                             className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-white shadow-lg object-cover bg-white"
                         />
@@ -151,7 +148,7 @@ const PublicArchitectProfile = () => {
                             >
                                 <div className="h-56 overflow-hidden relative">
                                     <img
-                                        src={work.images?.[0] ? (work.images[0].startsWith('http') ? work.images[0] : `${API}${work.images[0]}`) : "https://via.placeholder.com/600x400?text=Project"}
+                                        src={work.images?.[0] ? (work.images[0].startsWith('http') ? work.images[0] : `${work.images[0]}`) : "https://via.placeholder.com/600x400?text=Project"}
                                         alt={work.title}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
