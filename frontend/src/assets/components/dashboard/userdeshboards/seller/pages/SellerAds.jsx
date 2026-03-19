@@ -4,10 +4,7 @@ import {
     FaChartLine, FaImage, FaUpload, FaMoneyBillWave, FaRocket,
     FaPause,
 } from "react-icons/fa";
-import axios from "axios";
-import { AuthContext } from "../../../../../context/AuthContext";
-
-const API = import.meta.env.VITE_API_URL || "";
+import API from "../../../../../api/api";
 
 const STATUS_COLORS = {
     draft: "bg-gray-500/20 text-gray-400",
@@ -61,27 +58,27 @@ export default function SellerAds() {
 
     const fetchCategories = async () => {
         try {
-            const { data } = await axios.get(`${API}/api/categories`);
+            const { data } = await API.get(`/categories`);
             setCategories(data);
         } catch (err) { console.error(err); }
     };
 
     const fetchMyProducts = async () => {
         try {
-            const { data } = await axios.get(`${API}/api/products`, { headers });
+            const { data } = await API.get(`/products`);
             setMyProducts(data);
         } catch (err) { console.error(err); }
     };
 
     const fetchCampaigns = async () => {
         try {
-            const { data } = await axios.get(`${API}/api/ads/mine`, { headers });
+            const { data } = await API.get(`/ads/mine`);
             setCampaigns(data);
         } catch { }
     };
     const fetchPayments = async () => {
         try {
-            const { data } = await axios.get(`${API}/api/ads/my-payments`, { headers });
+            const { data } = await API.get(`/ads/my-payments`);
             setMyPayments(data);
         } catch { }
     };
@@ -94,7 +91,7 @@ export default function SellerAds() {
             const fd = new FormData();
             Object.entries(form).forEach(([k, v]) => fd.append(k, v));
             if (bannerFile) fd.append("bannerImage", bannerFile);
-            const { data } = await axios.post(`${API}/api/ads/`, fd, { headers });
+            const { data } = await API.post(`/ads/`, fd);
             setMsg(`✅ ${data.message || "Campaign created!"}`);
             fetchCampaigns();
             setTab("campaigns");
@@ -112,7 +109,7 @@ export default function SellerAds() {
             const fd = new FormData();
             Object.entries(payForm).forEach(([k, v]) => fd.append(k, v));
             if (proofFile) fd.append("proofImage", proofFile);
-            await axios.post(`${API}/api/ads/${payModal._id}/payment`, fd, { headers });
+            await API.post(`/ads/${payModal._id}/payment`, fd);
             setMsg("✅ Payment submitted! Admin will verify and activate.");
             setPayModal(null);
             fetchCampaigns();

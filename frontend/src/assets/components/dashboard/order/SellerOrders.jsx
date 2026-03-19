@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../../api/api";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import Nev from "../../Nev";

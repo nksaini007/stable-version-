@@ -4,10 +4,7 @@ import {
     FaChartLine, FaShoppingCart, FaBullhorn, FaCalendarAlt,
     FaCheckCircle, FaTimesCircle, FaFileInvoice,
 } from "react-icons/fa";
-import axios from "axios";
-import { AuthContext } from "../../../../../context/AuthContext";
-
-const API = import.meta.env.VITE_API_URL || "";
+import API from "../../../../../api/api";
 
 export default function SellerPayments() {
     const { token, user } = useContext(AuthContext);
@@ -27,7 +24,7 @@ export default function SellerPayments() {
 
     const fetchRevenue = async () => {
         try {
-            const { data } = await axios.get(`${API}/api/payments/seller/revenue`, { headers });
+            const { data } = await API.get(`/payments/seller/revenue`);
             setRevenue(data);
         } catch { }
     };
@@ -35,7 +32,7 @@ export default function SellerPayments() {
     const fetchStatement = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`${API}/api/payments/seller/statement?from=${from}&to=${to}`, { headers });
+            const { data } = await API.get(`/payments/seller/statement?from=${from}&to=${to}`);
             setStatement(data);
         } catch (err) {
             console.error(err);

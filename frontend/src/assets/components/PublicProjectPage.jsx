@@ -111,7 +111,7 @@ const PublicProjectPage = () => {
                                                 }`}
                                         >
                                             <img
-                                                src={img.startsWith('http') ? img : `${API_BASE}${img}`}
+                                                src={img.startsWith('http') ? img : `${img}`}
                                                 alt=""
                                                 className="w-full h-full object-cover"
                                             />
@@ -213,7 +213,7 @@ const PublicProjectPage = () => {
                                     <div className="flex items-center gap-4 mb-6">
                                         {work.architectInfo.profileImage ? (
                                             <img
-                                                src={`${API_BASE}${work.architectInfo.profileImage}`}
+                                                src={`${work.architectInfo.profileImage}`}
                                                 alt={work.architectInfo.name}
                                                 className="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-500/30"
                                             />

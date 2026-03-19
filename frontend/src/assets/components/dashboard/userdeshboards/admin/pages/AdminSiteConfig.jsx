@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { FaPlus, FaTrash, FaImage, FaSearch, FaStar, FaSave } from "react-icons/fa";
-
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import API from "../../../../../api/api";
 
 const AdminSiteConfig = () => {
     const [loading, setLoading] = useState(true);
@@ -25,9 +21,7 @@ const AdminSiteConfig = () => {
 
     const fetchConfig = async () => {
         try {
-            const { data } = await axios.get(`${API_BASE}/api/config/admin`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
+            const { data } = await API.get(`/config/admin`);
             setConfig(data);
             setBanners(data.banners || []);
             setTrendingItemIds(data.trendingItems || []);
@@ -58,11 +52,7 @@ const AdminSiteConfig = () => {
 
     const handleSaveBanners = async () => {
         try {
-            await axios.put(
-                `${API_BASE}/api/config/banners`,
-                { banners },
-                { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-            );
+            await API.put(`/config/banners`, { banners });
             toast.success("Banners updated successfully!");
         } catch (error) {
             toast.error("Failed to update banners");
@@ -77,8 +67,8 @@ const AdminSiteConfig = () => {
 
         setIsSearching(true);
         try {
-            const { data } = await axios.get(
-                `${API_BASE}/api/products/public?search=${searchQuery}&limit=10`
+            const { data } = await API.get(
+                `/products/public?search=${searchQuery}&limit=10`
             );
             // Backend might return { products: [...] } or just an array depending on implementation
             const results = data.products || data;
@@ -104,11 +94,7 @@ const AdminSiteConfig = () => {
 
     const handleSaveTrending = async () => {
         try {
-            await axios.put(
-                `${API_BASE}/api/config/trending`,
-                { trendingItemIds },
-                { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-            );
+            await API.put(`/config/trending`, { trendingItemIds });
             toast.success("Trending items updated successfully!");
         } catch (error) {
             toast.error("Failed to update trending items");
