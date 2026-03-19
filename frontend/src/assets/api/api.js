@@ -23,4 +23,5 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+export const API_BASE = baseURL;
 export default API;

@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../../../../../context/AuthContext";
-import axios from "axios";
+import API from "../../../../../api/api";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -24,7 +22,7 @@ const ArchitectSupport = () => {
     const fetchTickets = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("/api/support/architect", { headers: { Authorization: `Bearer ${token}` } });
+            const res = await API.get("/support/architect");
             setTickets(res.data.tickets);
         } catch (err) {
             toast.error("Failed to load support tickets");
@@ -35,7 +33,7 @@ const ArchitectSupport = () => {
 
     const fetchTicketDetails = async (id) => {
         try {
-            const res = await axios.get(`/api/support/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await API.get(`/support/${id}`);
             setActiveTicket(res.data.ticket);
         } catch (err) {
             toast.error("Failed to load ticket details");
@@ -47,7 +45,7 @@ const ArchitectSupport = () => {
         if (!replyText.trim()) return;
         setReplying(true);
         try {
-            await axios.post(`/api/support/${activeTicket._id}/reply`, { text: replyText }, { headers: { Authorization: `Bearer ${token}` } });
+            await API.post(`/support/${activeTicket._id}/reply`, { text: replyText });
             setReplyText("");
             fetchTicketDetails(activeTicket._id);
             fetchTickets(); // refresh list to update status if it changed to In Progress

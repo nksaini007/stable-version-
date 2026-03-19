@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../../../../../context/AuthContext";
-import axios from "axios";
+import API, { API_BASE } from "../../../../../api/api";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
@@ -46,9 +44,7 @@ const ArchitectWork = () => {
     const fetchWorks = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("/api/architect-works/my", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const res = await API.get("/architect-works/my");
             setWorks(res.data.works);
         } catch (err) {
             toast.error("Failed to load works.");
@@ -111,14 +107,10 @@ const ArchitectWork = () => {
             imageFiles.forEach(file => formData.append("images", file));
 
             if (editingWork) {
-                await axios.put(`/api/architect-works/${editingWork._id}`, formData, {
-                    headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
-                });
+                await API.put(`/architect-works/${editingWork._id}`, formData);
                 toast.success("Project updated!");
             } else {
-                await axios.post("/api/architect-works", formData, {
-                    headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
-                });
+                await API.post("/architect-works", formData);
                 toast.success("Project created!");
             }
 
@@ -134,9 +126,7 @@ const ArchitectWork = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`/api/architect-works/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            await API.delete(`/architect-works/${id}`);
             toast.success("Project deleted!");
             setDeleteConfirm(null);
             fetchWorks();
@@ -147,10 +137,7 @@ const ArchitectWork = () => {
 
     const handleRemoveImage = async (workId, imageUrl) => {
         try {
-            await axios.put(`/api/architect-works/${workId}/remove-image`,
-                { imageUrl },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            await API.put(`/architect-works/${workId}/remove-image`, { imageUrl });
             fetchWorks();
             if (editingWork && editingWork._id === workId) {
                 setEditingWork(prev => ({
@@ -196,7 +183,6 @@ const ArchitectWork = () => {
         return matchSearch && matchCat;
     });
 
-    const API_BASE = import.meta.env.VITE_API_URL || "";
 
     if (loading && works.length === 0) return (
         <div className="flex items-center justify-center min-h-screen bg-[#0a0f1c]">
