@@ -142,9 +142,9 @@ const AnimatedCard = () => {
     setError("");
     setHasSearched(true);
     setPage(1);
-    fetch(`/api/products/public?search=${categoryName}&page=1&limit=10`)
-      .then(res => res.json())
-      .then(data => {
+    API.get(`/products/public?search=${categoryName}&page=1&limit=10`)
+      .then(res => {
+        const data = res.data;
         setResults(data.products || []);
         setHasMore(data.hasMore || false);
         setLoading(false);
