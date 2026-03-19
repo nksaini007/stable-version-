@@ -1,10 +1,11 @@
 // ../../api/api.js
 import axios from "axios";
 
+const fallbackURL = "https://stable-version-backend.onrender.com";
+const baseURL = import.meta.env.VITE_API_URL || fallbackURL;
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL 
-    ? (import.meta.env.VITE_API_URL.endsWith('/api') ? import.meta.env.VITE_API_URL : `${import.meta.env.VITE_API_URL}/api`)
-    : "/api",
+  baseURL: baseURL.endsWith('/api') ? baseURL : `${baseURL}/api`,
 });
 
 // Add interceptor to handle URLs and strip leading slashes if baseURL is set
