@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import API from "../../api/api";
 import { AuthContext } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { FaEnvelope, FaReply, FaComments } from "react-icons/fa";
@@ -22,7 +22,7 @@ const CustomerInquiries = () => {
     const fetchMessages = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("/api/messages/my-messages", {
+            const res = await API.get("/messages/my-messages", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMessages(res.data.messages);
@@ -39,7 +39,7 @@ const CustomerInquiries = () => {
 
         try {
             setSendingReply(true);
-            const res = await axios.put(`/api/messages/${selectedMessage._id}/reply`, {
+            const res = await API.put(`/messages/${selectedMessage._id}/reply`, {
                 text: replyText
             }, {
                 headers: { Authorization: `Bearer ${token}` }

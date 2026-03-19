@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaRulerCombined } from "react-icons/fa";
 import { motion } from "framer-motion";
-import axios from "axios";
+import API from "../api/api";
 import Nev from "./Nev";
 import Footer from "./Footer";
 
@@ -16,7 +16,7 @@ const PlanTypesList = () => {
         const fetchPlanTypes = async () => {
             try {
                 // Fetch all categories to locate the plan types for the current category
-                const { data } = await axios.get("/api/plan-categories");
+                const { data } = await API.get("/plan-categories");
                 const currentCategory = data.categories.find(c => c.name === categoryName);
                 if (currentCategory && currentCategory.planTypes) {
                     setPlanTypes(currentCategory.planTypes);

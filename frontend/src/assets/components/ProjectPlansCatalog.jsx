@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../api/api";
 import { motion } from "framer-motion";
 import { FaMap, FaSearch, FaRulerCombined, FaTag } from "react-icons/fa";
 import Nev from "./Nev";
@@ -16,7 +16,7 @@ const ProjectPlansCatalog = () => {
         const fetchData = async () => {
             try {
                 const [plansRes] = await Promise.all([
-                    axios.get("/api/construction-plans")
+                    API.get("/construction-plans")
                 ]);
 
                 // Filter plans strictly by category and planType from URL

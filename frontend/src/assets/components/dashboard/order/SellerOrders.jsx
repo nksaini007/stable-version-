@@ -36,8 +36,8 @@ const SellerOrders = () => {
       const currentSellerId = decoded?.id || decoded?._id;
       setSellerId(currentSellerId);
 
-      const { data } = await axios.get(
-        `/api/orders/seller/orders`,
+      const { data } = await API.get(
+        `/orders/seller/orders`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -65,8 +65,8 @@ const SellerOrders = () => {
       setUpdating(true);
       const token = localStorage.getItem("token");
 
-      await axios.put(
-        `/api/orders/seller/item-status`,
+      await API.put(
+        `/orders/seller/item-status`,
         { orderId, productId, status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaBuilding } from "react-icons/fa";
 import { motion } from "framer-motion";
-import axios from "axios";
+import API from "../api/api";
 import Nev from "./Nev";
 import Footer from "./Footer";
 
@@ -13,7 +13,7 @@ const PlanCategoriesList = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const { data } = await axios.get("/api/plan-categories");
+                const { data } = await API.get("/plan-categories");
                 setCategories(data.categories || []);
             } catch (error) {
                 console.error("Failed to load plan categories", error);

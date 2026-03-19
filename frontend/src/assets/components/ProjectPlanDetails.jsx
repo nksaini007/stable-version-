@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import API from "../api/api";
 import { motion } from "framer-motion";
 import { FaChevronLeft, FaMap, FaRulerCombined, FaTag, FaCheckCircle, FaComments, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -22,7 +22,7 @@ const ProjectPlanDetails = () => {
     useEffect(() => {
         const fetchPlan = async () => {
             try {
-                const res = await axios.get(`/api/construction-plans/${id}`);
+                const res = await API.get(`/construction-plans/${id}`);
                 setPlan(res.data.plan);
             } catch (error) {
                 console.error("Failed to fetch plan exact details", error);
@@ -42,8 +42,8 @@ const ProjectPlanDetails = () => {
 
         try {
             setSending(true);
-            await axios.post(
-                "/api/messages",
+            await API.post(
+                "/messages",
                 {
                     planId: id,
                     subject: messageData.subject,
