@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import axios from "axios";
+import API from "../api/api";
 import Nev from "./Nev";
 import Footer from "./Footer";
 import { FaBoxes } from "react-icons/fa";
