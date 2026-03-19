@@ -82,9 +82,13 @@ app.use("/api/ads", adRoutes); // ✅ seller ad campaigns
 app.use("/api/delivery-pricing", deliveryPricingRoutes); // ✅ delivery pricing rules
 app.use("/api/service-categories", serviceCategoryRoutes); // ✅ service categories
 
-// ✅ Test Route
+// ✅ Test & Health Routes
 app.get("/", (req, res) => {
   res.send("✅ API is running...");
+});
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is healthy" });
 });
 
 // ✅ Start server
