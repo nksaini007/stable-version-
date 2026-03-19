@@ -4,10 +4,7 @@ import {
     FaMotorcycle, FaBox, FaWeightHanging, FaMapMarkerAlt,
     FaDatabase, FaCalculator, FaCheckCircle,
 } from "react-icons/fa";
-import axios from "axios";
-import { AuthContext } from "../../../../../context/AuthContext";
-
-const API = import.meta.env.VITE_API_URL || "";
+import API from "../../../../../api/api";
 
 const VEHICLE_ICONS = {
     bike: "🏍️",
@@ -57,7 +54,7 @@ export default function AdminDeliveryPricing() {
     const fetchRules = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`${API}/api/delivery-pricing/`, { headers });
+            const { data } = await API.get(`/delivery-pricing/`, { headers });
             setRules(data);
         } catch { } finally { setLoading(false); }
     };
@@ -66,7 +63,7 @@ export default function AdminDeliveryPricing() {
         if (!confirm("This will reset ALL delivery pricing rules with North India defaults. Continue?")) return;
         setSeeding(true);
         try {
-            const { data } = await axios.post(`${API}/api/delivery-pricing/seed`, {}, { headers });
+            const { data } = await API.post(`/delivery-pricing/seed`, {}, { headers });
             setMsg(`✅ ${data.message}`);
             fetchRules();
         } catch (err) {
@@ -81,10 +78,10 @@ export default function AdminDeliveryPricing() {
         setLoading(true);
         try {
             if (modal === "add") {
-                await axios.post(`${API}/api/delivery-pricing/`, form, { headers });
+                await API.post(`/delivery-pricing/`, form, { headers });
                 setMsg("✅ Rule added");
             } else {
-                await axios.put(`${API}/api/delivery-pricing/${form._id}`, form, { headers });
+                await API.put(`/delivery-pricing/${form._id}`, form, { headers });
                 setMsg("✅ Rule updated");
             }
             fetchRules();
@@ -97,7 +94,7 @@ export default function AdminDeliveryPricing() {
     const handleDelete = async (id, label) => {
         if (!confirm(`Delete "${label}" rule?`)) return;
         try {
-            await axios.delete(`${API}/api/delivery-pricing/${id}`, { headers });
+            await API.delete(`/delivery-pricing/${id}`, { headers });
             setMsg("✅ Rule deleted");
             fetchRules();
         } catch { setMsg("❌ Error deleting rule"); }
@@ -108,7 +105,7 @@ export default function AdminDeliveryPricing() {
         setCalcLoading(true);
         setCalcResult(null);
         try {
-            const { data } = await axios.post(`${API}/api/delivery-pricing/calculate`, calcForm, { headers });
+            const { data } = await API.post(`/delivery-pricing/calculate`, calcForm, { headers });
             setCalcResult(data);
         } catch (err) {
             setCalcResult({ error: err.response?.data?.message || "Error calculating" });

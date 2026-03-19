@@ -53,7 +53,6 @@ const PublicProjectPage = () => {
         </div>
     );
 
-    const API_BASE = import.meta.env.VITE_API_URL || "";
 
     return (
         <div className="min-h-screen bg-[#0a0f1c] text-white">
@@ -78,7 +77,7 @@ const PublicProjectPage = () => {
                         <div className="mb-10">
                             <div className="relative rounded-3xl overflow-hidden bg-[#1e293b] border border-white/10 shadow-2xl" style={{ height: "clamp(300px, 50vw, 500px)" }}>
                                 <img
-                                    src={work.images[activeImage].startsWith('http') ? work.images[activeImage] : `${API_BASE}${work.images[activeImage]}`}
+                                    src={work.images[activeImage].startsWith('http') ? work.images[activeImage] : `${work.images[activeImage]}`}
                                     alt={work.title}
                                     className="w-full h-full object-cover transition-all duration-500"
                                 />
