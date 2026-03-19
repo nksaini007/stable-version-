@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import API from "../api/api";
 import { FaBoxes, FaSearch } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
@@ -32,8 +32,8 @@ const Categories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(
-          `/api/categories`//192.168.29.236
+        const res = await API.get(
+          `/categories`
         );
         setCategories(Array.isArray(res.data) ? res.data : []);
       } catch (err) {

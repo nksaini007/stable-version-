@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import API from "../api/api";
 import { motion } from "framer-motion";
 import {
     FaBuilding, FaMapMarkerAlt, FaRulerCombined, FaMoneyBillWave,
@@ -23,7 +23,7 @@ const PublicProjectPage = () => {
     const fetchWork = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`/api/architect-works/public/${id}`);
+            const res = await API.get(`/architect-works/public/${id}`);
             setWork(res.data.work);
         } catch (err) {
             setError(err.response?.data?.message || "Project not found or not publicly available.");

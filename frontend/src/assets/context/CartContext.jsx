@@ -74,7 +74,7 @@
 //   );
 // };
 import React, { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import API from "../api/api";
 
 export const CartContext = createContext();
 
@@ -159,16 +159,9 @@ export const CartProvider = ({ children }) => {
         ),
       };
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      const response = await axios.post(
-        `/api/orders`,
-        orderData,
-        config
+      const response = await API.post(
+        `/orders`,
+        orderData
       );
 
       clearCart(); // Clear cart after successful order

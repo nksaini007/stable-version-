@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
-
-const API = import.meta.env.VITE_API_URL || "";
+import API from "../api/api";
 
 const PublicAds = ({ category }) => {
     const [ads, setAds] = useState([]);
@@ -28,9 +24,9 @@ const PublicAds = ({ category }) => {
     const fetchAds = async () => {
         try {
             const url = category
-                ? `${API}/api/ads/public?category=${encodeURIComponent(category)}`
-                : `${API}/api/ads/public`;
-            const { data } = await axios.get(url);
+                ? `/ads/public?category=${encodeURIComponent(category)}`
+                : `/ads/public`;
+            const { data } = await API.get(url);
             setAds(data);
         } catch (err) {
             console.error("Failed to fetch public ads", err);
@@ -41,7 +37,7 @@ const PublicAds = ({ category }) => {
 
     const handleAdClick = async (ad) => {
         // Fire & forget click tracking
-        axios.post(`${API}/api/ads/click/${ad._id}`).catch((e) => console.error(e));
+        API.post(`/ads/click/${ad._id}`).catch((e) => console.error(e));
 
         // Navigate to target if defined
         if (ad.targetProduct) {

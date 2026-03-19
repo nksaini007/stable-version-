@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { FaSearch } from "react-icons/fa";
 import Nev from "./Nev";
 import Footer from "./Footer";
+import API from "../api/api";
 
 // Intersection Observer Hook
 const useIntersectionObserver = (ref, callback, options) => {
@@ -48,13 +49,8 @@ const ItemPage = () => {
 
       if (searchQuery) params.append("search", searchQuery);
 
-      const res = await fetch(`/api/products/public?${params.toString()}`, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-      const data = await res.json();
+      const res = await API.get(`/products/public?${params.toString()}`);
+      const data = res.data;
       const newProducts = data.products || [];
 
       if (pageNum === 1) {

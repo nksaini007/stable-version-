@@ -25,7 +25,7 @@ const CategoryPage = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get(`/api/categories`);
+        const res = await API.get(`/categories`);
         const matched = res.data.find(
           (item) => item.name.toLowerCase() === categoryName.toLowerCase()
         );
@@ -199,7 +199,7 @@ export default CategoryPage;
 //   useEffect(() => {
 //     const fetchCategory = async () => {
 //       try {
-//         const res = await axios.get(`/api/categories`);
+//         const res = await API.get(`/categories`);
 //         const matched = res.data.find(
 //           (item) => item.name.toLowerCase() === categoryName.toLowerCase()
 //         );
@@ -375,7 +375,7 @@ export default CategoryPage;
 //       setLoading(true);
 //       setError(null);
 //       try {
-//         const res = await axios.get(`/api/categories`);
+//         const res = await API.get(`/categories`);
 //         if (!mounted) return;
 //         const matched = Array.isArray(res.data)
 //           ? res.data.find((item) => item.name.toLowerCase() === categoryName.toLowerCase())

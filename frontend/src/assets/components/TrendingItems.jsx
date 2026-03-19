@@ -1,10 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight, FaHeart, FaShoppingCart, FaFire } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import fallbackItems from "../json/Itom.json";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import API from "../api/api";
 
 const TrendingItems = ({ title = "what are you looking for?\t deals are here", autoplay = true }) => {
   const nav = useNavigate();
@@ -17,7 +16,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
   useEffect(() => {
     const fetchTrending = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/api/config`);
+        const res = await API.get(`/config`);
         const trending = res.data?.trendingItems || [];
         if (trending.length > 0) {
           // Map backend product data to our card format

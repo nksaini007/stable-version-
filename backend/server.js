@@ -19,9 +19,27 @@ const app = express();
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); // Allow serving /uploads
 app.use(cors({
-  origin: process.env.NODE_ENV === "production"
-    ? [process.env.FRONTEND_URL || "https://stinchar.com"]
-    : ["http://localhost:5173", "http://127.0.0.1:5173", /^http:\/\/192\.168\.\d+\.\d+:5173$/],
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      "https://stable-version.vercel.app",
+      "https://stinchar.com",
+      "http://localhost:5173",
+      "http://127.0.0.1:5173"
+    ].filter(Boolean);
+
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+
+    const isVercel = /^https:\/\/stable-version-.*\.vercel\.app$/.test(origin);
+    const isLocal = /^http:\/\/192\.168\.\d+\.\d+:5173$/.test(origin);
+
+    if (allowedOrigins.includes(origin) || isVercel || isLocal) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 app.use(express.json({ limit: "10kb" }));

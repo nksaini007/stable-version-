@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import Nev from "./Nev";
 import Footer from "./Footer";
 import Categories from "./Categories";
+import API from "../api/api";
 
 const ItemList = () => {
   const { categoryName, itemName, itemList } = useParams();
@@ -29,12 +30,8 @@ const ItemList = () => {
         type: type,
       });
 
-      const res = await fetch(`/api/products/public?${params.toString()}`, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-      const data = await res.json();
+      const res = await API.get(`/products/public?${params.toString()}`);
+      const data = res.data;
       const newProducts = data.products || [];
 
       const formatImage = (product) =>
@@ -55,15 +52,13 @@ const ItemList = () => {
             category: categoryName,
             subcategory: itemName,
         });
-        const relatedRes = await fetch(`/api/products/public?${relatedParams.toString()}`);
-        if (relatedRes.ok) {
-            const relatedData = await relatedRes.json();
-            // Filter out the current type from related on client side since we don't have a "not equal" filter on backend yet
-            const filteredRelated = (relatedData.products || [])
-                .filter(p => p.type?.toLowerCase() !== type.toLowerCase())
-                .map(p => ({ ...p, image: formatImage(p) }));
-            setRelatedProducts(filteredRelated);
-        }
+        const relatedRes = await API.get(`/products/public?${relatedParams.toString()}`);
+        const relatedData = relatedRes.data;
+        // Filter out the current type from related on client side since we don't have a "not equal" filter on backend yet
+        const filteredRelated = (relatedData.products || [])
+            .filter(p => p.type?.toLowerCase() !== type.toLowerCase())
+            .map(p => ({ ...p, image: formatImage(p) }));
+        setRelatedProducts(filteredRelated);
       } else {
         setMainProducts((prev) => [...prev, ...formatted]);
       }

@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaShieldAlt, FaLock, FaEye, FaEyeSlash, FaKey } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
-import axios from "axios";
+import API from "../api/api";
 
 const AdminGate = () => {
     const { login } = useContext(AuthContext);
@@ -34,8 +34,8 @@ const AdminGate = () => {
         setError("");
         setLoading(true);
         try {
-            const { data } = await axios.post(
-                `${import.meta.env.VITE_API_URL || ""}/api/users/x-admin-auth`,
+            const { data } = await API.post(
+                `/users/x-admin-auth`,
                 { adminKey, email, password }
             );
             login(data.user, data.token);

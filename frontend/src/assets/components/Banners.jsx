@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
-
-const API_BASE = import.meta.env.VITE_API_URL || "";
+import API from "../api/api";
 
 const Banners = () => {
     const [banners, setBanners] = useState([]);
@@ -12,7 +8,7 @@ const Banners = () => {
     useEffect(() => {
         const fetchBanners = async () => {
             try {
-                const res = await axios.get(`${API_BASE}/api/config`);
+                const res = await API.get(`/config`);
                 if (res.data?.banners) {
                     setBanners(res.data.banners);
                 }

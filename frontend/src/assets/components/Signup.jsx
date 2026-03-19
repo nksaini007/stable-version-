@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import API from "../api/api";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaUser,
@@ -57,7 +57,7 @@ function Signup() {
       if (form.pincode) formData.append("pincode", form.pincode);
       if (profileImage) formData.append("profileImage", profileImage);
 
-      await axios.post(`/api/users/signup`, formData, {
+      await API.post(`/users/signup`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setSuccess(true);

@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import API from "../api/api";
 import { FaLock, FaEnvelope, FaEye, FaEyeSlash, FaBuilding } from "react-icons/fa";
 import { toast } from "react-toastify";
 
@@ -18,14 +19,10 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/users/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const res = await API.post(`/users/login`, {
+        email, password 
       });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Login failed");
+      const data = res.data;
 
       const redirectPath = login(data.user, data.token);
       toast.success("Login Successful!");
