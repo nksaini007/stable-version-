@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 import API from "../api/api";
 
