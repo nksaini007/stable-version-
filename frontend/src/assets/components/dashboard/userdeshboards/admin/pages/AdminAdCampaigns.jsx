@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../../../../context/AuthContext";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import {
     FaBullhorn, FaCheck, FaTimes, FaPause,
     FaChartLine, FaMoneyBillWave, FaClock, FaRocket,
 } from "react-icons/fa";
-import axios from "axios";
-import { AuthContext } from "../../../../../context/AuthContext";
-
-const API = import.meta.env.VITE_API_URL || "";
+import API, { API_BASE } from "../../../../../api/api";
 
 const STATUS_COLORS = {
     draft: "bg-gray-500/20 text-gray-400",
@@ -36,21 +35,21 @@ export default function AdminAdCampaigns() {
         setLoading(true);
         try {
             const qs = filterStatus !== "all" ? `?status=${filterStatus}` : "";
-            const { data } = await axios.get(`${API}/api/ads/admin/all${qs}`, { headers });
+            const { data } = await API.get(`/ads/admin/all${qs}`);
             setCampaigns(data);
         } catch { } finally { setLoading(false); }
     };
 
     const fetchStats = async () => {
         try {
-            const { data } = await axios.get(`${API}/api/ads/admin/stats`, { headers });
+            const { data } = await API.get(`/ads/admin/stats`);
             setStats(data);
         } catch { }
     };
 
     const approve = async (id) => {
         try {
-            await axios.put(`${API}/api/ads/admin/${id}/approve`, { adminNote: actionNote }, { headers });
+            await API.put(`/ads/admin/${id}/approve`, { adminNote: actionNote });
             setMsg("✅ Campaign approved and activated!");
             setSelected(null); setActionNote("");
             fetchCampaigns(); fetchStats();
@@ -60,7 +59,7 @@ export default function AdminAdCampaigns() {
     const reject = async (id) => {
         if (!actionNote.trim()) { setMsg("❌ Please provide a rejection reason"); return; }
         try {
-            await axios.put(`${API}/api/ads/admin/${id}/reject`, { reason: actionNote }, { headers });
+            await API.put(`/ads/admin/${id}/reject`, { reason: actionNote });
             setMsg("✅ Campaign rejected");
             setSelected(null); setActionNote("");
             fetchCampaigns(); fetchStats();
@@ -69,7 +68,7 @@ export default function AdminAdCampaigns() {
 
     const pause = async (id) => {
         try {
-            await axios.put(`${API}/api/ads/admin/${id}/pause`, {}, { headers });
+            await API.put(`/ads/admin/${id}/pause`, {});
             setMsg("✅ Campaign paused");
             fetchCampaigns();
         } catch { }
@@ -135,7 +134,7 @@ export default function AdminAdCampaigns() {
                         <div className="flex flex-wrap gap-4 items-start justify-between">
                             <div className="flex gap-4 items-start">
                                 {c.bannerImage && (
-                                    <img src={`${API}${c.bannerImage}`} alt="banner"
+                                    <img src={getOptimizedImage(c.bannerImage, 400)} alt="banner"
                                         className="w-20 h-16 object-cover rounded-xl border border-white/10 shrink-0" />
                                 )}
                                 <div>
@@ -168,7 +167,7 @@ export default function AdminAdCampaigns() {
                                         <p className="text-white font-semibold">{c.latestPayment.referenceNumber}</p>
                                         <p className="text-gray-400">{c.latestPayment.paymentMethod} · ₹{c.latestPayment.amount}</p>
                                         {c.latestPayment.proofImage && (
-                                            <a href={`${API}${c.latestPayment.proofImage}`} target="_blank" rel="noreferrer"
+                                            <a href={getOptimizedImage(c.latestPayment.proofImage, 1000)} target="_blank" rel="noreferrer"
                                                 className="text-blue-400 text-xs hover:underline mt-1 block">View Proof</a>
                                         )}
                                     </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API, { API_BASE } from "../../../../../api/api";
 import { AuthContext } from "../../../../../context/AuthContext";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import { toast } from "react-toastify";
 import { FaArrowLeft, FaPlus, FaUserTie, FaUser, FaCheckCircle, FaSpinner, FaCalendarAlt, FaTimes, FaHardHat, FaImage, FaFilePdf } from "react-icons/fa";
 
@@ -15,8 +16,7 @@ const ManageProject = () => {
     const [loading, setLoading] = useState(true);
     const [showTaskModal, setShowTaskModal] = useState(false);
 
-    // Base API URL for images
-    const API = import.meta.env.VITE_API_URL || "";
+    // Base API URL for images (exported from api.js)
 
     const [users, setUsers] = useState([]);
 
@@ -36,9 +36,7 @@ const ManageProject = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const projRes = await axios.get("/api/construction/projects", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const projRes = await API.get("/construction/projects");
             const currentProj = projRes.data.projects.find(p => p._id === projectId);
 
             if (currentProj) {
@@ -49,14 +47,10 @@ const ManageProject = () => {
                 });
             }
 
-            const tasksRes = await axios.get(`/api/construction/project/${projectId}/tasks`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const tasksRes = await API.get(`/construction/project/${projectId}/tasks`);
             setTasks(tasksRes.data.tasks);
 
-            const usersRes = await axios.get("/api/users", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const usersRes = await API.get("/users");
             const responseData = usersRes.data;
             const usersList = Array.isArray(responseData)
                 ? responseData
@@ -77,9 +71,7 @@ const ManageProject = () => {
     const handleAssignRoles = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`/api/construction/project/${projectId}/assign`, assignmentData, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            await API.put(`/construction/project/${projectId}/assign`, assignmentData);
             toast.success("Roles assigned successfully");
             fetchData();
         } catch (error) {
@@ -94,12 +86,10 @@ const ManageProject = () => {
                 ? taskData.imageLinks.split(",").map(link => link.trim()).filter(link => link !== "")
                 : [];
 
-            await axios.post("/api/construction/task", {
+            await API.post("/construction/task", {
                 projectId,
                 ...taskData,
                 images,
-            }, {
-                headers: { Authorization: `Bearer ${token}` },
             });
             toast.success("Task created successfully");
             setShowTaskModal(false);
@@ -213,7 +203,7 @@ const ManageProject = () => {
                                                 {task.images.map((img, i) => (
                                                     <div key={i} className="relative h-20 w-32 shrink-0 rounded-xl overflow-hidden border border-gray-200 bg-white">
                                                         <img 
-                                                            src={img.startsWith('http') ? img : `${API}${img}`} 
+                                                            src={getOptimizedImage(img, 400)} 
                                                             alt="" 
                                                             className="w-full h-full object-cover"
                                                             onError={(e) => { e.target.src = 'https://placehold.co/400x300/e2e8f0/64748b?text=Missing+Image'; }}
@@ -241,10 +231,10 @@ const ManageProject = () => {
                                             {bp.fileUrl.endsWith('.pdf') ? (
                                                 <FaFilePdf className="text-5xl text-red-400" />
                                             ) : (
-                                                <img src={`${API}${bp.fileUrl}`} alt={bp.title} className="w-full h-full object-cover" />
+                                                <img src={getOptimizedImage(bp.fileUrl, 800)} alt={bp.title} className="w-full h-full object-cover" />
                                             )}
                                             <a
-                                                href={`${API}${bp.fileUrl}`}
+                                                href={getOptimizedImage(bp.fileUrl, 2000)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition text-white text-xs font-semibold"

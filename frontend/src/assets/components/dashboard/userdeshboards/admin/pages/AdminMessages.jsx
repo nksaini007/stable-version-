@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "../../../../../context/AuthContext";
+import API from "../../../../../api/api";
 import { toast } from "react-toastify";
 import { FaEnvelope, FaReply, FaCheckCircle, FaTimes, FaComments } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,9 +20,7 @@ const AdminMessages = () => {
     const fetchMessages = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("/api/messages/admin", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await API.get("/messages/admin");
             setMessages(res.data.messages);
         } catch (error) {
             toast.error("Failed to load customer messages.");
@@ -37,10 +35,8 @@ const AdminMessages = () => {
 
         try {
             setSendingReply(true);
-            const res = await axios.put(`/api/messages/${selectedMessage._id}/reply`, {
+            const res = await API.put(`/messages/${selectedMessage._id}/reply`, {
                 text: replyText
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
 
             toast.success("Reply sent successfully.");
@@ -56,10 +52,8 @@ const AdminMessages = () => {
 
     const handleUpdateStatus = async (id, newStatus) => {
         try {
-            await axios.put(`/api/messages/${id}/status`, {
+            await API.put(`/messages/${id}/status`, {
                 status: newStatus
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
             toast.success(`Ticket marked as ${newStatus}`);
             fetchMessages();

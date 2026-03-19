@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import API from "../../../../../api/api";
+import API, { API_BASE } from "../../../../../api/api";
 import {
   FaTrash, FaSearch, FaUser, FaStore, FaTruck, FaShieldAlt,
   FaToggleOn, FaToggleOff, FaTimes, FaCheckCircle, FaHourglassHalf,
@@ -9,8 +9,6 @@ import {
   FaUserCheck, FaUserTimes, FaEllipsisV, FaFilter, FaSortAmountDown,
   FaClock, FaChartBar,
 } from "react-icons/fa";
-
-const API_BASE = import.meta.env.VITE_API_URL || "";
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 const roleConfig = {

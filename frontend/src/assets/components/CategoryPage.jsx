@@ -6,20 +6,12 @@ import Nev from "./Nev";
 import Footer from "./Footer";
 import { FaBoxes } from "react-icons/fa";
 import PublicAds from "./PublicAds";
+import { getOptimizedImage } from "../utils/imageUtils";
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Convert image filename to full URL
-  const getImageUrl = (img) => {
-    if (!img) return null;
-    const cleanImg = img.replace(/^\/+/, "");
-    return img.startsWith("http")
-      ? img
-      : `/${cleanImg}`;
-  };
 
   // Fetch category
   useEffect(() => {
@@ -85,7 +77,7 @@ const CategoryPage = () => {
         >
           {category.image ? (
             <img
-              src={getImageUrl(category.image)}
+              src={getOptimizedImage(category.image, 1200)}
               alt={category.name}
               className="w-full h-52 sm:h-64 md:h-72 object-cover"
             />
@@ -137,7 +129,7 @@ const CategoryPage = () => {
                   {/* Image */}
                   {sub.image ? (
                     <img
-                      src={getImageUrl(sub.image)}
+                      src={getOptimizedImage(sub.image, 400)}
                       alt={sub.name}
                       className="w-full h-28 sm:h-32 object-cover rounded-lg"
                     />
@@ -155,8 +147,6 @@ const CategoryPage = () => {
                   <p className="text-xs text-gray-600 hidden sm:block">
                     Explore all items
                   </p>
-
-
                 </Link>
               </motion.div>
             ))

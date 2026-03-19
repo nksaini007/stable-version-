@@ -26,7 +26,7 @@ export const getOptimizedImage = (url, width) => {
 
   // Handle local legacy paths
   if (!url.startsWith('http')) {
-    const rawBackendUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const rawBackendUrl = import.meta.env.VITE_API_URL || "https://stable-version-backend.onrender.com";
     const backendUrl = rawBackendUrl.replace(/\/api$/, '');
     // Ensure no double slashes
     const cleanPath = url.startsWith('/') ? url : `/${url}`;

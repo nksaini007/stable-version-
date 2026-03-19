@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import WebAPI, { API_BASE } from "../../../../../api/api";
 import { AuthContext } from "../../../../../context/AuthContext";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import { FaArrowLeft, FaFileAlt, FaUpload, FaTasks, FaPlus, FaCheck, FaSpinner, FaMapMarkerAlt, FaFilePdf, FaImage } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 
-const API = import.meta.env.VITE_API_URL || "";
 
 const ArchitectActiveProjectDetails = () => {
     const { projectId } = useParams();
@@ -38,9 +38,7 @@ const ArchitectActiveProjectDetails = () => {
         try {
             setLoading(true);
             // Get all architect projects, then find the specific one to reuse the endpoint
-            const { data: projData } = await axios.get(`${API}/api/construction/architect/projects`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const { data: projData } = await WebAPI.get("/construction/architect/projects");
             const current = projData.projects.find(p => p._id === projectId);
             if (!current) {
                 toast.error("Project not found or access denied.");
@@ -50,7 +48,7 @@ const ArchitectActiveProjectDetails = () => {
             setProject(current);
 
             // Fetch Tasks
-            const { data: taskData } = await axios.get(`${API}/api/construction/project/${projectId}/tasks`);
+            const { data: taskData } = await WebAPI.get(`/construction/project/${projectId}/tasks`);
             setTasks(taskData.tasks || []);
 
         } catch (err) {
@@ -70,9 +68,8 @@ const ArchitectActiveProjectDetails = () => {
 
         try {
             setUploadingBlueprint(true);
-            const { data } = await axios.post(`${API}/api/construction/project/${projectId}/blueprint`, formData, {
+            const { data } = await WebAPI.post(`/construction/project/${projectId}/blueprint`, formData, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data"
                 }
             });
@@ -92,13 +89,11 @@ const ArchitectActiveProjectDetails = () => {
         if (!newTaskTitle) return toast.error("Title is required");
 
         try {
-            const { data } = await axios.post(`${API}/api/construction/project/${projectId}/task`, {
+            const { data } = await WebAPI.post(`/construction/project/${projectId}/task`, {
                 projectId,
                 title: newTaskTitle,
                 description: newTaskDesc,
                 dueDate: newTaskDate || undefined
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
 
             toast.success("Milestone created");
@@ -194,10 +189,10 @@ const ArchitectActiveProjectDetails = () => {
                                                 {bp.fileUrl.endsWith('.pdf') ? (
                                                     <FaFilePdf className="text-6xl text-red-400" />
                                                 ) : (
-                                                    <img src={`${API}${bp.fileUrl}`} alt={bp.title} className="w-full h-full object-cover" />
+                                                    <img src={getOptimizedImage(bp.fileUrl, 400)} alt={bp.title} className="w-full h-full object-cover" />
                                                 )}
                                                 <a
-                                                    href={`${API}${bp.fileUrl}`}
+                                                    href={getOptimizedImage(bp.fileUrl, 1200)}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flexitems-center justify-center transition flex text-white font-medium items-center gap-2"

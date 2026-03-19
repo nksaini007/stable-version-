@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import API from "../../../../../api/api";
 import { AuthContext } from "../../../../../context/AuthContext";
 import { toast } from "react-toastify";
 import { FaPlus, FaEye, FaTasks, FaHardHat, FaTimes } from "react-icons/fa";
@@ -23,9 +23,7 @@ const ConstructionProjects = () => {
     const fetchProjects = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("/api/construction/projects", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const res = await API.get("/construction/projects");
             setProjects(res.data.projects);
         } catch (error) {
             toast.error("Failed to load projects");
@@ -45,10 +43,9 @@ const ConstructionProjects = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(
-                "/api/construction/project",
-                formData,
-                { headers: { Authorization: `Bearer ${token}` } }
+            await API.post(
+                "/construction/project",
+                formData
             );
             toast.success("Project created successfully");
             setShowModal(false);

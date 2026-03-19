@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../../../../api/api";
-import axios from "axios";
 import {
   FaUsers,
   FaBox,
@@ -69,8 +68,8 @@ const AdminHome = () => {
         const results = await Promise.allSettled([
           API.get("/services/admin/all"),
           API.get("/bookings"),
-          axios.get("/api/plan-categories"),
-          axios.get("/api/construction-plans"),
+          API.get("/plan-categories"),
+          API.get("/construction-plans"),
           API.get("/messages"),
           API.get("/posts"),
         ]);

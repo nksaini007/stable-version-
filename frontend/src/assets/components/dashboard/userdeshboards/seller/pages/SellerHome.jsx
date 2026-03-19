@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import API from "../../../../../api/api";
 import { AuthContext } from "../../../../../context/AuthContext";
 import {
@@ -124,7 +125,7 @@ const SellerHome = () => {
                             {products.slice(0, 6).map((p) => (
                                 <div key={p._id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/70 hover:bg-gray-100/80 transition-colors">
                                     <div className="flex items-center gap-3">
-                                        <img src={p.images?.[0]?.url ? `${p.images[0].url}` : "https://via.placeholder.com/40"} alt="" className="w-10 h-10 rounded-lg object-cover border" />
+                                        <img src={getOptimizedImage(p.images?.[0]?.url, 100)} alt="" className="w-10 h-10 rounded-lg object-cover border" />
                                         <div>
                                             <p className="text-sm font-medium text-gray-700 truncate max-w-[200px]">{p.name}</p>
                                             <p className="text-[10px] text-gray-400">{p.category} • Stock: {p.stock}</p>

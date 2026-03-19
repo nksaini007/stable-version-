@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import API from "../../../../../api/api";
 import { 
     FaMoneyBillWave, FaTruck, FaRocket, FaSave, 
     FaPercentage, FaCheckCircle, FaExclamationTriangle,
@@ -7,7 +7,6 @@ import {
 } from "react-icons/fa";
 import { AuthContext } from "../../../../../context/AuthContext";
 
-const API = import.meta.env.VITE_API_URL || "";
 
 export default function AdminPricingControl() {
     const { token } = useContext(AuthContext);
@@ -29,7 +28,7 @@ export default function AdminPricingControl() {
     const fetchSettings = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`${API}/api/config/admin`, { headers });
+            const { data } = await API.get("/config/admin");
             if (data.settings) {
                 setSettings({
                     platformCommissionRate: data.settings.platformCommissionRate ?? 2,
@@ -48,7 +47,7 @@ export default function AdminPricingControl() {
         setSaving(true);
         setMessage(null);
         try {
-            await axios.put(`${API}/api/config/settings`, { settings }, { headers });
+            await API.put("/config/settings", { settings });
             setMessage({ type: "success", text: "Settings updated successfully!" });
         } catch (err) {
             setMessage({ type: "error", text: "Failed to update settings." });

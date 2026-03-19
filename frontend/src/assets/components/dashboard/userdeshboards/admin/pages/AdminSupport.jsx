@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import API from "../../../../../api/api";
 import { AuthContext } from "../../../../../context/AuthContext";
 import { toast } from "react-toastify";
 import { FaHeadset, FaSearch, FaFilter, FaSpinner, FaReply, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
@@ -22,7 +22,7 @@ const AdminSupport = () => {
     const fetchTickets = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("/api/support/all", { headers: { Authorization: `Bearer ${token}` } });
+            const res = await API.get("/support/all");
             setTickets(res.data.tickets);
         } catch (error) {
             toast.error("Failed to load support tickets");
@@ -37,7 +37,7 @@ const AdminSupport = () => {
 
         try {
             setUpdating(true);
-            await axios.post(`/api/support/${selectedTicket._id}/reply`, { text: replyText }, { headers: { Authorization: `Bearer ${token}` } });
+            await API.post(`/support/${selectedTicket._id}/reply`, { text: replyText });
             toast.success("Reply sent");
             setReplyText("");
             await fetchSpecificTicket(selectedTicket._id);
@@ -52,7 +52,7 @@ const AdminSupport = () => {
     const handleStatusUpdate = async (status) => {
         try {
             setUpdating(true);
-            await axios.put(`/api/support/${selectedTicket._id}/status`, { status }, { headers: { Authorization: `Bearer ${token}` } });
+            await API.put(`/support/${selectedTicket._id}/status`, { status });
             toast.success(`Ticket marked as ${status}`);
             await fetchSpecificTicket(selectedTicket._id);
             fetchTickets();
@@ -65,7 +65,7 @@ const AdminSupport = () => {
 
     const fetchSpecificTicket = async (id) => {
         try {
-            const res = await axios.get(`/api/support/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await API.get(`/support/${id}`);
             setSelectedTicket(res.data.ticket);
         } catch (error) {
             toast.error("Failed to fetch latest ticket data");

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import API from "../../../../../api/api";
 import { FaSearch, FaBoxOpen, FaClipboardList, FaClock, FaCheckCircle, FaTruck, FaTimesCircle } from "react-icons/fa";
 
@@ -110,7 +111,7 @@ const SellerOrdersPage = () => {
                                     {sellerItems.map(item => (
                                         <div key={item._id} className="flex items-center justify-between bg-gray-50 rounded-xl p-3">
                                             <div className="flex items-center gap-3">
-                                                <img src={item.image?.startsWith("http") ? item.image : `${item.image || ""}`} alt="" className="w-10 h-10 rounded-lg object-cover border" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                                                <img src={getOptimizedImage(item.image, 200)} alt="" className="w-10 h-10 rounded-lg object-cover border" onError={(e) => { e.currentTarget.style.display = "none"; }} />
                                                 <div>
                                                     <p className="text-sm font-medium text-gray-700">{item.name}</p>
                                                     <p className="text-[11px] text-gray-400">Qty: {item.qty} × ₹{item.price}</p>

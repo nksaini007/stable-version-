@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
-import axios from "axios";
+import WebAPI from "../../../../../api/api";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import { AuthContext } from "../../../../../context/AuthContext";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,16 +40,12 @@ const ArchitectDashboard = () => {
     const fetchProjects = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("/api/construction/architect/projects", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await WebAPI.get("/construction/architect/projects");
 
             const projectsData = res.data.projects;
 
             const projectsWithTasks = await Promise.all(projectsData.map(async (p) => {
-                const tRes = await axios.get(`/api/construction/project/${p._id}/tasks`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const tRes = await WebAPI.get(`/construction/project/${p._id}/tasks`);
                 return { ...p, tasks: tRes.data.tasks };
             }));
 
@@ -70,9 +67,8 @@ const ArchitectDashboard = () => {
             formData.append("status", statusInput);
             evidenceFiles.forEach(file => formData.append("images", file));
 
-            const res = await axios.put(`/api/construction/task/${selectedTask._id}/progress`, formData, {
+            const res = await WebAPI.put(`/construction/task/${selectedTask._id}/progress`, formData, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data"
                 }
             });
@@ -113,9 +109,7 @@ const ArchitectDashboard = () => {
     const fetchProjectUpdates = async (projectId) => {
         try {
             setUpdatesLoading(true);
-            const res = await axios.get(`/api/construction/project/${projectId}/updates`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await WebAPI.get(`/construction/project/${projectId}/updates`);
             setProjectUpdates(res.data.updates);
         } catch (error) {
             console.error("Error fetching updates:", error);
@@ -135,9 +129,8 @@ const ArchitectDashboard = () => {
             formData.append("content", updateContent);
             updateImageFiles.forEach(file => formData.append("images", file));
 
-            await axios.post(`/api/construction/project/${selectedProject._id}/update`, formData, {
+            await WebAPI.post(`/construction/project/${selectedProject._id}/update`, formData, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data"
                 }
             });
@@ -757,7 +750,7 @@ const ArchitectDashboard = () => {
                                                             {upd.images && upd.images.length > 0 && (
                                                                 <div className="mt-3 flex gap-2 overflow-x-auto">
                                                                     {upd.images.map((img, i) => (
-                                                                        <img key={i} src={img} alt="Update" className="h-20 w-28 object-cover rounded-lg border border-white/10 flex-shrink-0" />
+                                                                        <img key={i} src={getOptimizedImage(img, 300)} alt="Update" className="h-20 w-28 object-cover rounded-lg border border-white/10 flex-shrink-0" />
                                                                     ))}
                                                                 </div>
                                                             )}

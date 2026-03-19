@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
+import { AuthContext } from "../../../../../context/AuthContext";
 import {
     FaBullhorn, FaPlus, FaCheck, FaTimes, FaClock,
     FaChartLine, FaImage, FaUpload, FaMoneyBillWave, FaRocket,
     FaPause,
 } from "react-icons/fa";
-import API from "../../../../../api/api";
+import API, { API_BASE } from "../../../../../api/api";
 
 const STATUS_COLORS = {
     draft: "bg-gray-500/20 text-gray-400",
@@ -182,7 +184,7 @@ export default function SellerAds() {
                         campaigns.map((c) => (
                             <div key={c._id} className="bg-white/[0.03] border border-white/5 rounded-2xl p-5 flex flex-col md:flex-row gap-5">
                                 {c.bannerImage && (
-                                    <img src={`${API}${c.bannerImage}`} alt="banner"
+                                    <img src={getOptimizedImage(c.bannerImage, 400)} alt="banner"
                                         className="w-full md:w-40 h-24 object-cover rounded-xl border border-white/10" />
                                 )}
                                 <div className="flex-1 min-w-0">

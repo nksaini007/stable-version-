@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import API from "../../../../../api/api";
 import { AuthContext } from "../../../../../context/AuthContext";
 import { toast } from "react-toastify";
 import { FaPlus, FaEdit, FaTrash, FaImage, FaTimes } from "react-icons/fa";
@@ -30,7 +30,7 @@ const ManagePlans = () => {
 
     const fetchCategories = async () => {
         try {
-            const res = await axios.get("/api/plan-categories");
+            const res = await API.get("/plan-categories");
             setCategories(res.data.categories || []);
         } catch (error) {
             console.error("Failed to load plan categories", error);
@@ -40,7 +40,7 @@ const ManagePlans = () => {
     const fetchPlans = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("/api/construction-plans");
+            const res = await API.get("/construction-plans");
             setPlans(res.data.plans);
         } catch (error) {
             toast.error("Failed to load construction plans");
@@ -77,17 +77,15 @@ const ManagePlans = () => {
 
         try {
             if (editingId) {
-                await axios.put(`/api/construction-plans/${editingId}`, submitData, {
+                await API.put(`/construction-plans/${editingId}`, submitData, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data"
                     }
                 });
                 toast.success("Plan updated successfully!");
             } else {
-                await axios.post("/api/construction-plans", submitData, {
+                await API.post("/construction-plans", submitData, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
                         "Content-Type": "multipart/form-data"
                     }
                 });
@@ -105,9 +103,7 @@ const ManagePlans = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this plan?")) return;
         try {
-            await axios.delete(`/api/construction-plans/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await API.delete(`/construction-plans/${id}`);
             toast.success("Plan deleted successfully!");
             fetchPlans();
         } catch (error) {

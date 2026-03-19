@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "../../../../../context/AuthContext";
+import API from "../../../../../api/api";
 import { toast } from "react-toastify";
 import { FaCubes, FaPlus, FaEdit, FaTrash, FaCheck, FaTimes, FaSearch, FaSpinner, FaBoxes } from "react-icons/fa";
 
@@ -25,8 +25,8 @@ const AdminMaterials = () => {
         setLoading(true);
         try {
             const [matRes, reqRes] = await Promise.all([
-                axios.get("/api/materials/all", { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get("/api/materials/requests/all", { headers: { Authorization: `Bearer ${token}` } })
+                API.get("/materials/all"),
+                API.get("/materials/requests/all")
             ]);
             // Filter only global materials for admin database
             setMaterials(matRes.data.materials.filter(m => m.isGlobal));
@@ -44,10 +44,10 @@ const AdminMaterials = () => {
         setSubmitting(true);
         try {
             if (editingId) {
-                await axios.put(`/api/materials/global/${editingId}`, formData, { headers: { Authorization: `Bearer ${token}` } });
+                await API.put(`/materials/global/${editingId}`, formData);
                 toast.success("Material updated!");
             } else {
-                await axios.post("/api/materials/global", formData, { headers: { Authorization: `Bearer ${token}` } });
+                await API.post("/materials/global", formData);
                 toast.success("Material added to global database");
             }
             setShowModal(false);
@@ -64,7 +64,7 @@ const AdminMaterials = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this material from the global database?")) return;
         try {
-            await axios.delete(`/api/materials/global/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+            await API.delete(`/materials/global/${id}`);
             toast.success("Material deleted");
             fetchAllData();
         } catch (error) {
@@ -89,7 +89,7 @@ const AdminMaterials = () => {
         if (notes === null) return; // cancelled
 
         try {
-            await axios.put(`/api/materials/requests/${id}`, { status, adminNotes: notes }, { headers: { Authorization: `Bearer ${token}` } });
+            await API.put(`/materials/requests/${id}`, { status, adminNotes: notes });
             toast.success(`Request ${status.toLowerCase()}`);
             fetchAllData();
         } catch (error) {

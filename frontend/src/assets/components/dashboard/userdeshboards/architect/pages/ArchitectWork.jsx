@@ -1,4 +1,7 @@
+import React, { useState, useEffect, useContext } from "react";
 import API, { API_BASE } from "../../../../../api/api";
+import { AuthContext } from "../../../../../context/AuthContext";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
@@ -271,7 +274,7 @@ const ArchitectWork = () => {
                             <div className="h-48 bg-gray-800 relative overflow-hidden">
                                 {work.images && work.images.length > 0 ? (
                                     <img 
-                                        src={work.images[0].startsWith('http') ? work.images[0] : `${API_BASE}${work.images[0]}`} 
+                                        src={getOptimizedImage(work.images[0], 600)} 
                                         alt={work.title} 
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                                     />
@@ -443,7 +446,7 @@ const ArchitectWork = () => {
                                                 {editingWork.images.map((img, i) => (
                                                     <div key={i} className="relative group">
                                                         <img 
-                                                            src={img.startsWith('http') ? img : `${API_BASE}${img}`} 
+                                                            src={getOptimizedImage(img, 200)} 
                                                             alt="" 
                                                             className="w-20 h-16 object-cover rounded-lg border border-white/10" 
                                                         />

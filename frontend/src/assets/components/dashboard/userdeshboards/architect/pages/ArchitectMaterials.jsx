@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
+import WebAPI from "../../../../../api/api";
 import { AuthContext } from "../../../../../context/AuthContext";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -41,11 +41,11 @@ const ArchitectMaterials = () => {
         try {
             setLoading(true);
             const [matRes, projRes, alertRes, anRes, reqRes] = await Promise.all([
-                axios.get("/api/materials/all", { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get("/api/construction/architect/projects", { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get("/api/materials/alerts", { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get("/api/materials/analytics", { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get("/api/materials/requests/my", { headers: { Authorization: `Bearer ${token}` } }),
+                WebAPI.get("/materials/all"),
+                WebAPI.get("/construction/architect/projects"),
+                WebAPI.get("/materials/alerts"),
+                WebAPI.get("/materials/analytics"),
+                WebAPI.get("/materials/requests/my"),
             ]);
             setMaterials(matRes.data.materials);
             setProjects(projRes.data.projects);
@@ -55,7 +55,7 @@ const ArchitectMaterials = () => {
 
             // Fetch materials assigned to all projects
             const pmPromises = projRes.data.projects.map(p =>
-                axios.get(`/api/materials/project/${p._id}`, { headers: { Authorization: `Bearer ${token}` } })
+                WebAPI.get(`/materials/project/${p._id}`)
             );
             const pmResponses = await Promise.all(pmPromises);
             const allPm = pmResponses.map(res => res.data.materials).flat();
@@ -73,7 +73,7 @@ const ArchitectMaterials = () => {
         e.preventDefault();
         setSubmitting(true);
         try {
-            await axios.post("/api/materials/custom", materialForm, { headers: { Authorization: `Bearer ${token}` } });
+            await WebAPI.post("/materials/custom", materialForm);
             toast.success("Custom material added!");
             setShowMaterialModal(false);
             setMaterialForm({ name: "", category: "Cement & Concrete", unit: "kg", unitPrice: "", description: "" });
@@ -90,7 +90,7 @@ const ArchitectMaterials = () => {
         e.preventDefault();
         setSubmitting(true);
         try {
-            await axios.post("/api/materials/project", assignForm, { headers: { Authorization: `Bearer ${token}` } });
+            await WebAPI.post("/materials/project", assignForm);
             toast.success("Material assigned to project!");
             setShowAssignModal(false);
             setAssignForm({ projectId: "", materialId: "", quantityAllocated: "", lowStockThreshold: "10", notes: "" });
@@ -106,7 +106,7 @@ const ArchitectMaterials = () => {
     const handleUpdateUsage = async (id, currentUsed, increment) => {
         try {
             const newUsed = currentUsed + increment;
-            await axios.put(`/api/materials/project/${id}`, { quantityUsed: newUsed }, { headers: { Authorization: `Bearer ${token}` } });
+            await WebAPI.put(`/materials/project/${id}`, { quantityUsed: newUsed });
             toast.success("Usage updated!");
             fetchAllData();
         } catch (err) {
@@ -142,7 +142,7 @@ const ArchitectMaterials = () => {
         e.preventDefault();
         setSubmitting(true);
         try {
-            await axios.post("/api/materials/requests", requestForm, { headers: { Authorization: `Bearer ${token}` } });
+            await WebAPI.post("/materials/requests", requestForm);
             toast.success("Material request submitted to Admin!");
             setShowRequestModal(false);
             setRequestForm({ projectId: "", notes: "", items: [{ materialId: "", materialName: "", quantity: "", unit: "", urgency: "Medium" }] });

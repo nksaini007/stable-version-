@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
+import WebAPI from "../../../../../api/api";
 import { AuthContext } from "../../../../../context/AuthContext";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -46,10 +46,10 @@ const ArchitectLabor = () => {
         try {
             setLoading(true);
             const [lRes, pRes, sRes, prRes] = await Promise.all([
-                axios.get("/api/labor/laborers", { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get("/api/labor/payments", { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get("/api/labor/summary", { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get("/api/construction/architect/projects", { headers: { Authorization: `Bearer ${token}` } }),
+                WebAPI.get("/labor/laborers"),
+                WebAPI.get("/labor/payments"),
+                WebAPI.get("/labor/summary"),
+                WebAPI.get("/construction/architect/projects"),
             ]);
             setLaborers(lRes.data.laborers);
             setPayments(pRes.data.payments);
@@ -83,14 +83,10 @@ const ArchitectLabor = () => {
         setSubmitting(true);
         try {
             if (editingLaborer) {
-                await axios.put(`/api/labor/laborers/${editingLaborer._id}`, laborerForm, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await WebAPI.put(`/labor/laborers/${editingLaborer._id}`, laborerForm);
                 toast.success("Laborer updated!");
             } else {
-                await axios.post("/api/labor/laborers", laborerForm, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await WebAPI.post("/labor/laborers", laborerForm);
                 toast.success("Laborer added!");
             }
             setShowLaborerModal(false);
@@ -105,7 +101,7 @@ const ArchitectLabor = () => {
 
     const handleDeleteLaborer = async (id) => {
         try {
-            await axios.delete(`/api/labor/laborers/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+            await WebAPI.delete(`/labor/laborers/${id}`);
             toast.success("Laborer deleted!");
             setDeleteConfirm(null);
             fetchAll();
@@ -121,9 +117,7 @@ const ArchitectLabor = () => {
         e.preventDefault();
         setSubmitting(true);
         try {
-            await axios.post("/api/labor/payments", paymentForm, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await WebAPI.post("/labor/payments", paymentForm);
             toast.success("Payment recorded!");
             setShowPaymentModal(false);
             resetPaymentForm();
