@@ -3,6 +3,7 @@ const User = require("../models/userModel");
 const Product = require("../models/product");
 const AdPayment = require("../models/AdPayment");
 const AdCampaign = require("../models/AdCampaign");
+const WebsiteConfig = require("../models/WebsiteConfig");
 
 // ==================== ADMIN ENDPOINTS ====================
 
@@ -357,7 +358,10 @@ const getSellerStatement = async (req, res) => {
 
         transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        const platformCommission = parseFloat((grossSales * 0.02).toFixed(2)); // 2%
+        const config = await WebsiteConfig.findOne();
+        const commissionRate = config?.settings?.platformCommissionRate ?? 2;
+
+        const platformCommission = parseFloat((grossSales * (commissionRate / 100)).toFixed(2));
         const netEarnings = parseFloat((grossSales - platformCommission - totalAdSpend).toFixed(2));
 
         res.json({

@@ -34,7 +34,7 @@ const ProfileDropdown = ({ user, logout, mobile }) => {
   ];
 
   menuItems.push({ label: "Project Plans", icon: <FaMap className="text-gray-400" />, to: "/project-plans" });
-  menuItems.push({ label: "Messages", icon: <FaEnvelope className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/my-inquiries" : "/customer/orders"});
+  menuItems.push({ label: "Messages", icon: <FaEnvelope className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/my-inquiries" : "/customer/orders" });
   menuItems.push({ label: "Support Tickets", icon: <FaHeadset className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/support" : "/support" });
 
   return (

@@ -22,8 +22,10 @@ import {
   FaHeadset,
   FaBullhorn,
   FaTag,
+  FaSlidersH,
 } from "react-icons/fa";
 import { AuthContext } from "../../../../../context/AuthContext";
+import logo from "../../../../../logo.png";
 
 const menuGroups = [
   {
@@ -64,6 +66,7 @@ const menuGroups = [
       { name: "Support", path: "/admin/support", icon: <FaHeadset /> },
       { name: "Inquiries", path: "/admin/messages", icon: <FaEnvelope /> },
       { name: "Site Content", path: "/admin/site-config", icon: <FaLayerGroup /> },
+      { name: "Pricing Control", path: "/admin/pricing-control", icon: <FaSlidersH /> },
     ]
   }
 ];
@@ -96,14 +99,10 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
       {/* Logo */}
       <div className={`px-5 py-6 border-b border-white/5 shrink-0 transition-all duration-300 ${collapsed ? "text-center" : ""}`}>
         {collapsed ? (
-          <div className="w-10 h-10 mx-auto rounded-xl bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center text-white font-extrabold text-lg shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 hover:scale-105 hover:rotate-3 cursor-pointer">
-            S
-          </div>
+          <img src={logo} alt="S" className="w-10 h-10 mx-auto rounded-xl object-cover shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 hover:scale-105 hover:rotate-3 cursor-pointer" />
         ) : (
           <div className="flex items-center gap-4 cursor-pointer group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center text-white font-extrabold text-lg shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
-              S
-            </div>
+            <img src={logo} alt="S" className="w-10 h-10 rounded-xl object-cover shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 group-hover:scale-110 group-hover:rotate-6" />
             <div className="transition-transform duration-300 group-hover:translate-x-1">
               <h2 className="text-[16px] font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-300 tracking-wider">
                 STINCHAR

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../../api/api";
-import { FaPlus, FaEdit, FaTrash, FaImage, FaSearch, FaBox } from "react-icons/fa";
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox } from "react-icons/fa";
+import { getOptimizedImage, lazyImageProps } from "../../../../../utils/imageUtils";
 
 const SellerProducts = () => {
     const [products, setProducts] = useState([]);
@@ -154,7 +155,12 @@ const SellerProducts = () => {
                             </div>
                             {preview && (
                                 <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
-                                    <img src={preview} alt="" className="w-full h-full object-cover" />
+                                    <img 
+                                        src={getOptimizedImage(preview, 200)} 
+                                        alt="" 
+                                        className="w-full h-full object-cover" 
+                                        {...lazyImageProps}
+                                    />
                                 </div>
                             )}
                         </div>
@@ -182,7 +188,12 @@ const SellerProducts = () => {
                     {filtered.map((p) => (
                         <div key={p._id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all group">
                             <div className="h-40 bg-gray-100 overflow-hidden">
-                                <img src={p.images?.[0]?.url ? `${p.images[0].url}` : "https://via.placeholder.com/300x200"} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                <img 
+                                    src={getOptimizedImage(p.images?.[0]?.url, 500)} 
+                                    alt={p.name} 
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                                    {...lazyImageProps}
+                                />
                             </div>
                             <div className="p-4">
                                 <h3 className="text-sm font-semibold text-gray-800 truncate">{p.name}</h3>

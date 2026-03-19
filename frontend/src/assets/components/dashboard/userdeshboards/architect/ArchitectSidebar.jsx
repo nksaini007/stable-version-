@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FaHome, FaHardHat, FaSignOutAlt, FaChevronLeft, FaUser, FaRegCalendarAlt, FaFileAlt, FaChartLine, FaPalette, FaUsers, FaCubes, FaHeadset, FaBuilding } from "react-icons/fa";
 import { AuthContext } from "../../../../context/AuthContext";
+import logo from "../../../../logo.png";
 
 const menuItems = [
     { name: "Dashboard", path: "/architect", icon: <FaHome /> },
@@ -40,14 +41,10 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
 
             <div className={`px-5 py-6 border-b border-white/5 ${collapsed ? "text-center" : ""}`}>
                 {collapsed ? (
-                    <div className="w-9 h-9 mx-auto rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-indigo-500/20">
-                        A
-                    </div>
+                    <img src={logo} alt="S" className="w-9 h-9 mx-auto rounded-xl object-cover shadow-lg shadow-indigo-500/20" />
                 ) : (
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-indigo-500/20">
-                            A
-                        </div>
+                        <img src={logo} alt="S" className="w-9 h-9 rounded-xl object-cover shadow-lg shadow-indigo-500/20" />
                         <div>
                             <h2 className="text-[15px] font-bold text-white tracking-wide">Architect Panel</h2>
                             <p className="text-[10px] text-indigo-400 font-medium uppercase tracking-widest">Stinchar</p>

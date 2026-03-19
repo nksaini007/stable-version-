@@ -139,7 +139,7 @@ exports.updateTaskProgress = async (req, res) => {
 
         // Handle uploaded image files
         if (req.files && req.files.length > 0) {
-            const filePaths = req.files.map(f => "/" + f.path.replace(/\\/g, "/"));
+            const filePaths = req.files.map(f => f.path);
             task.images.push(...filePaths);
         }
 
@@ -176,7 +176,7 @@ exports.uploadBlueprint = async (req, res) => {
             return res.status(400).json({ success: false, message: "No blueprint file provided" });
         }
 
-        const fileUrl = "/" + req.file.path.replace(/\\/g, "/");
+        const fileUrl = req.file.path;
 
         project.blueprints.push({
             title: title || "Untitled Blueprint",
@@ -227,7 +227,7 @@ exports.createProjectUpdate = async (req, res) => {
         // Collect images from uploaded files
         let images = [];
         if (req.files && req.files.length > 0) {
-            images = req.files.map(f => "/" + f.path.replace(/\\/g, "/"));
+            images = req.files.map(f => f.path);
         }
 
         const update = new ProjectUpdate({

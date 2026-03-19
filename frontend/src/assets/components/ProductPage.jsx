@@ -6,6 +6,8 @@ import Footer from "./Footer";
 import { CartContext } from "../context/CartContext";
 import { Star, CheckCircle, XCircle, ShieldCheck, Truck, Sparkles } from "lucide-react";
 import ReviewSection from "./ReviewSection";
+import API from "../api/api";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const Skeleton = () => (
   <div className="animate-pulse">
@@ -74,23 +76,17 @@ const ProductPage = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem("token");
-        const headers = { "Content-Type": "application/json" };
-        if (token) {
-          headers.Authorization = `Bearer ${token}`;
-        }
-
-        const res = await fetch(`/api/products/${productId}`, { headers });
-
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
+        const { data } = await API.get(`/products/${productId}`);
 
         const normalizedImages = (data.images || []).map((img) =>
           img.url?.startsWith("http") ? img.url : `${img.url}`
         );
 
-        setSelectedImage(normalizedImages[0] || null);
-        setProductInfo({ ...data, images: normalizedImages });
+        setSelectedImage(getOptimizedImage(normalizedImages[0]));
+        setProductInfo({ 
+            ...data, 
+            images: normalizedImages.map(url => getOptimizedImage(url)) 
+        });
       } catch (err) {
         console.error(err);
         setError("Failed to fetch product. Please try again later.");
@@ -180,6 +176,7 @@ const ProductPage = () => {
                     src={selectedImage}
                     alt={productInfo.name}
                     className="rounded-lg w-full max-h-[520px] object-contain bg-white"
+                    {...lazyImageProps}
                   />
                 ) : (
                   <div className="h-[520px] bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
@@ -201,9 +198,10 @@ const ProductPage = () => {
                         aria-label={`Select image ${idx + 1}`}
                       >
                         <img
-                          src={img}
+                          src={getOptimizedImage(img, 200)}
                           alt={`Thumbnail ${idx + 1}`}
-                          className="w-full drop-shadow-lg h-full object-cover rounded-lg"
+                          className="w-full h-full object-cover rounded-lg shadow-sm"
+                          {...lazyImageProps}
                         />
                       </button>
                     );

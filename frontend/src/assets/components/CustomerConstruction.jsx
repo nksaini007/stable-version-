@@ -9,6 +9,7 @@ import {
     FaHardHat, FaBullhorn, FaCubes, FaChevronDown, FaChevronUp,
     FaEnvelope
 } from "react-icons/fa";
+import { getOptimizedImage } from "../utils/imageUtils";
 import Nev from "./Nev";
 import Footer from "./Footer";
 
@@ -58,14 +59,6 @@ const CustomerConstruction = () => {
         setExpandedProject(expandedProject === id ? null : id);
     };
 
-    const getImageUrl = (img) => {
-        if (!img) return null;
-        if (img.startsWith("http")) return img;
-        const normalized = img.replace(/\\/g, "/");
-        if (normalized.startsWith("uploads/")) return `/${normalized}`;
-        if (normalized.startsWith("/")) return normalized;
-        return `/${normalized}`;
-    };
 
     if (loading) return (
         <div className="min-h-screen bg-[#0d1117] flex flex-col justify-center items-center gap-4">
@@ -188,7 +181,7 @@ const CustomerConstruction = () => {
                                                                         <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors">
                                                                             {task.images?.[0] && (
                                                                                 <img 
-                                                                                    src={getImageUrl(task.images[0])} 
+                                                                                    src={getOptimizedImage(task.images[0])} 
                                                                                     alt="" 
                                                                                     className="w-full h-40 object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                                                                                 />
@@ -233,7 +226,7 @@ const CustomerConstruction = () => {
                                                                         <p className="text-gray-400 text-sm mb-4 leading-relaxed">{upd.content}</p>
                                                                         {upd.images?.[0] && (
                                                                             <div className="rounded-xl overflow-hidden border border-white/5 max-w-lg shadow-2xl">
-                                                                                <img src={getImageUrl(upd.images[0])} alt="" className="w-full object-cover" />
+                                                                                <img src={getOptimizedImage(upd.images[0])} alt="" className="w-full object-cover" />
                                                                             </div>
                                                                         )}
                                                                     </div>

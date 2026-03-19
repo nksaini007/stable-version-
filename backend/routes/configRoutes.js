@@ -4,7 +4,8 @@ const {
     getPublicConfig,
     getAdminConfig,
     updateBanners,
-    updateTrendingItems
+    updateTrendingItems,
+    updateSettings
 } = require('../controllers/configController');
 const { protect, adminOnly } = require('../middlewares/authMiddleware');
 
@@ -18,5 +19,6 @@ router.use(adminOnly);
 router.get('/admin', getAdminConfig);
 router.put('/banners', updateBanners);
 router.put('/trending', updateTrendingItems);
+router.put('/settings', updateSettings);
 
 module.exports = router;

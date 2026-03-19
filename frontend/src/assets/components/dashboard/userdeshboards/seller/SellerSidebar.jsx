@@ -5,6 +5,7 @@ import {
     FaSignOutAlt, FaChevronLeft, FaStore, FaBullhorn, FaTimes
 } from "react-icons/fa";
 import { AuthContext } from "../../../../context/AuthContext";
+import logo from "../../../../logo.png";
 
 const menuItems = [
     { name: "Dashboard", path: "/seller", icon: <FaHome /> },
@@ -43,11 +44,11 @@ const SellerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) =
 
             <div className={`px-5 py-6 border-b border-white/5 ${collapsed ? "md:text-center text-left" : ""}`}>
                 {collapsed ? (
-                    <div className="hidden md:flex w-9 h-9 mx-auto rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 items-center justify-center text-white font-bold text-sm shadow-lg shadow-orange-500/20">S</div>
+                    <img src={logo} alt="S" className="hidden md:flex w-9 h-9 mx-auto rounded-xl object-cover shadow-lg shadow-orange-500/20" />
                 ) : null}
                 
                 <div className={`flex items-center gap-3 ${collapsed ? "md:hidden" : ""}`}>
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-orange-500/20"><FaStore /></div>
+                    <img src={logo} alt="Seller Logo" className="w-9 h-9 rounded-xl object-cover shadow-lg shadow-orange-500/20" />
                     <div>
                         <h2 className="text-[15px] font-bold text-white tracking-wide">Seller Panel</h2>
                     </div>

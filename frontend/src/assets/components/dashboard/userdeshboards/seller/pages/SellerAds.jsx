@@ -95,7 +95,7 @@ export default function SellerAds() {
             Object.entries(form).forEach(([k, v]) => fd.append(k, v));
             if (bannerFile) fd.append("bannerImage", bannerFile);
             const { data } = await axios.post(`${API}/api/ads/`, fd, { headers });
-            setMsg("✅ Campaign created! Please submit payment to activate.");
+            setMsg(`✅ ${data.message || "Campaign created!"}`);
             fetchCampaigns();
             setTab("campaigns");
             setForm({ title: "", description: "", adType: "banner", targetCategory: "", targetProduct: "", budget: "", durationDays: 7 });

@@ -1,4 +1,5 @@
 const DeliveryPricing = require("../models/DeliveryPricing");
+const WebsiteConfig = require("../models/WebsiteConfig");
 
 // ==================== NORTH INDIA ZONE DEFAULTS ====================
 // Used when seeding or resetting zones
@@ -213,12 +214,12 @@ const calculateDeliveryCharge = async (req, res) => {
             });
         }
 
-        // Calculate cost for 1 vehicle
-        const baseCharge = selectedRule.basePrice;
-        const weightCharge = weight * selectedRule.pricePerKg;
-        const distanceCharge = km * selectedRule.pricePerKm;
         const perVehicleCost = baseCharge + weightCharge + distanceCharge;
-        const totalCharge = Math.max(perVehicleCost * vehicleCount, selectedRule.minimumCharge || 0);
+        
+        const config = await WebsiteConfig.findOne();
+        const isFree = config?.settings?.isDeliveryFree === true;
+
+        const totalCharge = isFree ? 0 : Math.max(perVehicleCost * vehicleCount, selectedRule.minimumCharge || 0);
 
         res.json({
             zone: selectedRule.zoneName,

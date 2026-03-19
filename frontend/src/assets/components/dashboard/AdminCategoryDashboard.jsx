@@ -338,6 +338,7 @@
 import React, { useEffect, useState } from "react";
 import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes, FaLayerGroup } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { getOptimizedImage } from "../../utils/imageUtils";
 import API from "../../api/api";
 import Nev from "../Nev";
 
@@ -441,11 +442,6 @@ const AdminCategoryDashboard = () => {
     fetchCategories();
   };
 
-  const getImageUrl = (img) => {
-    if (!img) return null;
-    if (img.startsWith("http")) return img;
-    return `${img}`;
-  };
 
   return (
     <>
@@ -519,7 +515,7 @@ const AdminCategoryDashboard = () => {
                 <div className="flex justify-between mb-3">
                   <div className="flex items-center gap-3">
                     {cat.image && (
-                      <img src={getImageUrl(cat.image)} alt="" className="w-12 h-12 rounded-xl" />
+                      <img src={getOptimizedImage(cat.image)} alt="" className="w-12 h-12 rounded-xl" />
                     )}
                     <h3 className="font-semibold text-lg capitalize">{cat.name}</h3>
                   </div>
@@ -573,6 +569,9 @@ const AdminCategoryDashboard = () => {
                 <div className="flex flex-wrap gap-2">
                   {cat.subcategories.map((sub) => (
                     <div key={sub._id} className="bg-blue-100 px-3 py-1 rounded-full text-sm flex gap-2 items-center">
+                      {sub.image && (
+                        <img src={getOptimizedImage(sub.image)} alt="" className="w-5 h-5 rounded-full object-cover" />
+                      )}
                       {sub.name}
                       <button onClick={() => handleEditSubcategory(cat._id, sub)} className="text-blue-600">
                         <FaEdit />

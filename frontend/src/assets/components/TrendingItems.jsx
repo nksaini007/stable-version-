@@ -3,6 +3,7 @@ import { FaChevronLeft, FaChevronRight, FaHeart, FaShoppingCart, FaFire } from "
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import fallbackItems from "../json/Itom.json";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
 const TrendingItems = ({ title = "what are you looking for?\t deals are here", autoplay = true }) => {
@@ -129,9 +130,9 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
                 <div className="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 hover:shadow-xl transition-shadow">
                   <div className="relative h-44 bg-gray-100">
                     <img
-                      src={it.image}
+                      src={getOptimizedImage(it.image, 500)}
                       alt={it.name}
-                      loading="lazy"
+                      {...lazyImageProps}
                       className="w-full h-full object-cover"
                     />
                     {it.tag && (

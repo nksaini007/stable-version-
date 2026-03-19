@@ -4,16 +4,7 @@ const path = require("path");
 const fs = require("fs");
 
 // ==================== MULTER CONFIG ====================
-const uploadDir = path.join(__dirname, "..", "uploads", "services");
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, `service_${Date.now()}_${Math.round(Math.random() * 1e9)}${ext}`);
-    },
-});
+const { storage } = require("../config/cloudinary");
 
 const uploadServiceImages = multer({
     storage,
@@ -48,7 +39,7 @@ const createService = async (req, res) => {
         });
 
         if (req.files && req.files.length > 0) {
-            newService.images = req.files.map(file => `/uploads/services/${file.filename}`);
+            newService.images = req.files.map(file => file.path);
         }
 
         await newService.save();
@@ -81,7 +72,7 @@ const updateService = async (req, res) => {
         if (serviceSubCategoryId) service.serviceSubCategoryId = serviceSubCategoryId;
 
         if (req.files && req.files.length > 0) {
-            service.images = req.files.map(file => `/uploads/services/${file.filename}`);
+            service.images = req.files.map(file => file.path);
         }
 
         await service.save();

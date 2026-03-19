@@ -13,7 +13,7 @@ exports.createWork = async (req, res) => {
         // Collect uploaded image paths
         let images = [];
         if (req.files && req.files.length > 0) {
-            images = req.files.map(f => "/" + f.path.replace(/\\/g, "/"));
+            images = req.files.map(f => f.path);
         }
 
         // Add external image links if provided
@@ -152,7 +152,7 @@ exports.updateWork = async (req, res) => {
 
         // Append newly uploaded images
         if (req.files && req.files.length > 0) {
-            const newImages = req.files.map(f => "/" + f.path.replace(/\\/g, "/"));
+            const newImages = req.files.map(f => f.path);
             work.images.push(...newImages);
         }
 

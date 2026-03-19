@@ -1,4 +1,5 @@
 const Order = require("../models/Order");
+const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
 // ------------------ CUSTOMER FUNCTIONS ------------------
@@ -23,6 +24,31 @@ const createOrder = async (req, res) => {
 
     if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({ message: "No order items" });
+    }
+
+    // ✅ NEW: Validate that all sellers are active
+    const sellerIds = [...new Set(orderItems.map((item) => {
+        // Handle both cases: item.seller as object or item.seller as ID
+        if (item.seller && typeof item.seller === 'object') {
+            return item.seller._id;
+        }
+        return item.seller;
+    }))].filter(id => id); // Remove any null/undefined
+
+    if (sellerIds.length > 0) {
+        const inactiveSellers = await User.find({
+            _id: { $in: sellerIds },
+            isActive: false,
+        });
+
+        if (inactiveSellers.length > 0) {
+            const names = inactiveSellers
+                .map((s) => s.businessName || s.name)
+                .join(", ");
+            return res.status(403).json({
+                message: `Order cannot be placed. The following shops are currently inactive: ${names}`,
+            });
+        }
     }
 
     const order = new Order({

@@ -114,7 +114,7 @@ exports.createCategory = async (req, res) => {
   try {
     const { name } = req.body;
     const image = req.files?.categoryImage
-      ? `/uploads/categories/${req.files.categoryImage[0].filename}`
+      ? req.files.categoryImage[0].path
       : null;
 
     if (!name) return res.status(400).json({ message: "Category name required" });
@@ -145,7 +145,7 @@ exports.updateCategory = async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
     const image = req.files?.categoryImage
-      ? `/uploads/categories/${req.files.categoryImage[0].filename}`
+      ? req.files.categoryImage[0].path
       : undefined;
 
     const category = await Category.findById(id);
@@ -178,7 +178,7 @@ exports.addSubcategory = async (req, res) => {
     const { categoryId } = req.params;
     const { name } = req.body;
     const image = req.files?.subcategoryImage
-      ? `/uploads/subcategories/${req.files.subcategoryImage[0].filename}`
+      ? req.files.subcategoryImage[0].path
       : null;
 
     const category = await Category.findById(categoryId);
@@ -199,7 +199,7 @@ exports.updateSubcategory = async (req, res) => {
     const { categoryId, subId } = req.params;
     const { name } = req.body;
     const image = req.files?.subcategoryImage
-      ? `/uploads/subcategories/${req.files.subcategoryImage[0].filename}`
+      ? req.files.subcategoryImage[0].path
       : undefined;
 
     const category = await Category.findById(categoryId);

@@ -3,15 +3,9 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { FaBoxes, FaSearch } from "react-icons/fa";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
-/* -------------------- Helpers -------------------- */
-const getImageUrl = (img) => {
-  if (!img) return null;
-  const cleanImg = img.replace(/^\/+/, "");
-  return img.startsWith("http")
-    ? img
-    : `/${cleanImg}`;//192.168.29.236
-};
+/* ------------------- Skeleton ------------------- */
 
 /* ------------------- Skeleton ------------------- */
 const SkeletonCards = ({ count = 12 }) => (
@@ -145,7 +139,7 @@ const Categories = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
                 {filtered.map((category, idx) => {
                   const subs = category.subcategories || [];
-                  const imageUrl = getImageUrl(category.image);
+                  const imageUrl = getOptimizedImage(category.image, 400);
                   const overflow = subs.length - 4;
 
                   return (
@@ -164,7 +158,7 @@ const Categories = () => {
                               src={imageUrl}
                               alt={category.name}
                               className="w-full h-full object-cover"
-                              loading="lazy"
+                              {...lazyImageProps}
                             />
                           ) : (
                             <div className="flex items-center justify-center h-full">

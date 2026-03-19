@@ -24,6 +24,7 @@ import AdminMaterials from "../pages/AdminMaterials";
 import AdminSupport from "../pages/AdminSupport";
 import AdminAdCampaigns from "../pages/AdminAdCampaigns";
 import AdminDeliveryPricing from "../pages/AdminDeliveryPricing";
+import AdminPricingControl from "../pages/AdminPricingControl";
 
 /**
  * Admin sub-router — rendered inside <Route path="/admin/*"> in App.jsx.
@@ -57,6 +58,7 @@ const AdminRoutes = () => {
         <Route path="materials" element={<AdminMaterials />} />
         <Route path="support" element={<AdminSupport />} />
         <Route path="ad-campaigns" element={<AdminAdCampaigns />} />
+        <Route path="pricing-control" element={<AdminPricingControl />} />
       </Route>
     </Routes>
   );

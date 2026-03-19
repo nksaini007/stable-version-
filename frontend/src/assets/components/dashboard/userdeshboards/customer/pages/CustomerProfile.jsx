@@ -9,14 +9,16 @@ import {
   FaBell, 
   FaMapMarkerAlt, 
   FaCamera,
-  FaCheckCircle
+  FaCheckCircle,
+  FaBox,
+  FaStar
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const ProfileSection = ({ title, subtitle, children }) => (
-  <div className="bg-white rounded-[2rem] border border-gray-100 p-6 sm:p-8 space-y-6 shadow-sm">
+  <div className="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8 space-y-6 shadow-sm">
     <div>
-      <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">{title}</h3>
+      <h3 className="text-xl font-bold text-gray-900 uppercase tracking-tight">{title}</h3>
       <p className="text-sm text-gray-400 font-medium">{subtitle}</p>
     </div>
     {children}
@@ -25,7 +27,7 @@ const ProfileSection = ({ title, subtitle, children }) => (
 
 const InputField = ({ label, icon, value, onChange, type = "text", placeholder, disabled = false }) => (
   <div className="space-y-2">
-    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">{label}</label>
+    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">{label}</label>
     <div className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all ${disabled ? "bg-gray-50 border-gray-100 opacity-60" : "bg-white border-gray-200 focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-500/5 group"}`}>
       <span className={`text-gray-400 ${!disabled && 'group-focus-within:text-orange-500'}`}>{icon}</span>
       <input 
@@ -71,11 +73,11 @@ const CustomerProfile = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Profile Header Card */}
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-[3rem] p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl">
          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500 rounded-full blur-[100px] opacity-20"></div>
          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-8">
             <div className="relative group">
-               <div className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-tr from-orange-400 to-amber-300 flex items-center justify-center text-white text-5xl font-black shadow-2xl border-4 border-white/10 overflow-hidden cursor-pointer">
+               <div className="w-32 h-32 rounded-2xl bg-gradient-to-tr from-orange-400 to-amber-300 flex items-center justify-center text-white text-5xl font-bold shadow-2xl border-4 border-white/10 overflow-hidden cursor-pointer">
                   {user?.name?.charAt(0) || "U"}
                </div>
                <button className="absolute bottom-2 right-2 w-10 h-10 bg-white text-gray-900 rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform">
@@ -83,12 +85,12 @@ const CustomerProfile = () => {
                </button>
             </div>
             <div className="text-center sm:text-left">
-               <h2 className="text-3xl sm:text-4xl font-black mb-2">{user?.name || "Customer Name"}</h2>
+               <h2 className="text-3xl sm:text-4xl font-bold mb-2">{user?.name || "Customer Name"}</h2>
                <div className="flex flex-wrap justify-center sm:justify-start gap-3">
-                  <span className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-white/5">
+                  <span className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border border-white/5">
                      <FaShieldAlt className="text-orange-400" /> Account Verified
                   </span>
-                  <span className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-white/5">
+                  <span className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border border-white/5">
                      <FaBox className="text-indigo-400" /> Buyer Rank
                   </span>
                </div>
@@ -124,16 +126,16 @@ const CustomerProfile = () => {
                     placeholder="+91 00000 00000"
                  />
                  <div className="space-y-2">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Theme Preference</label>
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Theme Preference</label>
                     <div className="bg-gray-50 p-2 rounded-2xl flex gap-2">
-                       <button type="button" className="flex-1 py-1.5 bg-white shadow-sm rounded-xl text-xs font-black text-gray-900 uppercase tracking-tight">Light</button>
+                       <button type="button" className="flex-1 py-1.5 bg-white shadow-sm rounded-xl text-xs font-bold text-gray-900 uppercase tracking-tight">Light</button>
                        <button type="button" className="flex-1 py-1.5 text-gray-400 font-bold text-xs uppercase tracking-tight">Dark</button>
                     </div>
                  </div>
               </div>
               <motion.button 
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-gray-900 text-white rounded-[1.5rem] font-black uppercase tracking-widest text-sm hover:bg-black transition-all shadow-xl shadow-gray-900/10 flex items-center justify-center gap-2"
+                className="w-full py-4 bg-gray-900 text-white rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-black transition-all shadow-xl shadow-gray-900/10 flex items-center justify-center gap-2"
               >
                  {loading ? "Saving..." : "Save Changes"}
               </motion.button>
@@ -196,17 +198,17 @@ const CustomerProfile = () => {
                  onChange={e => setFormData({...formData, confirmPassword: e.target.value})} 
                  placeholder="••••••••"
               />
-              <button type="button" className="w-full py-4 border-2 border-orange-500 text-orange-600 rounded-[1.5rem] font-black uppercase tracking-widest text-sm hover:bg-orange-50 transition-all">
+              <button type="button" className="w-full py-4 border-2 border-orange-500 text-orange-600 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-orange-50 transition-all">
                  Update Password
               </button>
            </ProfileSection>
 
            {/* Account Danger Zone */}
-           <div className="bg-red-50 p-6 rounded-[2rem] border border-red-100 flex flex-col items-center text-center">
+           <div className="bg-red-50 p-6 rounded-2xl border border-red-100 flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-4"><FaShieldAlt size={20}/></div>
-              <h4 className="text-lg font-black text-red-900 uppercase tracking-tight">Delete Account</h4>
+              <h4 className="text-lg font-bold text-red-900 uppercase tracking-tight">Delete Account</h4>
               <p className="text-xs text-red-500/80 font-bold font-medium mt-1 leading-relaxed">Permanently remove all your data. This action is irreversible.</p>
-              <button className="mt-6 text-xs font-black text-red-600 uppercase tracking-[0.2em] hover:underline transition-all">DEACTIVATE ACCOUNT</button>
+              <button className="mt-6 text-xs font-bold text-red-600 uppercase tracking-[0.2em] hover:underline transition-all">DEACTIVATE ACCOUNT</button>
            </div>
         </div>
       </form>

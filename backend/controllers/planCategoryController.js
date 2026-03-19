@@ -9,7 +9,7 @@ const createPlanCategory = async (req, res) => {
 
         let image = "";
         if (req.file) {
-            image = `/uploads/categories/${req.file.filename}`;
+            image = req.file.path;
         } else if (req.body.image) {
             // fallback if passed as string URL
             image = req.body.image;
@@ -57,7 +57,7 @@ const updatePlanCategory = async (req, res) => {
         const updateData = { name: req.body.name || category.name };
 
         if (req.file) {
-            updateData.image = `/uploads/categories/${req.file.filename}`;
+            updateData.image = req.file.path;
         } else if (req.body.image) {
             updateData.image = req.body.image;
         }
@@ -105,7 +105,7 @@ const addPlanType = async (req, res) => {
         const { name } = req.body;
         let image = "";
         if (req.file) {
-            image = `/uploads/subcategories/${req.file.filename}`;
+            image = req.file.path;
         } else if (req.body.image) {
             image = req.body.image;
         }
@@ -136,7 +136,7 @@ const updatePlanType = async (req, res) => {
 
         if (req.body.name) planType.name = req.body.name;
         if (req.file) {
-            planType.image = `/uploads/subcategories/${req.file.filename}`;
+            planType.image = req.file.path;
         } else if (req.body.image) {
             planType.image = req.body.image;
         }

@@ -3,20 +3,11 @@ const router = express.Router();
 const controller = require("../controllers/architectWorkController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const multer = require("multer");
+const { storage } = require("../config/cloudinary");
 const path = require("path");
 const fs = require("fs");
 
 // Multer config for architect work images
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const folder = "uploads/architect-works/";
-        if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-        cb(null, folder);
-    },
-    filename: (req, file, cb) => {
-        cb(null, "work_" + Date.now() + "_" + Math.round(Math.random() * 1000) + path.extname(file.originalname));
-    },
-});
 const upload = multer({ storage }).array("images", 10);
 
 // ─── PUBLIC ROUTE (no auth — QR code landing) ───

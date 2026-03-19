@@ -10,7 +10,7 @@ const createPlan = async (req, res) => {
         // Process uploaded images
         let imageUrls = [];
         if (req.files && req.files.length > 0) {
-            imageUrls = req.files.map((file) => `/uploads/plans/${file.filename}`);
+            imageUrls = req.files.map((file) => file.path);
         }
 
         const newPlan = new ConstructionPlan({
@@ -70,7 +70,7 @@ const updatePlan = async (req, res) => {
         }
 
         if (req.files && req.files.length > 0) {
-            updateData.images = req.files.map((file) => `/uploads/plans/${file.filename}`);
+            updateData.images = req.files.map((file) => file.path);
         }
 
         const updatedPlan = await ConstructionPlan.findByIdAndUpdate(

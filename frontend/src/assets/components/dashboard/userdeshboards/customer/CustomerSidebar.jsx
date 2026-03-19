@@ -12,15 +12,18 @@ import {
   FaCrown
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import logo from "../../../../logo.png";
 
 const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
   const menuItems = [
+
+    { name: "Home", icon: <FaHeart />, path: "/home" },
     { name: "Overview", icon: <FaThLarge />, path: "/customer", end: true },
     { name: "My Orders", icon: <FaShoppingBag />, path: "/customer/orders" },
-    { name: "Wishlist", icon: <FaHeart />, path: "/customer/wishlist" },
+
     { name: "My Construction", icon: <FaHammer />, path: "/my-construction" }, // Link to existing page
     { name: "Profile", icon: <FaUser />, path: "/profile" },
-    { name: "Support", icon: <FaHeadset />, path: "/customer/support" },
+    { name: "Support", icon: <FaHeadset />, path: "/support" },
   ];
 
   const sidebarVariants = {
@@ -38,25 +41,21 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
         className={`hidden md:flex flex-col h-screen bg-white border-r border-gray-200/60 sticky top-0 z-30 transition-all duration-300 ease-in-out`}
       >
         {/* Logo Section */}
-        <div className="h-20 flex items-center px-6 mb-4 relative">
+        <div className="h-20 flex items-center px-6 mb-2 relative">
           {!collapsed ? (
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
-                <FaCrown size={22} />
-              </div>
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+            <Link to="/" className="flex items-center gap-3">
+              <img src={logo} alt="Stinchar Logo" className="w-10 h-10 rounded-xl object-cover shadow-sm" />
+              <span className="text-xl font-bold text-gray-900 tracking-tight">
                 Stinchar
               </span>
             </Link>
           ) : (
-            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white mx-auto shadow-lg shadow-orange-500/20">
-              <FaCrown size={20} />
-            </div>
+            <img src={logo} alt="Stinchar Logo" className="w-10 h-10 rounded-xl object-cover mx-auto shadow-sm" />
           )}
 
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-orange-500 shadow-sm z-50 transition-colors"
+            className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-orange-600 shadow-sm z-50 transition-colors"
           >
             <motion.div animate={{ rotate: collapsed ? 180 : 0 }}>
               <FaChevronLeft size={10} />
@@ -74,7 +73,7 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
               className={({ isActive }) => `
                 flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200 group relative
                 ${isActive
-                  ? "bg-orange-50 text-orange-600 font-medium shadow-sm"
+                  ? "bg-orange-600 text-white font-bold shadow-md shadow-orange-600/20"
                   : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"}
               `}
             >
@@ -138,10 +137,10 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="absolute left-0 top-0 bottom-0 w-[280px] bg-white flex flex-col shadow-2xl"
             >
-              <div className="h-20 flex items-center justify-between px-6 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white">
-                    <FaCrown size={22} />
+              <div className="h-20 flex items-center justify-between px-6 border-b border-gray-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center text-white">
+                    <FaCrown size={20} />
                   </div>
                   <span className="text-xl font-bold text-gray-900">Stinchar</span>
                 </div>
@@ -159,7 +158,7 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
                     className={({ isActive }) => `
                       flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all
                       ${isActive
-                        ? "bg-orange-50 text-orange-600 font-bold"
+                        ? "bg-orange-600 text-white font-bold shadow-lg shadow-orange-600/20"
                         : "text-gray-500 hover:bg-gray-50"}
                     `}
                   >
@@ -168,11 +167,10 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
                   </NavLink>
                 ))}
               </nav>
-
               <div className="p-6 border-t border-gray-100">
                 <button
                   onClick={() => {/* handle logout */ }}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-gray-900 text-white rounded-xl shadow-lg shadow-gray-900/20 active:scale-95 transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-gray-100 text-gray-900 hover:bg-gray-200 rounded-xl font-bold transition-all"
                 >
                   <FaSignOutAlt />
                   <span>Log Out</span>

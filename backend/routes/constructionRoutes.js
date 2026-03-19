@@ -3,47 +3,14 @@ const router = express.Router();
 const constructionController = require("../controllers/constructionController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const multer = require("multer");
+const { storage } = require("../config/cloudinary");
 const path = require("path");
 const fs = require("fs");
 
 // Multer config for project update images
-const updateStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const folder = "uploads/project-updates/";
-        if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-        cb(null, folder);
-    },
-    filename: (req, file, cb) => {
-        cb(null, "update_" + Date.now() + path.extname(file.originalname));
-    },
-});
-const uploadUpdateImages = multer({ storage: updateStorage }).array("images", 5);
-
-// Multer config for task evidence images
-const taskStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const folder = "uploads/task-evidence/";
-        if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-        cb(null, folder);
-    },
-    filename: (req, file, cb) => {
-        cb(null, "evidence_" + Date.now() + path.extname(file.originalname));
-    },
-});
-const uploadTaskImages = multer({ storage: taskStorage }).array("images", 5);
-
-// Multer config for blueprint evidence images
-const blueprintStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const folder = "uploads/blueprints/";
-        if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
-        cb(null, folder);
-    },
-    filename: (req, file, cb) => {
-        cb(null, "blueprint_" + Date.now() + path.extname(file.originalname));
-    },
-});
-const uploadBlueprintDoc = multer({ storage: blueprintStorage }).single("blueprint");
+const uploadUpdateImages = multer({ storage }).array("images", 5);
+const uploadTaskImages = multer({ storage }).array("images", 5);
+const uploadBlueprintDoc = multer({ storage }).single("blueprint");
 
 // Note: Ensure your authMiddleware adds req.user and req.user.role if you plan to do role-based checks.
 

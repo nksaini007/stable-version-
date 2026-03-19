@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { FaArrowRight, FaTools, FaChevronRight } from "react-icons/fa";
 import API from "../api/api";
 import Nev from "./Nev";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const ServiceCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -83,9 +84,10 @@ const ServiceCategories = () => {
                     {/* Image Container */}
                     <div className="relative h-64 rounded-[1.8rem] overflow-hidden">
                       <img
-                        src={cat.image || "https://images.unsplash.com/photo-1581578731548-c64695cc6954?auto=format&fit=crop&q=80&w=800"}
+                        src={getOptimizedImage(cat.image, 800)}
                         alt={cat.name}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        {...lazyImageProps}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                       

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Outlet, Navigate, Link, useLocation } from "react-router-dom";
 import CustomerSidebar from "./CustomerSidebar";
-import { FaBars, FaBell, FaSearch, FaUserCircle, FaSignOutAlt, FaThLarge, FaShoppingBag, FaHeart, FaUser, FaChevronLeft } from "react-icons/fa";
+import { FaBars, FaBell, FaSearch, FaUserCircle, FaSignOutAlt, FaThLarge, FaShoppingBag, FaHeart, FaUser, FaChevronLeft, FaHammer } from "react-icons/fa";
 import { AuthContext } from "../../../../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -90,15 +90,15 @@ const CustomerLayout = () => {
                             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
                         </button>
 
-                        {/* Profile Dropdown (Simplified) */}
-                        <div className="flex items-center gap-3 pl-2 sm:pl-4 border-l border-gray-200">
+                        {/* Profile Area */}
+                        <div className="flex items-center gap-3 pl-4 border-l border-gray-100">
                             <div className="hidden sm:block text-right">
-                                <p className="text-sm font-bold text-gray-800 line-clamp-1">{user?.name || "Guest User"}</p>
-                                <button onClick={logout} className="text-[10px] text-gray-500 hover:text-red-500 font-bold uppercase tracking-wider flex items-center gap-1 justify-end ml-auto">
-                                    Logout <FaSignOutAlt />
+                                <p className="text-sm font-bold text-gray-900">{user?.name || "Guest"}</p>
+                                <button onClick={logout} className="text-[10px] text-gray-400 hover:text-red-500 font-bold uppercase tracking-wider transition-colors">
+                                    Sign Out
                                 </button>
                             </div>
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 border-2 border-white overflow-hidden cursor-pointer hover:scale-105 transition-transform">
+                            <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200 overflow-hidden shrink-0">
                                 {user?.avatar ? (
                                     <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
@@ -116,29 +116,29 @@ const CustomerLayout = () => {
                     </div>
                 </div>
 
-                {/* Mobile Bottom Nav (For better UX on phones) */}
-                <div className="md:hidden h-16 bg-white border-t border-gray-100 flex items-center justify-around px-2 z-30">
-                    <Link to="/customer" className={`p-2 flex flex-col items-center ${location.pathname === '/customer' ? 'text-orange-500' : 'text-gray-400'}`}>
-                        <FaThLarge size={20} />
-                        <span className="text-[10px] font-bold mt-1">Home</span>
+                {/* Mobile Bottom Nav - Clean & Simple */}
+                <div className="md:hidden h-16 bg-white/95 backdrop-blur-md border-t border-gray-100 flex items-center justify-around px-2 z-30">
+                    <Link to="/customer" className={`flex flex-col items-center gap-1 ${location.pathname === '/customer' ? 'text-orange-600' : 'text-gray-400'}`}>
+                        <FaThLarge size={18} />
+                        <span className="text-[9px] font-bold uppercase tracking-tighter">Home</span>
                     </Link>
-                    <Link to="/customer/orders" className={`p-2 flex flex-col items-center ${location.pathname === '/customer/orders' ? 'text-orange-500' : 'text-gray-400'}`}>
-                        <FaShoppingBag size={20} />
-                        <span className="text-[10px] font-bold mt-1">Orders</span>
+                    <Link to="/customer/orders" className={`flex flex-col items-center gap-1 ${location.pathname === '/customer/orders' ? 'text-orange-600' : 'text-gray-400'}`}>
+                        <FaShoppingBag size={18} />
+                        <span className="text-[9px] font-bold uppercase tracking-tighter">Orders</span>
                     </Link>
-                    <Link to="/cart" className="p-2 flex flex-col items-center text-gray-400">
-                        <div className="p-3 bg-gray-900 text-white rounded-2xl -mt-10 shadow-xl shadow-gray-900/30">
-                            <FaChevronLeft size={20} className="rotate-90" />
+                    <Link to="/project-categories" className="flex flex-col items-center gap-1 text-gray-400">
+                        <div className="p-3 bg-gray-900 text-white rounded-xl -mt-8 shadow-lg shadow-gray-900/20">
+                            <FaBars size={18} />
                         </div>
-                        <span className="text-[10px] font-bold mt-4">Cart</span>
+                        <span className="text-[9px] font-bold uppercase tracking-tighter">Explore</span>
                     </Link>
-                    <Link to="/customer/wishlist" className={`p-2 flex flex-col items-center ${location.pathname === '/customer/wishlist' ? 'text-orange-500' : 'text-gray-400'}`}>
-                        <FaHeart size={20} />
-                        <span className="text-[10px] font-bold mt-1">Saved</span>
+                    <Link to="/my-construction" className={`flex flex-col items-center gap-1 ${location.pathname === '/my-construction' ? 'text-orange-600' : 'text-gray-400'}`}>
+                        <FaHammer size={18} />
+                        <span className="text-[9px] font-bold uppercase tracking-tighter">Status</span>
                     </Link>
-                    <Link to="/profile" className={`p-2 flex flex-col items-center ${location.pathname === '/profile' ? 'text-orange-500' : 'text-gray-400'}`}>
-                        <FaUser size={20} />
-                        <span className="text-[10px] font-bold mt-1">Menu</span>
+                    <Link to="/profile" className={`flex flex-col items-center gap-1 ${location.pathname === '/profile' ? 'text-orange-600' : 'text-gray-400'}`}>
+                        <FaUserCircle size={18} />
+                        <span className="text-[9px] font-bold uppercase tracking-tighter">Account</span>
                     </Link>
                 </div>
             </main>

@@ -1,5 +1,5 @@
 const WebsiteConfig = require('../models/WebsiteConfig');
-const Product = require('../models/Product');
+const Product = require('../models/product');
 
 // Helper to ensure we only have one config document
 const getSingletonConfig = async () => {
@@ -99,9 +99,37 @@ const updateTrendingItems = async (req, res) => {
     }
 };
 
+// @desc    Update arbitrary settings
+// @route   PUT /api/config/settings
+// @access  Private/Admin
+const updateSettings = async (req, res) => {
+    try {
+        const { settings } = req.body;
+        if (!settings || typeof settings !== 'object') {
+            return res.status(400).json({ message: 'Settings must be an object' });
+        }
+
+        const config = await getSingletonConfig();
+        // Merge with existing settings or replace?
+        // Let's merge to be safe, but allow overriding top-level keys
+        config.settings = { ...config.settings, ...settings };
+        
+        // Mark as modified if it's a Mixed type
+        config.markModified('settings');
+        
+        const updated = await config.save();
+
+        res.status(200).json(updated.settings);
+    } catch (error) {
+        console.error('Error updating settings:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 module.exports = {
     getPublicConfig,
     getAdminConfig,
     updateBanners,
-    updateTrendingItems
+    updateTrendingItems,
+    updateSettings
 };

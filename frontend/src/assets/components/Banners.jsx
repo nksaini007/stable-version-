@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
@@ -44,9 +45,10 @@ const Banners = () => {
                                 }`}
                         >
                             <img
-                                src={banner.imageUrl}
+                                src={getOptimizedImage(banner.imageUrl, 1200)}
                                 alt={banner.title || "Promotional Banner"}
                                 className="w-full h-full object-cover"
+                                {...lazyImageProps}
                             />
                             {banner.title && (
                                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 pt-16">

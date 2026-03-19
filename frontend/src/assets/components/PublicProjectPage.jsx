@@ -7,6 +7,7 @@ import {
     FaListUl, FaCubes, FaUser, FaPhone, FaEnvelope, FaArrowLeft,
     FaCheckCircle, FaExclamationTriangle, FaHardHat
 } from "react-icons/fa";
+import logo from "../logo.png";
 
 const PublicProjectPage = () => {
     const { id } = useParams();
@@ -63,7 +64,7 @@ const PublicProjectPage = () => {
                         <FaArrowLeft /> Back to Home
                     </Link>
                     <div className="flex items-center gap-2">
-                        <FaHardHat className="text-indigo-400" />
+                        <img src={logo} alt="Stinchar Logo" className="h-6 w-auto object-contain" />
                         <span className="text-sm font-bold text-white">Stinchar</span>
                     </div>
                 </div>
@@ -110,10 +111,10 @@ const PublicProjectPage = () => {
                                                 : "border-white/10 opacity-60 hover:opacity-100"
                                                 }`}
                                         >
-                                            <img 
-                                                src={img.startsWith('http') ? img : `${API_BASE}${img}`} 
-                                                alt="" 
-                                                className="w-full h-full object-cover" 
+                                            <img
+                                                src={img.startsWith('http') ? img : `${API_BASE}${img}`}
+                                                alt=""
+                                                className="w-full h-full object-cover"
                                             />
                                         </button>
                                     ))}

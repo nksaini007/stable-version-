@@ -8,13 +8,7 @@ const postDir = path.join(__dirname, "..", "uploads", "posts");
 if (!fs.existsSync(postDir)) fs.mkdirSync(postDir, { recursive: true });
 
 // Multer Config for Post Images
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, postDir),
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, `post_${Date.now()}${ext}`);
-    },
-});
+const { storage } = require("../config/cloudinary");
 const uploadPostImage = multer({ storage }).single("image");
 
 // ==============================
@@ -27,7 +21,7 @@ const createPost = async (req, res) => {
         let image = null;
 
         if (req.file) {
-            image = `/uploads/posts/${req.file.filename}`;
+            image = req.file.path;
         }
 
         const newPost = new Post({

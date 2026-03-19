@@ -5,6 +5,7 @@ import {
     FaSignOutAlt, FaChevronLeft, FaStore,
 } from "react-icons/fa";
 import { AuthContext } from "../../../../context/AuthContext";
+import logo from "../../../../logo.png";
 
 const menuItems = [
     { name: "Dashboard", path: "/provider", icon: <FaHome /> },
@@ -27,10 +28,10 @@ const ProviderSidebar = ({ collapsed, setCollapsed }) => {
 
             <div className={`px-5 py-6 border-b border-white/5 ${collapsed ? "text-center" : ""}`}>
                 {collapsed ? (
-                    <div className="w-9 h-9 mx-auto rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-orange-500/20">P</div>
+                    <img src={logo} alt="S" className="w-9 h-9 mx-auto rounded-xl object-cover shadow-lg shadow-orange-500/20" />
                 ) : (
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-orange-500/20"><FaStore /></div>
+                        <img src={logo} alt="S" className="w-9 h-9 rounded-xl object-cover shadow-lg shadow-orange-500/20" />
                         <div>
                             <h2 className="text-[15px] font-bold text-white tracking-wide">Provider Panel</h2>
                             <p className="text-[10px] text-orange-400 font-medium uppercase tracking-widest">Stinchar</p>

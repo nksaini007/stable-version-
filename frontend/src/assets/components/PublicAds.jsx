@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const API = import.meta.env.VITE_API_URL || "";
 
@@ -86,9 +87,10 @@ const PublicAds = ({ category }) => {
                             onClick={() => handleAdClick(ad)}
                         >
                             <img
-                                src={ad.bannerImage.startsWith("http") ? ad.bannerImage : `${API}${ad.bannerImage}`}
+                                src={getOptimizedImage(ad.bannerImage, 1000)}
                                 alt={ad.title}
                                 className="w-full h-full object-cover"
+                                {...lazyImageProps}
                                 onError={(e) => { e.target.src = "https://via.placeholder.com/1200x400?text=Promotion"; }}
                             />
                             {/* Optional Overlay Title (Can be removed if images have text) */}

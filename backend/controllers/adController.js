@@ -1,5 +1,6 @@
 const AdCampaign = require("../models/AdCampaign");
 const AdPayment = require("../models/AdPayment");
+const WebsiteConfig = require("../models/WebsiteConfig");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -59,18 +60,9 @@ const trackAdClick = async (req, res) => {
 };
 
 // ==================== MULTER FOR AD IMAGES ====================
-const adUploadDir = path.join(__dirname, "..", "uploads", "ads");
-if (!fs.existsSync(adUploadDir)) fs.mkdirSync(adUploadDir, { recursive: true });
-
-const adStorage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, adUploadDir),
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, `ad_${Date.now()}${ext}`);
-    },
-});
+const { storage } = require("../config/cloudinary");
 const uploadAdFiles = multer({
-    storage: adStorage,
+    storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const allowed = /jpeg|jpg|png|gif|webp/;
@@ -95,6 +87,9 @@ const createCampaign = async (req, res) => {
         if (!title || !budget || !durationDays)
             return res.status(400).json({ message: "Title, budget and duration are required" });
 
+        const config = await WebsiteConfig.findOne();
+        const autoActivate = config?.settings?.adAutoActivate === true;
+
         const campaignData = {
             seller: req.user._id,
             title,
@@ -104,16 +99,29 @@ const createCampaign = async (req, res) => {
             targetProduct: targetProduct || null,
             budget: Number(budget),
             durationDays: Number(durationDays),
-            status: "pending_payment",
+            status: autoActivate ? "active" : "pending_payment",
         };
 
+        if (autoActivate) {
+            const now = new Date();
+            const endDate = new Date(now);
+            endDate.setDate(endDate.getDate() + Number(durationDays));
+            campaignData.startDate = now;
+            campaignData.endDate = endDate;
+        }
+
         if (req.files?.bannerImage?.[0]) {
-            campaignData.bannerImage = `/uploads/ads/${req.files.bannerImage[0].filename}`;
+            campaignData.bannerImage = req.files.bannerImage[0].path;
         }
 
         const campaign = new AdCampaign(campaignData);
         await campaign.save();
-        res.status(201).json({ message: "Campaign created. Please submit payment to activate.", campaign });
+        
+        const successMsg = autoActivate 
+            ? "Campaign created and launched successfully!" 
+            : "Campaign created. Please submit payment to activate.";
+
+        res.status(201).json({ message: successMsg, campaign });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -152,7 +160,7 @@ const updateCampaign = async (req, res) => {
         if (durationDays) campaign.durationDays = Number(durationDays);
 
         if (req.files?.bannerImage?.[0]) {
-            campaign.bannerImage = `/uploads/ads/${req.files.bannerImage[0].filename}`;
+            campaign.bannerImage = req.files.bannerImage[0].path;
         }
 
         await campaign.save();
@@ -187,7 +195,7 @@ const payForCampaign = async (req, res) => {
         };
 
         if (req.files?.proofImage?.[0]) {
-            paymentData.proofImage = `/uploads/ads/${req.files.proofImage[0].filename}`;
+            paymentData.proofImage = req.files.proofImage[0].path;
         }
 
         const payment = new AdPayment(paymentData);

@@ -1,4 +1,6 @@
 const Product = require('../models/product');
+const User = require('../models/userModel');
+const { deleteImage } = require('../config/cloudinary');
 
 // ==============================
 // PUBLIC: Get all products or search
@@ -11,14 +13,25 @@ const getProducts = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
+    // 1. Get all active sellers first to filter products efficiently
+    const activeSellers = await User.find({ role: 'seller', isActive: true }).select('_id');
+    const activeSellerIds = activeSellers.map(s => s._id);
+
     // Build filter object
-    const filter = {};
+    const filter = { 
+      seller: { $in: activeSellerIds },
+      isActive: true // Also ensure the product itself is active
+    };
 
     // Search logic (name or description)
     if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
+      filter.$and = [
+        {
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+            { description: { $regex: search, $options: 'i' } },
+          ]
+        }
       ];
     }
 
@@ -28,7 +41,10 @@ const getProducts = async (req, res) => {
     if (type) filter.type = { $regex: type, $options: 'i' };
 
     const total = await Product.countDocuments(filter);
-    const products = await Product.find(filter).skip(skip).limit(limit);
+    const products = await Product.find(filter)
+      .populate('seller', 'name businessName isActive')
+      .skip(skip)
+      .limit(limit);
 
     res.json({
       products,
@@ -113,11 +129,13 @@ const createProduct = async (req, res) => {
       imageLink, // New field for external URL
     } = req.body;
 
-    let image = req.file ? `/uploads/${req.file.filename}` : null;
+    let image = req.file ? req.file.path : null;
+    let public_id = req.file ? req.file.filename : (imageLink ? 'external' : null);
     
     // If no file, but a link is provided, use the link
     if (!image && imageLink) {
         image = imageLink;
+        public_id = 'external';
     }
 
     // Convert features from text → array if needed
@@ -143,7 +161,7 @@ const createProduct = async (req, res) => {
       features: featuresArray,
       care_instructions,
       stock,
-      images: image ? [{ public_id: image.startsWith('http') ? 'external' : 'local', url: image }] : [],
+      images: image ? [{ public_id: public_id, url: image }] : [],
       seller: req.user._id,
     });
 
@@ -163,11 +181,13 @@ const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    let image = req.file ? `/uploads/${req.file.filename}` : undefined;
+    let image = req.file ? req.file.path : undefined;
+    let public_id = req.file ? req.file.filename : (updates.imageLink ? 'external' : undefined);
 
     // If no file but imageLink provided in updates
     if (!image && updates.imageLink) {
         image = updates.imageLink;
+        public_id = 'external';
     }
 
     // Admin override: Admin can update any product, seller can only update their own
@@ -185,8 +205,12 @@ const updateProduct = async (req, res) => {
     });
 
     if (image) {
+        // Delete old image from Cloudinary if it exists
+        if (product.images && product.images.length > 0) {
+            await Promise.all(product.images.map(img => deleteImage(img.public_id)));
+        }
         product.images = [{ 
-            public_id: image.startsWith('http') ? 'external' : 'local', 
+            public_id: public_id, 
             url: image 
         }];
     }
@@ -210,9 +234,16 @@ const deleteProduct = async (req, res) => {
 
     // Admin override: Admin can delete any product
     const query = req.user.role === 'admin' ? { _id: id } : { _id: id, seller: req.user._id };
-    const product = await Product.findOneAndDelete(query);
+    const product = await Product.findOne(query);
 
     if (!product) return res.status(404).json({ message: 'Product not found or unauthorized' });
+
+    // Delete associated images from Cloudinary
+    if (product.images && product.images.length > 0) {
+      await Promise.all(product.images.map(img => deleteImage(img.public_id)));
+    }
+
+    await Product.findByIdAndDelete(product._id);
 
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
@@ -229,8 +260,16 @@ const getProductById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const product = await Product.findById(id);
+    const product = await Product.findById(id).populate('seller', 'name businessName isActive role');
     if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    // Check if seller is active (Allow admin and the seller themselves to see)
+    const isSeller = req.user && req.user._id && String(product.seller._id) === String(req.user._id);
+    const isAdmin = req.user && req.user.role === 'admin';
+
+    if (!isAdmin && !isSeller && (!product.seller || !product.seller.isActive)) {
+      return res.status(403).json({ message: 'This shop is currently inactive.' });
+    }
 
     res.json(product);
   } catch (error) {
@@ -245,6 +284,15 @@ const getProductById = async (req, res) => {
 const getPublicSellerProducts = async (req, res) => {
   try {
     const { sellerId } = req.params;
+
+    const seller = await User.findById(sellerId);
+    
+    // Allow admin to bypass
+    const isAdmin = req.user && req.user.role === 'admin';
+
+    if (!isAdmin && (!seller || !seller.isActive)) {
+        return res.status(403).json({ message: "This shop is currently inactive." });
+    }
 
     const products = await Product.find({ seller: sellerId, isActive: true });
 

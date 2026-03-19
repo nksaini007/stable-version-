@@ -51,4 +51,6 @@ const serviceSchema = new mongoose.Schema({
     reviews: [reviewSchema],
 }, { timestamps: true });
 
-module.exports = mongoose.model("Service", serviceSchema);
+// module.exports = mongoose.model("Service", serviceSchema);
+const Service = mongoose.models.Service || mongoose.model("Service", serviceSchema);
+module.exports = Service;

@@ -5,6 +5,7 @@ import {
     FaSignOutAlt, FaChevronLeft, FaTruck,
 } from "react-icons/fa";
 import { AuthContext } from "../../../../context/AuthContext";
+import logo from "../../../../logo.png";
 
 const menuItems = [
     { name: "Overview", path: "/delivery", icon: <FaBoxOpen /> },
@@ -30,12 +31,10 @@ const DeliverySidebar = ({ collapsed, setCollapsed }) => {
             {/* Logo area */}
             <div className={`px-5 py-6 border-b border-white/5 ${collapsed ? "text-center" : ""}`}>
                 {collapsed ? (
-                    <div className="w-9 h-9 mx-auto rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.3)]">D</div>
+                    <img src={logo} alt="S" className="w-9 h-9 mx-auto rounded-xl object-cover shadow-[0_0_15px_rgba(6,182,212,0.3)]" />
                 ) : (
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                            <FaTruck />
-                        </div>
+                        <img src={logo} alt="S" className="w-9 h-9 rounded-xl object-cover shadow-[0_0_15px_rgba(6,182,212,0.3)]" />
                         <div>
                             <h2 className="text-[15px] font-bold text-white tracking-wide">Fleet Hub</h2>
                             <p className="text-[10px] text-cyan-400 font-medium uppercase tracking-widest">Stinchar Delivery</p>
