@@ -57,6 +57,7 @@ const materialRoutes = require("./routes/materialRoutes"); // ✅ materials mana
 const supportRoutes = require("./routes/supportRoutes"); // ✅ support tickets
 const adRoutes = require("./routes/adRoutes"); // ✅ seller ad campaigns
 const deliveryPricingRoutes = require("./routes/deliveryPricingRoutes"); // ✅ delivery pricing
+const serviceCategoryRoutes = require("./routes/serviceCategoryRoutes"); // ✅ service categories
 
 // ✅ Use routes
 app.use("/api/users", userRoutes);
@@ -79,6 +80,7 @@ app.use("/api/support", supportRoutes); // ✅ support tickets
 app.use("/api/config", require("./routes/configRoutes")); // ✅ website config
 app.use("/api/ads", adRoutes); // ✅ seller ad campaigns
 app.use("/api/delivery-pricing", deliveryPricingRoutes); // ✅ delivery pricing rules
+app.use("/api/service-categories", serviceCategoryRoutes); // ✅ service categories
 
 // ✅ Test Route
 app.get("/", (req, res) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import Nev from "./Nev";
 import Footer from "./Footer";
@@ -6,65 +6,101 @@ import Categories from "./Categories";
 
 const ItemList = () => {
   const { categoryName, itemName, itemList } = useParams();
+  const observerRef = useRef(null);
   const [mainProducts, setMainProducts] = useState([]);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchingMore, setFetchingMore] = useState(false);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchProducts = async (pageNum = 1, isInitial = false) => {
+    try {
+      if (isInitial) setLoading(true);
+      else setFetchingMore(true);
+
+      const type = decodeURIComponent(itemList);
+      const params = new URLSearchParams({
+        page: pageNum,
+        limit: 10,
+        category: categoryName,
+        subcategory: itemName,
+        type: type,
+      });
+
+      const res = await fetch(`/api/products/public?${params.toString()}`, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      const data = await res.json();
+      const newProducts = data.products || [];
+
+      const formatImage = (product) =>
+        product.images?.length > 0
+          ? product.images[0].url.startsWith("http")
+            ? product.images[0].url
+            : `${product.images[0].url}`
+          : null;
+
+      const formatted = newProducts.map((p) => ({ ...p, image: formatImage(p) }));
+
+      if (pageNum === 1) {
+        setMainProducts(formatted);
+        
+        // Also fetch related products (one time only, small limit)
+        const relatedParams = new URLSearchParams({
+            limit: 5,
+            category: categoryName,
+            subcategory: itemName,
+        });
+        const relatedRes = await fetch(`/api/products/public?${relatedParams.toString()}`);
+        if (relatedRes.ok) {
+            const relatedData = await relatedRes.json();
+            // Filter out the current type from related on client side since we don't have a "not equal" filter on backend yet
+            const filteredRelated = (relatedData.products || [])
+                .filter(p => p.type?.toLowerCase() !== type.toLowerCase())
+                .map(p => ({ ...p, image: formatImage(p) }));
+            setRelatedProducts(filteredRelated);
+        }
+      } else {
+        setMainProducts((prev) => [...prev, ...formatted]);
+      }
+
+      setHasMore(data.hasMore);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch products. Please try again later.");
+    } finally {
+      setLoading(false);
+      setFetchingMore(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const headers = { "Content-Type": "application/json" };
-        if (token) {
-          headers.Authorization = `Bearer ${token}`;
-        }
-
-        const res = await fetch(`/api/products/public`, {
-          headers,
-        });
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        const products = Array.isArray(data) ? data : data.products || [];
-
-        const category = categoryName?.toLowerCase();
-        const subcategory = itemName?.toLowerCase();
-        const type = decodeURIComponent(itemList)?.toLowerCase();
-
-        const matched = products.filter(
-          (p) =>
-            p.category?.toLowerCase() === category &&
-            p.subcategory?.toLowerCase() === subcategory &&
-            p.type?.toLowerCase() === type
-        );
-
-        const related = products.filter(
-          (p) =>
-            p.category?.toLowerCase() === category &&
-            p.subcategory?.toLowerCase() === subcategory &&
-            p.type?.toLowerCase() !== type
-        );
-
-        const formatImage = (product) =>
-          product.images?.length > 0
-            ? product.images[0].url.startsWith("http")
-              ? product.images[0].url
-              : `${product.images[0].url}`
-            : null;
-
-        setMainProducts(matched.map((p) => ({ ...p, image: formatImage(p) })));
-        setRelatedProducts(related.map((p) => ({ ...p, image: formatImage(p) })));
-      } catch (err) {
-        console.error(err);
-        setError("Failed to fetch products. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
+    setPage(1);
+    setHasMore(true);
+    fetchProducts(1, true);
   }, [categoryName, itemName, itemList]);
+
+  const loadMore = useCallback(() => {
+    if (!fetchingMore && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchProducts(nextPage);
+    }
+  }, [fetchingMore, hasMore, page]);
+
+  // Observer implementation (matching ItemPage)
+  useEffect(() => {
+    if (!observerRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) loadMore();
+    }, { threshold: 0.1 });
+    observer.observe(observerRef.current);
+    return () => observer.disconnect();
+  }, [observerRef, loadMore]);
 
   return (
     <div className="bg-gradient-to-br from-white via-gray-50 to-gray-100 text-gray-800 min-h-screen">
@@ -164,6 +200,17 @@ const ItemList = () => {
               </>
             )}
           </>
+        )}
+
+        {/* Load More Sentinel */}
+        {hasMore && (
+          <div 
+            ref={observerRef}
+            id="load-more-sentinel" 
+            className="h-20 flex items-center justify-center mt-10"
+          >
+            {fetchingMore && <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>}
+          </div>
         )}
       </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "../../../../../api/api";
-import { FaTrash, FaCalendarAlt, FaStore, FaUser, FaClipboardCheck } from "react-icons/fa";
+import { FaTrash, FaCalendarAlt, FaStore, FaUser, FaClipboardCheck, FaPhone, FaMapMarkerAlt, FaEnvelope } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const BookingManagement = () => {
@@ -69,10 +69,10 @@ const BookingManagement = () => {
                         <thead className="bg-gray-50 border-b border-gray-100 text-gray-600">
                             <tr>
                                 <th className="px-6 py-4 font-semibold">Service Details</th>
-                                <th className="px-6 py-4 font-semibold hidden lg:table-cell">Customer</th>
-                                <th className="px-6 py-4 font-semibold hidden sm:table-cell">Provider</th>
+                                <th className="px-6 py-4 font-semibold hidden lg:table-cell">Customer Details</th>
+                                <th className="px-6 py-4 font-semibold hidden sm:table-cell">Provider Info</th>
                                 <th className="px-6 py-4 font-semibold text-center">Amount</th>
-                                <th className="px-6 py-4 font-semibold text-center">Date & Time</th>
+                                <th className="px-6 py-4 font-semibold text-center">Schedule</th>
                                 <th className="px-6 py-4 font-semibold text-center">Status</th>
                                 <th className="px-6 py-4 font-semibold text-right">Actions</th>
                             </tr>
@@ -86,29 +86,45 @@ const BookingManagement = () => {
                                 </tr>
                             ) : (
                                 bookings.map(b => (
-                                    <tr key={b._id} className="hover:bg-gray-50/50 transition">
+                                    <tr key={b._id} className="hover:bg-gray-50/50 transition border-b border-gray-50">
                                         <td className="px-6 py-4">
                                             <p className="font-bold text-gray-800">{b.serviceId?.title || 'Unknown Service'}</p>
                                             <p className="text-xs text-blue-500 font-medium">{b.serviceId?.category}</p>
                                         </td>
                                         <td className="px-6 py-4 hidden lg:table-cell">
-                                            <div className="flex items-center gap-2 text-gray-700">
-                                                <FaUser className="text-gray-300" />
-                                                <span className="font-medium">{b.customerId?.name || 'N/A'}</span>
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2 text-gray-800 font-bold">
+                                                    <FaUser className="text-gray-400 size-3" />
+                                                    <span>{b.customerId?.name || 'N/A'}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-gray-500 text-xs">
+                                                    <FaPhone className="text-gray-300 size-3" />
+                                                    <span>{b.customerId?.phone || 'No Phone'}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-gray-500 text-xs">
+                                                    <FaEnvelope className="text-gray-300 size-3" />
+                                                    <span>{b.customerId?.email}</span>
+                                                </div>
+                                                <div className="flex items-start gap-2 text-gray-500 text-[10px] leading-tight max-w-[200px] whitespace-normal">
+                                                    <FaMapMarkerAlt className="text-gray-300 size-3 mt-0.5 flex-shrink-0" />
+                                                    <span>{b.customerId?.address}{b.customerId?.pincode ? `, ${b.customerId.pincode}` : ''}</span>
+                                                </div>
                                             </div>
-                                            <p className="text-[10px] text-gray-400 mt-0.5 ml-5">{b.customerId?.email}</p>
                                         </td>
                                         <td className="px-6 py-4 hidden sm:table-cell">
                                             {b.providerId ? (
-                                                <>
-                                                    <div className="flex items-center gap-2 text-gray-700">
-                                                        <FaStore className="text-gray-300" />
-                                                        <span className="font-medium">{b.providerId.name}</span>
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2 text-gray-800 font-semibold">
+                                                        <FaStore className="text-orange-300 size-3" />
+                                                        <span>{b.providerId.name}</span>
                                                     </div>
-                                                    <p className="text-[10px] text-gray-400 mt-0.5 ml-5">{b.providerId.email}</p>
-                                                </>
+                                                    <div className="flex items-center gap-2 text-gray-500 text-xs">
+                                                        <FaPhone className="text-gray-300 size-3" />
+                                                        <span>{b.providerId.phone || 'No Phone'}</span>
+                                                    </div>
+                                                </div>
                                             ) : (
-                                                <span className="inline-block px-2 py-1 bg-yellow-50 text-yellow-700 text-xs font-bold rounded border border-yellow-200 uppercase tracking-wider">Unassigned</span>
+                                                <span className="inline-block px-2 py-1 bg-yellow-50 text-yellow-700 text-[10px] font-bold rounded border border-yellow-200 uppercase tracking-wider">Unassigned</span>
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-center font-bold text-gray-900">
@@ -132,32 +148,32 @@ const BookingManagement = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right space-x-2">
-                                            {!b.providerId && (
+                                            <div className="flex flex-col gap-2">
                                                 <select
                                                     onChange={(e) => assignProvider(b._id, e.target.value)}
-                                                    defaultValue=""
-                                                    className="text-xs bg-orange-50 text-orange-700 border border-orange-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-orange-200 outline-none cursor-pointer"
+                                                    value={b.providerId?._id || ""}
+                                                    className="text-[10px] bg-orange-50 text-orange-700 border border-orange-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-orange-200 outline-none cursor-pointer font-bold"
                                                 >
                                                     <option value="" disabled>Assign Provider</option>
                                                     {(() => {
-                                                        const capable = providers.filter(p => p.offeredServices?.includes(b.serviceId?._id));
-                                                        if (capable.length === 0) return <option disabled>No capable providers</option>;
+                                                        const capable = providers.filter(p => p.offeredServices?.some(id => id === b.serviceId?._id));
+                                                        if (capable.length === 0) return <option disabled>No specific providers found</option>;
                                                         return capable.map(p => (
                                                             <option key={p._id} value={p._id}>{p.name}</option>
                                                         ));
                                                     })()}
                                                 </select>
-                                            )}
-                                            <select
-                                                value={b.status}
-                                                onChange={(e) => updateStatus(b._id, e.target.value)}
-                                                className="text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-blue-100 outline-none"
-                                            >
-                                                <option value="Pending">Pending</option>
-                                                <option value="Confirmed">Confirmed</option>
-                                                <option value="Completed">Completed</option>
-                                                <option value="Cancelled">Cancelled</option>
-                                            </select>
+                                                <select
+                                                    value={b.status}
+                                                    onChange={(e) => updateStatus(b._id, e.target.value)}
+                                                    className="text-[10px] bg-white border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-blue-100 outline-none font-medium"
+                                                >
+                                                    <option value="Pending">Status: Pending</option>
+                                                    <option value="Confirmed">Status: Confirmed</option>
+                                                    <option value="Completed">Status: Completed</option>
+                                                    <option value="Cancelled">Status: Cancelled</option>
+                                                </select>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

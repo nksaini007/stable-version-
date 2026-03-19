@@ -173,6 +173,8 @@ import CustomerWishlist from "./assets/components/dashboard/userdeshboards/custo
 import CustomerSupportPage from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerSupport";
 
 // Services UI
+import ServiceCategories from "./assets/components/ServiceCategories";
+import ServiceSubCategories from "./assets/components/ServiceSubCategories";
 import ServiceSearch from "./assets/components/ServiceSearch";
 
 // Architect Public Profile
@@ -211,7 +213,9 @@ function App() {
 
           <Route path="/community" element={<CommunityFeed />} />
           <Route path="/community/post/:id" element={<SinglePost />} />
-          <Route path="/services" element={<ServiceSearch />} />
+          <Route path="/services" element={<ServiceCategories />} />
+          <Route path="/services/:categoryId" element={<ServiceSubCategories />} />
+          <Route path="/services/:categoryId/:subCategoryId" element={<ServiceSearch />} />
           <Route path="/project-showcase/:id" element={<PublicProjectPage />} />
 
           {/* Product / Category */}

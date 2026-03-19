@@ -246,6 +246,9 @@ const updateMyProfile = async (req, res) => {
     }
     if (user.role === "provider") {
       if (serviceCategory) user.serviceCategory = serviceCategory;
+      if (serviceCategoryId) user.serviceCategoryId = serviceCategoryId;
+      if (serviceSubCategory) user.serviceSubCategory = serviceSubCategory;
+      if (serviceSubCategoryId) user.serviceSubCategoryId = serviceSubCategoryId;
       if (serviceDescription) user.serviceDescription = serviceDescription;
       if (experience) user.experience = experience;
       if (offeredServices !== undefined) {

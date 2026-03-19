@@ -3,12 +3,29 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FaEnvelope, FaPhone, FaUser, FaMapMarkerAlt, FaEdit, FaCalendarAlt,
   FaCamera, FaSave, FaTimes, FaLock, FaStore, FaTruck, FaShieldAlt,
-  FaClipboardList, FaCog, FaSpinner
+  FaCog, FaSpinner
 } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import API from "../api/api";
 import Nev from "./Nev";
 import { Link } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// Fix Leaflet marker icons
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerIconRetina from "leaflet/dist/images/marker-icon-2x.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+let DefaultIcon = L.icon({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIconRetina,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const Profile = () => {
   const { user, setUser } = useContext(AuthContext);
@@ -24,10 +41,12 @@ const Profile = () => {
 
   const [form, setForm] = useState({});
   const [pwForm, setPwForm] = useState({ currentPassword: "", newPassword: "" });
-  const [bookings, setBookings] = useState([]);
 
   // Location state
   const [locationData, setLocationData] = useState({ lat: "", lng: "", city: "" });
+  
+  // Service Categories for Providers
+  const [serviceCategories, setServiceCategories] = useState([]);
 
   useEffect(() => {
     if (user) {
@@ -55,18 +74,30 @@ const Profile = () => {
         skills: user.skills ? user.skills.join(", ") : "",
         contactInfo: user.contactInfo || "",
         coaRegistration: user.coaRegistration || "",
+        serviceCategoryId: user.serviceCategoryId || "",
+        serviceSubCategoryId: user.serviceSubCategoryId || "",
+        serviceDescription: user.serviceDescription || "",
+        experience: user.experience || "",
       });
       setLocationData({
         lat: user.location?.lat || "",
         lng: user.location?.lng || "",
         city: user.location?.city || "",
       });
-
-      if (user.role === "customer" && activeTab === "bookings") {
-        API.get("/bookings/my-bookings").then(res => setBookings(res.data)).catch(console.error);
-      }
     }
-  }, [user, activeTab]);
+  }, [user]);
+
+  useEffect(() => {
+    const fetchServiceCats = async () => {
+      try {
+        const { data } = await API.get("/service-categories");
+        setServiceCategories(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchServiceCats();
+  }, []);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -75,9 +106,84 @@ const Profile = () => {
     if (type === "profile") {
       setNewImage(file);
       if (file) setImagePreview(URL.createObjectURL(file));
-    } else if (type === "banner") {
+    } else    if (type === "banner") {
       setNewBanner(file);
       if (file) setBannerPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleUseGPS = () => {
+    if (!navigator.geolocation) {
+      setMsg({ text: "Geolocation is not supported by your browser.", type: "error" });
+      return;
+    }
+
+    setSearching(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const resp = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          );
+          const data = await resp.json();
+          const cityName = data.address?.city || data.address?.town || data.address?.village || "";
+          
+          setLocationData({
+            lat: latitude,
+            lng: longitude,
+            city: cityName,
+          });
+          setCitySearch(data.display_name.split(",").slice(0, 2).join(","));
+          setMsg({ text: "Location detected successfully!", type: "success" });
+        } catch (e) {
+          setLocationData({ lat: latitude, lng: longitude, city: "" });
+          setMsg({ text: "Location detected, but failed to find city name.", type: "warning" });
+        } finally {
+          setSearching(false);
+          setTimeout(() => setMsg({ text: "", type: "" }), 3000);
+        }
+      },
+      (error) => {
+        setSearching(false);
+        setMsg({ text: "Unable to retrieve your location. Please check permissions.", type: "error" });
+        setTimeout(() => setMsg({ text: "", type: "" }), 3000);
+      }
+    );
+  };
+
+  // Map sub-component for handling clicks and updates
+  const MapEvents = () => {
+    const map = useMap();
+    useMapEvents({
+      click(e) {
+        handleReverseGeocode(e.latlng.lat, e.latlng.lng);
+      },
+    });
+
+    useEffect(() => {
+      if (locationData.lat && locationData.lng) {
+        map.setView([locationData.lat, locationData.lng], 13);
+      }
+    }, [locationData.lat, locationData.lng, map]);
+
+    return null;
+  };
+
+  const handleReverseGeocode = async (lat, lng) => {
+    setSearching(true);
+    try {
+      const resp = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+      const data = await resp.json();
+      const cityName = data.address?.city || data.address?.town || data.address?.village || "";
+      setLocationData({ lat, lng, city: cityName });
+      setCitySearch(data.display_name.split(",").slice(0, 2).join(","));
+    } catch (e) {
+      setLocationData({ ...locationData, lat, lng });
+    } finally {
+      setSearching(false);
     }
   };
 
@@ -201,10 +307,6 @@ const Profile = () => {
     { id: "settings", label: "Settings", icon: <FaCog /> },
     { id: "security", label: "Security", icon: <FaLock /> },
   ];
-
-  if (user?.role === "customer") {
-    tabs.push({ id: "bookings", label: "Bookings", icon: <FaClipboardList /> });
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
@@ -344,6 +446,13 @@ const Profile = () => {
                             <div className="flex justify-between text-sm"><span className="text-gray-500">Service Area</span><span className="font-medium text-gray-900">{user?.deliveryAreaPincode || "-"}</span></div>
                           </>
                         )}
+                        {user?.role === "provider" && (
+                          <>
+                            <div className="flex justify-between text-sm"><span className="text-gray-500">Service Category</span><span className="font-medium text-gray-900">{user?.serviceCategory || "-"}</span></div>
+                            <div className="flex justify-between text-sm"><span className="text-gray-500">Specialty</span><span className="font-medium text-gray-900">{user?.serviceSubCategory || "-"}</span></div>
+                            <div className="flex justify-between text-sm"><span className="text-gray-500">Experience</span><span className="font-medium text-gray-900">{user?.experience || "-"} Yrs</span></div>
+                          </>
+                        )}
                         {user?.role === "customer" && (
                           <div className="text-sm text-gray-500 italic">No additional professional parameters.</div>
                         )}
@@ -405,9 +514,48 @@ const Profile = () => {
 
                         {/* Location Section */}
                         <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-5">
-                          <div className="mb-4">
-                            <h4 className="text-sm font-semibold text-blue-900 flex items-center gap-2"><FaMapMarkerAlt /> My Location</h4>
-                            <p className="text-xs text-blue-600 mt-0.5">Search your city to set your location on the map</p>
+                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                            <div>
+                              <h4 className="text-sm font-semibold text-blue-900 flex items-center gap-2"><FaMapMarkerAlt /> Precise Live Location</h4>
+                              <p className="text-xs text-blue-600 mt-0.5">Use GPS or click on the map to set your location</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={handleUseGPS}
+                              disabled={searching}
+                              className="px-4 py-2 bg-white border border-blue-200 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm"
+                            >
+                              <FaMapMarkerAlt className="text-blue-500" />
+                              Use My GPS Location
+                            </button>
+                          </div>
+
+                          {/* Map Widget */}
+                          <div className="w-full h-64 rounded-xl border-2 border-white shadow-md overflow-hidden mb-6 relative z-0">
+                            <MapContainer
+                              center={[locationData.lat || 20.5937, locationData.lng || 78.9629]}
+                              zoom={locationData.lat ? 13 : 5}
+                              style={{ height: "100%", width: "100%" }}
+                            >
+                              <TileLayer
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                              />
+                              <MapEvents />
+                              {locationData.lat && locationData.lng && (
+                                <Marker
+                                  position={[locationData.lat, locationData.lng]}
+                                  draggable={true}
+                                  eventHandlers={{
+                                    dragend: (e) => {
+                                      const marker = e.target;
+                                      const { lat, lng } = marker.getLatLng();
+                                      handleReverseGeocode(lat, lng);
+                                    },
+                                  }}
+                                />
+                              )}
+                            </MapContainer>
                           </div>
 
                           {/* City Search */}
@@ -419,7 +567,7 @@ const Profile = () => {
                                 onChange={(e) => setCitySearch(e.target.value)}
                                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearchLocation(); } }}
                                 className={inputClasses + " flex-1"}
-                                placeholder="Type your city name, e.g. Mumbai, Delhi, Jaipur..."
+                                placeholder="Or search your city manually..."
                               />
                               <button
                                 type="button"
@@ -427,7 +575,7 @@ const Profile = () => {
                                 disabled={searching}
                                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition disabled:opacity-60 whitespace-nowrap"
                               >
-                                {searching ? <><FaSpinner className="animate-spin" /> Searching...</> : <><FaMapMarkerAlt /> Search Location</>}
+                                {searching ? <><FaSpinner className="animate-spin" /> Searching...</> : <><FaMapMarkerAlt /> Search</>}
                               </button>
                             </div>
 
@@ -455,20 +603,20 @@ const Profile = () => {
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                               <label className={labelClasses}>City</label>
-                              <input value={locationData.city} onChange={(e) => setLocationData({ ...locationData, city: e.target.value })} className={inputClasses} placeholder="Auto-filled when you search" />
+                              <input value={locationData.city} onChange={(e) => setLocationData({ ...locationData, city: e.target.value })} className={inputClasses} placeholder="City name" />
                             </div>
                             <div>
                               <label className={labelClasses}>Latitude</label>
-                              <input type="number" step="any" value={locationData.lat} onChange={(e) => setLocationData({ ...locationData, lat: e.target.value })} className={inputClasses} placeholder="e.g. 28.6139" readOnly />
+                              <input type="number" step="any" value={locationData.lat} onChange={(e) => setLocationData({ ...locationData, lat: e.target.value })} className={inputClasses} placeholder="Coordinates" readOnly />
                             </div>
                             <div>
                               <label className={labelClasses}>Longitude</label>
-                              <input type="number" step="any" value={locationData.lng} onChange={(e) => setLocationData({ ...locationData, lng: e.target.value })} className={inputClasses} placeholder="e.g. 77.2090" readOnly />
+                              <input type="number" step="any" value={locationData.lng} onChange={(e) => setLocationData({ ...locationData, lng: e.target.value })} className={inputClasses} placeholder="Coordinates" readOnly />
                             </div>
                           </div>
                           {locationData.lat && locationData.lng && (
                             <p className="text-xs text-green-700 mt-3 flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-                              ✅ Location set: <strong>{locationData.city || "Unknown"}</strong> ({Number(locationData.lat).toFixed(4)}, {Number(locationData.lng).toFixed(4)})
+                              ✅ Current Selection: <strong>{locationData.city || "Point on Map"}</strong> ({Number(locationData.lat).toFixed(4)}, {Number(locationData.lng).toFixed(4)})
                             </p>
                           )}
                         </div>
@@ -514,6 +662,52 @@ const Profile = () => {
                       </div>
                     )}
 
+                    {user?.role === "provider" && (
+                      <div className="pt-6 border-t border-gray-100">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4">Service Provider Details</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                           <div>
+                              <label className={labelClasses}>Primary Category</label>
+                              <select 
+                                name="serviceCategoryId" 
+                                value={form.serviceCategoryId} 
+                                onChange={(e) => {
+                                  const cat = serviceCategories.find(c => c._id === e.target.value);
+                                  setForm({ ...form, serviceCategoryId: e.target.value, serviceCategory: cat?.name || "", serviceSubCategoryId: "", serviceSubCategory: "" });
+                                }} 
+                                className={inputClasses}
+                              >
+                                <option value="">Select Category</option>
+                                {serviceCategories.map(c => (
+                                  <option key={c._id} value={c._id}>{c.name}</option>
+                                ))}
+                              </select>
+                           </div>
+                           <div>
+                              <label className={labelClasses}>Sub-Specialty</label>
+                              <select 
+                                name="serviceSubCategoryId" 
+                                value={form.serviceSubCategoryId} 
+                                onChange={(e) => {
+                                  const cat = serviceCategories.find(c => c._id === form.serviceCategoryId);
+                                  const sub = cat?.subcategories.find(s => s._id === e.target.value);
+                                  setForm({ ...form, serviceSubCategoryId: e.target.value, serviceSubCategory: sub?.name || "" });
+                                }} 
+                                className={inputClasses}
+                                disabled={!form.serviceCategoryId}
+                              >
+                                <option value="">Select Specialty</option>
+                                {serviceCategories.find(c => c._id === form.serviceCategoryId)?.subcategories.map(s => (
+                                  <option key={s._id} value={s._id}>{s.name}</option>
+                                ))}
+                              </select>
+                           </div>
+                           <div><label className={labelClasses}>Years of Experience</label><input name="experience" type="number" value={form.experience} onChange={handleChange} className={inputClasses} placeholder="e.g. 5" /></div>
+                           <div className="md:col-span-2"><label className={labelClasses}>Service Description</label><textarea name="serviceDescription" value={form.serviceDescription} onChange={handleChange} rows={3} className={inputClasses} placeholder="Describe the specific services you offer..." /></div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Submit Actions */}
                     <div className="pt-6 border-t border-gray-100 flex justify-end gap-3 z-10">
                       <button type="button" onClick={() => setActiveTab("overview")} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 text-sm font-medium transition cursor-pointer">Cancel</button>
@@ -552,58 +746,6 @@ const Profile = () => {
                       </button>
                     </div>
                   </form>
-                </motion.div>
-              )}
-
-              {/* BOOKINGS TAB (Customers Only) */}
-              {activeTab === "bookings" && user?.role === "customer" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 border-t border-transparent">
-                  <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
-                    <h2 className="text-xl font-bold text-gray-900">My Service Bookings</h2>
-                    <Link to="/my-construction" className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition shadow-sm">
-                      View Const. Projects
-                    </Link>
-                  </div>
-
-                  {bookings.length === 0 ? (
-                    <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                      <FaClipboardList className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-                      <h3 className="text-sm font-medium text-gray-900">No bookings yet</h3>
-                      <p className="text-sm text-gray-500 mt-1">Get started by exploring our services.</p>
-                    </div>
-                  ) : (
-                    <div className="grid gap-4">
-                      {bookings.map(b => (
-                        <div key={b._id} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-4 hover:shadow-md transition cursor-default">
-                          <div className="flex gap-4 items-center">
-                            <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                              <FaClipboardList className="text-xl" />
-                            </div>
-                            <div>
-                              <h4 className="font-bold text-gray-900 text-base">{b.serviceId?.title || "Service Name Unavailable"}</h4>
-                              <p className="text-sm text-gray-500 mt-0.5">Provider: <span className="text-gray-700 font-medium">{b.providerId?.name || "Unassigned"}</span></p>
-                              <div className="flex gap-3 text-xs text-gray-500 mt-2">
-                                <span className="flex items-center gap-1"><FaCalendarAlt /> {b.date}</span>
-                                <span>@ {b.time}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0 gap-2">
-                            <span className="text-lg font-bold text-gray-900">₹{b.amount}</span>
-                            <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md border
-                              ${b.status === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : ''}
-                              ${b.status === 'Confirmed' ? 'bg-blue-50 text-blue-700 border-blue-200' : ''}
-                              ${b.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
-                              ${b.status === 'Cancelled' ? 'bg-red-50 text-red-700 border-red-200' : ''}
-                            `}>
-                              {b.status}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </motion.div>
               )}
 

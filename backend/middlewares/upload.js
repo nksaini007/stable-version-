@@ -12,14 +12,15 @@ const createFolder = (folderPath) => {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    let folder = "uploads/";
+    let folderName = "";
 
-    if (file.fieldname === "categoryImage") folder += "categories/";
-    if (file.fieldname === "subcategoryImage") folder += "subcategories/";
-    if (file.fieldname === "images") folder += "plans/";
+    if (file.fieldname === "categoryImage") folderName = "service-categories/";
+    if (file.fieldname === "subcategoryImage") folderName = "service-subcategories/";
+    if (file.fieldname === "images") folderName = "plans/";
 
-    createFolder(folder);
-    cb(null, folder);
+    const folderPath = path.join(__dirname, "..", "uploads", folderName);
+    createFolder(folderPath);
+    cb(null, folderPath);
   },
   filename: (req, file, cb) => {
     cb(

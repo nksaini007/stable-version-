@@ -30,22 +30,21 @@ const uploadServiceImages = multer({
 
 // ==================== PROVIDER ENDPOINTS ====================
 
-// @desc    Create a new service
-// @route   POST /api/services
-// @access  Private (Admin only)
 const createService = async (req, res) => {
     try {
         if (req.user.role !== "admin") {
             return res.status(403).json({ message: "Only admin can create services" });
         }
 
-        const { title, description, category, price } = req.body;
+        const { title, description, category, price, serviceCategoryId, serviceSubCategoryId } = req.body;
 
         const newService = new Service({
             title,
             description,
             category,
             price: Number(price),
+            serviceCategoryId,
+            serviceSubCategoryId,
         });
 
         if (req.files && req.files.length > 0) {
@@ -71,13 +70,15 @@ const updateService = async (req, res) => {
         const service = await Service.findById(req.params.id);
         if (!service) return res.status(404).json({ message: "Service not found" });
 
-        const { title, description, category, price, isActive } = req.body;
+        const { title, description, category, price, isActive, serviceCategoryId, serviceSubCategoryId } = req.body;
 
         if (title) service.title = title;
         if (description) service.description = description;
         if (category) service.category = category;
         if (price) service.price = Number(price);
         if (isActive !== undefined) service.isActive = isActive;
+        if (serviceCategoryId) service.serviceCategoryId = serviceCategoryId;
+        if (serviceSubCategoryId) service.serviceSubCategoryId = serviceSubCategoryId;
 
         if (req.files && req.files.length > 0) {
             service.images = req.files.map(file => `/uploads/services/${file.filename}`);
@@ -111,16 +112,15 @@ const deleteService = async (req, res) => {
 
 // ==================== PUBLIC ENDPOINTS ====================
 
-// @desc    Get all active services with optional filtering
-// @route   GET /api/services
-// @access  Public
 const getServices = async (req, res) => {
     try {
-        const { category, search } = req.query;
+        const { category, search, serviceCategoryId, serviceSubCategoryId } = req.query;
 
         let query = { isActive: true };
 
-        if (category) query.category = category;
+        if (serviceCategoryId) query.serviceCategoryId = serviceCategoryId;
+        if (serviceSubCategoryId) query.serviceSubCategoryId = serviceSubCategoryId;
+        if (category && !serviceCategoryId) query.category = category;
         if (search) query.title = { $regex: search, $options: "i" };
 
         const services = await Service.find(query).sort({ createdAt: -1 });

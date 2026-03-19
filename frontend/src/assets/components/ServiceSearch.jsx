@@ -1,33 +1,45 @@
 import React, { useState, useEffect, useContext } from "react";
 import API from "../api/api";
-import { FaSearch, FaStar, FaStore, FaCalendarAlt, FaTimes } from "react-icons/fa";
+import { FaSearch, FaStar, FaStore, FaCalendarAlt, FaTimes, FaClipboardList } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import Nev from "./Nev";
+import { FaChevronLeft } from "react-icons/fa";
 
 const ServiceSearch = () => {
+    const { categoryId, subCategoryId } = useParams();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
-    const [category, setCategory] = useState("");
+    const [categoryName, setCategoryName] = useState("");
 
     // Booking Modal State
     const [bookingService, setBookingService] = useState(null);
     const [bookingDate, setBookingDate] = useState("");
     const [bookingTime, setBookingTime] = useState("");
+    
+    // My Bookings State
+    const [myBookings, setMyBookings] = useState([]);
+    const [fetchingBookings, setFetchingBookings] = useState(false);
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const fetchServices = async () => {
         try {
             setLoading(true);
-            let query = [];
-            if (search) query.push(`search=${search}`);
-            if (category) query.push(`category=${category}`);
-            const queryString = query.length > 0 ? `?${query.join("&")}` : "";
-
+            let queryParams = [];
+            if (search) queryParams.push(`search=${search}`);
+            if (categoryId) queryParams.push(`serviceCategoryId=${categoryId}`);
+            if (subCategoryId) queryParams.push(`serviceSubCategoryId=${subCategoryId}`);
+            
+            const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
             const res = await API.get(`/services${queryString}`);
             setServices(res.data);
+            
+            if (res.data.length > 0 && res.data[0].category) {
+                setCategoryName(res.data[0].category);
+            }
         } catch (err) {
             console.error(err);
         } finally {
@@ -35,13 +47,29 @@ const ServiceSearch = () => {
         }
     };
 
+    const fetchMyBookings = async () => {
+        if (!user || user.role !== "customer") return;
+        try {
+            setFetchingBookings(true);
+            const res = await API.get("/bookings/my-bookings");
+            setMyBookings(res.data);
+        } catch (err) {
+            console.error("Error fetching bookings:", err);
+        } finally {
+            setFetchingBookings(false);
+        }
+    };
+
     useEffect(() => {
-        // Debounce search slightly
+        fetchMyBookings();
+    }, [user]);
+
+    useEffect(() => {
         const timeout = setTimeout(() => {
             fetchServices();
         }, 500);
         return () => clearTimeout(timeout);
-    }, [search, category]);
+    }, [search, categoryId, subCategoryId]);
 
     const handleBook = async (e) => {
         e.preventDefault();
@@ -61,7 +89,7 @@ const ServiceSearch = () => {
             setBookingService(null);
             setBookingDate("");
             setBookingTime("");
-            // optionally navigate to /profile or /customer/bookings
+            fetchMyBookings(); // Refresh the list
         } catch (err) {
             console.error(err);
             alert("Failed to create booking");
@@ -77,10 +105,15 @@ const ServiceSearch = () => {
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header & Search */}
                 <div className="text-center space-y-4">
+                    <div className="flex justify-center mb-4">
+                        <Link to={`/services/${categoryId}`} className="text-orange-600 font-bold flex items-center gap-2 text-sm hover:-translate-x-1 transition">
+                            <FaChevronLeft size={10} /> BACK TO SUB-CATEGORIES
+                        </Link>
+                    </div>
                     <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
-                        Find the perfect <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">Service</span>
+                        {categoryName || "Expert"} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">Services</span>
                     </h1>
-                    <p className="text-gray-500 max-w-2xl mx-auto">Book expert professionals for your home requirements instantly.</p>
+                    <p className="text-gray-500 max-w-2xl mx-auto">Book expert professionals for your {categoryName?.toLowerCase() || 'home'} requirements instantly.</p>
 
                     <div className="max-w-xl mx-auto relative mt-8">
                         <input
@@ -96,20 +129,62 @@ const ServiceSearch = () => {
                     </div>
                 </div>
 
-                {/* Categories */}
-                <div className="flex flex-wrap justify-center gap-2">
-                    {categories.map(c => (
-                        <button key={c}
-                            onClick={() => setCategory(c === "All" ? "" : c)}
-                            className={`px-5 py-2 rounded-full text-sm font-semibold transition shadow-sm
-                ${(category === c || (c === "All" && category === ""))
-                                    ? "bg-gray-900 text-white"
-                                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"}`}
-                        >
-                            {c}
-                        </button>
-                    ))}
-                </div>
+                {/* My Bookings Section - Compact UI */}
+                {user && user.role === "customer" && (
+                    <div className="max-w-5xl mx-auto">
+                        <div className="flex items-center gap-2 mb-4">
+                            <FaClipboardList className="text-orange-500" />
+                            <h2 className="text-lg font-bold text-gray-800 uppercase tracking-tight">My Recent Bookings</h2>
+                        </div>
+                        
+                        {fetchingBookings ? (
+                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                                {[1, 2].map(i => (
+                                    <div key={i} className="min-w-[280px] h-24 bg-gray-100 rounded-2xl animate-pulse" />
+                                ))}
+                            </div>
+                        ) : myBookings.length === 0 ? (
+                            <div className="bg-white p-6 rounded-2xl border border-dashed border-gray-200 text-center">
+                                <p className="text-sm text-gray-400 font-medium">No active bookings. Start exploring below!</p>
+                            </div>
+                        ) : (
+                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                                {myBookings.map(b => (
+                                    <motion.div 
+                                        key={b._id}
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="min-w-[300px] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all snap-start flex flex-col justify-between"
+                                    >
+                                        <div className="flex justify-between items-start gap-3">
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-gray-900 text-sm truncate">{b.serviceId?.title || "Service"}</h4>
+                                                <div className="flex items-center gap-2 mt-1 text-[11px] text-gray-500 font-medium">
+                                                    <span className="flex items-center gap-1"><FaCalendarAlt className="text-[10px]" /> {b.date}</span>
+                                                    <span>•</span>
+                                                    <span>{b.time}</span>
+                                                </div>
+                                            </div>
+                                            <span className={`shrink-0 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border
+                                                ${b.status === 'Pending' ? 'bg-amber-50 text-amber-600 border-amber-100' : ''}
+                                                ${b.status === 'Confirmed' ? 'bg-blue-50 text-blue-600 border-blue-100' : ''}
+                                                ${b.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : ''}
+                                                ${b.status === 'Cancelled' ? 'bg-red-50 text-red-600 border-red-100' : ''}
+                                            `}>
+                                                {b.status}
+                                            </span>
+                                        </div>
+                                        <div className="mt-3 pt-3 border-t border-gray-50 flex justify-between items-center text-[11px]">
+                                            <span className="text-gray-400 font-medium">ID: #{b._id.slice(-6).toUpperCase()}</span>
+                                            <span className="text-gray-900 font-black">₹{b.amount}</span>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
 
                 {/* Results */}
                 {loading ? (
@@ -184,7 +259,7 @@ const ServiceSearch = () => {
                                             className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-orange-400 focus:ring-0 outline-none transition" />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Time Time</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Time</label>
                                         <input type="time" required value={bookingTime} onChange={e => setBookingTime(e.target.value)}
                                             className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-orange-400 focus:ring-0 outline-none transition" />
                                     </div>

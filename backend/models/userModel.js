@@ -53,7 +53,10 @@ const userSchema = new mongoose.Schema({
   adminAccessCode: String,
 
   // PROVIDER fields
-  serviceCategory: String,
+  serviceCategory: String, // Keep as string for display
+  serviceCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'ServiceCategory' },
+  serviceSubCategory: String,
+  serviceSubCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'ServiceCategory.subcategories' },
   serviceDescription: String,
   experience: String,
   verificationDocuments: [String],

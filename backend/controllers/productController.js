@@ -5,23 +5,30 @@ const Product = require('../models/product');
 // GET /api/products/public?search=keyword
 // ==============================
 const getProducts = async (req, res) => {
-  const search = req.query.search || '';
+  const { search = '', category, subcategory, type } = req.query;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
   try {
-    const query = {
-      $or: [
+    // Build filter object
+    const filter = {};
+
+    // Search logic (name or description)
+    if (search) {
+      filter.$or = [
         { name: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
-        { category: { $regex: search, $options: 'i' } },
-        { subcategory: { $regex: search, $options: 'i' } },
-      ],
-    };
+      ];
+    }
 
-    const total = await Product.countDocuments(query);
-    const products = await Product.find(query).skip(skip).limit(limit);
+    // Explicit filters
+    if (category) filter.category = { $regex: category, $options: 'i' };
+    if (subcategory) filter.subcategory = { $regex: subcategory, $options: 'i' };
+    if (type) filter.type = { $regex: type, $options: 'i' };
+
+    const total = await Product.countDocuments(filter);
+    const products = await Product.find(filter).skip(skip).limit(limit);
 
     res.json({
       products,

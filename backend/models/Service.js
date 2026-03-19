@@ -23,6 +23,13 @@ const serviceSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    serviceCategoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ServiceCategory",
+    },
+    serviceSubCategoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+    },
     price: {
         type: Number,
         required: true,

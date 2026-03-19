@@ -107,8 +107,8 @@ const updateBookingStatus = async (req, res) => {
 const getAllBookings = async (req, res) => {
     try {
         const bookings = await Booking.find()
-            .populate("customerId", "name email")
-            .populate("providerId", "name email")
+            .populate("customerId", "name email phone address pincode")
+            .populate("providerId", "name email phone")
             .populate("serviceId", "title category")
             .sort({ createdAt: -1 });
         res.json(bookings);

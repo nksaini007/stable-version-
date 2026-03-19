@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import API from "../../../../../api/api";
-import { FaTrash, FaCheckCircle, FaTimesCircle, FaCheck, FaBan, FaStore, FaTools } from "react-icons/fa";
+import { 
+    FaTrash, FaCheckCircle, FaTimesCircle, FaCheck, FaBan, FaStore, FaTools, 
+    FaLayerGroup as FaLayerIcon 
+} from "react-icons/fa";
+import AdminServiceCategoryDashboard from "../../../AdminServiceCategoryDashboard";
 import { toast } from "react-toastify";
 
 const ServiceManagement = () => {
@@ -16,6 +20,11 @@ const ServiceManagement = () => {
     });
     const [images, setImages] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    
+    // Category management
+    const [serviceCategories, setServiceCategories] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState("");
+    const [activeTab, setActiveTab] = useState("services"); // new tab system
 
     const fetchServices = async () => {
         try {
@@ -30,8 +39,18 @@ const ServiceManagement = () => {
         }
     };
 
+    const fetchCategories = async () => {
+        try {
+            const res = await API.get("/service-categories");
+            setServiceCategories(res.data);
+        } catch (err) {
+            console.error("Failed to fetch service categories", err);
+        }
+    };
+
     useEffect(() => {
         fetchServices();
+        fetchCategories();
     }, []);
 
     const handleCreateService = async (e) => {
@@ -41,8 +60,10 @@ const ServiceManagement = () => {
             const data = new FormData();
             data.append("title", formData.title);
             data.append("description", formData.description);
-            data.append("category", formData.category);
+            data.append("category", formData.category); // display name
             data.append("price", formData.price);
+            data.append("serviceCategoryId", selectedCategoryId);
+            data.append("serviceSubCategoryId", formData.subCategoryId);
 
             if (images) {
                 for (let i = 0; i < images.length; i++) {
@@ -89,8 +110,29 @@ const ServiceManagement = () => {
 
     if (loading) return <div className="p-8 text-center text-gray-500">Loading services...</div>;
 
+    const currentCategory = serviceCategories.find(c => c._id === selectedCategoryId);
+
     return (
         <div className="space-y-6">
+            <div className="flex border-b border-gray-200 mb-6">
+                <button
+                    onClick={() => setActiveTab("services")}
+                    className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'services' ? 'border-orange-500 text-orange-600 bg-orange-50/30' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                >
+                    <FaTools className="inline mr-2" /> All Services
+                </button>
+                <button
+                    onClick={() => setActiveTab("categories")}
+                    className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'categories' ? 'border-orange-500 text-orange-600 bg-orange-50/30' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                >
+                    <FaLayerIcon className="inline mr-2" /> Manage Hierarchies
+                </button>
+            </div>
+
+            {activeTab === "categories" ? (
+                <AdminServiceCategoryDashboard />
+            ) : (
+                <>
             <div className="flex justify-between items-end">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800">Service Management</h1>
@@ -194,19 +236,42 @@ const ServiceManagement = () => {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                                 <textarea required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none" rows="3" placeholder="Describe what the service includes"></textarea>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                                    <select required value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none">
+                                    <select 
+                                        required 
+                                        value={selectedCategoryId} 
+                                        onChange={e => {
+                                            const cat = serviceCategories.find(c => c._id === e.target.value);
+                                            setSelectedCategoryId(e.target.value);
+                                            setFormData({ ...formData, category: cat?.name || "", subCategoryId: "" });
+                                        }} 
+                                        className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none"
+                                    >
                                         <option value="">Select Category</option>
-                                        <option value="Cleaning">Cleaning</option>
-                                        <option value="Plumbing">Plumbing</option>
-                                        <option value="Electrical">Electrical</option>
-                                        <option value="Carpentry">Carpentry</option>
-                                        <option value="Painting">Painting</option>
-                                        <option value="Appliance Repair">Appliance Repair</option>
+                                        {serviceCategories.map(c => (
+                                            <option key={c._id} value={c._id}>{c.name}</option>
+                                        ))}
                                     </select>
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
+                                    <select 
+                                        required 
+                                        value={formData.subCategoryId} 
+                                        onChange={e => setFormData({ ...formData, subCategoryId: e.target.value })} 
+                                        className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none"
+                                        disabled={!selectedCategoryId}
+                                    >
+                                        <option value="">Select Sub</option>
+                                        {currentCategory?.subcategories?.map(s => (
+                                            <option key={s._id} value={s._id}>{s.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
                                     <input type="number" required min="0" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none" placeholder="999" />
@@ -223,9 +288,10 @@ const ServiceManagement = () => {
                     </div>
                 </div>
             )}
-
-        </div>
-    );
+        </>
+      )}
+    </div>
+  );
 };
 
 export default ServiceManagement;

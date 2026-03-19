@@ -195,7 +195,7 @@ const ProductPage = () => {
                     return (
                       <button
                         key={idx}
-                        className={`relative flex-shrink-0 w-20 h-20 rounded-lg border transition-all ${active ? "border-indigo-500 ring-2 ring-indigo-200" : "border-gray-200 hover:border-gray-300"
+                        className={`relative flex-shrink-0 w-20 h-20 drop-shadow-lg rounded-lg border transition-all ${active ? "border-indigo-500 ring-2 ring-indigo-200" : "border-gray-200 hover:border-gray-300"
                           }`}
                         onClick={() => setSelectedImage(img)}
                         aria-label={`Select image ${idx + 1}`}
@@ -203,7 +203,7 @@ const ProductPage = () => {
                         <img
                           src={img}
                           alt={`Thumbnail ${idx + 1}`}
-                          className="w-full h-full object-cover rounded-lg"
+                          className="w-full drop-shadow-lg h-full object-cover rounded-lg"
                         />
                       </button>
                     );

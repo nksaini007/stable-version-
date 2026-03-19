@@ -30,12 +30,12 @@ const ProfileDropdown = ({ user, logout, mobile }) => {
   const menuItems = [
     { label: "Dashboard", icon: <FaTachometerAlt className="text-gray-400" />, to: dashboardLink },
     { label: "Cart", icon: <FaShoppingCart className="text-gray-400" />, to: "/cart" },
-    { label: "Profile Settings", icon: <FaUserCircle className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/customer/profile" : "/profile" },
+    { label: "Profile Settings", icon: <FaUserCircle className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/profile" : "/profile" },
   ];
 
   menuItems.push({ label: "Project Plans", icon: <FaMap className="text-gray-400" />, to: "/project-plans" });
-  menuItems.push({ label: "Messages", icon: <FaEnvelope className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/customer/orders" : "/my-inquiries" });
-  menuItems.push({ label: "Support Tickets", icon: <FaHeadset className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/customer/support" : "/support" });
+  menuItems.push({ label: "Messages", icon: <FaEnvelope className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/my-inquiries" : "/customer/orders"});
+  menuItems.push({ label: "Support Tickets", icon: <FaHeadset className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/support" : "/support" });
 
   return (
     <div className="relative md:ml-4" ref={dropdownRef}>

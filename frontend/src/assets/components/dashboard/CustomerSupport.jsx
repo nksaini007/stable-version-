@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useContext, useCallback } from "react";
+import API from "../../api/api";
 import { AuthContext } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { FaEnvelope, FaReply, FaComments, FaPlus, FaTimes, FaCircle, FaSpinner } from "react-icons/fa";
 import Nev from "../Nev";
 
 const CustomerSupport = () => {
-    const { token, user } = useContext(AuthContext);
+    const { token } = useContext(AuthContext);
     const [tickets, setTickets] = useState([]);
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,33 +19,38 @@ const CustomerSupport = () => {
     const [newTicket, setNewTicket] = useState({ subject: "", category: "General", priority: "Medium", projectId: "", message: "" });
     const [creating, setCreating] = useState(false);
 
-    useEffect(() => {
-        if (token) {
-            fetchData();
-        }
-    }, [token]);
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true);
             const [ticketRes, projRes] = await Promise.all([
-                axios.get("/api/support/my", { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get("/api/construction/my-projects", { headers: { Authorization: `Bearer ${token}` } })
+                API.get("/support/my"),
+                API.get("/construction/customer/projects").catch((err) => {
+                    console.error("Failed to fetch projects for dropdown:", err);
+                    return { data: { projects: [] } };
+                })
             ]);
-            setTickets(ticketRes.data.tickets);
-            setProjects(projRes.data.projects);
+            setTickets(ticketRes.data.tickets || []);
+            setProjects(projRes.data.projects || []);
         } catch (error) {
+            console.error(error);
             toast.error("Failed to load your inquiries.");
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        if (token) {
+            fetchData();
+        }
+    }, [token, fetchData]);
 
     const fetchTicketDetails = async (id) => {
         try {
-            const res = await axios.get(`/api/support/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await API.get(`/support/${id}`);
             setSelectedTicket(res.data.ticket);
         } catch (err) {
+            console.error(err);
             toast.error("Failed to load ticket details");
         }
     };
@@ -54,7 +59,7 @@ const CustomerSupport = () => {
         e.preventDefault();
         setCreating(true);
         try {
-            await axios.post("/api/support", newTicket, { headers: { Authorization: `Bearer ${token}` } });
+            await API.post("/support", newTicket);
             toast.success("Support ticket created!");
             setShowNewModal(false);
             setNewTicket({ subject: "", category: "General", priority: "Medium", projectId: "", message: "" });
@@ -72,15 +77,14 @@ const CustomerSupport = () => {
 
         try {
             setSendingReply(true);
-            await axios.post(`/api/support/${selectedTicket._id}/reply`, { text: replyText }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await API.post(`/support/${selectedTicket._id}/reply`, { text: replyText });
 
             toast.success("Reply sent successfully.");
             setReplyText("");
             fetchTicketDetails(selectedTicket._id);
             fetchData(); // refresh list to update any status changes
         } catch (error) {
+            console.error(error);
             toast.error("Failed to send reply");
         } finally {
             setSendingReply(false);
