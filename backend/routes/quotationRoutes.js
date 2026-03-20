@@ -8,11 +8,11 @@ const {
   updateQuotationAdmin,
   respondToQuotation,
 } = require("../controllers/quotationController");
-const { protect, admin } = require("../middlewares/authMiddleware");
+const { protect, adminOnly } = require("../middlewares/authMiddleware");
 
 router.route("/")
   .post(protect, createQuotation)
-  .get(protect, admin, getAllQuotations);
+  .get(protect, adminOnly, getAllQuotations);
 
 router.route("/my")
   .get(protect, getMyQuotations);
@@ -21,7 +21,7 @@ router.route("/:id")
   .get(protect, getQuotationById);
 
 router.route("/:id/admin")
-  .put(protect, admin, updateQuotationAdmin);
+  .put(protect, adminOnly, updateQuotationAdmin);
 
 router.route("/:id/respond")
   .put(protect, respondToQuotation);
