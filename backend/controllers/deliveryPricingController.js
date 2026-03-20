@@ -172,23 +172,26 @@ const seedDefaultZones = async (req, res) => {
  */
 const calculateDeliveryCharge = async (req, res) => {
     try {
-        const { pincode, weightKg = 0, volumeM3 = 0, estimatedKm = 50 } = req.body;
+        const { pincode, weightKg = 0, volumeM3 = 0, estimatedKm = 50, itemsPrice = 0 } = req.body;
+        console.log("Delivery Calc Request Content:", { pincode, weightKg, estimatedKm, itemsPrice });
 
         if (!pincode) return res.status(400).json({ message: "Pincode is required" });
 
         const pincodeNum = Number(pincode);
         const weight = Number(weightKg);
-        const volume = Number(volumeM3);
         const km = Number(estimatedKm);
 
         // Find matching zone by pincode range
         const allRules = await DeliveryPricing.find({ isActive: true });
+        console.log(`Searching through ${allRules.length} active delivery rules...`);
+
         let matchedRules = allRules.filter((r) =>
             r.pincodeRanges.some((range) => pincodeNum >= range.from && pincodeNum <= range.to)
         );
 
         // Fallback: use all rules if no specific pincode match (for general North India)
         if (matchedRules.length === 0) {
+            console.log("No specific pincode match, falling back to all rules...");
             matchedRules = allRules;
         }
 
@@ -206,13 +209,17 @@ const calculateDeliveryCharge = async (req, res) => {
             selectedRule = matchedRules[matchedRules.length - 1]; // largest vehicle
             vehicleCount = Math.ceil(weight / selectedRule.maxWeightKg);
             multiVehicle = true;
+            console.log(`Multi-vehicle required: ${vehicleCount}x ${selectedRule.vehicleType}`);
         }
 
         if (!selectedRule) {
+            console.warn("No rule found even after fallback for pincode:", pincodeNum);
             return res.status(404).json({
                 message: "No delivery pricing configured for this area. Please contact support.",
             });
         }
+
+        console.log("Selected Rule:", selectedRule.zoneName, selectedRule.vehicleType);
 
         // --- CALCULATION ---
         const baseCharge = selectedRule.basePrice || 0;
@@ -224,13 +231,14 @@ const calculateDeliveryCharge = async (req, res) => {
         const config = await WebsiteConfig.findOne();
         const isSiteWideFree = config?.settings?.isDeliveryFree === true;
         
-        const { itemsPrice = 0 } = req.body;
         const itemsTotalNum = Number(itemsPrice);
         const isZoneFree = selectedRule.freeAboveOrderValue && itemsTotalNum >= selectedRule.freeAboveOrderValue;
 
         const totalCharge = (isSiteWideFree || isZoneFree) 
             ? 0 
             : Math.max(perVehicleCost * vehicleCount, selectedRule.minimumCharge || 0);
+
+        console.log("Calculation Result:", { perVehicleCost, vehicleCount, totalCharge, isZoneFree });
 
         res.json({
             zone: selectedRule.zoneName,
@@ -254,7 +262,8 @@ const calculateDeliveryCharge = async (req, res) => {
                     : null,
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("CRITICAL ERROR in calculateDeliveryCharge:", err);
+        res.status(500).json({ error: err.message, stack: err.stack });
     }
 };
 
