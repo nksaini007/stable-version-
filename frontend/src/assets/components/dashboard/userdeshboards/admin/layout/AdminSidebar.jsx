@@ -23,6 +23,7 @@ import {
   FaBullhorn,
   FaTag,
   FaSlidersH,
+  FaFileInvoice
 } from "react-icons/fa";
 import { AuthContext } from "../../../../../context/AuthContext";
 import logo from "../../../../../logo.png";
@@ -41,6 +42,7 @@ const menuGroups = [
     items: [
       { name: "Products", path: "/admin/products", icon: <FaBox /> },
       { name: "Orders", path: "/admin/orders", icon: <FaClipboardList /> },
+      { name: "Quotations", path: "/admin/quotations", icon: <FaFileInvoice /> },
       { name: "Delivery", path: "/admin/delivery", icon: <FaTruck /> },
       { name: "Delivery Pricing", path: "/admin/delivery-pricing", icon: <FaTag /> },
       { name: "Payments", path: "/admin/payments", icon: <FaMoneyBillWave /> },

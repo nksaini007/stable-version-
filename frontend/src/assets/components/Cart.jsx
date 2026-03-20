@@ -303,6 +303,9 @@ const Cart = () => {
   });
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [deliveryData, setDeliveryData] = useState(null);
+  const [config, setConfig] = useState({ settings: { minCartValue: 500, maxCartValue: 50000 } });
+  const [showQuotationModal, setShowQuotationModal] = useState(false);
+  const [customerNote, setCustomerNote] = useState("");
 
   const itemsTotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -316,6 +319,17 @@ const Cart = () => {
   );
 
   const total = itemsTotal + (deliveryData?.totalCharge || 0);
+
+  // Fetch Config for thresholds
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const { data } = await API.get("/config");
+        if (data) setConfig(data);
+      } catch (err) { console.error("Config fetch failed", err); }
+    };
+    fetchConfig();
+  }, []);
 
   // Auto-calculate delivery when pincode changes
   useEffect(() => {
@@ -407,6 +421,41 @@ const Cart = () => {
       setMessage(
         `SYSTEM_FAILURE: ${err.response?.data?.message || err.message}`
       );
+    }
+  };
+
+  const isQuotationRequired = itemsTotal > (config.settings?.maxCartValue || 50000) || itemsTotal < (config.settings?.minCartValue || 0);
+
+  const handleQuotationRequest = async () => {
+    setLoading(true);
+    setMessage("");
+
+    const quotationData = {
+      items: cartItems.map(item => ({
+        product: item._id,
+        name: item.name,
+        image: item.images?.[0],
+        qty: item.quantity,
+        price: item.price,
+        seller: item.seller,
+      })),
+      shippingAddress,
+      itemsPrice: itemsTotal,
+      customerNote,
+    };
+
+    try {
+      const token = localStorage.getItem("token");
+      await API.post(`/quotations`, quotationData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setLoading(false);
+      setMessage("SYSTEM_MSG: QUOTATION REQUEST LOGGED. ADMIN REVIEW PENDING.");
+      setShowQuotationModal(false);
+      setTimeout(() => navigate("/dashboard/customer/quotations"), 2000);
+    } catch (err) {
+      setLoading(false);
+      setMessage(`ERROR: QUOTATION_FAILURE: ${err.response?.data?.message || err.message}`);
     }
   };
 
@@ -587,14 +636,31 @@ const Cart = () => {
                     </h3>
                   </div>
 
+                  {isQuotationRequired && (
+                    <div className="mb-6 p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-800 text-xs font-bold uppercase leading-relaxed">
+                      [ ALERT ] ORDER_VALUE outside standard threshold (₹{config.settings?.minCartValue} - ₹{config.settings?.maxCartValue}).
+                      <br />Professional review required. Submit for quotation.
+                    </div>
+                  )}
+
                   <div className="flex flex-col gap-3">
-                    <button
-                      onClick={handleCheckout}
-                      disabled={loading || calcLoading || !deliveryData || deliveryData.error}
-                      className="w-full px-6 py-4 bg-cyan-500 hover:bg-cyan-600 text-white font-black uppercase tracking-widest transition-all shadow-[4px_4px_0px_rgba(6,182,212,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0"
-                    >
-                      {loading ? "INITIALIZING..." : "EXECUTE_ORDER"}
-                    </button>
+                    {isQuotationRequired ? (
+                      <button
+                        onClick={() => setShowQuotationModal(true)}
+                        disabled={loading}
+                        className="w-full px-6 py-4 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest transition-all shadow-[4px_4px_0px_rgba(245,158,11,0.3)]"
+                      >
+                        {loading ? "INITIALIZING..." : "REQUEST_QUOTATION"}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleCheckout}
+                        disabled={loading || calcLoading || !deliveryData || deliveryData.error}
+                        className="w-full px-6 py-4 bg-cyan-500 hover:bg-cyan-600 text-white font-black uppercase tracking-widest transition-all shadow-[4px_4px_0px_rgba(6,182,212,0.3)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0"
+                      >
+                        {loading ? "INITIALIZING..." : "EXECUTE_ORDER"}
+                      </button>
+                    )}
 
                     <button
                       onClick={clearCart}
@@ -615,6 +681,37 @@ const Cart = () => {
           )}
         </div>
       </div>
+
+      {/* Quotation Submission Modal */}
+      {showQuotationModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white border-2 border-slate-900 shadow-[10px_10px_0px_rgba(0,0,0,1)] w-full max-w-lg p-8 relative">
+            <h3 className="text-2xl font-black uppercase mb-6 border-b-2 border-slate-100 pb-2">Quotation_Finalize</h3>
+            <p className="text-sm text-slate-600 mb-6 font-bold uppercase">Briefly describe your requirements or special instructions for the admin review:</p>
+            <textarea
+              className="w-full p-4 bg-slate-50 border border-slate-300 focus:border-cyan-500 outline-none text-sm mb-6"
+              rows={4}
+              placeholder="e.g. Bulk order for construction site, need bulk discount..."
+              value={customerNote}
+              onChange={(e) => setCustomerNote(e.target.value)}
+            />
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowQuotationModal(false)}
+                className="flex-1 py-3 bg-white border-2 border-slate-200 text-slate-500 font-bold uppercase hover:border-pink-500 hover:text-pink-500 transition-all"
+              >
+                Abort
+              </button>
+              <button
+                onClick={handleQuotationRequest}
+                className="flex-1 py-3 bg-cyan-500 text-white font-black uppercase hover:bg-cyan-600 transition-all shadow-[4px_4px_0px_rgba(6,182,212,0.3)]"
+              >
+                Submit_Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

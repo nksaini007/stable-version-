@@ -9,7 +9,8 @@ import {
   FaHammer,
   FaSignOutAlt,
   FaChevronLeft,
-  FaCrown
+  FaCrown,
+  FaFileInvoice
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "../../../../logo.png";
@@ -20,6 +21,7 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     { name: "Home", icon: <FaHeart />, path: "/home" },
     { name: "Overview", icon: <FaThLarge />, path: "/customer", end: true },
     { name: "My Orders", icon: <FaShoppingBag />, path: "/customer/orders" },
+    { name: "My Quotations", icon: <FaFileInvoice />, path: "/customer/quotations" },
 
     { name: "My Construction", icon: <FaHammer />, path: "/my-construction" }, // Link to existing page
     { name: "Profile", icon: <FaUser />, path: "/profile" },

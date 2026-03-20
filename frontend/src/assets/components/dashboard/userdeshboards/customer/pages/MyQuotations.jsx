@@ -1,0 +1,128 @@
+import React, { useState, useEffect } from "react";
+import API from "../../../../../api/api";
+import { Loader2, CheckCircle, XCircle, Clock, FileText } from "lucide-react";
+
+const MyQuotations = () => {
+    const [quotations, setQuotations] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
+
+    useEffect(() => {
+        fetchQuotations();
+    }, []);
+
+    const fetchQuotations = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const { data } = await API.get("/quotations/my", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setQuotations(data);
+        } catch (err) {
+            console.error("Failed to fetch quotations", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResponse = async (id, response) => {
+        try {
+            const token = localStorage.getItem("token");
+            await API.put(`/quotations/${id}/respond`, { response }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setMessage(`Quotation ${response} successfully!`);
+            fetchQuotations();
+        } catch (err) {
+            setMessage("Failed to respond to quotation.");
+        }
+    };
+
+    if (loading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>;
+
+    return (
+        <div className="p-6 bg-white min-h-screen">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <FileText className="text-cyan-600" /> My Quotation Requests
+            </h2>
+
+            {message && <div className="mb-4 p-3 bg-cyan-50 text-cyan-700 font-bold border-l-4 border-cyan-500">{message}</div>}
+
+            {quotations.length === 0 ? (
+                <div className="text-center py-20 text-gray-500 border-2 border-dashed rounded-xl">
+                    No quotation requests found.
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-6">
+                    {quotations.map((q) => (
+                        <div key={q._id} className="border-2 border-slate-100 rounded-xl p-6 hover:border-cyan-200 transition-all shadow-sm">
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Request ID: {q._id.slice(-8)}</span>
+                                    <h3 className="text-lg font-bold text-slate-800 mt-1">
+                                        {q.items.length} Items • Total: ₹{q.totalPrice.toFixed(2)}
+                                    </h3>
+                                </div>
+                                <div className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-tighter ${
+                                    q.status === 'Requested' ? 'bg-amber-100 text-amber-700' :
+                                    q.status === 'Adjusted' ? 'bg-cyan-100 text-cyan-700 animate-pulse' :
+                                    q.status === 'Accepted' ? 'bg-green-100 text-green-700' :
+                                    'bg-red-100 text-red-700'
+                                }`}>
+                                    {q.status}
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 mb-6">
+                                {q.items.map((item, idx) => (
+                                    <div key={idx} className="flex justify-between text-sm border-b border-slate-50 pb-2 last:border-0">
+                                        <span className="text-slate-600">{item.name} x {item.qty}</span>
+                                        <span className="font-bold">₹{(item.price * item.qty).toFixed(2)}</span>
+                                    </div>
+                                ))}
+                                {q.shippingPrice > 0 && (
+                                    <div className="flex justify-between text-sm pt-2 text-cyan-600 font-bold italic">
+                                        <span>Adjusted Shipping:</span>
+                                        <span>+ ₹{q.shippingPrice.toFixed(2)}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {q.adminNote && (
+                                <div className="mb-6 p-4 bg-slate-50 rounded-lg border-l-4 border-slate-300">
+                                    <p className="text-xs font-bold text-slate-500 uppercase mb-1">Admin Note:</p>
+                                    <p className="text-sm italic">"{q.adminNote}"</p>
+                                </div>
+                            )}
+
+                            {q.status === 'Adjusted' && (
+                                <div className="flex gap-4">
+                                    <button 
+                                        onClick={() => handleResponse(q._id, 'Accepted')}
+                                        className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-black uppercase tracking-widest rounded-lg transition-all shadow-md"
+                                    >
+                                        Accept & Proceed
+                                    </button>
+                                    <button 
+                                        onClick={() => handleResponse(q._id, 'Rejected')}
+                                        className="flex-1 py-3 bg-white border-2 border-red-200 text-red-500 font-black uppercase tracking-widest rounded-lg hover:border-red-500 transition-all"
+                                    >
+                                        Reject
+                                    </button>
+                                </div>
+                            )}
+
+                            {q.status === 'Accepted' && (
+                                <div className="p-4 bg-green-50 text-green-700 text-center rounded-lg border-2 border-green-100 font-bold uppercase tracking-widest text-sm">
+                                    Quotation Accepted. Admin will process your order soon.
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default MyQuotations;

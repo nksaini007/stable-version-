@@ -171,6 +171,7 @@ import CustomerOrders from "./assets/components/dashboard/userdeshboards/custome
 import CustomerProfile from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerProfile";
 import CustomerWishlist from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerWishlist";
 import CustomerSupportPage from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerSupport";
+import MyQuotations from "./assets/components/dashboard/userdeshboards/customer/pages/MyQuotations";
 
 // Services UI
 import ServiceCategories from "./assets/components/ServiceCategories";
@@ -245,6 +246,7 @@ function App() {
             <Route path="profile" element={<CustomerProfile />} />
             <Route path="wishlist" element={<CustomerWishlist />} />
             <Route path="support" element={<CustomerSupportPage />} />
+            <Route path="quotations" element={<MyQuotations />} />
           </Route>
 
           {/* Seller Dashboard Routes */}

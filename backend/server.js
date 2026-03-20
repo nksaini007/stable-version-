@@ -62,6 +62,7 @@ const categoryRoutes = require("./routes/categoryRoutes");
 const orderRoutes = require("./routes/orderRoutes"); // ✅ added
 const paymentRoutes = require("./routes/paymentRoutes"); // ✅ payment system
 const postRoutes = require("./routes/postRoutes"); // ✅ community posts
+const quotationRoutes = require("./routes/quotationRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const constructionRoutes = require("./routes/constructionRoutes"); // ✅ construction projects
