@@ -28,11 +28,17 @@ const uploadServiceImages = multer({
  */
 const getMyServices = async (req, res) => {
     try {
+        console.log("Fetching my services for user:", req.user?._id);
         const user = await User.findById(req.user._id).populate("offeredServices");
-        if (!user) return res.status(404).json({ message: "User not found" });
+        if (!user) {
+            console.warn("User not found during getMyServices:", req.user?._id);
+            return res.status(404).json({ message: "User not found" });
+        }
 
+        console.log(`Found ${user.offeredServices?.length || 0} offered services for user:`, req.user._id);
         res.json(user.offeredServices || []);
     } catch (err) {
+        console.error("Error in getMyServices:", err);
         res.status(500).json({ error: err.message });
     }
 };

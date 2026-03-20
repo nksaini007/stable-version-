@@ -106,7 +106,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "ok", message: "Server is healthy" });
+  res.status(200).json({ 
+    status: "ok", 
+    message: "Server is healthy",
+    version: "1.0.1-provider-fix",
+    timestamp: new Date().toISOString()
+  });
 });
 
 // ✅ Start server

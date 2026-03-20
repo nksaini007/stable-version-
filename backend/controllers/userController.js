@@ -195,6 +195,7 @@ const updateMyProfile = async (req, res) => {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    console.log("Profile update request for user:", req.user._id, req.body);
     const {
       name, phone, bio, address, pincode, aadhaarNumber,
       businessName, gstNumber, panNumber, businessAddress, businessCategory, bankAccount, ifscCode, companyRegistrationNumber, tradeLicenseNumber, fssaiLicense,
@@ -238,14 +239,17 @@ const updateMyProfile = async (req, res) => {
     }
     if (user.role === "provider") {
       if (serviceCategory) user.serviceCategory = serviceCategory;
-      if (serviceCategoryId) user.serviceCategoryId = serviceCategoryId;
+      if (serviceCategoryId && serviceCategoryId !== "") user.serviceCategoryId = serviceCategoryId;
       if (serviceSubCategory) user.serviceSubCategory = serviceSubCategory;
-      if (serviceSubCategoryId) user.serviceSubCategoryId = serviceSubCategoryId;
+      if (serviceSubCategoryId && serviceSubCategoryId !== "") user.serviceSubCategoryId = serviceSubCategoryId;
       if (serviceDescription) user.serviceDescription = serviceDescription;
       if (experience) user.experience = experience;
       if (offeredServices !== undefined) {
-        // Ensure it's stored as an array
-        user.offeredServices = Array.isArray(offeredServices) ? offeredServices : [offeredServices];
+        // Ensure it's stored as an array and valid IDs
+        const cleanedServices = Array.isArray(offeredServices) 
+          ? offeredServices.filter(id => id && id !== "") 
+          : [offeredServices].filter(id => id && id !== "");
+        user.offeredServices = cleanedServices;
       }
     }
     if (user.role === "architect") {
@@ -279,12 +283,19 @@ const updateMyProfile = async (req, res) => {
     }
 
     await user.save();
+    console.log("Profile updated successfully for user:", req.user._id);
 
     const userResponse = user.toObject();
     delete userResponse.password;
     res.json({ message: "Profile updated", user: userResponse });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("Profile update error details:", {
+      userId: req.user?._id,
+      message: err.message,
+      name: err.name,
+      stack: err.stack
+    });
+    res.status(400).json({ error: err.message, type: err.name });
   }
 };
 
