@@ -21,7 +21,7 @@ const ProfileDropdown = ({ user, logout, mobile }) => {
 
   // Determine dashboard link based on role
   let dashboardLink = "/dashboard";
-  if (user?.role === "customer" || user?.role === "user") dashboardLink = "/customer";
+  if (user?.role === "customer" || user?.role === "user") dashboardLink = "/dashboard/customer";
   if (user?.role === "provider") dashboardLink = "/provider";
   if (user?.role === "delivery") dashboardLink = "/delivery";
   if (user?.role === "architect") dashboardLink = "/architect";
@@ -34,8 +34,8 @@ const ProfileDropdown = ({ user, logout, mobile }) => {
   ];
 
   menuItems.push({ label: "Project Plans", icon: <FaMap className="text-gray-400" />, to: "/project-plans" });
-  menuItems.push({ label: "Messages", icon: <FaEnvelope className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/my-inquiries" : "/customer/orders" });
-  menuItems.push({ label: "Support Tickets", icon: <FaHeadset className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/support" : "/support" });
+  menuItems.push({ label: "Messages", icon: <FaEnvelope className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/my-inquiries" : "/dashboard/customer/orders" });
+  menuItems.push({ label: "Support Tickets", icon: <FaHeadset className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/dashboard/customer/support" : "/support" });
 
   return (
     <div className="relative md:ml-4" ref={dropdownRef}>

@@ -240,7 +240,7 @@ function App() {
           <Route path="/orders" element={<SellerOrders />} />
 
           {/* Customer Dashboard Routes */}
-          <Route path="/customer" element={<CustomerLayout />}>
+          <Route path="/dashboard/customer" element={<CustomerLayout />}>
             <Route index element={<CustomerOverview />} />
             <Route path="orders" element={<CustomerOrders />} />
             <Route path="profile" element={<CustomerProfile />} />

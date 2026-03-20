@@ -452,7 +452,7 @@ const Cart = () => {
       setLoading(false);
       setMessage("SYSTEM_MSG: QUOTATION REQUEST LOGGED. ADMIN REVIEW PENDING.");
       setShowQuotationModal(false);
-      setTimeout(() => navigate("/dashboard/customer/quotations"), 2000);
+      setTimeout(() => navigate("/customer/quotations"), 2000);
     } catch (err) {
       setLoading(false);
       setMessage(`ERROR: QUOTATION_FAILURE: ${err.response?.data?.message || err.message}`);

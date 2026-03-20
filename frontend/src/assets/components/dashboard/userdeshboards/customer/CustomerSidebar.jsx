@@ -19,13 +19,13 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
   const menuItems = [
 
     { name: "Home", icon: <FaHeart />, path: "/home" },
-    { name: "Overview", icon: <FaThLarge />, path: "/customer", end: true },
-    { name: "My Orders", icon: <FaShoppingBag />, path: "/customer/orders" },
-    { name: "My Quotations", icon: <FaFileInvoice />, path: "/customer/quotations" },
-
-    { name: "My Construction", icon: <FaHammer />, path: "/my-construction" }, // Link to existing page
-    { name: "Profile", icon: <FaUser />, path: "/profile" },
-    { name: "Support", icon: <FaHeadset />, path: "/support" },
+    { name: "Overview", icon: <FaThLarge />, path: "/dashboard/customer", end: true },
+    { name: "My Orders", icon: <FaShoppingBag />, path: "/dashboard/customer/orders" },
+    { name: "My Quotations", icon: <FaFileInvoice />, path: "/dashboard/customer/quotations" },
+    { name: "Wishlist", icon: <FaHeart />, path: "/dashboard/customer/wishlist" },
+    { name: "My Construction", icon: <FaHammer />, path: "/my-construction" }, 
+    { name: "Profile", icon: <FaUser />, path: "/dashboard/customer/profile" },
+    { name: "Support", icon: <FaHeadset />, path: "/dashboard/customer/support" },
   ];
 
   const sidebarVariants = {
