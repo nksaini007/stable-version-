@@ -177,16 +177,23 @@ const calculateDeliveryCharge = async (req, res) => {
 
         if (!pincode) return res.status(400).json({ message: "Pincode is required" });
 
-        const pincodeNum = Number(pincode);
-        const weight = Number(weightKg);
-        const km = Number(estimatedKm);
+        const pincodeNum = Number(pincode) || 0;
+        const weight = Number(weightKg) || 0;
+        const km = Number(estimatedKm) || 0;
+        const itemsTotalNum = Number(itemsPrice) || 0;
 
         // Find matching zone by pincode range
         const allRules = await DeliveryPricing.find({ isActive: true });
+        if (!allRules || allRules.length === 0) {
+            console.warn("No active delivery rules found in database.");
+            return res.status(404).json({ message: "No delivery pricing configured. Admin needs to seed defaults." });
+        }
+
         console.log(`Searching through ${allRules.length} active delivery rules...`);
 
         let matchedRules = allRules.filter((r) =>
-            r.pincodeRanges.some((range) => pincodeNum >= range.from && pincodeNum <= range.to)
+            r.pincodeRanges && Array.isArray(r.pincodeRanges) && 
+            r.pincodeRanges.some((range) => pincodeNum >= (range.from || 0) && pincodeNum <= (range.to || 0))
         );
 
         // Fallback: use all rules if no specific pincode match (for general North India)
@@ -196,18 +203,19 @@ const calculateDeliveryCharge = async (req, res) => {
         }
 
         // Sort vehicle types by capacity
-        const order = ["bike", "mini_truck", "truck", "heavy_trailer"];
-        matchedRules.sort((a, b) => order.indexOf(a.vehicleType) - order.indexOf(b.vehicleType));
+        const vehicleOrder = ["bike", "mini_truck", "truck", "heavy_trailer"];
+        matchedRules.sort((a, b) => vehicleOrder.indexOf(a.vehicleType) - vehicleOrder.indexOf(b.vehicleType));
 
         // Find the single vehicle type that can carry weight
-        let selectedRule = matchedRules.find((r) => r.maxWeightKg >= weight);
+        let selectedRule = matchedRules.find((r) => (r.maxWeightKg || 0) >= weight);
         let vehicleCount = 1;
         let multiVehicle = false;
 
         // If no single vehicle can carry it, use the largest and multiply
         if (!selectedRule && matchedRules.length > 0) {
             selectedRule = matchedRules[matchedRules.length - 1]; // largest vehicle
-            vehicleCount = Math.ceil(weight / selectedRule.maxWeightKg);
+            const maxCap = selectedRule.maxWeightKg || 1; // avoid divide by zero
+            vehicleCount = Math.ceil(weight / maxCap);
             multiVehicle = true;
             console.log(`Multi-vehicle required: ${vehicleCount}x ${selectedRule.vehicleType}`);
         }
@@ -222,21 +230,23 @@ const calculateDeliveryCharge = async (req, res) => {
         console.log("Selected Rule:", selectedRule.zoneName, selectedRule.vehicleType);
 
         // --- CALCULATION ---
-        const baseCharge = selectedRule.basePrice || 0;
-        const weightCharge = (selectedRule.pricePerKg || 0) * weight;
-        const distanceCharge = (selectedRule.pricePerKm || 0) * km;
-        const perVehicleCost = baseCharge + weightCharge + distanceCharge;
+        const baseCharge = Number(selectedRule.basePrice) || 0;
+        const pricePerKg = Number(selectedRule.pricePerKg) || 0;
+        const pricePerKm = Number(selectedRule.pricePerKm) || 0;
+        const minimumCharge = Number(selectedRule.minimumCharge) || 0;
+        const freeAbove = Number(selectedRule.freeAboveOrderValue) || 0;
+
+        const perVehicleCost = baseCharge + (pricePerKg * weight) + (pricePerKm * km);
 
         // Check for free delivery (Site-wide or Zone-specific)
         const config = await WebsiteConfig.findOne();
         const isSiteWideFree = config?.settings?.isDeliveryFree === true;
         
-        const itemsTotalNum = Number(itemsPrice);
-        const isZoneFree = selectedRule.freeAboveOrderValue && itemsTotalNum >= selectedRule.freeAboveOrderValue;
+        const isZoneFree = freeAbove > 0 && itemsTotalNum >= freeAbove;
 
         const totalCharge = (isSiteWideFree || isZoneFree) 
             ? 0 
-            : Math.max(perVehicleCost * vehicleCount, selectedRule.minimumCharge || 0);
+            : Math.max(perVehicleCost * vehicleCount, minimumCharge);
 
         console.log("Calculation Result:", { perVehicleCost, vehicleCount, totalCharge, isZoneFree });
 
@@ -248,8 +258,8 @@ const calculateDeliveryCharge = async (req, res) => {
             multiVehicle,
             breakdown: {
                 baseCharge: parseFloat((baseCharge * vehicleCount).toFixed(2)),
-                weightCharge: parseFloat((weightCharge * vehicleCount).toFixed(2)),
-                distanceCharge: parseFloat((distanceCharge * vehicleCount).toFixed(2)),
+                weightCharge: parseFloat((pricePerKg * weight * vehicleCount).toFixed(2)),
+                distanceCharge: parseFloat((pricePerKm * km * vehicleCount).toFixed(2)),
                 perVehicleCost: parseFloat(perVehicleCost.toFixed(2)),
                 vehicleCount,
                 totalEstimatedKm: km,
@@ -258,12 +268,16 @@ const calculateDeliveryCharge = async (req, res) => {
             note: multiVehicle
                 ? `Order weight (${weight}kg) requires ${vehicleCount} ${selectedRule.vehicleLabel || selectedRule.vehicleType}(s)`
                 : isZoneFree 
-                    ? `Free delivery applied (Order > ₹${selectedRule.freeAboveOrderValue})`
+                    ? `Free delivery applied (Order > ₹${freeAbove})`
                     : null,
         });
     } catch (err) {
         console.error("CRITICAL ERROR in calculateDeliveryCharge:", err);
-        res.status(500).json({ error: err.message, stack: err.stack });
+        res.status(500).json({ 
+            error: "Failed to calculate delivery. Internal Server Error.",
+            details: err.message,
+            stack: process.env.NODE_ENV === "production" ? undefined : err.stack
+        });
     }
 };
 
