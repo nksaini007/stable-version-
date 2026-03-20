@@ -1,4 +1,5 @@
 const Service = require("../models/Service");
+const User = require("../models/userModel");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -20,6 +21,21 @@ const uploadServiceImages = multer({
 }).array("images", 5);
 
 // ==================== PROVIDER ENDPOINTS ====================
+
+/**
+ * GET /api/services/user/my-services
+ * @desc Get services that the current provider has selected
+ */
+const getMyServices = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).populate("offeredServices");
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        res.json(user.offeredServices || []);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 const createService = async (req, res) => {
     try {
@@ -156,6 +172,7 @@ module.exports = {
     deleteService,
     getServices,
     getServiceById,
+    getMyServices,
     getAllServices,
     uploadServiceImages,
 };

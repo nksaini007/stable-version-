@@ -199,7 +199,7 @@ const updateMyProfile = async (req, res) => {
       name, phone, bio, address, pincode, aadhaarNumber,
       businessName, gstNumber, panNumber, businessAddress, businessCategory, bankAccount, ifscCode, companyRegistrationNumber, tradeLicenseNumber, fssaiLicense,
       vehicleType, licenseNumber, rcBookNumber, deliveryAreaPincode,
-      serviceCategory, serviceDescription, experience, offeredServices,
+      serviceCategory, serviceCategoryId, serviceSubCategory, serviceSubCategoryId, serviceDescription, experience, offeredServices,
       coaRegistration, location
     } = req.body;
 

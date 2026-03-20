@@ -7,12 +7,14 @@ const {
     deleteService,
     getServices,
     getServiceById,
+    getMyServices,
     getAllServices,
     uploadServiceImages,
 } = require("../controllers/serviceController");
 
 // Public routes
 router.get("/", getServices);
+router.get("/user/my-services", protect, getMyServices);
 router.get("/:id", getServiceById);
 
 // Admin routes
