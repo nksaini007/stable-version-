@@ -111,7 +111,7 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ 
     status: "ok", 
     message: "Server is healthy",
-    version: "1.0.1-provider-fix",
+    version: "1.0.2-quotation-fix",
     timestamp: new Date().toISOString()
   });
 });
