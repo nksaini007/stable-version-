@@ -83,6 +83,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/orders", orderRoutes); // ✅ order routes
+app.use("/api/quotations", quotationRoutes); // ✅ quotation routes
 app.use("/api/payments", paymentRoutes); // ✅ payment routes
 app.use("/api/posts", postRoutes); // ✅ community posts
 app.use("/api/services", serviceRoutes);
