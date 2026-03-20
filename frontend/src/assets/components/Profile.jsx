@@ -78,6 +78,11 @@ const Profile = () => {
         serviceSubCategoryId: user.serviceSubCategoryId || "",
         serviceDescription: user.serviceDescription || "",
         experience: user.experience || "",
+        storeDescription: user.storeDescription || "",
+        supportPhone: user.supportPhone || "",
+        supportEmail: user.supportEmail || "",
+        businessType: user.businessType || "",
+        socialLinks: user.socialLinks || { facebook: "", instagram: "", twitter: "", linkedin: "" },
       });
       setLocationData({
         lat: user.location?.lat || "",
@@ -241,7 +246,13 @@ const Profile = () => {
     setMsg({ text: "", type: "" });
     try {
       const formData = new FormData();
-      Object.entries(form).forEach(([k, v]) => { if (v) formData.append(k, v); });
+      Object.entries(form).forEach(([k, v]) => { 
+        if (k === "socialLinks") {
+          formData.append(k, JSON.stringify(v));
+        } else if (v !== undefined && v !== null) {
+          formData.append(k, v); 
+        }
+      });
       if (newImage) formData.append("profileImage", newImage);
       if (newBanner) formData.append("shopBanner", newBanner);
 
@@ -629,9 +640,29 @@ const Profile = () => {
                         <h3 className="text-sm font-semibold text-gray-900 mb-4">Business & Legal Details</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div><label className={labelClasses}>Business Name</label><input name="businessName" value={form.businessName} onChange={handleChange} className={inputClasses} /></div>
+                          <div>
+                            <label className={labelClasses}>Business Type</label>
+                            <select name="businessType" value={form.businessType} onChange={handleChange} className={inputClasses}>
+                              <option value="">Select Type</option>
+                              <option value="Individual">Individual</option>
+                              <option value="Partnership">Partnership</option>
+                              <option value="Company">Company</option>
+                            </select>
+                          </div>
                           <div><label className={labelClasses}>Business Category</label><input name="businessCategory" value={form.businessCategory} onChange={handleChange} className={inputClasses} /></div>
                           <div><label className={labelClasses}>GST Number</label><input name="gstNumber" value={form.gstNumber} onChange={handleChange} className={inputClasses} /></div>
                           <div><label className={labelClasses}>PAN Number</label><input name="panNumber" value={form.panNumber} onChange={handleChange} className={inputClasses} /></div>
+                          <div><label className={labelClasses}>Support Phone</label><input name="supportPhone" value={form.supportPhone} onChange={handleChange} className={inputClasses} /></div>
+                          <div><label className={labelClasses}>Support Email</label><input name="supportEmail" value={form.supportEmail} onChange={handleChange} className={inputClasses} /></div>
+                          <div className="md:col-span-2"><label className={labelClasses}>Shop Description</label><textarea name="storeDescription" value={form.storeDescription} onChange={handleChange} rows={2} className={inputClasses} placeholder="Tell customers about your shop..." /></div>
+                          
+                          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label className={labelClasses}>Facebook URL</label><input value={form.socialLinks?.facebook} onChange={(e) => setForm({...form, socialLinks: {...form.socialLinks, facebook: e.target.value}})} className={inputClasses} /></div>
+                            <div><label className={labelClasses}>Instagram URL</label><input value={form.socialLinks?.instagram} onChange={(e) => setForm({...form, socialLinks: {...form.socialLinks, instagram: e.target.value}})} className={inputClasses} /></div>
+                            <div><label className={labelClasses}>Twitter URL</label><input value={form.socialLinks?.twitter} onChange={(e) => setForm({...form, socialLinks: {...form.socialLinks, twitter: e.target.value}})} className={inputClasses} /></div>
+                            <div><label className={labelClasses}>LinkedIn URL</label><input value={form.socialLinks?.linkedin} onChange={(e) => setForm({...form, socialLinks: {...form.socialLinks, linkedin: e.target.value}})} className={inputClasses} /></div>
+                          </div>
+
                           <div><label className={labelClasses}>Company Reg. No.</label><input name="companyRegistrationNumber" value={form.companyRegistrationNumber} onChange={handleChange} className={inputClasses} /></div>
                           <div><label className={labelClasses}>Trade / FSSAI License</label><input name="tradeLicenseNumber" value={form.tradeLicenseNumber} onChange={handleChange} className={inputClasses} /></div>
                           <div className="md:col-span-2"><label className={labelClasses}>Business Address</label><input name="businessAddress" value={form.businessAddress} onChange={handleChange} className={inputClasses} /></div>

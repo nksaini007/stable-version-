@@ -214,12 +214,23 @@ const calculateDeliveryCharge = async (req, res) => {
             });
         }
 
+        // --- CALCULATION ---
+        const baseCharge = selectedRule.basePrice || 0;
+        const weightCharge = (selectedRule.pricePerKg || 0) * weight;
+        const distanceCharge = (selectedRule.pricePerKm || 0) * km;
         const perVehicleCost = baseCharge + weightCharge + distanceCharge;
-        
-        const config = await WebsiteConfig.findOne();
-        const isFree = config?.settings?.isDeliveryFree === true;
 
-        const totalCharge = isFree ? 0 : Math.max(perVehicleCost * vehicleCount, selectedRule.minimumCharge || 0);
+        // Check for free delivery (Site-wide or Zone-specific)
+        const config = await WebsiteConfig.findOne();
+        const isSiteWideFree = config?.settings?.isDeliveryFree === true;
+        
+        const { itemsPrice = 0 } = req.body;
+        const itemsTotalNum = Number(itemsPrice);
+        const isZoneFree = selectedRule.freeAboveOrderValue && itemsTotalNum >= selectedRule.freeAboveOrderValue;
+
+        const totalCharge = (isSiteWideFree || isZoneFree) 
+            ? 0 
+            : Math.max(perVehicleCost * vehicleCount, selectedRule.minimumCharge || 0);
 
         res.json({
             zone: selectedRule.zoneName,
@@ -238,7 +249,9 @@ const calculateDeliveryCharge = async (req, res) => {
             totalCharge: parseFloat(totalCharge.toFixed(2)),
             note: multiVehicle
                 ? `Order weight (${weight}kg) requires ${vehicleCount} ${selectedRule.vehicleLabel || selectedRule.vehicleType}(s)`
-                : null,
+                : isZoneFree 
+                    ? `Free delivery applied (Order > ₹${selectedRule.freeAboveOrderValue})`
+                    : null,
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

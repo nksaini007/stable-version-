@@ -332,7 +332,7 @@ const Cart = () => {
       const token = localStorage.getItem("token");
       const { data } = await API.post(
         `/delivery-pricing/calculate`,
-        { pincode: shippingAddress.postalCode, weightKg: totalWeightKg },
+        { pincode: shippingAddress.postalCode, weightKg: totalWeightKg, itemsPrice: itemsTotal },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setDeliveryData(data);

@@ -33,6 +33,20 @@ const userSchema = new mongoose.Schema({
   // SELLER fields
   businessName: String,
   shopBanner: String,
+  storeDescription: String,
+  supportPhone: String,
+  supportEmail: String,
+  businessType: {
+    type: String,
+    enum: ["Individual", "Partnership", "Company", ""],
+    default: "",
+  },
+  socialLinks: {
+    facebook: { type: String, default: "" },
+    instagram: { type: String, default: "" },
+    twitter: { type: String, default: "" },
+    linkedin: { type: String, default: "" },
+  },
   gstNumber: String,
   panNumber: String,
   companyRegistrationNumber: String,

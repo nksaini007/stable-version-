@@ -41,6 +41,7 @@ const createUser = async (req, res) => {
       name, email, password, role, phone, address, pincode,
       aadhaarNumber, gstNumber, businessName, panNumber, businessAddress,
       businessCategory, bankAccount, ifscCode, companyRegistrationNumber, tradeLicenseNumber, fssaiLicense,
+      storeDescription, supportPhone, supportEmail, businessType, socialLinks,
       vehicleType, licenseNumber, rcBookNumber, deliveryAreaPincode,
       serviceCategory, serviceDescription, experience,
       adminAccessCode, bio, coaRegistration
@@ -85,7 +86,16 @@ const createUser = async (req, res) => {
     }
 
     if (role === "seller") {
-      Object.assign(userData, { gstNumber, businessName, panNumber, businessAddress, businessCategory, bankAccount, ifscCode, companyRegistrationNumber, tradeLicenseNumber, fssaiLicense });
+      Object.assign(userData, { 
+        gstNumber, businessName, panNumber, businessAddress, businessCategory, bankAccount, ifscCode, 
+        companyRegistrationNumber, tradeLicenseNumber, fssaiLicense,
+        storeDescription, supportPhone, supportEmail, businessType
+      });
+      if (socialLinks) {
+        try {
+          userData.socialLinks = typeof socialLinks === "string" ? JSON.parse(socialLinks) : socialLinks;
+        } catch (e) { console.error("Social Links Parse Error:", e); }
+      }
     } else if (role === "delivery") {
       Object.assign(userData, { vehicleType, licenseNumber, rcBookNumber, deliveryAreaPincode });
     } else if (role === "provider") {
@@ -199,6 +209,7 @@ const updateMyProfile = async (req, res) => {
     const {
       name, phone, bio, address, pincode, aadhaarNumber,
       businessName, gstNumber, panNumber, businessAddress, businessCategory, bankAccount, ifscCode, companyRegistrationNumber, tradeLicenseNumber, fssaiLicense,
+      storeDescription, supportPhone, supportEmail, businessType, socialLinks,
       vehicleType, licenseNumber, rcBookNumber, deliveryAreaPincode,
       serviceCategory, serviceCategoryId, serviceSubCategory, serviceSubCategoryId, serviceDescription, experience, offeredServices,
       coaRegistration, location
@@ -230,6 +241,16 @@ const updateMyProfile = async (req, res) => {
       if (companyRegistrationNumber) user.companyRegistrationNumber = companyRegistrationNumber;
       if (tradeLicenseNumber) user.tradeLicenseNumber = tradeLicenseNumber;
       if (fssaiLicense) user.fssaiLicense = fssaiLicense;
+      if (storeDescription) user.storeDescription = storeDescription;
+      if (supportPhone) user.supportPhone = supportPhone;
+      if (supportEmail) user.supportEmail = supportEmail;
+      if (businessType) user.businessType = businessType;
+      if (socialLinks) {
+        try {
+          const links = typeof socialLinks === "string" ? JSON.parse(socialLinks) : socialLinks;
+          user.socialLinks = { ...user.socialLinks, ...links };
+        } catch (e) { console.error("Social Links Update Error:", e); }
+      }
     }
     if (user.role === "delivery") {
       if (vehicleType) user.vehicleType = vehicleType;
