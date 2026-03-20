@@ -10,6 +10,8 @@ const {
 } = require("../controllers/quotationController");
 const { protect, adminOnly } = require("../middlewares/authMiddleware");
 
+router.get("/test", (req, res) => res.json({ message: "Quotation Routes Active" }));
+
 router.route("/")
   .post(protect, createQuotation)
   .get(protect, adminOnly, getAllQuotations);

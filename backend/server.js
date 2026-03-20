@@ -79,11 +79,11 @@ const deliveryPricingRoutes = require("./routes/deliveryPricingRoutes"); // ✅ 
 const serviceCategoryRoutes = require("./routes/serviceCategoryRoutes"); // ✅ service categories
 
 // ✅ Use routes
+app.use("/api/quotations", quotationRoutes); // ✅ quotation routes
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/orders", orderRoutes); // ✅ order routes
-app.use("/api/quotations", quotationRoutes); // ✅ quotation routes
 app.use("/api/payments", paymentRoutes); // ✅ payment routes
 app.use("/api/posts", postRoutes); // ✅ community posts
 app.use("/api/services", serviceRoutes);
@@ -111,7 +111,7 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ 
     status: "ok", 
     message: "Server is healthy",
-    version: "1.0.3-fix",
+    version: "1.0.4-diag",
     timestamp: new Date().toISOString()
   });
 });
