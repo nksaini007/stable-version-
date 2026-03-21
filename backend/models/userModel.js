@@ -82,6 +82,12 @@ const userSchema = new mongoose.Schema({
   coaRegistration: String,
   assignedProjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ConstructionProject' }],
 
+  // OTP Verification fields
+  otp: String,
+  otpExpires: Date,
+  isEmailVerified: { type: Boolean, default: false },
+  isPhoneVerified: { type: Boolean, default: false },
+
 }, { timestamps: true });
 
 // module.exports = mongoose.model("User", userSchema);

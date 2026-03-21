@@ -16,8 +16,11 @@ import {
     FaIdCard,
     FaFileInvoiceDollar,
     FaLandmark,
-    FaFileUpload
+    FaFileUpload,
+    FaEnvelope,
+    FaPhone
 } from "react-icons/fa";
+import OTPModal from "./auth/OTPModal";
 
 function PartnerSignup() {
     const navigate = useNavigate();
@@ -45,6 +48,10 @@ function PartnerSignup() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
+    const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+    const [modal, setModal] = useState({ isOpen: false, type: "", value: "" });
+    const [otpLoading, setOtpLoading] = useState(""); // "email" or "phone"
 
     const inputClasses = "w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm text-sm";
     const labelClasses = "block text-sm font-medium text-gray-700 mb-1.5";
@@ -71,8 +78,34 @@ function PartnerSignup() {
             setError("Phone number must be exactly 10 digits.");
             return false;
         }
+        if (!isEmailVerified || !isPhoneVerified) {
+            setError("Please verify both your email and phone number via OTP.");
+            return false;
+        }
         setError("");
         return true;
+    };
+
+    const handleSendOTP = async (type) => {
+        const value = type === "email" ? form.email : form.phone;
+        if (!value) {
+            setError(`Please enter a valid ${type} first`);
+            return;
+        }
+        if (type === "phone" && !/^\d{10}$/.test(value)) {
+            setError("Phone number must be exactly 10 digits.");
+            return;
+        }
+        setOtpLoading(type);
+        setError("");
+        try {
+            await API.post("/users/send-otp", { [type]: value, type });
+            setModal({ isOpen: true, type, value });
+        } catch (err) {
+            setError(err.response?.data?.message || `Failed to send ${type} OTP`);
+        } finally {
+            setOtpLoading("");
+        }
     };
 
     const validateStep2 = () => {
@@ -283,7 +316,18 @@ function PartnerSignup() {
                                             </div>
                                             <div>
                                                 <label className={labelClasses}>Official Email Address</label>
-                                                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="name@company.com" className={inputClasses} required />
+                                                <div className="relative">
+                                                    <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="name@company.com" className={`${inputClasses} pr-20`} required disabled={isEmailVerified} />
+                                                    {!isEmailVerified ? (
+                                                        <button type="button" onClick={() => handleSendOTP("email")} disabled={otpLoading === "email"} className="absolute right-2 top-1.5 px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md hover:bg-indigo-700 transition disabled:opacity-50">
+                                                            {otpLoading === "email" ? "..." : "Verify"}
+                                                        </button>
+                                                    ) : (
+                                                        <div className="absolute right-2 top-2 text-green-600">
+                                                            <FaCheckCircle />
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div>
                                                 <label className={labelClasses}>Account Password</label>
@@ -291,7 +335,18 @@ function PartnerSignup() {
                                             </div>
                                             <div>
                                                 <label className={labelClasses}>Primary Phone Number</label>
-                                                <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '').substring(0, 10) })} placeholder="10-digit mobile number" className={inputClasses} required />
+                                                <div className="relative">
+                                                    <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '').substring(0, 10) })} placeholder="10-digit mobile number" className={`${inputClasses} pr-20`} required disabled={isPhoneVerified} />
+                                                    {!isPhoneVerified ? (
+                                                        <button type="button" onClick={() => handleSendOTP("phone")} disabled={otpLoading === "phone"} className="absolute right-2 top-1.5 px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md hover:bg-indigo-700 transition disabled:opacity-50">
+                                                            {otpLoading === "phone" ? "..." : "Verify"}
+                                                        </button>
+                                                    ) : (
+                                                        <div className="absolute right-2 top-2 text-green-600">
+                                                            <FaCheckCircle />
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="md:col-span-2">
                                                 <label className={labelClasses}>Complete Residential/Primary Address</label>
@@ -555,6 +610,16 @@ function PartnerSignup() {
                     </div>
                 </div>
             </div>
+            <OTPModal 
+                isOpen={modal.isOpen} 
+                onClose={() => setModal({ ...modal, isOpen: false })} 
+                type={modal.type} 
+                value={modal.value} 
+                onVerified={() => {
+                    if (modal.type === "email") setIsEmailVerified(true);
+                    if (modal.type === "phone") setIsPhoneVerified(true);
+                }}
+            />
         </div>
     );
 }

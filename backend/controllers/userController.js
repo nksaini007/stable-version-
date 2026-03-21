@@ -6,6 +6,7 @@ const ArchitectWork = require("../models/ArchitectWork");
 const path = require("path");
 const fs = require("fs");
 const { deleteImage } = require("../config/cloudinary");
+const { generateOTP, sendEmailOTP, sendSMSOTP } = require("../config/otpService");
 
 // ==================== MULTER CONFIG ====================
 const { storage } = require("../config/cloudinary");
@@ -49,6 +50,16 @@ const createUser = async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "Email already registered" });
+
+    // Check if the email and phone are verified
+    // We fetch the account created/updated during sendOTP/verifyOTP
+    const verifiedUser = await User.findOne({ email });
+    if (!verifiedUser || !verifiedUser.isEmailVerified) {
+        return res.status(403).json({ message: "Please verify your email via OTP before signing up." });
+    }
+    if (!verifiedUser.isPhoneVerified) {
+        return res.status(403).json({ message: "Please verify your mobile number via OTP before signing up." });
+    }
 
     const allowedRoles = ["customer", "seller", "delivery", "admin", "provider", "architect"];
     if (role && !allowedRoles.includes(role))
@@ -519,6 +530,71 @@ const getArchitectPublicProfile = async (req, res) => {
   }
 };
 
+/**
+ * POST /api/users/send-otp
+ * Body: { email, phone, type } where type is 'email' or 'phone'
+ */
+const sendOTP = async (req, res) => {
+    try {
+        const { email, phone, type } = req.body;
+        const otp = generateOTP();
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+        if (type === "email") {
+            if (!email) return res.status(400).json({ message: "Email is required" });
+            const success = await sendEmailOTP(email, otp);
+            if (!success) return res.status(500).json({ message: "Failed to send email OTP" });
+            
+            // Store OTP in User model (or a TempOTP model if you don't want to create User yet)
+            // For simplicity, we'll try to find a user with this email or just return success
+            // In a better flow, we'd use a TempOTP collection.
+            await User.findOneAndUpdate({ email }, { otp, otpExpires }, { upsert: true, new: true });
+            
+            res.json({ message: "OTP sent to your email" });
+        } else if (type === "phone") {
+            if (!phone) return res.status(400).json({ message: "Phone number is required" });
+            const success = await sendSMSOTP(phone, otp);
+            if (!success) return res.status(500).json({ message: "Failed to send SMS OTP" });
+            
+            await User.findOneAndUpdate({ phone }, { otp, otpExpires }, { upsert: true, new: true });
+            
+            res.json({ message: "OTP sent to your phone" });
+        } else {
+            res.status(400).json({ message: "Invalid OTP type" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+/**
+ * POST /api/users/verify-otp
+ * Body: { email, phone, otp, type }
+ */
+const verifyOTP = async (req, res) => {
+    try {
+        const { email, phone, otp, type } = req.body;
+        let query = type === "email" ? { email } : { phone };
+        
+        const user = await User.findOne(query);
+        if (!user || user.otp !== otp || user.otpExpires < Date.now()) {
+            return res.status(400).json({ message: "Invalid or expired OTP" });
+        }
+
+        // Clear OTP and mark as verified
+        if (type === "email") user.isEmailVerified = true;
+        if (type === "phone") user.isPhoneVerified = true;
+        
+        user.otp = undefined;
+        user.otpExpires = undefined;
+        await user.save();
+
+        res.json({ message: "Verification successful", isEmailVerified: user.isEmailVerified, isPhoneVerified: user.isPhoneVerified });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 module.exports = {
   getUsers,
   getProviders,
@@ -537,4 +613,6 @@ module.exports = {
   uploadProfile,
   getSellerPublicProfile,
   getArchitectPublicProfile,
+  sendOTP,
+  verifyOTP,
 };

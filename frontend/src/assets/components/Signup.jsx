@@ -8,8 +8,12 @@ import {
   FaCheckCircle,
   FaTimesCircle,
   FaCamera,
-  FaBuilding
+  FaBuilding,
+  FaShieldAlt,
+  FaEnvelope,
+  FaPhone
 } from "react-icons/fa";
+import OTPModal from "./auth/OTPModal";
 
 function Signup() {
   const navigate = useNavigate();
@@ -26,6 +30,10 @@ function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [modal, setModal] = useState({ isOpen: false, type: "", value: "" });
+  const [otpLoading, setOtpLoading] = useState(""); // "email" or "phone"
 
   const labelClasses = "block text-sm font-medium text-gray-700 mb-1.5";
   const inputClasses =
@@ -40,6 +48,24 @@ function Signup() {
     if (file) setPreview(URL.createObjectURL(file));
   };
 
+  const handleSendOTP = async (type) => {
+    const value = type === "email" ? form.email : form.phone;
+    if (!value) {
+      setError(`Please enter a valid ${type} first`);
+      return;
+    }
+    setOtpLoading(type);
+    setError("");
+    try {
+      await API.post("/users/send-otp", { [type]: value, type });
+      setModal({ isOpen: true, type, value });
+    } catch (err) {
+      setError(err.response?.data?.message || `Failed to send ${type} OTP`);
+    } finally {
+      setOtpLoading("");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -47,6 +73,12 @@ function Signup() {
     setSuccess(false);
 
     try {
+      if (!isEmailVerified || !isPhoneVerified) {
+        setError("Please verify both your email and phone number via OTP.");
+        setIsLoading(false);
+        return;
+      }
+
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("email", form.email);
@@ -111,7 +143,18 @@ function Signup() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className={labelClasses}>Email Address</label>
-                <input name="email" type="email" placeholder="name@company.com" className={inputClasses} onChange={handleChange} required />
+                <div className="relative">
+                  <input name="email" type="email" placeholder="name@company.com" className={`${inputClasses} pr-20`} onChange={handleChange} required disabled={isEmailVerified} />
+                  {!isEmailVerified ? (
+                    <button type="button" onClick={() => handleSendOTP("email")} disabled={otpLoading === "email"} className="absolute right-2 top-1.5 px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md hover:bg-indigo-700 transition disabled:opacity-50">
+                      {otpLoading === "email" ? "..." : "Verify"}
+                    </button>
+                  ) : (
+                    <div className="absolute right-2 top-2 text-green-600">
+                      <FaCheckCircle />
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 <label className={labelClasses}>Password</label>
@@ -121,8 +164,19 @@ function Signup() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className={labelClasses}>Phone Number (Optional)</label>
-                <input name="phone" placeholder="10-digit number" className={inputClasses} onChange={handleChange} maxLength={10} />
+                <label className={labelClasses}>Phone Number</label>
+                <div className="relative">
+                  <input name="phone" placeholder="10-digit number" className={`${inputClasses} pr-20`} onChange={handleChange} maxLength={10} required disabled={isPhoneVerified} />
+                  {!isPhoneVerified ? (
+                    <button type="button" onClick={() => handleSendOTP("phone")} disabled={otpLoading === "phone"} className="absolute right-2 top-1.5 px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md hover:bg-indigo-700 transition disabled:opacity-50">
+                      {otpLoading === "phone" ? "..." : "Verify"}
+                    </button>
+                  ) : (
+                    <div className="absolute right-2 top-2 text-green-600">
+                      <FaCheckCircle />
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 <label className={labelClasses}>Pincode / Zip</label>
@@ -185,6 +239,16 @@ function Signup() {
           </div>
         </div>
       </div>
+      <OTPModal 
+        isOpen={modal.isOpen} 
+        onClose={() => setModal({ ...modal, isOpen: false })} 
+        type={modal.type} 
+        value={modal.value} 
+        onVerified={() => {
+          if (modal.type === "email") setIsEmailVerified(true);
+          if (modal.type === "phone") setIsPhoneVerified(true);
+        }}
+      />
     </div>
   );
 }
