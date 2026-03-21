@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const User = require("../models/userModel");
+const Otp = require("../models/otpModel");
 const ArchitectWork = require("../models/ArchitectWork");
 const path = require("path");
 const fs = require("fs");
@@ -51,14 +52,14 @@ const createUser = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "Email already registered" });
 
-    // Check if the email and phone are verified
-    // We fetch the account created/updated during sendOTP/verifyOTP
-    const verifiedUser = await User.findOne({ email });
-    if (!verifiedUser || !verifiedUser.isEmailVerified) {
-        return res.status(403).json({ message: "Please verify your email via OTP before signing up." });
-    }
-    if (!verifiedUser.isPhoneVerified) {
-        return res.status(403).json({ message: "Please verify your mobile number via OTP before signing up." });
+    // Check OTP verification status from Otp model
+    const emailOTP = await Otp.findOne({ email, type: "email", isVerified: true });
+    // Use phone from form or req.body
+    const phoneToVerify = phone || req.body.phone;
+    const phoneOTP = await Otp.findOne({ phone: phoneToVerify, type: "phone", isVerified: true });
+
+    if (!emailOTP || !phoneOTP) {
+        return res.status(403).json({ message: "Please verify both email and phone number via OTP before signing up." });
     }
 
     const allowedRoles = ["customer", "seller", "delivery", "admin", "provider", "architect"];
@@ -545,10 +546,11 @@ const sendOTP = async (req, res) => {
             const success = await sendEmailOTP(email, otp);
             if (!success) return res.status(500).json({ message: "Failed to send email OTP" });
             
-            // Store OTP in User model (or a TempOTP model if you don't want to create User yet)
-            // For simplicity, we'll try to find a user with this email or just return success
-            // In a better flow, we'd use a TempOTP collection.
-            await User.findOneAndUpdate({ email }, { otp, otpExpires }, { upsert: true, new: true });
+            await Otp.findOneAndUpdate(
+              { email, type: "email" }, 
+              { otp, otpExpires, isVerified: false }, 
+              { upsert: true, new: true }
+            );
             
             res.json({ message: "OTP sent to your email" });
         } else if (type === "phone") {
@@ -556,7 +558,11 @@ const sendOTP = async (req, res) => {
             const success = await sendSMSOTP(phone, otp);
             if (!success) return res.status(500).json({ message: "Failed to send SMS OTP" });
             
-            await User.findOneAndUpdate({ phone }, { otp, otpExpires }, { upsert: true, new: true });
+            await Otp.findOneAndUpdate(
+              { phone, type: "phone" }, 
+              { otp, otpExpires, isVerified: false }, 
+              { upsert: true, new: true }
+            );
             
             res.json({ message: "OTP sent to your phone" });
         } else {
@@ -574,23 +580,20 @@ const sendOTP = async (req, res) => {
 const verifyOTP = async (req, res) => {
     try {
         const { email, phone, otp, type } = req.body;
-        let query = type === "email" ? { email } : { phone };
+        let query = type === "email" ? { email, type: "email" } : { phone, type: "phone" };
         
-        const user = await User.findOne(query);
-        if (!user || user.otp !== otp || user.otpExpires < Date.now()) {
+        const otpDoc = await Otp.findOne(query);
+        if (!otpDoc || otpDoc.otp !== otp || otpDoc.otpExpires < Date.now()) {
             return res.status(400).json({ message: "Invalid or expired OTP" });
         }
 
-        // Clear OTP and mark as verified
-        if (type === "email") user.isEmailVerified = true;
-        if (type === "phone") user.isPhoneVerified = true;
-        
-        user.otp = undefined;
-        user.otpExpires = undefined;
-        await user.save();
+        // Mark as verified
+        otpDoc.isVerified = true;
+        await otpDoc.save();
 
-        res.json({ message: "Verification successful", isEmailVerified: user.isEmailVerified, isPhoneVerified: user.isPhoneVerified });
+        res.json({ message: "Verification successful", isVerified: true });
     } catch (err) {
+        console.error("verifyOTP Error:", err);
         res.status(500).json({ error: err.message });
     }
 };
