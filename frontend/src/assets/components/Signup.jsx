@@ -11,12 +11,16 @@ import {
   FaBuilding,
   FaShieldAlt,
   FaEnvelope,
-  FaPhone
+  FaPhone,
+  FaLock,
+  FaMapMarkerAlt,
+  FaArrowLeft
 } from "react-icons/fa";
 import OTPModal from "./auth/OTPModal";
 
 function Signup() {
   const navigate = useNavigate();
+  const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -35,9 +39,9 @@ function Signup() {
   const [modal, setModal] = useState({ isOpen: false, type: "", value: "" });
   const [otpLoading, setOtpLoading] = useState(""); // "email" or "phone"
 
-  const labelClasses = "block text-sm font-medium text-gray-700 mb-1.5";
+  const labelClasses = "block text-sm font-semibold text-gray-700 mb-2 ml-1";
   const inputClasses =
-    "w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm text-sm";
+    "w-full px-5 py-3.5 rounded-2xl border-2 border-gray-100 bg-gray-50/50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all duration-300 shadow-sm text-sm font-medium";
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -66,6 +70,20 @@ function Signup() {
     }
   };
 
+  const nextStep = () => {
+    if (step === 1 && (!isEmailVerified || !isPhoneVerified)) {
+      setError("Please verify both email and phone number to continue.");
+      return;
+    }
+    setError("");
+    setStep(step + 1);
+  };
+
+  const prevStep = () => {
+    setError("");
+    setStep(step - 1);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -73,12 +91,6 @@ function Signup() {
     setSuccess(false);
 
     try {
-      if (!isEmailVerified || !isPhoneVerified) {
-        setError("Please verify both your email and phone number via OTP.");
-        setIsLoading(false);
-        return;
-      }
-
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("email", form.email);
@@ -101,144 +113,227 @@ function Signup() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12 font-sans">
-      <div className="w-full max-w-xl bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-200 overflow-hidden">
+  const steps = [
+    { title: "Verification", icon: <FaShieldAlt /> },
+    { title: "Personal", icon: <FaUser /> },
+    { title: "Review", icon: <FaCheckCircle /> }
+  ];
 
-        {/* Header */}
-        <div className="p-8 pb-6 text-center border-b border-gray-100 bg-gray-50/50">
-          <div className="mx-auto w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-sm mb-4">
-            <FaBuilding className="text-white text-xl" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Create an Account</h1>
-          <p className="text-sm text-gray-500 mt-2">Sign up as a customer and join the platform.</p>
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4 py-12 font-sans relative overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-3xl -mr-64 -mt-64"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-100/50 rounded-full blur-3xl -ml-64 -mb-64"></div>
+
+      <div className="w-full max-w-2xl bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white overflow-hidden relative z-10">
+        
+        {/* Progress Bar */}
+        <div className="flex border-b border-gray-100">
+          {steps.map((s, i) => (
+            <div key={i} className="flex-1 relative py-6">
+              <div className={`flex flex-col items-center transition-all duration-500 ${step > i + 1 ? 'text-green-500' : step === i + 1 ? 'text-indigo-600' : 'text-gray-400'}`}>
+                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center mb-2 text-sm shadow-sm transition-all duration-500 ${step > i + 1 ? 'bg-green-50 border-green-100' : step === i + 1 ? 'bg-indigo-600 text-white shadow-indigo-100 ml-0' : 'bg-gray-50 border-gray-100'}`}>
+                  {step > i + 1 ? <FaCheckCircle /> : s.icon}
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider">{s.title}</span>
+              </div>
+              {i < steps.length - 1 && (
+                <div className="absolute top-[44px] left-[calc(50%+25px)] w-[calc(100%-50px)] h-[2px] bg-gray-100">
+                  <motion.div 
+                    initial={{ scaleX: 0 }} 
+                    animate={{ scaleX: step > i + 1 ? 1 : 0 }} 
+                    className="h-full bg-green-500 origin-left"
+                  ></motion.div>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* Form Content */}
-        <div className="p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Profile Image */}
-            <div className="flex justify-center mb-2">
-              <div className="text-center">
-                <label className="relative cursor-pointer group block">
-                  <div className="w-20 h-20 mx-auto rounded-full bg-indigo-50 border-2 border-dashed border-indigo-200 flex items-center justify-center overflow-hidden group-hover:border-indigo-400 group-hover:bg-indigo-100 transition">
-                    {preview ? (
-                      <img src={preview} alt="Profile" className="w-full h-full object-cover" />
-                    ) : (
-                      <FaCamera className="text-xl text-indigo-400" />
-                    )}
-                  </div>
-                  <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                </label>
-                <span className="block text-xs font-medium text-gray-500 mt-2">Upload Profile Photo</span>
-              </div>
-            </div>
-
-            {/* Basic Fields */}
-            <div>
-              <label className={labelClasses}>Full Name</label>
-              <input name="name" placeholder="John Doe" className={inputClasses} onChange={handleChange} required />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className={labelClasses}>Email Address</label>
-                <div className="relative">
-                  <input name="email" type="email" placeholder="name@company.com" className={`${inputClasses} pr-20`} onChange={handleChange} required disabled={isEmailVerified} />
-                  {!isEmailVerified ? (
-                    <button type="button" onClick={() => handleSendOTP("email")} disabled={otpLoading === "email"} className="absolute right-2 top-1.5 px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md hover:bg-indigo-700 transition disabled:opacity-50">
-                      {otpLoading === "email" ? "..." : "Verify"}
-                    </button>
-                  ) : (
-                    <div className="absolute right-2 top-2 text-green-600">
-                      <FaCheckCircle />
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div>
-                <label className={labelClasses}>Password</label>
-                <input name="password" type="password" placeholder="••••••••" className={inputClasses} onChange={handleChange} required minLength={6} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className={labelClasses}>Phone Number</label>
-                <div className="relative">
-                  <input name="phone" placeholder="10-digit number" className={`${inputClasses} pr-20`} onChange={handleChange} maxLength={10} required disabled={isPhoneVerified} />
-                  {!isPhoneVerified ? (
-                    <button type="button" onClick={() => handleSendOTP("phone")} disabled={otpLoading === "phone"} className="absolute right-2 top-1.5 px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md hover:bg-indigo-700 transition disabled:opacity-50">
-                      {otpLoading === "phone" ? "..." : "Verify"}
-                    </button>
-                  ) : (
-                    <div className="absolute right-2 top-2 text-green-600">
-                      <FaCheckCircle />
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div>
-                <label className={labelClasses}>Pincode / Zip</label>
-                <input name="pincode" placeholder="e.g. 110001" className={inputClasses} onChange={handleChange} maxLength={6} />
-              </div>
-            </div>
-
-            <div>
-              <label className={labelClasses}>Full Address</label>
-              <input name="address" placeholder="Street layout, building number, locality" className={inputClasses} onChange={handleChange} />
-            </div>
-
-            {/* Messages */}
-            <AnimatePresence>
-              {error && (
-                <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="flex items-start gap-3 bg-red-50 border border-red-200 p-3.5 rounded-lg text-red-800 text-sm font-medium">
-                  <FaTimesCircle className="mt-0.5 shrink-0" /> {error}
-                </motion.div>
-              )}
-              {success && (
-                <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
-                  className="flex items-start gap-3 bg-green-50 border border-green-200 p-3.5 rounded-lg text-green-800 text-sm font-medium">
-                  <FaCheckCircle className="mt-0.5 shrink-0" /> Account created successfully! Redirecting...
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full mt-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center h-11 gap-2"
+        <div className="p-10">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
             >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Creating Account...
-                </>
-              ) : (
-                <>Sign Up <FaArrowRight /></>
-              )}
-            </button>
-          </form>
+              <form onSubmit={step === 3 ? handleSubmit : (e) => e.preventDefault()}>
+                
+                {step === 1 && (
+                  <div className="space-y-6">
+                    <div className="mb-8">
+                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Security Verification</h2>
+                      <p className="text-gray-500 text-sm">We need to verify your contact information to secure your account.</p>
+                    </div>
+                    
+                    <div>
+                      <label className={labelClasses}>Email Address</label>
+                      <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors">
+                          <FaEnvelope />
+                        </div>
+                        <input name="email" type="email" placeholder="name@company.com" className={`${inputClasses} pl-12 pr-28`} onChange={handleChange} value={form.email} disabled={isEmailVerified} />
+                        {!isEmailVerified ? (
+                          <button type="button" onClick={() => handleSendOTP("email")} disabled={otpLoading === "email" || !form.email} className="absolute right-2.5 top-1/2 -translate-y-1/2 px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 disabled:opacity-50">
+                            {otpLoading === "email" ? "..." : "Verify"}
+                          </button>
+                        ) : (
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500 flex items-center gap-2 text-xs font-bold bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
+                            <FaCheckCircle /> Verified
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-          <div className="mt-8 text-center bg-gray-50 -mx-8 -mb-8 p-6 border-t border-gray-100 flex flex-col gap-3">
-            <Link to="/login" className="text-sm text-gray-600 hover:text-gray-900 transition">
-              Already have an account? <span className="text-indigo-600 font-semibold hover:text-indigo-800">Sign in</span>
-            </Link>
-            <div className="w-2/3 h-px bg-gray-200 mx-auto my-1"></div>
-            <p className="text-xs text-gray-500">
-              Looking to sell, deliver, or provide services?<br />
-              <Link to="/partner-signup" className="text-indigo-600 font-semibold hover:text-indigo-800 mt-1 inline-block">
-                Partner Registration &rarr;
-              </Link>
-            </p>
-          </div>
+                    <div>
+                      <label className={labelClasses}>Phone Number</label>
+                      <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors">
+                          <FaPhone />
+                        </div>
+                        <input name="phone" placeholder="10-digit mobile number" className={`${inputClasses} pl-12 pr-28`} onChange={handleChange} value={form.phone} maxLength={10} disabled={isPhoneVerified} />
+                        {!isPhoneVerified ? (
+                          <button type="button" onClick={() => handleSendOTP("phone")} disabled={otpLoading === "phone" || !form.phone} className="absolute right-2.5 top-1/2 -translate-y-1/2 px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 disabled:opacity-50">
+                            {otpLoading === "phone" ? "..." : "Verify"}
+                          </button>
+                        ) : (
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500 flex items-center gap-2 text-xs font-bold bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
+                            <FaCheckCircle /> Verified
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {step === 2 && (
+                  <div className="space-y-6">
+                    <div className="mb-8 text-center">
+                      <div className="w-24 h-24 mx-auto mb-4 relative">
+                        <div className="w-full h-full rounded-3xl bg-indigo-50 border-2 border-dashed border-indigo-200 flex items-center justify-center overflow-hidden">
+                          {preview ? (
+                            <img src={preview} alt="Profile" className="w-full h-full object-cover" />
+                          ) : (
+                            <FaCamera className="text-2xl text-indigo-400" />
+                          )}
+                        </div>
+                        <label className="absolute -bottom-2 -right-2 w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg cursor-pointer hover:bg-indigo-700 transition active:scale-90">
+                          <FaCamera className="text-sm" />
+                          <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                        </label>
+                      </div>
+                      <h2 className="text-2xl font-bold text-gray-900">Your Identity</h2>
+                      <p className="text-gray-500 text-sm">Tell us a bit about yourself.</p>
+                    </div>
+
+                    <div>
+                      <label className={labelClasses}>Full Name</label>
+                      <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors">
+                          <FaUser />
+                        </div>
+                        <input name="name" placeholder="John Doe" className={`${inputClasses} pl-12`} onChange={handleChange} value={form.name} required />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className={labelClasses}>Create Password</label>
+                      <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors">
+                          <FaLock />
+                        </div>
+                        <input name="password" type="password" placeholder="••••••••" className={`${inputClasses} pl-12`} onChange={handleChange} value={form.password} required minLength={6} />
+                      </div>
+                      <p className="text-[10px] text-gray-400 mt-2 ml-1 uppercase font-bold tracking-wider">At least 6 characters</p>
+                    </div>
+                  </div>
+                )}
+
+                {step === 3 && (
+                  <div className="space-y-6">
+                    <div className="mb-8">
+                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Location Details</h2>
+                      <p className="text-gray-500 text-sm">Help us connect you to local services.</p>
+                    </div>
+
+                    <div>
+                      <label className={labelClasses}>Pincode / Zip</label>
+                      <div className="relative group">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors">
+                          <FaMapMarkerAlt />
+                        </div>
+                        <input name="pincode" placeholder="e.g. 110001" className={`${inputClasses} pl-12`} onChange={handleChange} value={form.pincode} maxLength={6} />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className={labelClasses}>Full Address</label>
+                      <textarea name="address" placeholder="Street layout, building number, locality" className={`${inputClasses} h-32 resize-none`} onChange={handleChange} value={form.address}></textarea>
+                    </div>
+
+                    <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex gap-4 mt-8">
+                       <div className="w-10 h-10 bg-indigo-600 rounded-xl flex shrink-0 items-center justify-center text-white text-sm shadow-md">
+                          <FaShieldAlt />
+                       </div>
+                       <div>
+                          <h4 className="text-sm font-bold text-indigo-900">Final Security Check</h4>
+                          <p className="text-xs text-indigo-700/70 mt-1 leading-relaxed">By creating an account, you agree to our terms and conditions. Your data is protected.</p>
+                       </div>
+                    </div>
+                  </div>
+                )}
+
+                <AnimatePresence>
+                  {error && (
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                      className="mt-6 flex items-start gap-3 bg-red-50/50 backdrop-blur-sm border border-red-200 p-4 rounded-2xl text-red-800 text-sm font-medium">
+                      <FaTimesCircle className="mt-0.5 shrink-0" /> {error}
+                    </motion.div>
+                  )}
+                  {success && (
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
+                      className="mt-6 flex items-center gap-3 bg-green-50/50 backdrop-blur-sm border border-green-200 p-4 rounded-2xl text-green-800 text-sm font-medium">
+                      <FaCheckCircle className="shrink-0" /> Creating your account...
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="flex gap-4 mt-10">
+                  {step > 1 && (
+                    <button type="button" onClick={prevStep} className="flex-1 h-14 rounded-2xl border-2 border-gray-100 font-bold text-gray-600 hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+                       <FaArrowLeft className="text-xs" /> Back
+                    </button>
+                  )}
+                  
+                  {step < 3 ? (
+                    <button type="button" onClick={nextStep} className="flex-[2] h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                      Next Step <FaArrowRight className="text-xs" />
+                    </button>
+                  ) : (
+                    <button type="submit" disabled={isLoading || success} className="flex-[2] h-14 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-bold shadow-xl shadow-indigo-100 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                      {isLoading ? (
+                        <>
+                          <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Processing...
+                        </>
+                      ) : (
+                        <>Finish Signup <FaCheckCircle /></>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </form>
+            </motion.div>
+          </AnimatePresence>
+
+          <p className="mt-10 text-center text-sm text-gray-500">
+            Already have an account? <Link to="/login" className="text-indigo-600 font-bold hover:text-indigo-800 ml-1 transition-colors">Sign In</Link>
+          </p>
         </div>
       </div>
+
       <OTPModal 
         isOpen={modal.isOpen} 
         onClose={() => setModal({ ...modal, isOpen: false })} 

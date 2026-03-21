@@ -67,54 +67,70 @@ const OTPModal = ({ isOpen, onClose, type, value, onVerified }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-100"
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-white/20 relative"
       >
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
-              <FaShieldAlt />
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-900">OTP Verification</h3>
-              <p className="text-xs text-gray-500">Enter the code sent to {value}</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
+        {/* Glow Effect */}
+        <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-500/20 blur-3xl rounded-full"></div>
+        <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-purple-500/20 blur-3xl rounded-full"></div>
+
+        <div className="p-8 relative">
+          <button onClick={onClose} className="absolute right-6 top-6 p-2 hover:bg-gray-100/50 rounded-full transition text-gray-400 hover:text-gray-600">
             <FaTimes />
           </button>
-        </div>
 
-        <div className="p-8">
-          <div className="flex justify-between gap-2 mb-8">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg mx-auto mb-4">
+              <FaShieldAlt />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">Verification</h3>
+            <p className="text-sm text-gray-500 mt-2 px-6">
+              Enter the 6-digit code sent to <br/>
+              <span className="font-semibold text-indigo-600">{value}</span>
+            </p>
+          </div>
+
+          <div className="flex justify-between gap-2.5 mb-8">
             {otp.map((data, index) => (
               <input
                 key={index}
                 type="text"
-                name="otp"
                 maxLength="1"
-                className="w-12 h-14 border border-gray-300 rounded-xl text-center text-xl font-bold focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition shadow-sm"
+                className="w-full aspect-square border-2 border-gray-200 rounded-2xl text-center text-2xl font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all duration-200 bg-white/50"
                 value={data}
                 onChange={(e) => handleChange(e.target, index)}
                 onFocus={(e) => e.target.select()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Backspace' && !data && e.target.previousSibling) {
+                    e.target.previousSibling.focus();
+                  }
+                }}
               />
             ))}
           </div>
 
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {error && (
-              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
-                className="mb-6 flex items-center gap-2 text-red-600 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">
-                <FaExclamationCircle /> {error}
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-6 flex items-center gap-3 text-red-600 text-sm font-medium bg-red-50/50 backdrop-blur-sm p-4 rounded-2xl border border-red-100"
+              >
+                <FaExclamationCircle className="shrink-0" /> {error}
               </motion.div>
             )}
             {success && (
-              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
-                className="mb-6 flex items-center gap-2 text-green-600 text-sm font-medium bg-green-50 p-3 rounded-lg border border-green-100">
-                <FaCheckCircle /> Verification Successful!
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: 'auto' }}
+                className="mb-6 flex items-center gap-3 text-green-600 text-sm font-medium bg-green-50/50 backdrop-blur-sm p-4 rounded-2xl border border-green-100"
+              >
+                <FaCheckCircle className="shrink-0" /> Verified Successfully!
               </motion.div>
             )}
           </AnimatePresence>
@@ -122,19 +138,29 @@ const OTPModal = ({ isOpen, onClose, type, value, onVerified }) => {
           <button
             onClick={handleVerify}
             disabled={otp.some(v => v === "") || isLoading || success}
-            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+            className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 h-14"
           >
-            {isLoading ? "Verifying..." : "Verify OTP"}
+            {isLoading ? (
+              <>
+                <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Verifying...
+              </>
+            ) : "Verify now"}
           </button>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Didn't receive code? {timer > 0 ? (
-                <span className="text-gray-400 font-medium ml-1">Resend in {timer}s</span>
-              ) : (
-                <button onClick={handleResend} className="text-indigo-600 font-bold hover:text-indigo-800 ml-1">Resend Now</button>
-              )}
-            </p>
+          <div className="mt-8 text-center">
+            <div className="inline-block p-1 px-4 bg-gray-50/50 rounded-full border border-gray-100">
+              <p className="text-sm text-gray-600">
+                Didn't receive code? {timer > 0 ? (
+                  <span className="text-gray-400 font-medium ml-1 flex items-center gap-1.5 inline-flex">
+                    <span className="w-1 h-1 bg-gray-300 rounded-full animate-pulse"></span>
+                    Resend in {timer}s
+                  </span>
+                ) : (
+                  <button onClick={handleResend} className="text-indigo-600 font-bold hover:text-indigo-800 ml-1 transition">Resend Now</button>
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </motion.div>
