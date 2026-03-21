@@ -536,16 +536,30 @@ const getArchitectPublicProfile = async (req, res) => {
  * Body: { email, phone, type } where type is 'email' or 'phone'
  */
 const sendOTP = async (req, res) => {
-    console.log(`[sendOTP] Request received:`, req.body);
+    console.log(`[sendOTP] Request received. Body:`, JSON.stringify(req.body));
     try {
         const { email, phone, type } = req.body;
+
+        if (!type || !["email", "phone"].includes(type)) {
+            return res.status(400).json({ message: "Invalid OTP type. Must be 'email' or 'phone'." });
+        }
+
         const otp = generateOTP();
         const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
         if (type === "email") {
             if (!email) return res.status(400).json({ message: "Email is required" });
-            const success = await sendEmailOTP(email, otp);
-            if (!success) return res.status(500).json({ message: "Failed to send email OTP" });
+
+            console.log(`[sendOTP] Attempting to send email OTP to: ${email}`);
+            const result = await sendEmailOTP(email, otp);
+            
+            if (!result.success) {
+                console.error(`[sendOTP] ❌ Email send failed:`, result.error);
+                return res.status(500).json({ 
+                    message: "Failed to send email OTP. Please try again.", 
+                    detail: result.error 
+                });
+            }
             
             await Otp.findOneAndUpdate(
               { email, type: "email" }, 
@@ -553,11 +567,22 @@ const sendOTP = async (req, res) => {
               { upsert: true, new: true }
             );
             
+            console.log(`[sendOTP] ✅ Email OTP stored and sent to: ${email}`);
             res.json({ message: "OTP sent to your email" });
+
         } else if (type === "phone") {
             if (!phone) return res.status(400).json({ message: "Phone number is required" });
-            const success = await sendSMSOTP(phone, otp);
-            if (!success) return res.status(500).json({ message: "Failed to send SMS OTP" });
+
+            console.log(`[sendOTP] Attempting to send phone OTP to: ${phone}`);
+            const result = await sendSMSOTP(phone, otp);
+            
+            if (!result.success) {
+                console.error(`[sendOTP] ❌ SMS send failed:`, result.error);
+                return res.status(500).json({ 
+                    message: "Failed to send SMS OTP", 
+                    detail: result.error 
+                });
+            }
             
             await Otp.findOneAndUpdate(
               { phone, type: "phone" }, 
@@ -565,12 +590,12 @@ const sendOTP = async (req, res) => {
               { upsert: true, new: true }
             );
             
+            console.log(`[sendOTP] ✅ Phone OTP stored for: ${phone}`);
             res.json({ message: "OTP sent to your phone" });
-        } else {
-            res.status(400).json({ message: "Invalid OTP type" });
         }
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error(`[sendOTP] ❌ Unexpected error:`, err);
+        res.status(500).json({ message: "Internal server error", error: err.message });
     }
 };
 

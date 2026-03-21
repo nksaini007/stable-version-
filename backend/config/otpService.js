@@ -1,5 +1,14 @@
 const nodemailer = require("nodemailer");
-const admin = require("./firebaseConfig"); // We'll create this next
+
+// ============================================================
+// Safe Firebase import — won't crash if firebase-admin is missing
+// ============================================================
+let admin = null;
+try {
+    admin = require("./firebaseConfig");
+} catch (e) {
+    console.warn("[otpService] Firebase config unavailable:", e.message);
+}
 
 /**
  * Generate a random 6-digit OTP
@@ -8,71 +17,127 @@ const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+// ============================================================
+// PERSISTENT TRANSPORTER — created once, reused for all emails
+// ============================================================
+let _transporter = null;
+
+const getTransporter = () => {
+    if (_transporter) return _transporter;
+
+    const user = process.env.GMAIL_USER;
+    const pass = process.env.GMAIL_PASS;
+
+    if (!user || !pass) {
+        console.error("[otpService] ❌ GMAIL_USER or GMAIL_PASS is missing from environment!");
+        return null;
+    }
+
+    // Strip any accidental spaces from the app password
+    const cleanPass = pass.replace(/\s/g, "");
+
+    console.log(`[otpService] Creating SMTP transporter for: ${user} (pass length: ${cleanPass.length})`);
+
+    _transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+            user: user,
+            pass: cleanPass,
+        },
+        connectionTimeout: 10000, // 10 sec
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
+    });
+
+    return _transporter;
+};
+
 /**
- * Send OTP via Email using Nodemailer
+ * Verify the SMTP connection is working
+ * @returns {Promise<{ok: boolean, error?: string}>}
  */
-const sendEmailOTP = async (email, otp) => {
+const verifyEmailConfig = async () => {
+    const transporter = getTransporter();
+    if (!transporter) {
+        return { ok: false, error: "GMAIL_USER or GMAIL_PASS missing" };
+    }
     try {
-        const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true, // Use SSL
-            auth: {
-                user: process.env.GMAIL_USER,
-                pass: process.env.GMAIL_PASS,
-            },
-        });
-
-        const mailOptions = {
-            from: `"Stinchar Support" <${process.env.GMAIL_USER}>`,
-            to: email,
-            subject: "Your Stinchar Verification Code",
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-                    <h2 style="color: #333; text-align: center;">Verify Your Email</h2>
-                    <p style="font-size: 16px; color: #555;">Hello,</p>
-                    <p style="font-size: 16px; color: #555;">Thank you for choosing Stinchar. Use the following OTP to complete your verification process. This code is valid for 10 minutes.</p>
-                    <div style="text-align: center; margin: 30px 0;">
-                        <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #007bff; background: #f0f8ff; padding: 10px 20px; border-radius: 5px;">${otp}</span>
-                    </div>
-                    <p style="font-size: 14px; color: #888; text-align: center;">If you didn't request this code, please ignore this email.</p>
-                    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-                    <p style="font-size: 12px; color: #aaa; text-align: center;">&copy; 2024 Stinchar. All rights reserved.</p>
-                </div>
-            `,
-        };
-
-        await transporter.sendMail(mailOptions);
-        console.log(`OTP sent to email: ${email}`);
-        return true;
-    } catch (error) {
-        console.error("Error sending email OTP:", error);
-        return false;
+        await transporter.verify();
+        return { ok: true };
+    } catch (err) {
+        // Reset transporter so next call rebuilds it
+        _transporter = null;
+        return { ok: false, error: err.message, code: err.code };
     }
 };
 
 /**
- * Send OTP via SMS using Firebase or Mock
+ * Send OTP via Email using Nodemailer
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+const sendEmailOTP = async (email, otp) => {
+    try {
+        const transporter = getTransporter();
+        if (!transporter) {
+            return { success: false, error: "Email configuration missing. Set GMAIL_USER and GMAIL_PASS." };
+        }
+
+        const mailOptions = {
+            from: `"Stinchar" <${process.env.GMAIL_USER}>`,
+            to: email,
+            subject: "Your Stinchar Verification Code",
+            html: `
+                <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: auto; padding: 0; border-radius: 16px; overflow: hidden; border: 1px solid #e5e7eb;">
+                    <div style="background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 40px 30px; text-align: center;">
+                        <h1 style="color: #fff; margin: 0; font-size: 24px; letter-spacing: 1px;">STINCHAR</h1>
+                        <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 14px;">Email Verification</p>
+                    </div>
+                    <div style="padding: 40px 30px; background: #fff;">
+                        <p style="font-size: 16px; color: #374151; margin: 0 0 8px;">Hello,</p>
+                        <p style="font-size: 15px; color: #6b7280; line-height: 1.6;">Use the following code to verify your email address. This code expires in <strong>10 minutes</strong>.</p>
+                        <div style="text-align: center; margin: 32px 0;">
+                            <div style="display: inline-block; background: #f0f4ff; border: 2px dashed #4f46e5; border-radius: 12px; padding: 16px 40px;">
+                                <span style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #4f46e5; font-family: 'Courier New', monospace;">${otp}</span>
+                            </div>
+                        </div>
+                        <p style="font-size: 13px; color: #9ca3af; text-align: center;">If you didn't request this, safely ignore this email.</p>
+                    </div>
+                    <div style="background: #f9fafb; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                        <p style="font-size: 11px; color: #9ca3af; margin: 0;">&copy; ${new Date().getFullYear()} Stinchar. All rights reserved.</p>
+                    </div>
+                </div>
+            `,
+        };
+
+        console.log(`[otpService] Sending OTP to: ${email}`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`[otpService] ✅ OTP sent to ${email} | MessageID: ${info.messageId} | Accepted: ${info.accepted}`);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error(`[otpService] ❌ Failed to send OTP to ${email}:`, error.message);
+        // Reset transporter on auth errors so it rebuilds next time
+        if (error.code === "EAUTH" || error.code === "ESOCKET") {
+            _transporter = null;
+        }
+        return { success: false, error: error.message, code: error.code };
+    }
+};
+
+/**
+ * Send OTP via SMS (Mock — real SMS requires Twilio or similar)
  */
 const sendSMSOTP = async (phone, otp) => {
     try {
-        // NOTE: Firebase Admin SDK doesn't natively "send" SMS like Twilio.
-        // Usually, Phone Auth is handled on the Frontend.
-        // However, for backend-initiated SMS, you'd typically use Twilio.
-        // IF the user wants a "free" backend-only SMS solution, it's tricky.
-        
-        // For now, if Firebase is configured, we'll assume they might use it for verification later.
-        // For SENDING, I'll log to console as a "Mock" and explain this.
-        console.log(`[MOCK SMS] Sending OTP ${otp} to ${phone}`);
-        
-        // In a real scenario with Twilio:
+        console.log(`[otpService] [MOCK SMS] OTP ${otp} → ${phone}`);
+        // In production, integrate Twilio:
         // const client = require('twilio')(process.env.TWILIO_SID, process.env.TWILIO_AUTH);
-        // await client.messages.create({ body: `Your Stinchar OTP is ${otp}`, from: '+123456789', to: phone });
-
-        return true;
+        // await client.messages.create({ body: `Your Stinchar OTP: ${otp}`, from: '+1234567890', to: phone });
+        return { success: true };
     } catch (error) {
-        console.error("Error sending SMS OTP:", error);
-        return false;
+        console.error("[otpService] SMS Error:", error.message);
+        return { success: false, error: error.message };
     }
 };
 
@@ -80,4 +145,5 @@ module.exports = {
     generateOTP,
     sendEmailOTP,
     sendSMSOTP,
+    verifyEmailConfig,
 };
