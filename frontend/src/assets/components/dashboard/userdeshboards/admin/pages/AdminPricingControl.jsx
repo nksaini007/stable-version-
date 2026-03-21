@@ -13,7 +13,9 @@ export default function AdminPricingControl() {
     const [settings, setSettings] = useState({
         platformCommissionRate: 2,
         isDeliveryFree: false,
-        adAutoActivate: false
+        adAutoActivate: false,
+        minCartValue: 500,
+        maxCartValue: 50000
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -33,7 +35,9 @@ export default function AdminPricingControl() {
                 setSettings({
                     platformCommissionRate: data.settings.platformCommissionRate ?? 2,
                     isDeliveryFree: data.settings.isDeliveryFree ?? false,
-                    adAutoActivate: data.settings.adAutoActivate ?? false
+                    adAutoActivate: data.settings.adAutoActivate ?? false,
+                    minCartValue: data.settings.minCartValue ?? 500,
+                    maxCartValue: data.settings.maxCartValue ?? 50000
                 });
             }
         } catch (err) {
@@ -142,6 +146,44 @@ export default function AdminPricingControl() {
                         >
                             <div className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-all ${settings.adAutoActivate ? "left-8" : "left-1"}`} />
                         </button>
+                    </div>
+                </div>
+
+                {/* Min Order Value Setting */}
+                <div className="bg-white/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 mb-5 group-hover:scale-110 transition-transform">
+                        <FaMoneyBillWave size={20} />
+                    </div>
+                    <h3 className="text-gray-500 font-bold text-lg mb-1">Min Order for Direct Purchase</h3>
+                    <p className="text-gray-400 text-xs mb-6">Orders below this amount will require a quotation review.</p>
+                    
+                    <div className="relative">
+                        <input 
+                            type="number" 
+                            value={settings.minCartValue}
+                            onChange={(e) => setSettings({...settings, minCartValue: Number(e.target.value)})}
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-gray-500 font-black text-2xl focus:outline-none focus:border-amber-500/50 transition-all"
+                        />
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xl ml-[-15px]">₹</span>
+                    </div>
+                </div>
+
+                {/* Max Order Value Setting */}
+                <div className="bg-white/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
+                    <div className="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 mb-5 group-hover:scale-110 transition-transform">
+                        <FaRocket size={20} />
+                    </div>
+                    <h3 className="text-gray-500 font-bold text-lg mb-1">Max Order for Direct Purchase</h3>
+                    <p className="text-gray-400 text-xs mb-6">Orders above this amount will trigger a mandatory quotation request.</p>
+                    
+                    <div className="relative">
+                        <input 
+                            type="number" 
+                            value={settings.maxCartValue}
+                            onChange={(e) => setSettings({...settings, maxCartValue: Number(e.target.value)})}
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-gray-500 font-black text-2xl focus:outline-none focus:border-pink-500/50 transition-all"
+                        />
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xl ml-[-15px]">₹</span>
                     </div>
                 </div>
 

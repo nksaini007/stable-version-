@@ -68,7 +68,7 @@ const menuGroups = [
       { name: "Support", path: "/admin/support", icon: <FaHeadset /> },
       { name: "Inquiries", path: "/admin/messages", icon: <FaEnvelope /> },
       { name: "Site Content", path: "/admin/site-config", icon: <FaLayerGroup /> },
-      { name: "Pricing Control", path: "/admin/pricing-control", icon: <FaSlidersH /> },
+      { name: "Admin Pricing Control", path: "/admin/pricing-control", icon: <FaSlidersH /> },
     ]
   }
 ];
