@@ -26,17 +26,18 @@ app.use(cors({
       "https://stinchar.com",
       "http://localhost:5173",
       "http://127.0.0.1:5173"
-    ].filter(Boolean);
+    ].map(o => o?.replace(/\/$/, "")).filter(Boolean);
 
-    // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
 
-    const isVercel = /^https:\/\/stable-version-.*\.vercel\.app$/.test(origin);
-    const isLocal = /^http:\/\/192\.168\.\d+\.\d+:5173$/.test(origin);
+    const sanitizedOrigin = origin.replace(/\/$/, "");
+    const isVercel = /^https:\/\/stable-version-.*\.vercel\.app$/.test(sanitizedOrigin);
+    const isLocal = /^http:\/\/192\.168\.\d+\.\d+:5173$/.test(sanitizedOrigin);
 
-    if (allowedOrigins.includes(origin) || isVercel || isLocal) {
+    if (allowedOrigins.includes(sanitizedOrigin) || isVercel || isLocal) {
       callback(null, true);
     } else {
+      console.error(`[CORS Error] Origin ${origin} not allowed. Allowed:`, allowedOrigins);
       callback(new Error("Not allowed by CORS"));
     }
   },
