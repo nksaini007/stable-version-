@@ -75,7 +75,14 @@ const MyQuotations = () => {
 
                             <div className="space-y-3 mb-6">
                                 {q.items.map((item, idx) => (
-                                    <div key={idx} className="flex justify-between text-sm border-b border-slate-50 pb-2 last:border-0">
+                                    <div key={idx} className="flex gap-4 text-sm border-b border-slate-50 pb-4 last:border-0 items-center">
+                                        <div className="w-12 h-12 rounded bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
+                                            <img 
+                                                src={item.product?.images?.[0]?.url || item.image} 
+                                                alt="" 
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
                                                 <span className={`text-slate-600 ${!item.isAvailable ? 'line-through opacity-50' : ''}`}>{item.name} x {item.qty}</span>

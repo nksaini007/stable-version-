@@ -159,10 +159,13 @@ const AdminQuotations = () => {
                                                 <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1 rounded">ID_{item.product?._id?.slice(-6) || 'N/A'}</span>
                                             </div>
                                             <p className="text-[10px] text-slate-500 mt-1 uppercase">Seller: {item.seller?.name || item.product?.seller?.name || 'Unknown'}</p>
-                                            <p className="text-[10px] text-orange-600 font-black mt-1 uppercase">
-                                                STINCHAR_COST: ₹{item.product?.pricingTiers?.stinchar !== undefined ? item.product.pricingTiers.stinchar : (item.product?.price || 'N/A')}
+                                            <p className="text-[10px] text-orange-600 font-bold mt-1 uppercase">
+                                                STINCHAR_PURCHASE: ₹{item.product?.pricingTiers?.stinchar ?? '0'}
                                             </p>
-                                            <p className="text-[10px] text-slate-400">Qty: {item.qty} | Base Price: ₹{item.product?.price || '?'}</p>
+                                            <p className="text-[10px] text-emerald-600 font-black uppercase">
+                                                MARGIN: ₹{(item.price - (item.product?.pricingTiers?.stinchar || 0)).toFixed(2)}
+                                            </p>
+                                            <p className="text-[10px] text-slate-400">Qty: {item.qty} | Base: ₹{item.product?.price || '?'}</p>
                                         </div>
                                     </div>
 
