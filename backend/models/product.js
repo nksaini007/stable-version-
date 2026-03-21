@@ -87,6 +87,27 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    // New Pricing Tiers
+    pricingTiers: {
+      architect: { type: Number, default: 0 },
+      stinchar: { type: Number, default: 0 },
+      normal: { type: Number, default: 0 },
+      bulk: [
+        {
+          minQty: { type: Number, required: true },
+          price: { type: Number, required: true },
+        },
+      ],
+    },
+
+    // Recommendations
+    recommendations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+      },
+    ],
   },
   { timestamps: true }
 );

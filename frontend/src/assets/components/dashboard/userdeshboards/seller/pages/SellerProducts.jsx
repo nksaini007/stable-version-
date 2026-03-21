@@ -14,7 +14,8 @@ const SellerProducts = () => {
     const [form, setForm] = useState({
         name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "",
         material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "", 
-        image: null, imageLink: ""
+        image: null, imageLink: "",
+        pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] }
     });
 
     const fetchProducts = async () => {
@@ -45,7 +46,8 @@ const SellerProducts = () => {
         setForm({ 
             name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", 
             brand: "", material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", 
-            features: "", care_instructions: "", image: null, imageLink: "" 
+            features: "", care_instructions: "", image: null, imageLink: "",
+            pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] }
         });
         setEditing(null); setPreview(null); setShowForm(false);
     };
@@ -54,7 +56,17 @@ const SellerProducts = () => {
         e.preventDefault();
         try {
             const formData = new FormData();
-            Object.entries(form).forEach(([k, v]) => { if (v) formData.append(k, v); });
+            Object.entries(form).forEach(([k, v]) => { 
+                if (v !== null && v !== undefined) {
+                    if (k === 'pricingTiers') {
+                        formData.append(k, JSON.stringify(v));
+                    } else if (k === 'features' && typeof v === 'string') {
+                        formData.append(k, v);
+                    } else {
+                        formData.append(k, v);
+                    }
+                }
+            });
             if (editing) {
                 await API.put(`/products/${editing._id}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
             } else {
@@ -74,7 +86,8 @@ const SellerProducts = () => {
             brand: p.brand || "", material: p.material || "", color: p.color || "", dimensions: p.dimensions || "", 
             weight: p.weight || "", warranty: p.warranty || "", origin: p.origin || "", 
             features: (p.features || []).join(", "), care_instructions: p.care_instructions || "", 
-            image: null, imageLink: p.images?.[0]?.public_id === 'external' ? p.images[0].url : ""
+            image: null, imageLink: p.images?.[0]?.public_id === 'external' ? p.images[0].url : "",
+            pricingTiers: p.pricingTiers || { architect: "", stinchar: "", normal: "", bulk: [] }
         });
         setEditing(p);
         setPreview(p.images?.[0]?.url ? `${p.images[0].url}` : null);
@@ -131,6 +144,100 @@ const SellerProducts = () => {
                             ))}
                         </div>
                         <input name="features" placeholder="Features (comma separated)" value={form.features} onChange={handleChange} className={inputCls} />
+                        
+                        {/* Pricing Tiers Section */}
+                        <div className="p-4 bg-orange-50/50 rounded-2xl border border-orange-100 space-y-4">
+                            <h4 className="text-xs font-bold text-orange-700 uppercase tracking-wider">Pricing_Tiers (₹)</h4>
+                            <div className="grid sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-orange-600 block mb-1">ARCHITECT_PRICE</label>
+                                    <input 
+                                        type="number" 
+                                        value={form.pricingTiers.architect} 
+                                        onChange={(e) => setForm({...form, pricingTiers: {...form.pricingTiers, architect: e.target.value}})}
+                                        className={inputCls} 
+                                        placeholder="Architect Price"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-orange-600 block mb-1">STINCHAR_PURCHASE</label>
+                                    <input 
+                                        type="number" 
+                                        value={form.pricingTiers.stinchar} 
+                                        onChange={(e) => setForm({...form, pricingTiers: {...form.pricingTiers, stinchar: e.target.value}})}
+                                        className={inputCls} 
+                                        placeholder="Stinchar Price"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-orange-600 block mb-1">NORMAL_CUSTOMER</label>
+                                    <input 
+                                        type="number" 
+                                        value={form.pricingTiers.normal} 
+                                        onChange={(e) => setForm({...form, pricingTiers: {...form.pricingTiers, normal: e.target.value}})}
+                                        className={inputCls} 
+                                        placeholder="Standard Price"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Bulk Pricing */}
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <label className="text-[10px] font-bold text-orange-600 uppercase">Bulk_Pricing_Tiers (Qty vs Price)</label>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setForm({
+                                            ...form, 
+                                            pricingTiers: {
+                                                ...form.pricingTiers, 
+                                                bulk: [...form.pricingTiers.bulk, { minQty: "", price: "" }]
+                                            }
+                                        })}
+                                        className="text-[10px] font-bold text-orange-600 hover:underline"
+                                    >
+                                        + ADD_TIER
+                                    </button>
+                                </div>
+                                {form.pricingTiers.bulk.map((tier, bIdx) => (
+                                    <div key={bIdx} className="grid grid-cols-3 gap-3 items-center bg-gray-50/50 p-2 rounded-xl border border-gray-100">
+                                        <input 
+                                            type="number" 
+                                            placeholder="Min Qty" 
+                                            value={tier.minQty} 
+                                            onChange={(e) => {
+                                                const newBulk = [...form.pricingTiers.bulk];
+                                                newBulk[bIdx].minQty = e.target.value;
+                                                setForm({...form, pricingTiers: {...form.pricingTiers, bulk: newBulk}});
+                                            }}
+                                            className={inputCls} 
+                                        />
+                                        <input 
+                                            type="number" 
+                                            placeholder="Price (₹)" 
+                                            value={tier.price} 
+                                            onChange={(e) => {
+                                                const newBulk = [...form.pricingTiers.bulk];
+                                                newBulk[bIdx].price = e.target.value;
+                                                setForm({...form, pricingTiers: {...form.pricingTiers, bulk: newBulk}});
+                                            }}
+                                            className={inputCls} 
+                                        />
+                                        <button 
+                                            type="button" 
+                                            onClick={() => {
+                                                const newBulk = form.pricingTiers.bulk.filter((_, i) => i !== bIdx);
+                                                setForm({...form, pricingTiers: {...form.pricingTiers, bulk: newBulk}});
+                                            }}
+                                            className="text-red-500 text-xs font-bold hover:underline"
+                                        >
+                                            REMOVE
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
                         <textarea name="care_instructions" placeholder="Care Instructions" value={form.care_instructions} onChange={handleChange} rows={2} className={inputCls} />
                         <div className="grid sm:grid-cols-2 gap-4 items-end">
                             <div className="space-y-2">

@@ -45,7 +45,11 @@ const getMyQuotations = async (req, res) => {
 // @access  Private/Admin
 const getAllQuotations = async (req, res) => {
   try {
-    const quotations = await Quotation.find({}).populate("user", "name email").sort({ createdAt: -1 });
+    const quotations = await Quotation.find({})
+      .populate("user", "name email")
+      .populate("items.product", "name images price seller stock")
+      .populate("items.seller", "name phone")
+      .sort({ createdAt: -1 });
     res.json(quotations);
   } catch (error) {
     res.status(500).json({ message: error.message });

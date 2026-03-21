@@ -127,6 +127,8 @@ const createProduct = async (req, res) => {
       features,
       care_instructions,
       imageLink, // New field for external URL
+      pricingTiers, // JSON string or object
+      recommendations, // array of IDs
     } = req.body;
 
     let image = req.file ? req.file.path : null;
@@ -163,6 +165,8 @@ const createProduct = async (req, res) => {
       stock,
       images: image ? [{ public_id: public_id, url: image }] : [],
       seller: req.user._id,
+      pricingTiers: typeof pricingTiers === 'string' ? JSON.parse(pricingTiers) : pricingTiers,
+      recommendations: typeof recommendations === 'string' ? JSON.parse(recommendations) : recommendations,
     });
 
     res.status(201).json(product);
@@ -199,8 +203,10 @@ const updateProduct = async (req, res) => {
     Object.keys(updates).forEach((key) => {
       if (key === 'features' && typeof updates[key] === 'string') {
         product[key] = updates[key].split(',').map((f) => f.trim());
+      } else if (key === 'pricingTiers' || key === 'recommendations') {
+        product[key] = typeof updates[key] === 'string' ? JSON.parse(updates[key]) : updates[key];
       } else if (key !== 'imageLink') { // Don't directly map imageLink to product
-        product[key] = updates[key] || product[key];
+        product[key] = updates[key] !== undefined ? updates[key] : product[key];
       }
     });
 

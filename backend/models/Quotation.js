@@ -22,6 +22,14 @@ const quotationSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
+        isAvailable: {
+          type: Boolean,
+          default: true,
+        },
+        alternativeProduct: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+        },
       },
     ],
     shippingAddress: {

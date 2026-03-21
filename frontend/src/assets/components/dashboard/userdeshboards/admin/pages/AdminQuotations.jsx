@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API from "../../../../../api/api";
-import { Loader2, Edit3, Send, CheckCircle, Trash2, User, Phone, MapPin } from "lucide-react";
+import { Loader2, Edit3, Send, CheckCircle, Trash2, User, Phone, MapPin, Package, AlertTriangle, ExternalLink, Search } from "lucide-react";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 
 const AdminQuotations = () => {
     const [quotations, setQuotations] = useState([]);
@@ -39,6 +40,18 @@ const AdminQuotations = () => {
     const handleItemPriceChange = (index, newPrice) => {
         const newItems = [...editData.items];
         newItems[index].price = parseFloat(newPrice) || 0;
+        setEditData({ ...editData, items: newItems });
+    };
+
+    const handleItemToggleAvailability = (index) => {
+        const newItems = [...editData.items];
+        newItems[index].isAvailable = !newItems[index].isAvailable;
+        setEditData({ ...editData, items: newItems });
+    };
+
+    const handleAlternativeChange = (index, altId) => {
+        const newItems = [...editData.items];
+        newItems[index].alternativeProduct = altId;
         setEditData({ ...editData, items: newItems });
     };
 
@@ -100,23 +113,65 @@ const AdminQuotations = () => {
                             <p className="flex items-center gap-2"><MapPin size={12}/> {selected.shippingAddress?.address}, {selected.shippingAddress?.city}</p>
                         </div>
 
-                        <div className="mb-6 space-y-4">
-                            <h4 className="text-xs font-bold text-slate-400 uppercase">Item_Pricing:</h4>
+                        <div className="mb-6 space-y-6">
+                            <h4 className="text-xs font-bold text-slate-400 uppercase">Line_Items:</h4>
                             {editData.items.map((item, idx) => (
-                                <div key={idx} className="flex items-center justify-between gap-4 border-b border-slate-100 pb-2">
-                                    <div className="flex-1">
-                                        <p className="text-xs font-bold line-clamp-1 uppercase">{item.name}</p>
-                                        <p className="text-[10px] text-slate-400">Qty: {item.qty}</p>
+                                <div key={idx} className={`p-4 border-2 ${item.isAvailable ? 'border-slate-100' : 'border-red-200 bg-red-50'} rounded-xl space-y-4`}>
+                                    <div className="flex gap-4">
+                                        <div className="w-16 h-16 bg-slate-100 rounded border border-slate-200 overflow-hidden shrink-0">
+                                            <img 
+                                                src={getOptimizedImage(item.product?.images?.[0]?.url || item.image, 200)} 
+                                                alt="" 
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between items-start">
+                                                <p className="text-xs font-black uppercase truncate">{item.name}</p>
+                                                <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1 rounded">ID_{item.product?._id?.slice(-6) || 'N/A'}</span>
+                                            </div>
+                                            <p className="text-[10px] text-slate-500 mt-1 uppercase">Seller: {item.seller?.name || item.product?.seller?.name || 'Unknown'}</p>
+                                            <p className="text-[10px] text-slate-400">Qty: {item.qty} | Base Price: ₹{item.product?.price || '?'}</p>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-slate-400">₹</span>
-                                        <input 
-                                            type="number" 
-                                            value={item.price} 
-                                            onChange={(e) => handleItemPriceChange(idx, e.target.value)}
-                                            className="w-24 p-1 border-2 border-slate-200 text-right font-bold text-xs focus:border-cyan-500 outline-none"
-                                        />
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Adjusted_Price (₹):</label>
+                                            <input 
+                                                type="number" 
+                                                value={item.price} 
+                                                onChange={(e) => handleItemPriceChange(idx, e.target.value)}
+                                                className="w-full p-2 border-2 border-slate-200 font-bold text-xs focus:border-cyan-500 outline-none"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col justify-end">
+                                            <button 
+                                                onClick={() => handleItemToggleAvailability(idx)}
+                                                className={`py-2 px-3 text-[10px] font-bold uppercase rounded border-2 transition-all ${item.isAvailable ? 'border-amber-500 text-amber-600 hover:bg-amber-50' : 'border-emerald-500 bg-emerald-500 text-white'}`}
+                                            >
+                                                {item.isAvailable ? "MARK_UNAVAILABLE" : "MARK_AVAILABLE"}
+                                            </button>
+                                        </div>
                                     </div>
+
+                                    {!item.isAvailable && (
+                                        <div className="pt-2 border-t border-red-100">
+                                            <label className="text-[9px] font-bold text-red-400 uppercase">Recommended_Alternative (Product ID):</label>
+                                            <div className="flex gap-2">
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Paste alternative ID here..."
+                                                    value={item.alternativeProduct || ""} 
+                                                    onChange={(e) => handleAlternativeChange(idx, e.target.value)}
+                                                    className="flex-1 p-2 border-2 border-red-200 text-[10px] outline-none focus:border-red-400"
+                                                />
+                                                <button className="p-2 bg-slate-900 text-white rounded hover:bg-cyan-600 transition-all">
+                                                    <Search size={14} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
