@@ -120,9 +120,10 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ 
     status: "ok", 
     message: "Server is healthy",
-    version: "1.0.5",
+    version: "1.0.6",
     timestamp: new Date().toISOString(),
     gmailConfigured: !!(process.env.GMAIL_USER && process.env.GMAIL_PASS),
+    brevoConfigured: !!process.env.BREVO_API_KEY,
   });
 });
 
