@@ -52,13 +52,22 @@ function Signup() {
   const handleSendOTP = async (type) => {
     const value = type === "email" ? form.email : form.phone;
     if (!value) { setError(`Please enter your ${type} first`); return; }
+    // Phone OTP requires email to be verified first (code is sent to email)
+    if (type === "phone" && !isEmailVerified) {
+      setError("Please verify your email first. Phone verification code will be sent to your email.");
+      return;
+    }
     setOtpLoading(type);
     setError("");
     setOtpError("");
     setOtpSuccess(false);
     setOtp(["", "", "", "", "", ""]);
     try {
-      await API.post("/users/send-otp", { [type]: value, type });
+      // For phone, also send email so backend can deliver OTP via email
+      const payload = type === "phone"
+        ? { phone: value, email: form.email, type }
+        : { email: value, type };
+      await API.post("/users/send-otp", payload);
       setOtpMode(type);
       setResendTimer(60);
       setTimeout(() => otpRefs.current[0]?.focus(), 100);
@@ -202,7 +211,11 @@ function Signup() {
           </div>
           <h4 className="font-bold text-gray-900 text-base">Enter Verification Code</h4>
           <p className="text-xs text-gray-500 mt-1">
-            6-digit code sent to <span className="font-semibold text-indigo-600">{targetValue}</span>
+            {otpMode === "phone" ? (
+              <>Code for <span className="font-semibold text-emerald-600">{targetValue}</span> sent to your <span className="font-semibold text-indigo-600">email</span></>
+            ) : (
+              <>6-digit code sent to <span className="font-semibold text-indigo-600">{targetValue}</span></>
+            )}
           </p>
         </div>
 

@@ -7,7 +7,7 @@ const ArchitectWork = require("../models/ArchitectWork");
 const path = require("path");
 const fs = require("fs");
 const { deleteImage } = require("../config/cloudinary");
-const { generateOTP, sendEmailOTP, sendSMSOTP } = require("../config/otpService");
+const { generateOTP, sendEmailOTP, sendPhoneOTPViaEmail } = require("../config/otpService");
 
 // ==================== MULTER CONFIG ====================
 const { storage } = require("../config/cloudinary");
@@ -572,14 +572,15 @@ const sendOTP = async (req, res) => {
 
         } else if (type === "phone") {
             if (!phone) return res.status(400).json({ message: "Phone number is required" });
+            if (!email) return res.status(400).json({ message: "Email is required for phone verification (OTP delivered via email)" });
 
-            console.log(`[sendOTP] Attempting to send phone OTP to: ${phone}`);
-            const result = await sendSMSOTP(phone, otp);
+            console.log(`[sendOTP] Sending phone OTP for ${phone} to email: ${email}`);
+            const result = await sendPhoneOTPViaEmail(phone, otp, email);
             
             if (!result.success) {
-                console.error(`[sendOTP] ❌ SMS send failed:`, result.error);
+                console.error(`[sendOTP] ❌ Phone OTP email failed:`, result.error);
                 return res.status(500).json({ 
-                    message: "Failed to send SMS OTP", 
+                    message: "Failed to send phone verification code", 
                     detail: result.error 
                 });
             }
@@ -590,8 +591,8 @@ const sendOTP = async (req, res) => {
               { upsert: true, new: true }
             );
             
-            console.log(`[sendOTP] ✅ Phone OTP stored for: ${phone}`);
-            res.json({ message: "OTP sent to your phone" });
+            console.log(`[sendOTP] ✅ Phone OTP stored for: ${phone}, sent to: ${email}`);
+            res.json({ message: "Verification code sent to your email for phone verification" });
         }
     } catch (err) {
         console.error(`[sendOTP] ❌ Unexpected error:`, err);

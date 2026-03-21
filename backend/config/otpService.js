@@ -173,21 +173,58 @@ const verifyEmailConfig = async () => {
 };
 
 /**
- * Send OTP via SMS (Mock — real SMS requires Twilio or similar)
+ * Send OTP for phone verification — delivered via EMAIL
+ * (Free SMS APIs don't exist; we send to user's email instead)
+ * @param {string} phone - The phone number being verified
+ * @param {string} otp - The OTP code
+ * @param {string} email - The user's email to deliver the OTP to
  */
-const sendSMSOTP = async (phone, otp) => {
-    try {
-        console.log(`[otpService] [MOCK SMS] OTP ${otp} → ${phone}`);
-        return { success: true };
-    } catch (error) {
-        console.error("[otpService] SMS Error:", error.message);
-        return { success: false, error: error.message };
+const sendPhoneOTPViaEmail = async (phone, otp, email) => {
+    if (!email) {
+        return { success: false, error: "Email is required to send phone verification code" };
     }
+
+    const subject = `Stinchar: Phone Verification Code for ${phone}`;
+    const html = `
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: auto; padding: 0; border-radius: 16px; overflow: hidden; border: 1px solid #e5e7eb;">
+        <div style="background: linear-gradient(135deg, #059669, #0d9488); padding: 40px 30px; text-align: center;">
+            <h1 style="color: #fff; margin: 0; font-size: 24px; letter-spacing: 1px;">STINCHAR</h1>
+            <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 14px;">Phone Number Verification</p>
+        </div>
+        <div style="padding: 40px 30px; background: #fff;">
+            <p style="font-size: 16px; color: #374151; margin: 0 0 8px;">Hello,</p>
+            <p style="font-size: 15px; color: #6b7280; line-height: 1.6;">Use the following code to verify your phone number <strong>${phone}</strong>. This code expires in <strong>10 minutes</strong>.</p>
+            <div style="text-align: center; margin: 32px 0;">
+                <div style="display: inline-block; background: #f0fdf4; border: 2px dashed #059669; border-radius: 12px; padding: 16px 40px;">
+                    <span style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #059669; font-family: 'Courier New', monospace;">${otp}</span>
+                </div>
+            </div>
+            <p style="font-size: 13px; color: #9ca3af; text-align: center;">This code was sent to your email because SMS is not available.</p>
+        </div>
+        <div style="background: #f9fafb; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+            <p style="font-size: 11px; color: #9ca3af; margin: 0;">&copy; ${new Date().getFullYear()} Stinchar. All rights reserved.</p>
+        </div>
+    </div>`;
+
+    // Use the same email sending pipeline (Brevo → Gmail fallback)
+    if (process.env.BREVO_API_KEY) {
+        console.log(`[otpService] Sending phone OTP for ${phone} via Brevo to email: ${email}`);
+        const result = await sendViaBrevo(email, subject, html);
+        if (result.success) return result;
+        console.warn(`[otpService] Brevo failed for phone OTP, trying Gmail...`);
+    }
+
+    if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+        console.log(`[otpService] Sending phone OTP for ${phone} via Gmail to email: ${email}`);
+        return await sendViaGmail(email, subject, html);
+    }
+
+    return { success: false, error: "No email provider configured for phone OTP delivery." };
 };
 
 module.exports = {
     generateOTP,
     sendEmailOTP,
-    sendSMSOTP,
+    sendPhoneOTPViaEmail,
     verifyEmailConfig,
 };
