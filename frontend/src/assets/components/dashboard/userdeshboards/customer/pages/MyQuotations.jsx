@@ -76,8 +76,26 @@ const MyQuotations = () => {
                             <div className="space-y-3 mb-6">
                                 {q.items.map((item, idx) => (
                                     <div key={idx} className="flex justify-between text-sm border-b border-slate-50 pb-2 last:border-0">
-                                        <span className="text-slate-600">{item.name} x {item.qty}</span>
-                                        <span className="font-bold">₹{(item.price * item.qty).toFixed(2)}</span>
+                                        <div className="flex-1">
+                                            <div className="flex justify-between items-start">
+                                                <span className={`text-slate-600 ${!item.isAvailable ? 'line-through opacity-50' : ''}`}>{item.name} x {item.qty}</span>
+                                                <span className="font-bold">₹{(item.price * item.qty).toFixed(2)}</span>
+                                            </div>
+                                            {!item.isAvailable && (
+                                                <div className="mt-2 p-2 bg-red-50 border border-red-100 rounded text-[11px]">
+                                                    <p className="text-red-600 font-black uppercase mb-1">Product_Unavailable</p>
+                                                    {item.alternativeProduct ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-slate-500 font-bold uppercase">Our Recommendation:</span>
+                                                            <span className="text-cyan-700 font-black">{item.alternativeProduct.name || 'View Alternative'}</span>
+                                                            <span className="text-slate-400">₹{item.alternativeProduct.price}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-slate-400 italic">No alternative suggested. Please contact us.</p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                                 {q.shippingPrice > 0 && (

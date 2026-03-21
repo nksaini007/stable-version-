@@ -33,7 +33,16 @@ const createQuotation = async (req, res) => {
 // @access  Private
 const getMyQuotations = async (req, res) => {
   try {
-    const quotations = await Quotation.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const quotations = await Quotation.find({ user: req.user._id })
+      .populate({
+        path: "items.product",
+        select: "name images price seller"
+      })
+      .populate({
+        path: "items.alternativeProduct",
+        select: "name images price"
+      })
+      .sort({ createdAt: -1 });
     res.json(quotations);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -47,7 +56,14 @@ const getAllQuotations = async (req, res) => {
   try {
     const quotations = await Quotation.find({})
       .populate("user", "name email")
-      .populate("items.product", "name images price seller stock")
+      .populate({
+        path: "items.product",
+        select: "name images price seller stock pricingTiers"
+      })
+      .populate({
+        path: "items.alternativeProduct",
+        select: "name images price"
+      })
       .populate("items.seller", "name phone")
       .sort({ createdAt: -1 });
     res.json(quotations);
@@ -61,7 +77,16 @@ const getAllQuotations = async (req, res) => {
 // @access  Private
 const getQuotationById = async (req, res) => {
   try {
-    const quotation = await Quotation.findById(req.params.id).populate("user", "name email");
+    const quotation = await Quotation.findById(req.params.id)
+      .populate("user", "name email")
+      .populate({
+        path: "items.product",
+        select: "name images price seller stock pricingTiers"
+      })
+      .populate({
+        path: "items.alternativeProduct",
+        select: "name images price"
+      });
     if (!quotation) return res.status(404).json({ message: "Quotation not found" });
 
     // Ensure only owner or admin can view
@@ -85,7 +110,12 @@ const updateQuotationAdmin = async (req, res) => {
 
     if (!quotation) return res.status(404).json({ message: "Quotation not found" });
 
-    if (items) quotation.items = items;
+    if (items) {
+      quotation.items = items.map(item => ({
+        ...item,
+        alternativeProduct: (item.alternativeProduct && item.alternativeProduct !== "") ? item.alternativeProduct : null
+      }));
+    }
     if (shippingPrice !== undefined) quotation.shippingPrice = shippingPrice;
     if (adminNote) quotation.adminNote = adminNote;
 

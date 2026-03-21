@@ -163,7 +163,7 @@ const AdminQuotations = () => {
                                                 <input 
                                                     type="text" 
                                                     placeholder="Paste alternative ID here..."
-                                                    value={item.alternativeProduct || ""} 
+                                                    value={typeof item.alternativeProduct === 'object' ? item.alternativeProduct?._id : (item.alternativeProduct || "")} 
                                                     onChange={(e) => handleAlternativeChange(idx, e.target.value)}
                                                     className="flex-1 p-2 border-2 border-red-200 text-[10px] outline-none focus:border-red-400"
                                                 />
