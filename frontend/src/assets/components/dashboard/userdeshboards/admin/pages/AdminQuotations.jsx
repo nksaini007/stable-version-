@@ -9,6 +9,9 @@ const AdminQuotations = () => {
     const [selected, setSelected] = useState(null);
     const [editData, setEditData] = useState({ items: [], shippingPrice: 0, adminNote: "" });
     const [message, setMessage] = useState("");
+    const [searchTerms, setSearchTerms] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+    const [activeSearchIdx, setActiveSearchIdx] = useState(null);
 
     useEffect(() => {
         fetchQuotations();
@@ -67,6 +70,31 @@ const AdminQuotations = () => {
         } catch (err) {
             setMessage("Failed to update quotation.");
         }
+    };
+
+    const handleSearchProducts = async (term) => {
+        setSearchTerms(term);
+        if (term.length < 2) {
+            setSearchResults([]);
+            return;
+        }
+        try {
+            const token = localStorage.getItem("token");
+            const { data } = await API.get(`/products/admin-all`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const filtered = data.filter(p => p.name.toLowerCase().includes(term.toLowerCase())).slice(0, 5);
+            setSearchResults(filtered);
+        } catch (err) {
+            console.error("Search failed", err);
+        }
+    };
+
+    const handleSelectAlternative = (idx, product) => {
+        handleAlternativeChange(idx, product._id);
+        setSearchResults([]);
+        setActiveSearchIdx(null);
+        setSearchTerms("");
     };
 
     if (loading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-cyan-500" /></div>;
@@ -131,7 +159,9 @@ const AdminQuotations = () => {
                                                 <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1 rounded">ID_{item.product?._id?.slice(-6) || 'N/A'}</span>
                                             </div>
                                             <p className="text-[10px] text-slate-500 mt-1 uppercase">Seller: {item.seller?.name || item.product?.seller?.name || 'Unknown'}</p>
-                                            <p className="text-[10px] text-orange-600 font-black mt-1 uppercase">STINCHAR_COST: ₹{item.product?.pricingTiers?.stinchar || '?'}</p>
+                                            <p className="text-[10px] text-orange-600 font-black mt-1 uppercase">
+                                                STINCHAR_COST: ₹{item.product?.pricingTiers?.stinchar !== undefined ? item.product.pricingTiers.stinchar : (item.product?.price || 'N/A')}
+                                            </p>
                                             <p className="text-[10px] text-slate-400">Qty: {item.qty} | Base Price: ₹{item.product?.price || '?'}</p>
                                         </div>
                                     </div>
@@ -159,18 +189,39 @@ const AdminQuotations = () => {
                                     {!item.isAvailable && (
                                         <div className="pt-2 border-t border-red-100">
                                             <label className="text-[9px] font-bold text-red-400 uppercase">Recommended_Alternative (Product ID):</label>
-                                            <div className="flex gap-2">
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Paste alternative ID here..."
-                                                    value={typeof item.alternativeProduct === 'object' ? item.alternativeProduct?._id : (item.alternativeProduct || "")} 
-                                                    onChange={(e) => handleAlternativeChange(idx, e.target.value)}
-                                                    className="flex-1 p-2 border-2 border-red-200 text-[10px] outline-none focus:border-red-400"
-                                                />
-                                                <button className="p-2 bg-slate-900 text-white rounded hover:bg-cyan-600 transition-all">
-                                                    <Search size={14} />
-                                                </button>
-                                            </div>
+                                                <div className="flex-1 relative">
+                                                    <div className="flex gap-2">
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Search alternative by name..."
+                                                            value={activeSearchIdx === idx ? searchTerms : (typeof item.alternativeProduct === 'object' ? item.alternativeProduct?.name : (item.alternativeProduct || ""))} 
+                                                            onFocus={() => setActiveSearchIdx(idx)}
+                                                            onChange={(e) => handleSearchProducts(e.target.value)}
+                                                            className="flex-1 p-2 border-2 border-red-200 text-[10px] outline-none focus:border-red-400"
+                                                        />
+                                                        {activeSearchIdx === idx && searchResults.length > 0 && (
+                                                            <div className="absolute top-full left-0 right-0 bg-white border-2 border-slate-900 z-50 shadow-xl mt-1 max-h-40 overflow-y-auto">
+                                                                {searchResults.map((res) => (
+                                                                    <div 
+                                                                        key={res._id} 
+                                                                        onClick={() => handleSelectAlternative(idx, res)}
+                                                                        className="p-2 hover:bg-cyan-50 cursor-pointer text-[10px] border-b border-slate-100 flex justify-between"
+                                                                    >
+                                                                        <span className="font-bold">{res.name}</span>
+                                                                        <span className="text-slate-400">₹{res.price}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                        <button 
+                                                            type="button"
+                                                            onClick={() => setActiveSearchIdx(activeSearchIdx === idx ? null : idx)}
+                                                            className="p-2 bg-slate-900 text-white rounded hover:bg-cyan-600 transition-all"
+                                                        >
+                                                            <Search size={14} />
+                                                        </button>
+                                                    </div>
+                                                </div>
                                         </div>
                                     )}
                                 </div>
