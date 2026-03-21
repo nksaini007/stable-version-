@@ -84,7 +84,7 @@ function Login() {
             <div>
               <div className="flex justify-between items-center mb-2 ml-1">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest">Password</label>
-                <Link to="/forgot-password" **className="text-[10px] font-black uppercase tracking-wider text-indigo-600 hover:text-indigo-500 transition"**>
+                <Link to="/forgot-password" className="text-[10px] font-black uppercase tracking-wider text-indigo-600 hover:text-indigo-500 transition">
                   Forgot?
                 </Link>
               </div>

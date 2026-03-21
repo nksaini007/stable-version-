@@ -31,7 +31,8 @@ app.use(cors({
     if (!origin) return callback(null, true);
 
     const sanitizedOrigin = origin.replace(/\/$/, "");
-    const isVercel = /^https:\/\/stable-version-.*\.vercel\.app$/.test(sanitizedOrigin);
+    // Support main domain and hyphenated preview subdomains (e.g. stable-version-git-main-nksaini007.vercel.app)
+    const isVercel = /^https:\/\/stable-version(-.*)?\.vercel\.app$/.test(sanitizedOrigin);
     const isLocal = /^http:\/\/192\.168\.\d+\.\d+:5173$/.test(sanitizedOrigin);
 
     if (allowedOrigins.includes(sanitizedOrigin) || isVercel || isLocal) {
