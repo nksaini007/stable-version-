@@ -536,6 +536,7 @@ const getArchitectPublicProfile = async (req, res) => {
  * Body: { email, phone, type } where type is 'email' or 'phone'
  */
 const sendOTP = async (req, res) => {
+    console.log(`[sendOTP] Request received:`, req.body);
     try {
         const { email, phone, type } = req.body;
         const otp = generateOTP();

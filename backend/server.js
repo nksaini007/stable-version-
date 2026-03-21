@@ -20,29 +20,36 @@ app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); // Allow serving /uploads
 app.use(cors({
   origin: (origin, callback) => {
+    // If no origin (like a server-side or postman request), allow it
+    if (!origin) return callback(null, true);
+
+    const sanitizedOrigin = origin.replace(/\/$/, "").toLowerCase();
+    
     const allowedOrigins = [
       process.env.FRONTEND_URL,
       "https://stable-version.vercel.app",
       "https://stinchar.com",
+      "https://www.stinchar.com",
       "http://localhost:5173",
       "http://127.0.0.1:5173"
-    ].map(o => o?.replace(/\/$/, "")).filter(Boolean);
+    ].map(o => o?.replace(/\/$/, "").toLowerCase()).filter(Boolean);
 
-    if (!origin) return callback(null, true);
-
-    const sanitizedOrigin = origin.replace(/\/$/, "");
     // Support main domain and hyphenated preview subdomains (e.g. stable-version-git-main-nksaini007.vercel.app)
-    const isVercel = /^https:\/\/stable-version(-.*)?\.vercel\.app$/.test(sanitizedOrigin);
+    const isVercel = sanitizedOrigin.endsWith(".vercel.app") && sanitizedOrigin.includes("stable-version");
     const isLocal = /^http:\/\/192\.168\.\d+\.\d+:5173$/.test(sanitizedOrigin);
 
     if (allowedOrigins.includes(sanitizedOrigin) || isVercel || isLocal) {
+      console.log(`[CORS Success] Origin: ${origin}`);
       callback(null, true);
     } else {
-      console.error(`[CORS Error] Origin ${origin} not allowed. Allowed:`, allowedOrigins);
-      callback(new Error("Not allowed by CORS"));
+      console.warn(`[CORS Rejected] Origin: ${origin}`);
+      // Instead of throwing an error which might crash the response, 
+      // just pass false to let the browser handle the block normally.
+      callback(null, false);
     }
   },
-  credentials: true
+  credentials: true,
+  optionsSuccessStatus: 200 // Some legacy browsers crash on 204
 }));
 app.use(express.json({ limit: "10kb" }));
 
