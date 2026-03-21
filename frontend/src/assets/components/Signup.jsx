@@ -48,31 +48,21 @@ function Signup() {
     if (file) setPreview(URL.createObjectURL(file));
   };
 
-  // ── Send OTP ──
-  const handleSendOTP = async (type) => {
-    const value = type === "email" ? form.email : form.phone;
-    if (!value) { setError(`Please enter your ${type} first`); return; }
-    // Phone OTP requires email to be verified first (code is sent to email)
-    if (type === "phone" && !isEmailVerified) {
-      setError("Please verify your email first. Phone verification code will be sent to your email.");
-      return;
-    }
-    setOtpLoading(type);
+  // ── Send OTP (email only) ──
+  const handleSendOTP = async () => {
+    if (!form.email) { setError("Please enter your email first"); return; }
+    setOtpLoading("email");
     setError("");
     setOtpError("");
     setOtpSuccess(false);
     setOtp(["", "", "", "", "", ""]);
     try {
-      // For phone, also send email so backend can deliver OTP via email
-      const payload = type === "phone"
-        ? { phone: value, email: form.email, type }
-        : { email: value, type };
-      await API.post("/users/send-otp", payload);
-      setOtpMode(type);
+      await API.post("/users/send-otp", { email: form.email, type: "email" });
+      setOtpMode("email");
       setResendTimer(60);
       setTimeout(() => otpRefs.current[0]?.focus(), 100);
     } catch (err) {
-      setError(err.response?.data?.message || `Failed to send ${type} OTP`);
+      setError(err.response?.data?.message || "Failed to send OTP");
     } finally {
       setOtpLoading("");
     }
@@ -349,7 +339,7 @@ function Signup() {
                             <FaCheckCircle /> Verified
                           </div>
                         ) : otpMode !== "email" ? (
-                          <button type="button" onClick={() => handleSendOTP("email")}
+                          <button type="button" onClick={handleSendOTP}
                             disabled={otpLoading === "email" || !form.email}
                             className="absolute right-2.5 top-1/2 -translate-y-1/2 px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 disabled:opacity-50">
                             {otpLoading === "email" ? (
@@ -362,7 +352,7 @@ function Signup() {
                       <AnimatePresence>{otpMode === "email" && renderOtpCard()}</AnimatePresence>
                     </div>
 
-                    {/* Phone Field */}
+                    {/* Phone Field (no OTP — will be added later with MSG91) */}
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Phone Number <span className="text-gray-400 font-normal">(optional)</span></label>
                       <div className="relative group">
@@ -370,25 +360,11 @@ function Signup() {
                           <FaPhone />
                         </div>
                         <input name="phone" placeholder="10-digit mobile number"
-                          className={`${inputClasses} pl-12 pr-28`}
+                          className={`${inputClasses} pl-12`}
                           onChange={handleChange} value={form.phone}
-                          maxLength={10}
-                          disabled={isPhoneVerified || otpMode === "phone"} />
-                        {isPhoneVerified ? (
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500 flex items-center gap-1.5 text-xs font-bold bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
-                            <FaCheckCircle /> Verified
-                          </div>
-                        ) : otpMode !== "phone" ? (
-                          <button type="button" onClick={() => handleSendOTP("phone")}
-                            disabled={otpLoading === "phone" || !form.phone}
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 disabled:opacity-50">
-                            {otpLoading === "phone" ? (
-                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            ) : "Send OTP"}
-                          </button>
-                        ) : null}
+                          maxLength={10} />
                       </div>
-                      <AnimatePresence>{otpMode === "phone" && renderOtpCard()}</AnimatePresence>
+                      <p className="text-[10px] text-gray-400 mt-1.5 ml-1">Phone verification coming soon</p>
                     </div>
                   </div>
                 )}
