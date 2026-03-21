@@ -76,10 +76,10 @@ const AdminProductTable = () => {
             <table className="w-full text-left">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Product Details</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Seller Info</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Pricing & Stock</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Status</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Product Details & ID</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Seller Details</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Pricing Tiers (₹)</th>
+                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Stock & Status</th>
                   <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs text-right">Actions</th>
                 </tr>
               </thead>
@@ -97,30 +97,49 @@ const AdminProductTable = () => {
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900 line-clamp-1">{product.name}</p>
-                          <p className="text-xs text-gray-500 mt-0.5"><span className="font-medium text-blue-600">{product.category}</span> {product.subcategory && `> ${product.subcategory}`}</p>
+                          <div className="flex flex-col gap-0.5 mt-1">
+                            <span className="text-[10px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 w-fit">ID: {product._id}</span>
+                            <p className="text-xs text-gray-500"><span className="font-medium text-blue-600">{product.category}</span> {product.subcategory && `> ${product.subcategory}`}</p>
+                          </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       {product.seller ? (
-                        <div>
-                          <p className="font-medium text-gray-800 flex items-center gap-1.5"><FaStore className="text-gray-400 text-xs" /> {product.seller.name}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{product.seller.email}</p>
+                        <div className="space-y-1">
+                          <p className="font-bold text-gray-800 flex items-center gap-1.5"><FaStore className="text-blue-500 text-xs" /> {product.seller.name}</p>
+                          <p className="text-[11px] text-gray-500 leading-tight">{product.seller.email}</p>
+                          <p className="text-[11px] text-gray-400 font-medium">Role: <span className="text-blue-600">{product.seller.role}</span></p>
                         </div>
                       ) : (
-                        <span className="text-red-400 text-xs italic">Unknown/Deleted Seller</span>
+                        <span className="text-red-400 text-xs italic">Seller Unavailable</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <p className="font-bold text-gray-900">₹{product.price}</p>
-                      <p className={`text-xs mt-0.5 font-medium ${product.stock > 10 ? 'text-green-600' : product.stock > 0 ? 'text-orange-500' : 'text-red-500'}`}>
-                        Stock: {product.stock}
-                      </p>
+                      <div className="space-y-1 text-[11px]">
+                        <div className="flex justify-between border-b border-gray-50 pb-0.5">
+                          <span className="text-gray-400">Normal:</span>
+                          <span className="font-bold text-gray-700">₹{product.pricingTiers?.normal || product.price || 0}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-gray-50 pb-0.5">
+                          <span className="text-orange-400 font-medium">Stinchar:</span>
+                          <span className="font-bold text-orange-600">₹{product.pricingTiers?.stinchar || 0}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-blue-400 font-medium">Architect:</span>
+                          <span className="font-bold text-blue-600">₹{product.pricingTiers?.architect || 0}</span>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${product.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}`}>
-                        {product.isActive ? 'Active' : 'Inactive'}
-                      </span>
+                      <div className="space-y-1.5">
+                        <p className={`text-xs font-bold ${product.stock > 10 ? 'text-emerald-600' : product.stock > 0 ? 'text-amber-500' : 'text-red-500'}`}>
+                          QTY: {product.stock}
+                        </p>
+                        <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-black uppercase ${product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
+                          {product.isActive ? 'ACTIVE' : 'INACTIVE'}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button

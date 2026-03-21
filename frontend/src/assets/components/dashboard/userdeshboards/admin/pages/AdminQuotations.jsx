@@ -131,6 +131,7 @@ const AdminQuotations = () => {
                                                 <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1 rounded">ID_{item.product?._id?.slice(-6) || 'N/A'}</span>
                                             </div>
                                             <p className="text-[10px] text-slate-500 mt-1 uppercase">Seller: {item.seller?.name || item.product?.seller?.name || 'Unknown'}</p>
+                                            <p className="text-[10px] text-orange-600 font-black mt-1 uppercase">STINCHAR_COST: ₹{item.product?.pricingTiers?.stinchar || '?'}</p>
                                             <p className="text-[10px] text-slate-400">Qty: {item.qty} | Base Price: ₹{item.product?.price || '?'}</p>
                                         </div>
                                     </div>
