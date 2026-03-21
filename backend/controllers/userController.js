@@ -52,14 +52,11 @@ const createUser = async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "Email already registered" });
 
-    // Check OTP verification status from Otp model
+    // Check OTP verification status from Otp model (email only — phone OTP coming with MSG91 later)
     const emailOTP = await Otp.findOne({ email, type: "email", isVerified: true });
-    // Use phone from form or req.body
-    const phoneToVerify = phone || req.body.phone;
-    const phoneOTP = await Otp.findOne({ phone: phoneToVerify, type: "phone", isVerified: true });
 
-    if (!emailOTP || !phoneOTP) {
-        return res.status(403).json({ message: "Please verify both email and phone number via OTP before signing up." });
+    if (!emailOTP) {
+        return res.status(403).json({ message: "Please verify your email via OTP before signing up." });
     }
 
     const allowedRoles = ["customer", "seller", "delivery", "admin", "provider", "architect"];
