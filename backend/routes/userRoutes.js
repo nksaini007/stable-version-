@@ -20,6 +20,7 @@ const {
    getArchitectPublicProfile,
    sendOTP,
    verifyOTP,
+   resetPassword,
 } = require("../controllers/userController");
 
 const { protect, adminOnly } = require("../middlewares/authMiddleware");
@@ -31,6 +32,7 @@ router.post("/signup", uploadProfile, createUser);
 router.post("/login", loginUser);
 router.post("/send-otp", sendOTP);
 router.post("/verify-otp", verifyOTP);
+router.post("/reset-password", resetPassword);
 router.get("/shop/:id", getSellerPublicProfile);
 router.get("/architect/:id", getArchitectPublicProfile);
 // Hidden admin gate — not linked in any UI or docs

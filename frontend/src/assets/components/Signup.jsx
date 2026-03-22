@@ -1,12 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/api";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  FaUser, FaArrowRight, FaCheckCircle, FaTimesCircle, FaCamera,
-  FaShieldAlt, FaEnvelope, FaPhone, FaLock,
-  FaMapMarkerAlt, FaArrowLeft, FaRedo
-} from "react-icons/fa";
 
 function Signup() {
   const navigate = useNavigate();
@@ -45,7 +39,6 @@ function Signup() {
     if (file) setPreview(URL.createObjectURL(file));
   };
 
-  // ── Send Email OTP ──
   const handleSendOTP = async () => {
     if (!form.email) { setError("Please enter your email first"); return; }
     setOtpLoading(true);
@@ -65,7 +58,6 @@ function Signup() {
     }
   };
 
-  // ── OTP Input ──
   const handleOtpChange = (val, idx) => {
     if (!/^\d*$/.test(val)) return;
     const n = [...otp]; n[idx] = val; setOtp(n); setOtpError("");
@@ -80,7 +72,6 @@ function Signup() {
     if (p.length === 6) { setOtp(p.split("")); otpRefs.current[5]?.focus(); }
   };
 
-  // ── Verify OTP ──
   const handleVerifyOTP = async () => {
     const code = otp.join("");
     if (code.length !== 6) { setOtpError("Enter all 6 digits"); return; }
@@ -131,197 +122,137 @@ function Signup() {
     } finally { setIsLoading(false); }
   };
 
-  const steps = [
-    { title: "Verify", icon: <FaShieldAlt /> },
-    { title: "Details", icon: <FaUser /> },
-    { title: "Finish", icon: <FaCheckCircle /> },
-  ];
-  const inputCls = "w-full px-5 py-3.5 rounded-2xl border-2 border-gray-100 bg-gray-50/50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all duration-300 shadow-sm text-sm font-medium";
+  const inputCls = "w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-md px-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gray-500 transition-colors";
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4 py-12 font-sans relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-3xl -mr-64 -mt-64" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-100/50 rounded-full blur-3xl -ml-64 -mb-64" />
+    <div className="min-h-screen bg-[#121212] flex items-center justify-center p-4 font-sans text-white">
+      <div className="w-full max-w-sm flex flex-col">
+        <button type="button" onClick={() => navigate(-1)} className="self-start text-gray-400 hover:text-white mb-8 text-sm tracking-wide transition-colors">
+          Back
+        </button>
 
-      <div className="w-full max-w-2xl bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white overflow-hidden relative z-10">
-        {/* Progress */}
-        <div className="flex border-b border-gray-100">
-          {steps.map((s, i) => (
-            <div key={i} className="flex-1 relative py-6">
-              <div className={`flex flex-col items-center transition-all duration-500 ${step > i+1 ? 'text-green-500' : step === i+1 ? 'text-indigo-600' : 'text-gray-400'}`}>
-                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center mb-2 text-sm shadow-sm transition-all duration-500 ${step > i+1 ? 'bg-green-50' : step === i+1 ? 'bg-indigo-600 text-white shadow-indigo-100' : 'bg-gray-50'}`}>
-                  {step > i+1 ? <FaCheckCircle /> : s.icon}
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider">{s.title}</span>
-              </div>
-              {i < steps.length-1 && (
-                <div className="absolute top-[44px] left-[calc(50%+25px)] w-[calc(100%-50px)] h-[2px] bg-gray-100">
-                  <motion.div initial={{scaleX:0}} animate={{scaleX: step>i+1?1:0}} className="h-full bg-green-500 origin-left" />
-                </div>
-              )}
-            </div>
-          ))}
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold tracking-tight">Create Account</h1>
+          <p className="text-sm text-gray-400 mt-1.5">{step === 1 ? 'Verify your email' : step === 2 ? 'Your Details' : 'Location & Finish'}</p>
         </div>
 
-        <div className="p-8 sm:p-10">
-          <AnimatePresence mode="wait">
-            <motion.div key={step} initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-20}} transition={{duration:0.3}}>
-              <form onSubmit={step===3 ? handleSubmit : e=>e.preventDefault()}>
+        <div className="flex items-center mb-8 gap-2">
+           <div className={`h-1 flex-1 rounded-full ${step >= 1 ? 'bg-[#F3F4F6]' : 'bg-[#2A2A2A]'}`} />
+           <div className={`h-1 flex-1 rounded-full ${step >= 2 ? 'bg-[#F3F4F6]' : 'bg-[#2A2A2A]'}`} />
+           <div className={`h-1 flex-1 rounded-full ${step >= 3 ? 'bg-[#F3F4F6]' : 'bg-[#2A2A2A]'}`} />
+        </div>
 
-                {/* ── STEP 1: Email Verification ── */}
-                {step === 1 && (
-                  <div className="space-y-5">
-                    <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-1">Email Verification</h2>
-                      <p className="text-gray-500 text-sm">Verify your email to create your account.</p>
-                    </div>
+        <form onSubmit={step===3 ? handleSubmit : e=>e.preventDefault()} className="flex flex-col gap-4">
+          
+          {step === 1 && (
+            <>
+              <div className="flex flex-col">
+                <input name="email" type="email" placeholder="Email Address *" value={form.email} onChange={handleChange} disabled={isEmailVerified || showOtp} required className={inputCls} />
+              </div>
+              
+              {!showOtp && !isEmailVerified && (
+                <button type="button" onClick={handleSendOTP} disabled={otpLoading || !form.email} className="w-full bg-[#2A2A2A] text-white font-medium text-sm rounded-md py-3.5 mt-2 hover:bg-[#333] transition-colors disabled:opacity-50">
+                   {otpLoading ? "Sending OTP..." : "Send OTP"}
+                </button>
+              )}
 
-                    {/* Email */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Email Address <span className="text-red-400">*</span></label>
-                      <div className="relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaEnvelope /></div>
-                        <input name="email" type="email" placeholder="name@example.com" className={`${inputCls} pl-12 pr-28`} onChange={handleChange} value={form.email} disabled={isEmailVerified || showOtp} />
-                        {isEmailVerified ? (
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500 flex items-center gap-1.5 text-xs font-bold bg-green-50 px-3 py-1.5 rounded-lg border border-green-100"><FaCheckCircle /> Verified</div>
-                        ) : !showOtp && (
-                          <button type="button" onClick={handleSendOTP} disabled={otpLoading || !form.email}
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 disabled:opacity-50">
-                            {otpLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Send OTP"}
-                          </button>
-                        )}
-                      </div>
+              {showOtp && !isEmailVerified && (
+                 <div className="mt-2 p-4 bg-[#1A1A1A] border border-[#2A2A2A] rounded-md">
+                    <p className="text-xs text-gray-400 mb-3 text-center">Verify 6-digit code sent to {form.email}</p>
+                    <div className="flex justify-center gap-2 mb-4" onPaste={handleOtpPaste}>
+                      {otp.map((d,i)=>(
+                        <input key={i} ref={el=>otpRefs.current[i]=el} type="text" inputMode="numeric" maxLength={1} value={d}
+                               onChange={e=>handleOtpChange(e.target.value,i)} onKeyDown={e=>handleOtpKeyDown(e,i)} onFocus={e=>e.target.select()}
+                               className={`w-10 h-12 bg-[#121212] border ${otpSuccess ? 'border-green-500' : otpError ? 'border-red-500' : 'border-[#333]'} rounded-md text-center text-white focus:outline-none focus:border-gray-500 transition-colors`} />
+                      ))}
                     </div>
-
-                    {/* Inline OTP */}
-                    <AnimatePresence>
-                      {showOtp && !isEmailVerified && (
-                        <motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:"auto"}} exit={{opacity:0,height:0}}
-                          className="p-6 bg-gradient-to-br from-indigo-50/80 to-purple-50/80 rounded-3xl border border-indigo-100">
-                          <div className="text-center mb-4">
-                            <div className="w-11 h-11 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg mx-auto mb-2"><FaShieldAlt /></div>
-                            <h4 className="font-bold text-gray-900 text-sm">Enter Verification Code</h4>
-                            <p className="text-xs text-gray-500 mt-1">6-digit code sent to <span className="font-semibold text-indigo-600">{form.email}</span></p>
-                          </div>
-                          <div className="flex justify-center gap-2 mb-4" onPaste={handleOtpPaste}>
-                            {otp.map((d,i)=>(
-                              <input key={i} ref={el=>otpRefs.current[i]=el} type="text" inputMode="numeric" maxLength={1} value={d}
-                                onChange={e=>handleOtpChange(e.target.value,i)} onKeyDown={e=>handleOtpKeyDown(e,i)} onFocus={e=>e.target.select()}
-                                className={`w-11 h-13 border-2 rounded-xl text-center text-lg font-bold outline-none transition-all ${otpSuccess?'border-green-400 bg-green-50 text-green-600':otpError?'border-red-300 bg-red-50 text-red-600':'border-gray-200 bg-white/80 text-gray-900 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10'}`} />
-                            ))}
-                          </div>
-                          {otpError && <p className="text-red-600 text-xs font-medium text-center mb-3 flex items-center justify-center gap-1"><FaTimesCircle /> {otpError}</p>}
-                          {otpSuccess && <p className="text-green-600 text-xs font-bold text-center mb-3 flex items-center justify-center gap-1"><FaCheckCircle /> Verified!</p>}
-                          <button type="button" onClick={handleVerifyOTP} disabled={otp.some(v=>v==="")||otpVerifying||otpSuccess}
-                            className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2 text-sm">
-                            {otpVerifying ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Verifying...</> : otpSuccess ? <><FaCheckCircle /> Done!</> : "Verify Code"}
-                          </button>
-                          <div className="flex justify-between items-center mt-3">
-                            <button type="button" onClick={()=>{setShowOtp(false);setOtp(["","","","","",""]);setOtpError("");}} className="text-xs text-gray-400 hover:text-gray-600 font-medium">← Cancel</button>
-                            {resendTimer > 0 ? <span className="text-xs text-gray-400">Resend in {resendTimer}s</span> : <button type="button" onClick={handleResend} className="text-xs text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1"><FaRedo className="text-[10px]" /> Resend</button>}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {/* Phone (optional, no OTP) */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Phone Number <span className="text-gray-400 font-normal">(optional)</span></label>
-                      <div className="relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaPhone /></div>
-                        <input name="phone" placeholder="10-digit mobile number" className={`${inputCls} pl-12`} onChange={handleChange} value={form.phone} maxLength={10} />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* ── STEP 2: Personal Details ── */}
-                {step === 2 && (
-                  <div className="space-y-5">
-                    <div className="mb-6 text-center">
-                      <div className="w-20 h-20 mx-auto mb-3 relative">
-                        <div className="w-full h-full rounded-3xl bg-indigo-50 border-2 border-dashed border-indigo-200 flex items-center justify-center overflow-hidden">
-                          {preview ? <img src={preview} alt="Profile" className="w-full h-full object-cover" /> : <FaCamera className="text-xl text-indigo-400" />}
-                        </div>
-                        <label className="absolute -bottom-1 -right-1 w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg cursor-pointer hover:bg-indigo-700 transition active:scale-90">
-                          <FaCamera className="text-xs" />
-                          <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                        </label>
-                      </div>
-                      <h2 className="text-2xl font-bold text-gray-900">Your Details</h2>
-                      <p className="text-gray-500 text-sm">Tell us about yourself</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Full Name <span className="text-red-400">*</span></label>
-                      <div className="relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaUser /></div>
-                        <input name="name" placeholder="John Doe" className={`${inputCls} pl-12`} onChange={handleChange} value={form.name} required />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Password <span className="text-red-400">*</span></label>
-                      <div className="relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaLock /></div>
-                        <input name="password" type="password" placeholder="••••••••" className={`${inputCls} pl-12`} onChange={handleChange} value={form.password} required minLength={6} />
-                      </div>
-                      <p className="text-[10px] text-gray-400 mt-1.5 ml-1 uppercase font-bold tracking-wider">Minimum 6 characters</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* ── STEP 3: Location & Submit ── */}
-                {step === 3 && (
-                  <div className="space-y-5">
-                    <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-1">Location</h2>
-                      <p className="text-gray-500 text-sm">Help us connect you to local services.</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Pincode</label>
-                      <div className="relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaMapMarkerAlt /></div>
-                        <input name="pincode" placeholder="e.g. 110001" className={`${inputCls} pl-12`} onChange={handleChange} value={form.pincode} maxLength={6} />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 ml-1">Full Address</label>
-                      <textarea name="address" placeholder="Street, building, locality" className={`${inputCls} h-28 resize-none`} onChange={handleChange} value={form.address} />
-                    </div>
-                    <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex gap-3">
-                      <div className="w-9 h-9 bg-indigo-600 rounded-xl flex shrink-0 items-center justify-center text-white text-sm shadow-md"><FaShieldAlt /></div>
-                      <div>
-                        <h4 className="text-sm font-bold text-indigo-900">Ready to Go</h4>
-                        <p className="text-xs text-indigo-700/70 mt-0.5">By creating an account, you agree to our terms.</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Messages */}
-                <AnimatePresence>
-                  {error && <motion.div initial={{opacity:0,y:-5}} animate={{opacity:1,y:0}} exit={{opacity:0}} className="mt-5 flex items-start gap-2.5 bg-red-50/50 border border-red-200 p-3.5 rounded-2xl text-red-800 text-sm font-medium"><FaTimesCircle className="mt-0.5 shrink-0" /> {error}</motion.div>}
-                  {success && <motion.div initial={{opacity:0,y:-5}} animate={{opacity:1,y:0}} className="mt-5 flex items-center gap-2.5 bg-green-50/50 border border-green-200 p-3.5 rounded-2xl text-green-800 text-sm font-medium"><FaCheckCircle className="shrink-0" /> Account created! Redirecting...</motion.div>}
-                </AnimatePresence>
-
-                {/* Buttons */}
-                <div className="flex gap-3 mt-8">
-                  {step > 1 && <button type="button" onClick={prevStep} className="flex-1 h-13 rounded-2xl border-2 border-gray-100 font-bold text-gray-600 hover:bg-gray-50 transition flex items-center justify-center gap-2"><FaArrowLeft className="text-xs" /> Back</button>}
-                  {step < 3 ? (
-                    <button type="button" onClick={nextStep} className="flex-[2] h-13 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 transition active:scale-[0.98] flex items-center justify-center gap-2">Next <FaArrowRight className="text-xs" /></button>
-                  ) : (
-                    <button type="submit" disabled={isLoading||success} className="flex-[2] h-13 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-bold shadow-xl shadow-indigo-100 transition active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50">
-                      {isLoading ? <><div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" /> Processing...</> : <>Create Account <FaCheckCircle /></>}
+                    {otpError && <p className="text-red-400 text-xs text-center mb-3">{otpError}</p>}
+                    <button type="button" onClick={handleVerifyOTP} disabled={otp.some(v=>v==="")||otpVerifying||otpSuccess} className="w-full bg-[#F3F4F6] text-black font-medium text-sm rounded-md py-3 hover:bg-white transition-colors mb-2 disabled:opacity-50">
+                       {otpVerifying ? "Verifying..." : otpSuccess ? "Verified!" : "Verify Code"}
                     </button>
-                  )}
-                </div>
-              </form>
-            </motion.div>
-          </AnimatePresence>
+                    <div className="flex justify-between items-center px-1">
+                      <button type="button" onClick={()=>{setShowOtp(false);setOtp(["","","","","",""]);setOtpError("");}} className="text-xs text-gray-500 hover:text-white transition-colors">Cancel</button>
+                      <button type="button" onClick={handleResend} disabled={resendTimer>0} className="text-xs text-gray-500 hover:text-white transition-colors disabled:opacity-50">{resendTimer>0 ? `Resend in ${resendTimer}s`:`Resend`}</button>
+                    </div>
+                 </div>
+              )}
 
-          <div className="mt-8 text-center space-y-3">
-            <p className="text-sm text-gray-500">Already have an account? <Link to="/login" className="text-indigo-600 font-bold hover:text-indigo-800 ml-1">Sign In</Link></p>
-            <p className="text-sm text-gray-500">Want to be a Partner? <Link to="/partner-signup" className="text-emerald-600 font-bold hover:text-emerald-800 ml-1">Partner Signup</Link></p>
+              {isEmailVerified && (
+                <p className="text-green-400 text-xs text-center mt-2">Email Verified ✓</p>
+              )}
+
+              <div className="flex flex-col mt-2">
+                <input name="phone" placeholder="Phone Number (optional)" value={form.phone} onChange={handleChange} maxLength={10} className={inputCls} />
+              </div>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              <div className="flex flex-col mb-4 items-center">
+                 <div className="w-20 h-20 rounded-full bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center overflow-hidden mb-2 relative hover:border-gray-500 transition-colors">
+                    {preview ? <img src={preview} alt="Profile" className="w-full h-full object-cover" /> : <span className="text-xs text-gray-500">Avatar</span>}
+                    <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleImageChange} />
+                 </div>
+                 <span className="text-xs text-gray-500">Profile Photo (Optional)</span>
+              </div>
+              <div className="flex flex-col">
+                <input name="name" type="text" placeholder="Full Name *" value={form.name} onChange={handleChange} required className={inputCls} />
+              </div>
+              <div className="flex flex-col">
+                <input name="password" type="password" placeholder="Password (Min 6 chars) *" value={form.password} onChange={handleChange} required minLength={6} className={inputCls} />
+              </div>
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+              <div className="flex flex-col">
+                <input name="pincode" type="text" placeholder="Pincode" value={form.pincode} onChange={handleChange} maxLength={6} className={inputCls} />
+              </div>
+              <div className="flex flex-col">
+                <textarea name="address" placeholder="Full Address" value={form.address} onChange={handleChange} className={`${inputCls} h-24 resize-none`} />
+              </div>
+
+              <div className="flex items-center gap-3 mt-2">
+                <input type="checkbox" id="terms" required className="w-4 h-4 rounded-sm bg-[#1A1A1A] border border-[#333] accent-white cursor-pointer" />
+                <label htmlFor="terms" className="text-xs text-gray-400 select-none cursor-pointer">
+                  I agree to Terms & Conditions
+                </label>
+              </div>
+            </>
+          )}
+
+          {error && <p className="text-red-400 text-xs text-center mt-2">{error}</p>}
+          {success && <p className="text-green-400 text-xs text-center mt-2">Account created! Redirecting...</p>}
+
+          <div className="flex gap-3 mt-4">
+            {step > 1 && (
+               <button type="button" onClick={prevStep} className="flex-1 bg-[#1A1A1A] border border-[#2A2A2A] text-white font-medium text-sm rounded-md py-3.5 hover:bg-[#2A2A2A] transition-colors">
+                 Back
+               </button>
+            )}
+            {step < 3 ? (
+               <button type="button" onClick={nextStep} className="flex-[2] bg-[#F3F4F6] text-black font-medium text-sm rounded-md py-3.5 hover:bg-white transition-colors">
+                 Next Step
+               </button>
+            ) : (
+               <button type="submit" disabled={isLoading||success} className="flex-[2] bg-[#F3F4F6] text-black font-medium text-sm rounded-md py-3.5 hover:bg-white transition-colors disabled:opacity-50">
+                 {isLoading ? "Processing..." : "Sign Up"}
+               </button>
+            )}
           </div>
+        </form>
+
+        <div className="flex items-center my-8">
+          <hr className="flex-1 border-[#2A2A2A]" />
+          <span className="px-4 text-xs text-gray-500">or</span>
+          <hr className="flex-1 border-[#2A2A2A]" />
+        </div>
+
+        <div className="text-center text-xs text-gray-400 flex flex-col gap-3">
+          <p>Already have an account? <Link to="/login" className="text-white hover:underline transition-all ml-1">Sign In</Link></p>
+          <p>Want to be a Partner? <Link to="/partner-signup" className="text-white hover:underline transition-all ml-1">Partner Signup</Link></p>
         </div>
       </div>
     </div>

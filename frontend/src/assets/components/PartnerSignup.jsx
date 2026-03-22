@@ -1,13 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/api";
 import { Link, useNavigate } from "react-router-dom";
-import {
-    FaStore, FaTruck, FaShieldAlt, FaArrowRight, FaArrowLeft,
-    FaCheckCircle, FaTimesCircle, FaCamera, FaHardHat, FaIdCard,
-    FaFileInvoiceDollar, FaLandmark, FaFileUpload, FaEnvelope,
-    FaPhone, FaLock, FaMapMarkerAlt, FaUser, FaRedo
-} from "react-icons/fa";
 
 function PartnerSignup() {
     const navigate = useNavigate();
@@ -48,18 +41,6 @@ function PartnerSignup() {
         return () => clearInterval(interval);
     }, [resendTimer]);
 
-    const lbl = "block text-sm font-semibold text-gray-700 mb-2 ml-1";
-    const inp = "w-full px-5 py-3.5 rounded-2xl border-2 border-gray-100 bg-gray-50/50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all duration-300 shadow-sm text-sm font-medium";
-
-    const roles = [
-        { key: "seller", icon: FaStore, title: "Seller", desc: "Sell goods", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-100", glow: "shadow-emerald-100" },
-        { key: "delivery", icon: FaTruck, title: "Delivery", desc: "Logistics", color: "text-blue-700", bg: "bg-blue-50 border-blue-100", glow: "shadow-blue-100" },
-        { key: "provider", icon: FaStore, title: "Provider", desc: "Services", color: "text-orange-700", bg: "bg-orange-50 border-orange-100", glow: "shadow-orange-100" },
-        { key: "architect", icon: FaHardHat, title: "Architect", desc: "Projects", color: "text-amber-700", bg: "bg-amber-50 border-amber-100", glow: "shadow-amber-100" },
-        { key: "admin", icon: FaShieldAlt, title: "Admin", desc: "Platform", color: "text-violet-700", bg: "bg-violet-50 border-violet-100", glow: "shadow-violet-100" },
-    ];
-
-    // ── Email OTP Functions ──
     const handleSendOTP = async () => {
         if (!form.email) { setError("Enter your email first"); return; }
         setOtpLoading(true); setError(""); setOtpError(""); setOtpSuccess(false); setOtp(["","","","","",""]);
@@ -96,7 +77,6 @@ function PartnerSignup() {
         catch { setOtpError("Failed to resend"); }
     };
 
-    // ── Validation ──
     const validateStep1 = () => {
         if (!form.name || !form.email || !form.password || !form.phone || !form.address || !form.pincode) { setError("All fields are required."); return false; }
         if (form.password.length < 6) { setError("Password must be at least 6 characters."); return false; }
@@ -144,283 +124,228 @@ function PartnerSignup() {
         finally { setIsLoading(false); }
     };
 
-    const stepTitles = ["Identity", "Compliance", "Finance", "Finalize"];
-    const stepIcons = [<FaIdCard />, <FaFileInvoiceDollar />, <FaLandmark />, <FaFileUpload />];
+    const inp = "w-full bg-[#1A1A1A] border border-[#2A2A2A] rounded-md px-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gray-500 transition-colors";
+    const lbl = "block text-xs font-semibold text-gray-500 mb-2";
 
-    // ── Inline OTP Card ──
+    const roles = [
+        { key: "seller", title: "Seller" },
+        { key: "delivery", title: "Delivery" },
+        { key: "provider", title: "Provider" },
+        { key: "architect", title: "Architect" },
+        { key: "admin", title: "Admin" },
+    ];
+
     const renderOtpCard = () => (
-        <motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:"auto"}} exit={{opacity:0,height:0}}
-            className="mt-3 p-5 bg-gradient-to-br from-indigo-50/80 to-purple-50/80 rounded-2xl border border-indigo-100">
-            <div className="text-center mb-3">
-                <div className="w-10 h-10 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white text-base shadow-lg mx-auto mb-2"><FaShieldAlt /></div>
-                <p className="text-xs text-gray-500">Code sent to <span className="font-semibold text-indigo-600">{form.email}</span></p>
-            </div>
-            <div className="flex justify-center gap-2 mb-3" onPaste={handleOtpPaste}>
+        <div className="mt-2 p-4 bg-[#1A1A1A] border border-[#2A2A2A] rounded-md">
+            <p className="text-xs text-gray-400 mb-3 text-center">Verify code sent to {form.email}</p>
+            <div className="flex justify-center gap-2 mb-4" onPaste={handleOtpPaste}>
                 {otp.map((d,i)=>(
                     <input key={i} ref={el=>otpRefs.current[i]=el} type="text" inputMode="numeric" maxLength={1} value={d}
                         onChange={e=>handleOtpChange(e.target.value,i)} onKeyDown={e=>handleOtpKeyDown(e,i)} onFocus={e=>e.target.select()}
-                        className={`w-10 h-12 border-2 rounded-xl text-center text-lg font-bold outline-none transition-all ${otpSuccess?'border-green-400 bg-green-50 text-green-600':otpError?'border-red-300 bg-red-50 text-red-600':'border-gray-200 bg-white/80 text-gray-900 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10'}`} />
+                        className={`w-10 h-12 bg-[#121212] border ${otpSuccess ? 'border-green-500' : otpError ? 'border-red-500' : 'border-[#333]'} rounded-md text-center text-white focus:outline-none focus:border-gray-500 transition-colors`} />
                 ))}
             </div>
-            {otpError && <p className="text-red-600 text-xs text-center mb-2 flex items-center justify-center gap-1"><FaTimesCircle /> {otpError}</p>}
-            {otpSuccess && <p className="text-green-600 text-xs font-bold text-center mb-2 flex items-center justify-center gap-1"><FaCheckCircle /> Verified!</p>}
+            {otpError && <p className="text-red-400 text-xs text-center mb-3">{otpError}</p>}
             <button type="button" onClick={handleVerifyOTP} disabled={otp.some(v=>v==="")||otpVerifying||otpSuccess}
-                className="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2 text-sm">
-                {otpVerifying ? "Verifying..." : otpSuccess ? "Done!" : "Verify Code"}
+                className="w-full bg-[#F3F4F6] text-black font-medium text-sm rounded-md py-3 hover:bg-white transition-colors mb-2 disabled:opacity-50">
+                {otpVerifying ? "Verifying..." : otpSuccess ? "Verified!" : "Verify Code"}
             </button>
-            <div className="flex justify-between items-center mt-2.5">
-                <button type="button" onClick={()=>{setShowOtp(false);setOtp(["","","","","",""]);setOtpError("");}} className="text-xs text-gray-400 hover:text-gray-600">← Cancel</button>
-                {resendTimer > 0 ? <span className="text-xs text-gray-400">Resend in {resendTimer}s</span> : <button type="button" onClick={handleResend} className="text-xs text-indigo-600 font-bold flex items-center gap-1"><FaRedo className="text-[10px]" /> Resend</button>}
+            <div className="flex justify-between items-center px-1">
+                <button type="button" onClick={()=>{setShowOtp(false);setOtp(["","","","","",""]);setOtpError("");}} className="text-xs text-gray-500 hover:text-white transition-colors">Cancel</button>
+                <button type="button" onClick={handleResend} disabled={resendTimer>0} className="text-xs text-gray-500 hover:text-white transition-colors disabled:opacity-50">{resendTimer>0 ? `Resend in ${resendTimer}s`:`Resend`}</button>
             </div>
-        </motion.div>
+        </div>
     );
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4 py-12 font-sans relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-3xl -mr-64 -mt-64" />
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-100/50 rounded-full blur-3xl -ml-64 -mb-64" />
+        <div className="min-h-screen bg-[#121212] flex items-center justify-center p-4 font-sans text-white py-12">
+            <div className="w-full max-w-md flex flex-col">
+                <button type="button" onClick={() => navigate(-1)} className="self-start text-gray-400 hover:text-white mb-8 text-sm tracking-wide transition-colors">
+                    Back
+                </button>
 
-            <div className="w-full max-w-4xl bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white overflow-hidden relative z-10 flex flex-col min-h-[700px]">
+                <div className="mb-6">
+                    <h1 className="text-2xl font-semibold tracking-tight">Partner Application</h1>
+                    <p className="text-sm text-gray-400 mt-1.5">
+                        {step === 1 ? 'Identity & Contact' : step === 2 ? 'Compliance Details' : step === 3 ? 'Banking Information' : 'Final Review'}
+                    </p>
+                </div>
 
-                {/* Progress */}
-                <div className="flex border-b border-gray-100">
-                    {stepTitles.map((title, i) => (
-                        <div key={i} className="flex-1 relative py-7">
-                            <div className={`flex flex-col items-center transition-all duration-500 ${step > i+1 ? 'text-green-500' : step === i+1 ? 'text-indigo-600' : 'text-gray-400'}`}>
-                                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center mb-2 text-base shadow-sm transition-all duration-500 ${step > i+1 ? 'bg-green-50' : step === i+1 ? 'bg-indigo-600 text-white shadow-indigo-100' : 'bg-gray-50'}`}>
-                                    {step > i+1 ? <FaCheckCircle /> : stepIcons[i]}
-                                </div>
-                                <span className="text-[10px] font-bold uppercase tracking-wider">{title}</span>
-                            </div>
-                            {i < stepTitles.length-1 && (
-                                <div className="absolute top-[50px] left-[calc(50%+28px)] w-[calc(100%-56px)] h-[2px] bg-gray-100">
-                                    <motion.div initial={{scaleX:0}} animate={{scaleX:step>i+1?1:0}} className="h-full bg-green-500 origin-left" />
-                                </div>
-                            )}
-                        </div>
+                <div className="flex items-center mb-8 gap-2">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className={`h-1 flex-1 rounded-full ${step >= i ? 'bg-[#F3F4F6]' : 'bg-[#2A2A2A]'}`} />
                     ))}
                 </div>
 
-                <div className="p-8 sm:p-10 flex-1">
-                    <AnimatePresence mode="wait">
-                        <motion.div key={step} initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-20}} transition={{duration:0.3}} className="h-full flex flex-col">
-
-                            {/* ── STEP 1: Identity & Email Verification ── */}
-                            {step === 1 && (
-                                <div className="space-y-6">
-                                    <div className="mb-4">
-                                        <h2 className="text-2xl font-bold text-gray-900 mb-1">Partner Identity</h2>
-                                        <p className="text-gray-500 text-sm">Choose your role, verify email, and provide basic details.</p>
-                                    </div>
-
-                                    {/* Role Selector */}
-                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                                        {roles.map(r => (
-                                            <button key={r.key} type="button" onClick={() => setRole(r.key)}
-                                                className={`p-3.5 rounded-2xl border-2 flex flex-col items-center justify-center text-center transition-all duration-300 ${role === r.key ? `${r.bg} ${r.color} border-transparent shadow-lg ${r.glow} scale-105` : "bg-white border-gray-50 text-gray-400 hover:bg-gray-50"}`}>
-                                                <r.icon className={`text-xl mb-1.5 ${role === r.key ? r.color : "text-gray-300"}`} />
-                                                <div className="font-bold text-xs">{r.title}</div>
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    {/* Fields Grid */}
-                                    <div className="grid md:grid-cols-2 gap-5 pt-4 border-t border-gray-100">
-                                        <div className="md:col-span-2">
-                                            <label className={lbl}>Full Legal Name <span className="text-red-400">*</span></label>
-                                            <div className="relative group">
-                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaUser /></div>
-                                                <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="As per official documents" className={`${inp} pl-12`} required />
-                                            </div>
-                                        </div>
-
-                                        {/* Email + OTP */}
-                                        <div className="md:col-span-2">
-                                            <label className={lbl}>Official Email <span className="text-red-400">*</span></label>
-                                            <div className="relative group">
-                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaEnvelope /></div>
-                                                <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="name@company.com" className={`${inp} pl-12 pr-28`} required disabled={isEmailVerified || showOtp} />
-                                                {isEmailVerified ? (
-                                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500 flex items-center gap-1.5 text-xs font-bold bg-green-50 px-3 py-1.5 rounded-lg border border-green-100"><FaCheckCircle /> Verified</div>
-                                                ) : !showOtp && (
-                                                    <button type="button" onClick={handleSendOTP} disabled={otpLoading || !form.email}
-                                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 disabled:opacity-50">
-                                                        {otpLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Send OTP"}
-                                                    </button>
-                                                )}
-                                            </div>
-                                            <AnimatePresence>{showOtp && !isEmailVerified && renderOtpCard()}</AnimatePresence>
-                                        </div>
-
-                                        {/* Phone */}
-                                        <div>
-                                            <label className={lbl}>Phone <span className="text-red-400">*</span></label>
-                                            <div className="relative group">
-                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaPhone /></div>
-                                                <input value={form.phone} onChange={e => setForm({...form, phone: e.target.value.replace(/\D/g,'').substring(0,10)})} placeholder="10-digit number" className={`${inp} pl-12`} required />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className={lbl}>Password <span className="text-red-400">*</span></label>
-                                            <div className="relative group">
-                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaLock /></div>
-                                                <input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} placeholder="Min. 6 chars" className={`${inp} pl-12`} required minLength={6} />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className={lbl}>Pincode <span className="text-red-400">*</span></label>
-                                            <div className="relative group">
-                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors"><FaMapMarkerAlt /></div>
-                                                <input value={form.pincode} onChange={e => setForm({...form, pincode: e.target.value.replace(/\D/g,'').substring(0,6)})} placeholder="6-digit Zip" className={`${inp} pl-12`} required />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className={lbl}>Full Address <span className="text-red-400">*</span></label>
-                                            <input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="Business locality, street" className={inp} required />
-                                        </div>
-                                    </div>
+                <form className="flex flex-col gap-5">
+                    
+                    {step === 1 && (
+                        <>
+                            <div>
+                                <label className={lbl}>Select Category <span className="text-red-400">*</span></label>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    {roles.map(r => (
+                                        <button key={r.key} type="button" onClick={() => setRole(r.key)} className={`p-3 rounded-md border text-xs font-medium transition-colors ${role === r.key ? 'bg-white text-black border-white' : 'bg-[#1A1A1A] text-gray-400 border-[#2A2A2A] hover:bg-[#2A2A2A]'}`}>
+                                            {r.title}
+                                        </button>
+                                    ))}
                                 </div>
-                            )}
+                            </div>
 
-                            {/* ── STEP 2: Legal & Compliance ── */}
-                            {step === 2 && (
-                                <div className="space-y-6">
-                                    <div className="mb-4">
-                                        <h2 className="text-2xl font-bold text-gray-900 mb-1">Legal & Compliance</h2>
-                                        <p className="text-gray-500 text-sm">Regulatory data for {role.toUpperCase()} verification.</p>
-                                    </div>
+                            <div className="flex flex-col">
+                                <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Full Legal Name *" className={inp} required />
+                            </div>
 
-                                    <div className="p-5 bg-indigo-50/30 rounded-2xl border border-indigo-100">
-                                        <label className={lbl}>Aadhaar Number (12-digit UID)</label>
-                                        <input value={aadhaarNumber} onChange={e => setAadhaarNumber(e.target.value.replace(/\D/g,'').substring(0,12))} placeholder="XXXX XXXX XXXX" className={inp} />
-                                    </div>
-
-                                    {role === "seller" && (
-                                        <div className="grid md:grid-cols-2 gap-5">
-                                            <div className="md:col-span-2"><label className={lbl}>Business Name</label><input value={sellerDetails.businessName} onChange={e=>setSellerDetails({...sellerDetails,businessName:e.target.value})} className={inp} /></div>
-                                            <div><label className={lbl}>GSTIN</label><input value={sellerDetails.gstNumber} onChange={e=>setSellerDetails({...sellerDetails,gstNumber:e.target.value})} className={inp} /></div>
-                                            <div><label className={lbl}>PAN</label><input value={sellerDetails.panNumber} onChange={e=>setSellerDetails({...sellerDetails,panNumber:e.target.value})} className={inp} /></div>
-                                            <div><label className={lbl}>Category</label>
-                                                <select value={sellerDetails.businessCategory} onChange={e=>setSellerDetails({...sellerDetails,businessCategory:e.target.value})} className={inp}>
-                                                    <option value="">Select</option><option value="Hardware">Hardware</option><option value="Materials">Materials</option><option value="Others">Others</option>
-                                                </select>
-                                            </div>
-                                            <div><label className={lbl}>Business Address</label><input value={sellerDetails.businessAddress} onChange={e=>setSellerDetails({...sellerDetails,businessAddress:e.target.value})} className={inp} /></div>
-                                            <div><label className={lbl}>Company Reg. No.</label><input value={sellerDetails.companyRegistrationNumber} onChange={e=>setSellerDetails({...sellerDetails,companyRegistrationNumber:e.target.value})} className={inp} /></div>
-                                            <div><label className={lbl}>Trade License</label><input value={sellerDetails.tradeLicenseNumber} onChange={e=>setSellerDetails({...sellerDetails,tradeLicenseNumber:e.target.value})} className={inp} /></div>
-                                        </div>
-                                    )}
-                                    {role === "delivery" && (
-                                        <div className="grid md:grid-cols-2 gap-5">
-                                            <div><label className={lbl}>Vehicle Type</label><select value={deliveryDetails.vehicleType} onChange={e=>setDeliveryDetails({...deliveryDetails,vehicleType:e.target.value})} className={inp}><option value="">Select</option><option value="Mini Truck">Mini Truck</option><option value="Cargo Van">Cargo Van</option><option value="Bike">Bike</option></select></div>
-                                            <div><label className={lbl}>DL Number</label><input value={deliveryDetails.licenseNumber} onChange={e=>setDeliveryDetails({...deliveryDetails,licenseNumber:e.target.value})} className={inp} /></div>
-                                            <div><label className={lbl}>RC Book No.</label><input value={deliveryDetails.rcBookNumber} onChange={e=>setDeliveryDetails({...deliveryDetails,rcBookNumber:e.target.value})} className={inp} /></div>
-                                            <div><label className={lbl}>Delivery Area Pincode</label><input value={deliveryDetails.deliveryAreaPincode} onChange={e=>setDeliveryDetails({...deliveryDetails,deliveryAreaPincode:e.target.value.replace(/\D/g,'').substring(0,6)})} className={inp} /></div>
-                                        </div>
-                                    )}
-                                    {role === "provider" && (
-                                        <div className="grid md:grid-cols-2 gap-5">
-                                            <div><label className={lbl}>Service Category</label><input value={providerDetails.serviceCategory} onChange={e=>setProviderDetails({...providerDetails,serviceCategory:e.target.value})} placeholder="e.g. Electrician" className={inp} /></div>
-                                            <div><label className={lbl}>Years Experience</label><input value={providerDetails.experience} onChange={e=>setProviderDetails({...providerDetails,experience:e.target.value})} placeholder="e.g. 5 Years" className={inp} /></div>
-                                            <div className="md:col-span-2"><label className={lbl}>Description</label><textarea value={providerDetails.serviceDescription} onChange={e=>setProviderDetails({...providerDetails,serviceDescription:e.target.value})} rows={3} className={inp} /></div>
-                                        </div>
-                                    )}
-                                    {role === "architect" && (
-                                        <div className="grid md:grid-cols-2 gap-5">
-                                            <div className="md:col-span-2"><label className={lbl}>CoA Registration</label><input value={architectDetails.coaRegistration} onChange={e=>setArchitectDetails({...architectDetails,coaRegistration:e.target.value})} placeholder="CA/YYYY/XXXXX" className={inp} /></div>
-                                            <div className="md:col-span-2"><label className={lbl}>Skills (comma-separated)</label><input value={architectDetails.skills} onChange={e=>setArchitectDetails({...architectDetails,skills:e.target.value})} placeholder="AutoCAD, Revit, etc." className={inp} /></div>
-                                            <div className="md:col-span-2"><label className={lbl}>Contact Info</label><input value={architectDetails.contactInfo} onChange={e=>setArchitectDetails({...architectDetails,contactInfo:e.target.value})} placeholder="Additional contact" className={inp} /></div>
-                                        </div>
-                                    )}
-                                    {role === "admin" && (
-                                        <div className="p-5 bg-violet-50/50 rounded-2xl border border-violet-100">
-                                            <label className={lbl}>Admin Access Code</label>
-                                            <input type="password" value={adminDetails.adminAccessCode} onChange={e=>setAdminDetails({...adminDetails,adminAccessCode:e.target.value})} className={inp} />
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* ── STEP 3: Banking ── */}
-                            {step === 3 && (
-                                <div className="space-y-6">
-                                    <div className="mb-4 text-center">
-                                        <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 border border-emerald-100 shadow-sm"><FaLandmark /></div>
-                                        <h2 className="text-2xl font-bold text-gray-900">Banking & Finance</h2>
-                                        <p className="text-gray-500 text-sm">Where you'll receive payouts.</p>
-                                    </div>
-                                    {["seller","provider","architect"].includes(role) ? (
-                                        <div className="grid md:grid-cols-2 gap-5 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-                                            <div><label className={lbl}>Bank Account No.</label><input type="password" value={bankDetails.bankAccount} onChange={e=>setBankDetails({...bankDetails,bankAccount:e.target.value})} className={inp} /></div>
-                                            <div><label className={lbl}>IFSC Code</label><input value={bankDetails.ifscCode} onChange={e=>setBankDetails({...bankDetails,ifscCode:e.target.value})} className={inp} /></div>
-                                            <div className="md:col-span-2 text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest p-3 bg-white/80 rounded-xl border border-gray-100">🔒 Encrypted & Secure</div>
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-12 bg-gray-50/30 rounded-2xl border border-dashed border-gray-200">
-                                            <p className="text-gray-400 font-medium">No financial details required for this role.<br />Proceed to the final step.</p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* ── STEP 4: Finalize ── */}
-                            {step === 4 && (
-                                <div className="space-y-6">
-                                    <div className="mb-4">
-                                        <h2 className="text-2xl font-bold text-gray-900 mb-1">Finalization</h2>
-                                        <p className="text-gray-500 text-sm">Upload profile photo and documents.</p>
-                                    </div>
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-6 text-center relative group overflow-hidden">
-                                            <div className="w-24 h-24 mx-auto rounded-2xl bg-white border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden mb-3 group-hover:border-indigo-400 transition shadow-sm">
-                                                {preview ? <img src={preview} alt="Profile" className="w-full h-full object-cover" /> : <FaCamera className="text-2xl text-gray-300" />}
-                                                <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleImageChange} />
-                                            </div>
-                                            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Profile Photo</div>
-                                        </div>
-                                        <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-6 flex flex-col justify-center">
-                                            <div className="text-xs font-bold text-gray-700 uppercase tracking-widest mb-3">Official Documents</div>
-                                            <input type="file" multiple accept=".pdf,image/*" className="w-full text-xs text-gray-500 file:mr-3 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer" onChange={handleDocsChange} />
-                                            {verificationDocs.length > 0 && <div className="mt-3 text-[10px] font-black uppercase text-indigo-600">✓ {verificationDocs.length} docs ready</div>}
-                                        </div>
-                                    </div>
-                                    <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex gap-3">
-                                        <div className="w-9 h-9 bg-indigo-600 rounded-xl flex shrink-0 items-center justify-center text-white text-sm shadow-md"><FaShieldAlt /></div>
-                                        <div>
-                                            <h4 className="text-sm font-bold text-indigo-900">Final Check</h4>
-                                            <p className="text-xs text-indigo-700/70 mt-0.5">By submitting, you agree to our terms. Your data will be reviewed by the Stinchar team.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Messages */}
-                            <AnimatePresence>
-                                {error && <motion.div initial={{opacity:0,y:-5}} animate={{opacity:1,y:0}} exit={{opacity:0}} className="mt-5 flex items-start gap-2.5 bg-red-50/50 border border-red-100 p-3.5 rounded-2xl text-red-800 text-sm font-medium"><FaTimesCircle className="mt-0.5 shrink-0" /> {error}</motion.div>}
-                                {success && <motion.div initial={{opacity:0,y:-5}} animate={{opacity:1,y:0}} className="mt-5 flex items-center gap-2.5 bg-green-50/50 border border-green-100 p-3.5 rounded-2xl text-green-800 text-sm font-medium"><FaCheckCircle className="shrink-0" /> Application submitted! Redirecting...</motion.div>}
-                            </AnimatePresence>
-
-                            {/* Buttons */}
-                            <div className="mt-auto pt-8 flex gap-3">
-                                {step > 1 && <button type="button" onClick={handlePrev} className="flex-1 h-13 rounded-2xl border-2 border-gray-100 font-bold text-gray-500 hover:bg-gray-50 transition flex items-center justify-center gap-2"><FaArrowLeft className="text-xs" /> Back</button>}
-                                {step < 4 ? (
-                                    <button type="button" onClick={handleNext} className="flex-[2] h-13 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-xl shadow-indigo-100 transition active:scale-[0.98] flex items-center justify-center gap-2">Next Stage <FaArrowRight className="text-xs" /></button>
-                                ) : (
-                                    <button type="button" onClick={handleSubmit} disabled={isLoading||success} className="flex-[2] h-13 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl font-bold shadow-2xl shadow-indigo-100 transition active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50">
-                                        {isLoading ? "Submitting..." : "Submit Application"}
+                            <div className="flex flex-col">
+                                <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="Business Email *" className={inp} required disabled={isEmailVerified || showOtp} />
+                                {isEmailVerified ? (
+                                    <p className="text-green-400 text-xs mt-2 text-center">Email Verified ✓</p>
+                                ) : !showOtp && (
+                                    <button type="button" onClick={handleSendOTP} disabled={otpLoading || !form.email} className="w-full bg-[#2A2A2A] text-white font-medium text-sm rounded-md py-3.5 mt-2 hover:bg-[#333] transition-colors disabled:opacity-50">
+                                        {otpLoading ? "Sending OTP..." : "Send OTP"}
                                     </button>
                                 )}
+                                {showOtp && !isEmailVerified && renderOtpCard()}
                             </div>
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-            </div>
 
-            <div className="fixed bottom-6 left-0 right-0 text-center z-20">
-                <p className="text-sm text-gray-500">
-                    Customer? <Link to="/signup" className="text-indigo-600 font-bold hover:text-indigo-800 mx-1">Sign Up</Link> •
-                    Already registered? <Link to="/login" className="text-indigo-600 font-bold hover:text-indigo-800 mx-1">Log In</Link>
-                </p>
+                            <div className="flex flex-col">
+                                <input value={form.phone} onChange={e => setForm({...form, phone: e.target.value.replace(/\D/g,'').substring(0,10)})} placeholder="10-digit Phone *" className={inp} required />
+                            </div>
+                            <div className="flex flex-col">
+                                <input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} placeholder="Password (Min. 6) *" className={inp} required minLength={6} />
+                            </div>
+                            <div className="flex flex-col">
+                                <input value={form.pincode} onChange={e => setForm({...form, pincode: e.target.value.replace(/\D/g,'').substring(0,6)})} placeholder="Locality Pincode *" className={inp} required />
+                            </div>
+                            <div className="flex flex-col">
+                                <textarea value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="Full Business Address *" className={`${inp} h-20 resize-none`} required />
+                            </div>
+                        </>
+                    )}
+
+                    {step === 2 && (
+                        <>
+                            <div className="flex flex-col">
+                                <input value={aadhaarNumber} onChange={e => setAadhaarNumber(e.target.value.replace(/\D/g,'').substring(0,12))} placeholder="Aadhaar Number (Optional)" className={inp} />
+                            </div>
+
+                            {role === "seller" && (
+                                <>
+                                    <input value={sellerDetails.businessName} onChange={e=>setSellerDetails({...sellerDetails,businessName:e.target.value})} placeholder="Business Name" className={inp} />
+                                    <input value={sellerDetails.gstNumber} onChange={e=>setSellerDetails({...sellerDetails,gstNumber:e.target.value})} placeholder="GSTIN" className={inp} />
+                                    <input value={sellerDetails.panNumber} onChange={e=>setSellerDetails({...sellerDetails,panNumber:e.target.value})} placeholder="PAN" className={inp} />
+                                    <select value={sellerDetails.businessCategory} onChange={e=>setSellerDetails({...sellerDetails,businessCategory:e.target.value})} className={`${inp} text-gray-300`}>
+                                        <option value="">Select Category</option><option value="Hardware">Hardware</option><option value="Materials">Materials</option><option value="Others">Others</option>
+                                    </select>
+                                    <input value={sellerDetails.businessAddress} onChange={e=>setSellerDetails({...sellerDetails,businessAddress:e.target.value})} placeholder="Business Operations Address" className={inp} />
+                                    <input value={sellerDetails.companyRegistrationNumber} onChange={e=>setSellerDetails({...sellerDetails,companyRegistrationNumber:e.target.value})} placeholder="Company Reg. No." className={inp} />
+                                    <input value={sellerDetails.tradeLicenseNumber} onChange={e=>setSellerDetails({...sellerDetails,tradeLicenseNumber:e.target.value})} placeholder="Trade License" className={inp} />
+                                </>
+                            )}
+
+                            {role === "delivery" && (
+                                <>
+                                    <select value={deliveryDetails.vehicleType} onChange={e=>setDeliveryDetails({...deliveryDetails,vehicleType:e.target.value})} className={`${inp} text-gray-300`}><option value="">Select Vehicle</option><option value="Mini Truck">Mini Truck</option><option value="Cargo Van">Cargo Van</option><option value="Bike">Bike</option></select>
+                                    <input value={deliveryDetails.licenseNumber} onChange={e=>setDeliveryDetails({...deliveryDetails,licenseNumber:e.target.value})} placeholder="DL Number" className={inp} />
+                                    <input value={deliveryDetails.rcBookNumber} onChange={e=>setDeliveryDetails({...deliveryDetails,rcBookNumber:e.target.value})} placeholder="RC Book No." className={inp} />
+                                    <input value={deliveryDetails.deliveryAreaPincode} onChange={e=>setDeliveryDetails({...deliveryDetails,deliveryAreaPincode:e.target.value.replace(/\D/g,'').substring(0,6)})} placeholder="Delivery Area Pincode" className={inp} />
+                                </>
+                            )}
+
+                            {role === "provider" && (
+                                <>
+                                    <input value={providerDetails.serviceCategory} onChange={e=>setProviderDetails({...providerDetails,serviceCategory:e.target.value})} placeholder="Service Category (e.g. Electrician)" className={inp} />
+                                    <input value={providerDetails.experience} onChange={e=>setProviderDetails({...providerDetails,experience:e.target.value})} placeholder="Years Experience (e.g. 5 Years)" className={inp} />
+                                    <textarea value={providerDetails.serviceDescription} onChange={e=>setProviderDetails({...providerDetails,serviceDescription:e.target.value})} placeholder="Service Description" rows={3} className={`${inp} h-24 resize-none`} />
+                                </>
+                            )}
+
+                            {role === "architect" && (
+                                <>
+                                    <input value={architectDetails.coaRegistration} onChange={e=>setArchitectDetails({...architectDetails,coaRegistration:e.target.value})} placeholder="CoA Registration (CA/YYYY/XXXXX)" className={inp} />
+                                    <input value={architectDetails.skills} onChange={e=>setArchitectDetails({...architectDetails,skills:e.target.value})} placeholder="Skills (comma-separated)" className={inp} />
+                                    <input value={architectDetails.contactInfo} onChange={e=>setArchitectDetails({...architectDetails,contactInfo:e.target.value})} placeholder="Additional Contact Info" className={inp} />
+                                </>
+                            )}
+
+                            {role === "admin" && (
+                                <>
+                                    <input type="password" value={adminDetails.adminAccessCode} onChange={e=>setAdminDetails({...adminDetails,adminAccessCode:e.target.value})} placeholder="Admin Access Code" className={inp} />
+                                </>
+                            )}
+                        </>
+                    )}
+
+                    {step === 3 && (
+                        <>
+                            {["seller","provider","architect"].includes(role) ? (
+                                <>
+                                    <input type="password" value={bankDetails.bankAccount} onChange={e=>setBankDetails({...bankDetails,bankAccount:e.target.value})} placeholder="Bank Account No." className={inp} />
+                                    <input value={bankDetails.ifscCode} onChange={e=>setBankDetails({...bankDetails,ifscCode:e.target.value})} placeholder="IFSC Code" className={inp} />
+                                    <p className="text-[10px] text-gray-500 text-center uppercase tracking-widest mt-2">Data is encrypted & secure</p>
+                                </>
+                            ) : (
+                                <p className="text-sm text-gray-400 text-center py-8">No financial details required for this role.</p>
+                            )}
+                        </>
+                    )}
+
+                    {step === 4 && (
+                        <>
+                            <div className="flex flex-col items-center mb-6">
+                                <div className="w-24 h-24 rounded-md bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center overflow-hidden mb-3 relative hover:border-gray-500 transition-colors">
+                                    {preview ? <img src={preview} alt="Profile" className="w-full h-full object-cover" /> : <span className="text-xs text-gray-500">Logotype</span>}
+                                    <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleImageChange} />
+                                </div>
+                                <span className="text-xs text-gray-500 uppercase tracking-widest font-bold">Business Photo</span>
+                            </div>
+
+                            <div className="flex flex-col">
+                                <label className={lbl}>Verified Documents</label>
+                                <input type="file" multiple accept=".pdf,image/*" className={`${inp} p-3 text-xs file:bg-[#2A2A2A] file:text-white file:border-none file:px-3 file:py-1.5 file:rounded-sm file:mr-3 file:cursor-pointer`} onChange={handleDocsChange} />
+                                {verificationDocs.length > 0 && <span className="text-xs text-green-400 mt-2">✓ {verificationDocs.length} documents attached</span>}
+                            </div>
+                            
+                            <div className="flex items-center gap-3 mt-4">
+                                <input type="checkbox" id="terms" required className="w-4 h-4 rounded-sm bg-[#1A1A1A] border border-[#333] accent-white cursor-pointer" />
+                                <label htmlFor="terms" className="text-xs text-gray-400 select-none cursor-pointer">
+                                I confirm the details provided are accurate.
+                                </label>
+                            </div>
+                        </>
+                    )}
+
+                    {error && <p className="text-red-400 text-xs text-center mt-2">{error}</p>}
+                    {success && <p className="text-green-400 text-xs text-center mt-2">Application submitted! Redirecting...</p>}
+
+                    <div className="flex gap-3 mt-6">
+                        {step > 1 && (
+                            <button type="button" onClick={handlePrev} className="flex-1 bg-[#1A1A1A] border border-[#2A2A2A] text-white font-medium text-sm rounded-md py-3.5 hover:bg-[#2A2A2A] transition-colors">
+                                Back
+                            </button>
+                        )}
+                        {step < 4 ? (
+                            <button type="button" onClick={handleNext} className="flex-[2] bg-[#F3F4F6] text-black font-medium text-sm rounded-md py-3.5 hover:bg-white transition-colors">
+                                Next Step
+                            </button>
+                        ) : (
+                            <button type="button" onClick={handleSubmit} disabled={isLoading||success} className="flex-[2] bg-[#F3F4F6] text-black font-medium text-sm rounded-md py-3.5 hover:bg-white transition-colors disabled:opacity-50">
+                                {isLoading ? "Submitting..." : "Submit Application"}
+                            </button>
+                        )}
+                    </div>
+                </form>
+
+                <div className="flex items-center my-8">
+                    <hr className="flex-1 border-[#2A2A2A]" />
+                    <span className="px-4 text-xs text-gray-500">or</span>
+                    <hr className="flex-1 border-[#2A2A2A]" />
+                </div>
+
+                <div className="text-center text-xs text-gray-400 space-y-2 flex flex-col">
+                    <span>Already an approved partner? <Link to="/login" className="text-white hover:underline transition-all ml-1">Log In</Link></span>
+                    <span>Just want services? <Link to="/signup" className="text-white hover:underline transition-all ml-1">Customer Signup</Link></span>
+                </div>
             </div>
         </div>
     );

@@ -108,6 +108,7 @@ import SellerShop from "./assets/components/SellerShop";
 import Login from "./assets/components/Login";
 import Signup from "./assets/components/Signup";
 import PartnerSignup from "./assets/components/PartnerSignup";
+import ForgotPassword from "./assets/components/ForgotPassword";
 import Profile from "./assets/components/Profile";
 import Contact from "./assets/components/contact/Contact";
 import Cart from "./assets/components/Cart";
@@ -195,6 +196,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/partner-signup" element={<PartnerSignup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />

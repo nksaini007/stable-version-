@@ -622,6 +622,32 @@ const verifyOTP = async (req, res) => {
     }
 };
 
+/**
+ * POST /api/users/reset-password
+ * Body: { email, newPassword }
+ */
+const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) return res.status(400).json({ message: "Email and new password required" });
+    
+    const otpDoc = await Otp.findOne({ email, type: "email", isVerified: true });
+    if (!otpDoc) return res.status(403).json({ message: "Please verify OTP successfully before resetting password" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    await Otp.deleteOne({ _id: otpDoc._id });
+
+    res.json({ message: "Password reset successful" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getUsers,
   getProviders,
@@ -642,4 +668,5 @@ module.exports = {
   getArchitectPublicProfile,
   sendOTP,
   verifyOTP,
+  resetPassword,
 };
