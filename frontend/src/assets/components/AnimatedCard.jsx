@@ -249,7 +249,7 @@ const AnimatedCard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="w-full max-w-3xl -mt-8 sm:-mt-12 relative z-20 px-4 sm:px-0"
+            className="w-full max-w-3xl -mt-6 sm:-mt-24 relative z-20 px-4 sm:px-0"
           >
             <form onSubmit={handleSearch} className="relative flex flex-col sm:flex-row items-center w-full shadow-2xl rounded-2xl sm:rounded-full bg-neutral-800/80 backdrop-blur-md p-2 border border-neutral-700 gap-2 sm:gap-0">
               <div className="hidden sm:block pl-4 text-gray-500">
@@ -342,7 +342,7 @@ const AnimatedCard = () => {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-8 gap-2 xl:gap-2">
                   {results.map((product, i) => {
                     const isLastElement = i === results.length - 1;
                     return (

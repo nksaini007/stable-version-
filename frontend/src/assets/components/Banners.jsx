@@ -33,9 +33,9 @@ const Banners = () => {
     if (banners.length === 0) return null;
 
     return (
-        <section className="py-8 bg-gray-50 flex justify-center w-full">
-            <div className="relative w-full max-w-6xl px-4 md:px-8">
-                <div className="overflow-hidden rounded-2xl shadow-md border border-gray-200 relative h-48 md:h-72 lg:h-[400px]">
+        <section className="w-full bg-gray-50 flex justify-center pb-8 border-b border-gray-200">
+            <div className="relative w-full h-[30vh] sm:h-[40vh] md:h-72 lg:h-[500px]">
+                <div className="overflow-hidden relative w-full h-full shadow-sm">
                     {banners.map((banner, i) => (
                         <div
                             key={banner.id || i}
