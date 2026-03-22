@@ -48,7 +48,7 @@ const Nev = () => {
     <>
       {/* ================= NAVBAR ================= */}
       <nav className="hidden md:block sticky top-0 w-full z-50">
-        <div className="absolute inset-0 bg-[#0d1117]/95 backdrop-blur-2xl border-b border-gray-500/10"></div>
+        <div className="absolute inset-0 bg-neutral-900/90 backdrop-blur-2xl border-b border-neutral-800"></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-[60px] md:h-[64px]">
@@ -112,7 +112,7 @@ const Nev = () => {
       <div className="md:hidden fixed top-4 left-4 z-[90]">
         <button
           onClick={() => setMobileMenuOpen(true)}
-          className="w-10 h-10 rounded-xl bg-[#0d1117]/85 border border-white/10 flex items-center justify-center text-gray-300"
+          className="w-10 h-10 rounded-xl bg-neutral-900/85 backdrop-blur-md border border-neutral-800 flex items-center justify-center text-gray-300"
         >
           <Menu size={20} />
         </button>
@@ -137,10 +137,10 @@ const Nev = () => {
       )}
 
       <div
-        className={`fixed inset-y-0 left-0 w-[280px] bg-[#0d1117] z-[200] transform transition-transform ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 left-0 w-[280px] bg-neutral-900 z-[200] transform transition-transform ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
-        <div className="flex justify-between p-5 border-b border-white/10">
+        <div className="flex justify-between p-5 border-b border-neutral-800">
           <Link to="/" className="flex items-center gap-2.5" onClick={() => setMobileMenuOpen(false)}>
             <img src={logo} alt="Stinchar Logo" className="h-7 w-auto object-contain" />
             <span className="text-xl font-black text-white">
@@ -172,7 +172,7 @@ const Nev = () => {
 
       {/* ================= FLOATING STINCHAR LOGO ================= */}
       <div className="md:hidden fixed bottom-[85px] left-1/2 -translate-x-1/2 z-[110] pointer-events-none">
-        <div className="px-4 py-1 rounded-full bg-[#0d1117]/90 backdrop-blur-xl border border-white/10 shadow-lg">
+        <div className="px-4 py-1 rounded-full bg-neutral-900/90 backdrop-blur-xl border border-neutral-800 shadow-lg">
           <span className="text-sm font-black text-white tracking-wide">
             Stin<span className="text-gray-400">char</span>
           </span>
@@ -181,7 +181,7 @@ const Nev = () => {
 
       {/* ================= MOBILE BOTTOM NAVBAR ================= */}
       <div className="fixed bottom-2 left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] md:hidden z-[100]">
-        <div className="bg-[#0d1117]/85 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-2xl ">
+        <div className="bg-neutral-900/85 backdrop-blur-3xl border border-neutral-800 rounded-3xl shadow-2xl ">
           <div className="flex justify-between items-center px-3">
 
             {[

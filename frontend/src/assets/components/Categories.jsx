@@ -85,7 +85,7 @@ const Categories = () => {
           {/* ---------------- Sidebar ---------------- */}
           <aside className="lg:col-span-3 space-y-4">
             {/* Search */}
-            <div className="bg-white rounded-xl border border-gray-100 p-3">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
               <label className="text-xs font-semibold text-gray-600">
                 Search
               </label>
@@ -95,13 +95,13 @@ const Categories = () => {
                   value={term}
                   onChange={(e) => setTerm(e.target.value)}
                   placeholder="Search categories..."
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-400 outline-none"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-gray-400 outline-none transition-all"
                 />
               </div>
             </div>
 
             {/* Popular */}
-            <div className="bg-white rounded-xl border border-gray-100 p-3">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
               <h3 className="text-xs font-semibold text-gray-700 mb-2">
                 Popular Categories
               </h3>
@@ -150,7 +150,7 @@ const Categories = () => {
                       )}`}
                       className="group"
                     >
-                      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition">
+                      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                         {/* Image */}
                         <div className="relative h-32 bg-gray-100">
                           {imageUrl ? (

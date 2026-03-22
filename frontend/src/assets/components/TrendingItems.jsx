@@ -70,7 +70,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
 
   if (loading) {
     return (
-      <section className="py-10 bg-white">
+      <section className="py-10 bg-gray-50">
         <div className="mx-auto max-w-6xl px-4 text-center text-gray-400">
           Loading trending items...
         </div>
@@ -81,7 +81,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
   if (items.length === 0) return null;
 
   return (
-    <section className="py-10 bg-white">
+    <section className="py-10 bg-gray-50">
       <div className="mx-auto max-w-6xl px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -126,7 +126,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
                 className={`snap-center flex-shrink-0 w-[70%] sm:w-[42%] md:w-[30%] lg:w-[24%] transition-all duration-300 ${active ? "scale-[1.03]" : "scale-[0.97] opacity-70"
                   }`}
               >
-                <div className="rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 hover:shadow-xl transition-shadow">
+                <div className="rounded-2xl overflow-hidden shadow-sm bg-white border border-gray-200 hover:shadow-md transition-shadow">
                   <div className="relative h-44 bg-gray-100">
                     <img
                       src={getOptimizedImage(it.image, 500)}
@@ -135,7 +135,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
                       className="w-full h-full object-cover"
                     />
                     {it.tag && (
-                      <span className="absolute left-3 top-3 bg-gradient-to-r from-gray-500 to-gray-500 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+                      <span className="absolute left-3 top-3 bg-white/90 backdrop-blur-md border border-gray-200 text-gray-800 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
                         {it.tag}
                       </span>
                     )}
@@ -150,7 +150,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
                     <div className="flex items-center justify-between">
                       <button
                         onClick={() => nav(`/product/${it.id || i}`)}
-                        className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-gray-500 to-gray-500 text-white hover:from-gray-600 hover:to-gray-600 transition-all shadow-sm"
+                        className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-gray-800 text-white hover:bg-black transition-all shadow-sm hover:shadow"
                       >
                         View Details
                       </button>

@@ -35,7 +35,7 @@ const Banners = () => {
     return (
         <section className="py-8 bg-gray-50 flex justify-center w-full">
             <div className="relative w-full max-w-6xl px-4 md:px-8">
-                <div className="overflow-hidden rounded-2xl shadow-xl border border-gray-100 relative h-48 md:h-72 lg:h-[400px]">
+                <div className="overflow-hidden rounded-2xl shadow-md border border-gray-200 relative h-48 md:h-72 lg:h-[400px]">
                     {banners.map((banner, i) => (
                         <div
                             key={banner.id || i}

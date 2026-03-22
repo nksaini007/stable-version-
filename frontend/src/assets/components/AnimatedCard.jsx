@@ -204,14 +204,14 @@ const AnimatedCard = () => {
   // RENDER FOR CUSTOMERS & GUESTS (Modern Light Theme with Picture)
   // ----------------------------------------------------------------------
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans text-gray-800">
+    <div className="flex flex-col font-sans">
 
-      {/* 🌟 VIBRANT LIGHT HERO SECTION 🌟 */}
-      <div className="relative w-full pt-8 pb-16 px-2 sm:px-8 lg:px-12 bg-white border-b border-gray-100 overflow-hidden">
+      {/* 🌟 PREMIUM DARK HERO SECTION 🌟 */}
+      <div className="relative w-full pt-16 pb-24 px-4 sm:px-8 lg:px-12 bg-neutral-900 border-b border-neutral-800 overflow-hidden text-white">
 
         {/* Soft Background Blurs */}
-        <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-orange-100/60 rounded-full blur-[100px] opacity-40 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-blue-100/60 rounded-full blur-[100px] opacity-40 translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gray-500/10 rounded-full blur-[120px] opacity-40 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-gray-400/5 rounded-full blur-[120px] opacity-40 translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col items-center">
 
@@ -222,22 +222,22 @@ const AnimatedCard = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="w-full max-w-5xl relative mb-12"
           >
-            {/* Stunning Image Container - Uploaded Vibe translated to Modern Light */}
-            <div className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] bg-yellow-400 relative group">
-              {/* Replace url with specific user upload if desired, utilizing a beautiful tech placeholder here */}
+            {/* Stunning Image Container */}
+            <div className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] rounded-[2.5rem] overflow-hidden shadow-2xl bg-neutral-800 relative group border border-neutral-800">
+              {/* Replace url with specific user upload if desired */}
               <img
-                src="https://instasize.com/api/image/3d0b8078ee65a921890436f973efec5e60f3746ca4895057ce3744a5b80b7b34.jpeg"
+                src="https://image2url.com/r2/default/images/1774154339885-0b60d52e-5742-4594-ae1f-2b32ab04bfad.jpg"
                 alt="Main Visual"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-in-out"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
 
               {/* Overlay Text inside the Image */}
               <div className="absolute bottom-8 left-8 sm:bottom-12 sm:left-12 max-w-2xl">
-                <span className="px-4 py-1.5 bg-yellow-400 backdrop-blur-md rounded-full text-xs sm:text-sm font-black tracking-widest text-[#e71a23] mb-4 inline-block shadow-sm">
+                <span className="px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-xs sm:text-sm font-semibold tracking-widest text-white border border-white/20 mb-4 inline-block shadow-sm">
                   STINCHAR INNOVATIONS
                 </span>
-                <h1 className="text-3xl sm:text-5xl md:text-6xl font-black  text-white leading-tight drop-shadow-2xl">
+                <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight drop-shadow-md">
                   BY<br />NK_SAINI
                 </h1>
               </div>
@@ -251,25 +251,25 @@ const AnimatedCard = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="w-full max-w-3xl -mt-8 sm:-mt-12 relative z-20 px-4 sm:px-0"
           >
-            <form onSubmit={handleSearch} className="relative flex flex-col sm:flex-row items-center w-full shadow-[0_8px_40px_rgba(0,0,0,0.12)] rounded-3xl sm:rounded-full bg-white p-2 border border-gray-100 gap-2 sm:gap-0">
-              <div className="hidden sm:block pl-4 text-gray-400">
+            <form onSubmit={handleSearch} className="relative flex flex-col sm:flex-row items-center w-full shadow-2xl rounded-2xl sm:rounded-full bg-neutral-800/80 backdrop-blur-md p-2 border border-neutral-700 gap-2 sm:gap-0">
+              <div className="hidden sm:block pl-4 text-gray-500">
                 <FaSearch className="text-xl" />
               </div>
 
               <div className="flex w-full items-center pl-2 sm:pl-1 pr-2 sm:pr-6 py-2 sm:py-4">
-                <FaSearch className="text-gray-400 text-lg sm:hidden mr-2" />
+                <FaSearch className="text-gray-500 text-lg sm:hidden mr-2" />
                 <input
                   type="text"
                   placeholder="Search premium assets, designers..."
                   value={searchQuery || ""}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent text-gray-800 text-sm sm:text-base font-medium focus:outline-none placeholder-gray-400"
+                  className="w-full bg-transparent text-white text-sm sm:text-base font-medium focus:outline-none placeholder-gray-500"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-base sm:text-lg font-bold rounded-2xl sm:rounded-full transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                className="w-full sm:w-auto px-8 py-3 sm:py-4 bg-white hover:bg-gray-100 text-neutral-900 text-base sm:text-lg font-semibold rounded-2xl sm:rounded-full transition-all shadow-md hover:-translate-y-0.5"
               >
                 Search
               </button>
@@ -293,14 +293,15 @@ const AnimatedCard = () => {
         </div >
       </div >
 
-      {/* ✨ BRIGHT RESULTS GRID SECTION ✨ */}
-      < div className="flex-1 max-w-[1400px] mx-auto w-full px-2 sm:px-8 py-4" >
+      {/* ✨ LIGHT CONTENT GRID SECTION ✨ */}
+      <div className="flex-1 w-full bg-gray-50 text-gray-900 pb-16">
+        <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-8 py-8 md:py-12">
 
         {/* Status Handling */}
         {
           loading && (
             <div className="flex flex-col items-center justify-center py-16">
-              <div className="w-12 h-12 border-4 border-gray-100 border-t-orange-500 rounded-full animate-spin mb-4 shadow-sm"></div>
+              <div className="w-12 h-12 border-4 border-gray-200 border-t-neutral-800 rounded-full animate-spin mb-4 shadow-sm"></div>
               <p className="text-gray-500 font-medium tracking-wide">Gathering files...</p>
             </div>
           )
@@ -332,16 +333,16 @@ const AnimatedCard = () => {
               animate={{ opacity: 1 }}
               className="w-full"
             >
-              <div className="mb-5 flex items-center justify-between border-b border-gray-100 pb-4">
-                <h2 className="text-2xl font-century text-gray-900">
-                  Results for <span className="text-orange-500">"{searchQuery}"</span>
+              <div className="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
+                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                  Results for <span className="text-neutral-500 font-medium">"{searchQuery}"</span>
                 </h2>
-                <span className="px-4 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-full text-sm font-bold">
+                <span className="px-3 py-1 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-semibold shadow-sm">
                   {results.length} Found
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-3 xl:gap-2">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-6">
                 {results.map((product, i) => {
                   const isLastElement = i === results.length - 1;
                   return (
@@ -352,7 +353,7 @@ const AnimatedCard = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: (i % 10) * 0.03, duration: 0.4 }}
                       onClick={() => navigate(`/product/${product._id}`)}
-                      className="group cursor-pointer flex flex-col bg-white rounded-[1.25rem] p-3 border border-gray-100 shadow-sm hover:shadow-[0_8px_25px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-1"
+                      className="group cursor-pointer flex flex-col bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                     >
                       {/* Image Container - Clean and perfectly rounded */}
                       <div className="w-full aspect-[4/4] bg-gray-50 rounded-xl overflow-hidden mb-4 relative">
@@ -366,10 +367,10 @@ const AnimatedCard = () => {
 
                       {/* Content Details - Soft and legible */}
                       <div className="px-2 flex flex-col flex-1 pb-1">
-                        <h3 className="text-[15px] font-bold text-gray-900 leading-tight mb-1.5 line-clamp-1 group-hover:text-orange-600 transition-colors">
+                        <h3 className="text-sm font-semibold text-gray-900 leading-tight mb-1.5 line-clamp-1 group-hover:text-neutral-600 transition-colors">
                           {product.name}
                         </h3>
-                        <p className="text-[12px] text-gray-500 line-clamp-2 mb-3 leading-relaxed font-medium">
+                        <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">
                           {product.description}
                         </p>
                         <div className="mt-auto flex justify-between items-end">
@@ -392,9 +393,9 @@ const AnimatedCard = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div >
-
-    </div >
+        </div>
+      </div>
+    </div>
   );
 };
 
