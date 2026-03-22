@@ -637,8 +637,8 @@ const resetPassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.password = await bcrypt.hash(newPassword, 10);
-    await user.save();
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.updateOne({ email }, { password: hashedPassword });
 
     await Otp.deleteOne({ _id: otpDoc._id });
 
