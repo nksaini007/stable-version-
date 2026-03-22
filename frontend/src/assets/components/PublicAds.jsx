@@ -69,7 +69,7 @@ const PublicAds = ({ category }) => {
     if (ads.length === 0) return null; // Don't show anything if no active ads
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 my-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-8 mt-2">
             <div className="relative w-full h-48 md:h-64 lg:h-80 overflow-hidden rounded-2xl shadow-sm group cursor-pointer 
                       border border-gray-200 hover:shadow-md transition-all duration-300">
 

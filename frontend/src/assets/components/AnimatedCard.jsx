@@ -294,8 +294,9 @@ const AnimatedCard = () => {
       </div >
 
       {/* ✨ LIGHT CONTENT GRID SECTION ✨ */}
-      <div className="flex-1 w-full bg-gray-50 text-gray-900 pb-16">
-        <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-8 py-8 md:py-12">
+      {(hasSearched || loading || error) && (
+        <div className="flex-1 w-full bg-gray-50 text-gray-900 pb-16">
+          <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-8 py-8 md:py-12">
 
           {/* Status Handling */}
           {
@@ -395,6 +396,7 @@ const AnimatedCard = () => {
           </AnimatePresence>
         </div>
       </div>
+      )}
     </div>
   );
 };
