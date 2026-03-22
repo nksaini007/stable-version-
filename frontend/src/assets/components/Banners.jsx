@@ -34,7 +34,7 @@ const Banners = () => {
 
     return (
         <section className="w-full bg-gray-50 flex justify-center pb-8 border-b border-gray-200">
-            <div className="relative w-full h-[30vh] sm:h-[40vh] md:h-72 lg:h-[500px]">
+            <div className="relative w-full  h-[30vh] sm:h-[40vh] md:h-72 lg:h-[1000px]">
                 <div className="overflow-hidden relative w-full h-full shadow-sm">
                     {banners.map((banner, i) => (
                         <div
