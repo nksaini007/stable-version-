@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { FaImage, FaSave, FaPlus, FaTrash, FaStar, FaSearch } from "react-icons/fa";
+import { toast } from "react-toastify";
 import API from "../../../../../api/api";
 
 const AdminSiteConfig = () => {
