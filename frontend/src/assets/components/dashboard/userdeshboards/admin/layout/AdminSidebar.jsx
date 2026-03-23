@@ -103,13 +103,13 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
       {/* Logo */}
       <div className={`px-5 py-6 shrink-0 transition-all duration-300 ${collapsed ? "text-center" : "pl-6"}`}>
         {collapsed ? (
-          <div className="w-8 h-8 mx-auto bg-white rounded flex items-center justify-center cursor-pointer">
-            <span className="text-[#1A1B1E] font-black text-xl italic">T</span>
+          <div className="w-8 h-8 mx-auto bg-white/10 border border-white/10 rounded-lg flex items-center justify-center cursor-pointer hover:bg-white/20 transition-colors">
+            <span className="text-white font-black text-xl italic">S</span>
           </div>
         ) : (
           <div className="flex items-center gap-3 cursor-pointer group">
-            <div className="w-6 h-6 bg-white rounded flex items-center justify-center shrink-0">
-              <span className="text-[#1A1B1E] font-black text-sm italic">T</span>
+            <div className="w-6 h-6 bg-white/10 border border-white/10 rounded-md flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-colors">
+              <span className="text-white font-black text-sm italic">S</span>
             </div>
             <div className="transition-transform duration-300 group-hover:translate-x-1">
               <h2 className="text-[18px] font-bold text-white tracking-wide">
@@ -160,9 +160,9 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
                 title={collapsed ? item.name : ""}
                 className={({ isActive }) =>
                   `group relative flex items-center ${collapsed ? "justify-center mx-2 rounded-lg" : "px-6"
-                  } gap-4 py-2 text-[13px] font-medium transition-colors duration-200 ease-out overflow-hidden ${isActive
-                    ? `text-white ${collapsed ? 'bg-[#2A2B2F]' : ''}`
-                    : "text-[#8E929C] hover:text-white"
+                  } gap-4 py-2.5 text-[13px] font-medium transition-all duration-200 ease-out overflow-hidden ${isActive
+                    ? `text-white ${collapsed ? 'bg-[#2A2B2F]' : 'bg-[#2A2B2F]/40'}`
+                    : "text-[#8E929C] hover:text-white hover:bg-[#2A2B2F]/20"
                   }`
                 }
               >
@@ -195,7 +195,7 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
 
         {/* User Info */}
         {!collapsed && user && (
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#121212] border border-[#2A2B2F] cursor-pointer hover:bg-[#2A2B2F] transition-colors">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-[#2A2B2F]/30 border border-[#2A2B2F] cursor-pointer hover:bg-[#2A2B2F]/80 transition-all duration-300">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded bg-[#2A2B2F] text-white flex items-center justify-center font-bold text-sm shrink-0">
                 {user.name ? user.name.charAt(0) : "U"}
