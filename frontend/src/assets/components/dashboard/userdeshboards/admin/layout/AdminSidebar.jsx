@@ -85,12 +85,12 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
   return (
     <aside
       className={`${collapsed ? "w-[72px]" : "w-64"
-        } h-screen bg-gradient-to-b from-[#0a0f1c] via-[#0f172a] to-[#0a0f1c] flex flex-col transition-all duration-400 ease-out border-r border-white/5 relative shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.5)] z-40`}
+        } h-screen bg-gradient-to-b from-[#0a0a0a] via-[#111111] to-[#050505] flex flex-col transition-all duration-400 ease-out border-r border-white/5 relative shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.5)] z-40`}
     >
       {/* Collapse Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-8 w-6 h-6 bg-gradient-to-br from-gray-500 to-gray-600 rounded-full flex items-center justify-center text-white hover:shadow-[0_0_12px_rgba(59,130,246,0.8)] hover:scale-110 transition-all duration-300 z-50 cursor-pointer shadow-lg"
+        className="absolute -right-3 top-8 w-6 h-6 bg-gray-800/80 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:scale-110 transition-all duration-300 z-50 cursor-pointer shadow-lg"
       >
         <FaChevronLeft
           className={`text-[10px] transition-transform duration-500 ease-spring ${collapsed ? "rotate-180" : ""
@@ -159,7 +159,7 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
                 className={({ isActive }) =>
                   `group relative flex items-center ${collapsed ? "justify-center" : "px-4"
                   } gap-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-300 ease-out overflow-hidden ${isActive
-                    ? "bg-gray-500/10 text-gray-400 shadow-[inset_4px_0_0_0_#3b82f6]"
+                    ? "bg-blue-600/10 text-blue-400 shadow-[inset_4px_0_0_0_#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.1)]"
                     : "text-gray-400 hover:text-white hover:bg-white/5 border-l-4 border-transparent hover:shadow-[inset_2px_0_0_0_rgba(255,255,255,0.2)]"
                   }`
                 }
@@ -167,13 +167,13 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
                 {/* Background Glow Effect on Active */}
                 {({ isActive }) => (
                   <>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-gray-500/10 to-transparent opacity-0 transition-opacity duration-300 ${isActive ? "opacity-100" : "group-hover:opacity-50"}`}></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-600/10 to-transparent opacity-0 transition-opacity duration-300 ${isActive ? "opacity-100" : "group-hover:opacity-50"}`}></div>
 
-                    <span className={`relative text-[16px] flex-shrink-0 transition-transform duration-300 ${isActive ? "scale-110 text-gray-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" : "group-hover:scale-110 group-hover:text-gray-300"}`}>
+                    <span className={`relative text-[16px] flex-shrink-0 transition-transform duration-300 ${isActive ? "scale-110 text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : "group-hover:scale-110 group-hover:text-gray-300"}`}>
                       {item.icon}
                     </span>
                     {!collapsed && (
-                      <span className={`relative transition-all duration-300 ${isActive ? "font-semibold tracking-wide" : "group-hover:translate-x-1"}`}>
+                      <span className={`relative transition-all duration-300 ${isActive ? "font-semibold tracking-wide text-white" : "group-hover:translate-x-1"}`}>
                         {item.name}
                       </span>
                     )}
@@ -186,7 +186,7 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
       </nav>
 
       {/* User Info + Logout stick to bottom */}
-      <div className="p-4 border-t border-white/5 space-y-3 shrink-0 bg-[#0a0f1c]/50 backdrop-blur-md">
+      <div className="p-4 border-t border-white/5 space-y-3 shrink-0 bg-[#050505]/80 backdrop-blur-md">
         {!collapsed && user && (
           <div className="p-3 rounded-2xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/5 flex items-center gap-3 backdrop-blur-sm shadow-inner transition-all duration-300 hover:border-white/10 hover:bg-white/10 cursor-default group">
             <div className="w-8 h-8 rounded-full bg-gray-500/20 text-gray-400 flex items-center justify-center font-bold uppercase shrink-0 ring-1 ring-gray-500/30 group-hover:ring-gray-400 transition-all duration-300">
