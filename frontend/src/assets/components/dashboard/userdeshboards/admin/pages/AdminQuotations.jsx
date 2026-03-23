@@ -113,7 +113,7 @@ const AdminQuotations = () => {
                         <div 
                             key={q._id} 
                             onClick={() => handleSelect(q)}
-                            className={`p-4 border-2 transition-all cursor-pointer ${selected?._id === q._id ? 'border-cyan-500 bg-white shadow-[4px_4px_0px_rgba(6,182,212,1)]' : 'border-slate-200 bg-white hover:border-slate-400 shadow-sm'}`}
+                            className={`p-4 border-2 transition-all cursor-pointer ${selected?._id === q._id ? 'border-cyan-500 bg-[#1A1B1E] border border-[#2A2B2F] -[4px_4px_0px_rgba(6,182,212,1)]' : 'border-slate-200 bg-[#1A1B1E] border border-[#2A2B2F] hover:border-slate-400 '}`}
                         >
                             <div className="flex justify-between items-center mb-2">
                                 <span className="font-black">ID_{q._id.slice(-8)}</span>
@@ -129,7 +129,7 @@ const AdminQuotations = () => {
 
                 {/* Editor */}
                 {selected ? (
-                    <div className="bg-white border-4 border-slate-900 p-8 shadow-[10px_10px_0px_rgba(0,0,0,1)] sticky top-24">
+                    <div className="bg-[#1A1B1E] border border-[#2A2B2F] border-4 border-slate-900 p-8 -[10px_10px_0px_rgba(0,0,0,1)] sticky top-24">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-black uppercase">Edit_Quotation</h3>
                             <button onClick={() => setSelected(null)} className="text-xs font-bold text-pink-500 hover:underline">CLOSE_PANEL</button>
@@ -203,7 +203,7 @@ const AdminQuotations = () => {
                                                             className="flex-1 p-2 border-2 border-red-200 text-[10px] outline-none focus:border-red-400"
                                                         />
                                                         {activeSearchIdx === idx && searchResults.length > 0 && (
-                                                            <div className="absolute top-full left-0 right-0 bg-white border-2 border-slate-900 z-50 shadow-xl mt-1 max-h-40 overflow-y-auto">
+                                                            <div className="absolute top-full left-0 right-0 bg-[#1A1B1E] border border-[#2A2B2F] border-2 border-slate-900 z-50  mt-1 max-h-40 overflow-y-auto">
                                                                 {searchResults.map((res) => (
                                                                     <div 
                                                                         key={res._id} 
@@ -254,7 +254,7 @@ const AdminQuotations = () => {
 
                         <button 
                             onClick={handleUpdate}
-                            className="w-full py-4 bg-slate-900 text-white font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-cyan-600 transition-all shadow-[6px_6px_0px_rgba(6,182,212,0.3)]"
+                            className="w-full py-4 bg-slate-900 text-white font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-cyan-600 transition-all -[6px_6px_0px_rgba(6,182,212,0.3)]"
                         >
                             <Send size={18} /> Send_Quotation
                         </button>

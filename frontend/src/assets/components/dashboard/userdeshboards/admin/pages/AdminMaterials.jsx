@@ -102,19 +102,19 @@ const AdminMaterials = () => {
     return (
         <div className="p-6">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2"><FaBoxes className="text-indigo-600" /> Material Management</h1>
+                <h1 className="text-2xl font-bold text-white flex items-center gap-2"><FaBoxes className="text-indigo-400" /> Material Management</h1>
                 <button onClick={() => { setFormData({ name: "", category: "Cement", unit: "kg", unitPrice: "", description: "" }); setEditingId(null); setShowModal(true); }}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+                    className="bg-white text-black hover:bg-gray-200 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
                     <FaPlus /> Add Material
                 </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-gray-200 mb-6">
-                <button onClick={() => setActiveTab("materials")} className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === "materials" ? "border-indigo-600 text-indigo-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+            <div className="flex border-b border-[#2A2B2F] mb-6">
+                <button onClick={() => setActiveTab("materials")} className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === "materials" ? "border-indigo-600 text-indigo-400" : "border-transparent text-[#8E929C] hover:text-gray-200"}`}>
                     Global Database ({materials.length})
                 </button>
-                <button onClick={() => setActiveTab("requests")} className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 flex items-center gap-2 ${activeTab === "requests" ? "border-indigo-600 text-indigo-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
+                <button onClick={() => setActiveTab("requests")} className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 flex items-center gap-2 ${activeTab === "requests" ? "border-indigo-600 text-indigo-400" : "border-transparent text-[#8E929C] hover:text-gray-200"}`}>
                     Architect Requests
                     {requests.filter(r => r.status === "Pending").length > 0 && (
                         <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{requests.filter(r => r.status === "Pending").length}</span>
@@ -124,9 +124,9 @@ const AdminMaterials = () => {
 
             {/* Tab: Materials Database */}
             {activeTab === "materials" && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl  border border-[#2A2B2F] overflow-hidden">
                     <table className="w-full text-left text-sm whitespace-nowrap">
-                        <thead className="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200">
+                        <thead className="bg-[#121212] text-[#8E929C] font-semibold border-b border-[#2A2B2F]">
                             <tr>
                                 <th className="px-6 py-4">Name</th>
                                 <th className="px-6 py-4">Category</th>
@@ -135,12 +135,12 @@ const AdminMaterials = () => {
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-[#2A2B2F]">
                             {materials.map(m => (
-                                <tr key={m._id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">{m.name}</td>
-                                    <td className="px-6 py-4"><span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">{m.category}</span></td>
-                                    <td className="px-6 py-4 text-gray-600">{m.unit}</td>
+                                <tr key={m._id} className="hover:bg-[#121212]">
+                                    <td className="px-6 py-4 font-medium text-white">{m.name}</td>
+                                    <td className="px-6 py-4"><span className="bg-[#121212] text-[#8E929C] px-2 py-1 rounded text-xs">{m.category}</span></td>
+                                    <td className="px-6 py-4 text-[#8E929C]">{m.unit}</td>
                                     <td className="px-6 py-4 font-semibold">₹{m.unitPrice}</td>
                                     <td className="px-6 py-4 text-right space-x-3">
                                         <button onClick={() => openEditModal(m)} className="text-blue-500 hover:text-blue-700 p-1"><FaEdit /></button>
@@ -148,7 +148,7 @@ const AdminMaterials = () => {
                                     </td>
                                 </tr>
                             ))}
-                            {materials.length === 0 && <tr><td colSpan="5" className="text-center p-8 text-gray-500">No materials in the global database</td></tr>}
+                            {materials.length === 0 && <tr><td colSpan="5" className="text-center p-8 text-[#8E929C]">No materials in the global database</td></tr>}
                         </tbody>
                     </table>
                 </div>
@@ -158,16 +158,16 @@ const AdminMaterials = () => {
             {activeTab === "requests" && (
                 <div className="space-y-4">
                     {requests.map(req => (
-                        <div key={req._id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                            <div className="flex justify-between items-start mb-4 border-b border-gray-100 pb-4">
+                        <div key={req._id} className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl  border border-[#2A2B2F] p-5">
+                            <div className="flex justify-between items-start mb-4 border-b border-[#2A2B2F] pb-4">
                                 <div>
                                     <div className="flex items-center gap-3 mb-1">
-                                        <h3 className="font-bold text-gray-900">Request from {req.architectId?.name || "Unknown Architect"}</h3>
+                                        <h3 className="font-bold text-white">Request from {req.architectId?.name || "Unknown Architect"}</h3>
                                         <span className={`px-2 py-0.5 rounded text-xs font-bold ${req.status === 'Pending' ? 'bg-amber-100 text-amber-700' : req.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                                             {req.status}
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-500">Project: <span className="font-semibold">{req.projectId?.name || "Unknown Project"}</span> &bull; Submitted: {new Date(req.createdAt).toLocaleDateString()}</p>
+                                    <p className="text-sm text-[#8E929C]">Project: <span className="font-semibold">{req.projectId?.name || "Unknown Project"}</span> &bull; Submitted: {new Date(req.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 {req.status === 'Pending' && (
                                     <div className="flex gap-2">
@@ -178,13 +178,13 @@ const AdminMaterials = () => {
                             </div>
 
                             <div>
-                                <h4 className="text-xs font-bold text-gray-500 uppercase mb-2 border-b border-gray-50 pb-1">Requested Items</h4>
+                                <h4 className="text-xs font-bold text-[#8E929C] uppercase mb-2 border-b border-gray-50 pb-1">Requested Items</h4>
                                 <ul className="space-y-2">
                                     {req.items.map((item, i) => (
-                                        <li key={i} className="flex justify-between items-center text-sm bg-gray-50 py-1.5 px-3 rounded-md">
+                                        <li key={i} className="flex justify-between items-center text-sm bg-[#121212] py-1.5 px-3 rounded-md">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-semibold text-gray-800">{item.materialId?.name || item.materialName || "Custom Material"}</span>
-                                                <span className="text-gray-400 text-xs">({item.materialId?.category || "Custom"})</span>
+                                                <span className="font-semibold text-white">{item.materialId?.name || item.materialName || "Custom Material"}</span>
+                                                <span className="text-[#6B7280] text-xs">({item.materialId?.category || "Custom"})</span>
                                             </div>
                                             <div className="flex items-center gap-4">
                                                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase ${item.urgency === 'High' ? 'bg-red-100 text-red-700' : item.urgency === 'Medium' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>{item.urgency} Priority</span>
@@ -196,54 +196,54 @@ const AdminMaterials = () => {
                             </div>
 
                             {req.adminNotes && (
-                                <div className="mt-4 p-3 bg-gray-50 rounded-lg text-sm italic text-gray-600 border border-gray-100">
-                                    <span className="font-bold -not-italic text-gray-700">Notes:</span> {req.adminNotes}
+                                <div className="mt-4 p-3 bg-[#121212] rounded-lg text-sm italic text-[#8E929C] border border-[#2A2B2F]">
+                                    <span className="font-bold -not-italic text-gray-200">Notes:</span> {req.adminNotes}
                                 </div>
                             )}
                         </div>
                     ))}
-                    {requests.length === 0 && <div className="text-center p-12 bg-white rounded-xl border border-gray-200 text-gray-500">No material requests found.</div>}
+                    {requests.length === 0 && <div className="text-center p-12 bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl border border-[#2A2B2F] text-[#8E929C]">No material requests found.</div>}
                 </div>
             )}
 
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-                        <div className="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                            <h2 className="text-lg font-bold text-gray-800">{editingId ? "Edit" : "Add"} Global Material</h2>
-                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600"><FaTimes /></button>
+                    <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl  w-full max-w-md overflow-hidden">
+                        <div className="p-5 border-b border-[#2A2B2F] bg-[#121212] flex justify-between items-center">
+                            <h2 className="text-lg font-bold text-white">{editingId ? "Edit" : "Add"} Global Material</h2>
+                            <button onClick={() => setShowModal(false)} className="text-[#6B7280] hover:text-[#8E929C]"><FaTimes /></button>
                         </div>
                         <form onSubmit={handleSaveMaterial} className="p-5 space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Name</label>
-                                <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Portland Cement" />
+                                <label className="block text-xs font-bold text-gray-200 uppercase mb-1">Name</label>
+                                <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full border border-[#2A2B2F] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-0" placeholder="e.g. Portland Cement" />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Category</label>
-                                    <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                    <label className="block text-xs font-bold text-gray-200 uppercase mb-1">Category</label>
+                                    <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full border border-[#2A2B2F] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-0 bg-[#1A1B1E] border border-[#2A2B2F]">
                                         <option>Cement</option><option>Sand</option><option>Steel</option><option>Bricks</option><option>Wood</option><option>Electrical</option><option>Plumbing</option><option>Other</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Unit</label>
-                                    <select value={formData.unit} onChange={e => setFormData({ ...formData, unit: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                                    <label className="block text-xs font-bold text-gray-200 uppercase mb-1">Unit</label>
+                                    <select value={formData.unit} onChange={e => setFormData({ ...formData, unit: e.target.value })} className="w-full border border-[#2A2B2F] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-0 bg-[#1A1B1E] border border-[#2A2B2F]">
                                         <option>kg</option><option>tons</option><option>bags</option><option>sqft</option><option>cft</option><option>pieces</option><option>meters</option>
                                     </select>
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Unit Price (₹)</label>
-                                <input type="number" required min="0" value={formData.unitPrice} onChange={e => setFormData({ ...formData, unitPrice: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="450" />
+                                <label className="block text-xs font-bold text-gray-200 uppercase mb-1">Unit Price (₹)</label>
+                                <input type="number" required min="0" value={formData.unitPrice} onChange={e => setFormData({ ...formData, unitPrice: e.target.value })} className="w-full border border-[#2A2B2F] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-0" placeholder="450" />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Description (Optional)</label>
-                                <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none h-20" placeholder="Additional details..." />
+                                <label className="block text-xs font-bold text-gray-200 uppercase mb-1">Description (Optional)</label>
+                                <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full border border-[#2A2B2F] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-0 resize-none h-20" placeholder="Additional details..." />
                             </div>
                             <div className="pt-2 flex justify-end gap-3">
-                                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                                <button type="submit" disabled={submitting} className="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors shadow-sm disabled:opacity-50">
+                                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm font-medium text-[#8E929C] hover:bg-[#121212] rounded-lg transition-colors">Cancel</button>
+                                <button type="submit" disabled={submitting} className="px-4 py-2 text-sm font-bold bg-white text-black hover:bg-gray-200 rounded-lg transition-colors  disabled:opacity-50">
                                     {submitting ? "Saving..." : "Save Material"}
                                 </button>
                             </div>

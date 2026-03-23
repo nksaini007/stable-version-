@@ -22,10 +22,10 @@ const roleConfig = {
 
 const InfoRow = ({ icon, label, value }) => (
   <div className="flex items-start gap-2">
-    <span className="text-gray-500 mt-0.5 shrink-0 text-xs">{icon}</span>
+    <span className="text-[#8E929C] mt-0.5 shrink-0 text-xs">{icon}</span>
     <div>
-      <p className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</p>
-      <p className="text-sm text-gray-200 font-medium break-all">{value || <span className="text-gray-600 font-normal">Not provided</span>}</p>
+      <p className="text-[10px] text-[#8E929C] uppercase tracking-wider">{label}</p>
+      <p className="text-sm text-gray-200 font-medium break-all">{value || <span className="text-[#8E929C] font-normal">Not provided</span>}</p>
     </div>
   </div>
 );
@@ -35,13 +35,13 @@ const DocCard = ({ label, url }) => {
   const fullUrl = url.startsWith("http") ? url : `${API_BASE}${url}`;
   const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3">
+    <div className="bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl p-3 flex items-center gap-3">
       <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
         <FaFileAlt className="text-blue-400 text-sm" />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs font-semibold text-gray-300 truncate">{label}</p>
-        <p className="text-[10px] text-gray-500">{isImage ? "Image" : "Document"}</p>
+        <p className="text-[10px] text-[#8E929C]">{isImage ? "Image" : "Document"}</p>
       </div>
       <div className="flex gap-1.5 shrink-0">
         <a href={fullUrl} target="_blank" rel="noreferrer"
@@ -137,7 +137,7 @@ const UserManagement = () => {
           <h1 className="text-2xl font-black text-white flex items-center gap-3">
             <FaUserCheck className="text-blue-400" /> User Management
           </h1>
-          <p className="text-gray-400 text-sm mt-1">Manage all users, partners, and document verification</p>
+          <p className="text-[#6B7280] text-sm mt-1">Manage all users, partners, and document verification</p>
         </div>
         {msg && (
           <div className={`px-4 py-2 rounded-xl text-sm font-medium border ${msg.startsWith("✅") ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400"}`}>
@@ -150,12 +150,12 @@ const UserManagement = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setRoleFilter(t.key)}
-            className={`relative rounded-2xl p-3 text-left transition-all border ${roleFilter === t.key ? "border-white/20 bg-white/10 shadow-lg" : "border-white/5 bg-white/[0.03] hover:bg-white/[0.06]"}`}>
+            className={`relative rounded-2xl p-3 text-left transition-all border ${roleFilter === t.key ? "border-white/20 bg-[#1A1B1E] border border-[#2A2B2F]/10 " : "border-white/5 bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] hover:bg-[#1A1B1E] border border-[#2A2B2F]/[0.06]"}`}>
             {roleFilter === t.key && (
               <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${t.color} opacity-10`} />
             )}
             <p className="text-xl font-black text-white">{t.count}</p>
-            <p className="text-[10px] text-gray-400 mt-0.5 uppercase tracking-wider">{t.label}</p>
+            <p className="text-[10px] text-[#6B7280] mt-0.5 uppercase tracking-wider">{t.label}</p>
           </button>
         ))}
       </div>
@@ -163,13 +163,13 @@ const UserManagement = () => {
       {/* Toolbar */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-60">
-          <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs" />
+          <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8E929C] text-xs" />
           <input placeholder="Search name, email, phone, business..."
             value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-blue-500/40" />
+            className="w-full pl-9 pr-4 py-2.5 bg-[#1A1B1E] border border-[#2A2B2F]/[0.04] border border-white/10 rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-white/40" />
         </div>
-        <div className="flex items-center gap-2 bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2">
-          <FaSortAmountDown className="text-gray-500 text-xs" />
+        <div className="flex items-center gap-2 bg-[#1A1B1E] border border-[#2A2B2F]/[0.04] border border-white/10 rounded-xl px-3 py-2">
+          <FaSortAmountDown className="text-[#8E929C] text-xs" />
           <select value={sortBy} onChange={e => setSortBy(e.target.value)}
             className="bg-transparent text-sm text-gray-300 focus:outline-none">
             <option value="newest" className="bg-[#0a0f1e]">Newest First</option>
@@ -177,7 +177,7 @@ const UserManagement = () => {
             <option value="name" className="bg-[#0a0f1e]">Name A–Z</option>
           </select>
         </div>
-        <span className="text-gray-500 text-sm">{filtered.length} user{filtered.length !== 1 ? "s" : ""}</span>
+        <span className="text-[#8E929C] text-sm">{filtered.length} user{filtered.length !== 1 ? "s" : ""}</span>
       </div>
 
       {/* User Cards Grid */}
@@ -186,7 +186,7 @@ const UserManagement = () => {
           <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 text-[#8E929C]">
           <FaUser className="text-5xl mx-auto mb-4 opacity-20" />
           <p>No users found</p>
         </div>
@@ -200,12 +200,12 @@ const UserManagement = () => {
 
             return (
               <div key={u._id}
-                className={`group bg-white/[0.03] border rounded-2xl p-4 transition-all hover:bg-white/[0.06] hover:shadow-lg hover:shadow-black/30 cursor-pointer ${isPending ? "border-yellow-500/30" : "border-white/5"}`}
+                className={`group bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border rounded-2xl p-4 transition-all hover:bg-[#1A1B1E] border border-[#2A2B2F]/[0.06] hover: hover:-black/30 cursor-pointer ${isPending ? "border-yellow-500/30" : "border-white/5"}`}
                 onClick={() => setSelected(u)}>
                 {/* Card Header */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${rc.color} flex items-center justify-center text-white text-lg font-bold shrink-0 shadow-lg`}>
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${rc.color} flex items-center justify-center text-white text-lg font-bold shrink-0 `}>
                       {u.profileImage ? (
                         <img src={u.profileImage.startsWith("http") ? u.profileImage : `${API_BASE}${u.profileImage}`}
                           alt="" className="w-full h-full object-cover rounded-xl" />
@@ -215,7 +215,7 @@ const UserManagement = () => {
                     </div>
                     <div className="min-w-0">
                       <p className="text-white font-bold truncate">{u.name}</p>
-                      <p className="text-gray-400 text-xs truncate">{u.email}</p>
+                      <p className="text-[#6B7280] text-xs truncate">{u.email}</p>
                       {u.businessName && <p className="text-orange-400 text-xs truncate">{u.businessName}</p>}
                     </div>
                   </div>
@@ -237,7 +237,7 @@ const UserManagement = () => {
                 </div>
 
                 {/* Meta */}
-                <div className="mt-3 flex flex-wrap gap-2 text-[10px] text-gray-500">
+                <div className="mt-3 flex flex-wrap gap-2 text-[10px] text-[#8E929C]">
                   {u.phone && <span className="flex items-center gap-1"><FaPhone />{u.phone}</span>}
                   {u.location?.city && <span className="flex items-center gap-1"><FaMapMarkerAlt />{u.location.city}</span>}
                   <span className="flex items-center gap-1"><FaClock />{new Date(u.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
@@ -265,7 +265,7 @@ const UserManagement = () => {
                       </button>
                     )}
                     <button onClick={() => handleToggle(u._id)} disabled={actionLoading}
-                      className={`p-1.5 rounded-lg transition-all text-sm ${u.isActive !== false ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20" : "bg-gray-500/10 text-gray-500 hover:bg-gray-500/20"}`}
+                      className={`p-1.5 rounded-lg transition-all text-sm ${u.isActive !== false ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20" : "bg-gray-500/10 text-[#8E929C] hover:bg-gray-500/20"}`}
                       title={u.isActive !== false ? "Deactivate" : "Activate"}>
                       {u.isActive !== false ? <FaToggleOn /> : <FaToggleOff />}
                     </button>
@@ -280,7 +280,7 @@ const UserManagement = () => {
       {/* ─── DETAIL MODAL ──────────────────────────────────────── */}
       {selected && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0d1225] border border-white/10 rounded-3xl w-full max-w-3xl shadow-2xl my-8" onClick={e => e.stopPropagation()}>
+          <div className="bg-[#0d1225] border border-white/10 rounded-3xl w-full max-w-3xl  my-8" onClick={e => e.stopPropagation()}>
             {(() => {
               const u = selected;
               const rc = roleConfig[u.role] || roleConfig.customer;
@@ -300,7 +300,7 @@ const UserManagement = () => {
                     <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_top_right,white,transparent)]" />
                     <div className="relative flex items-start justify-between gap-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white text-2xl font-black border border-white/30 overflow-hidden">
+                        <div className="w-16 h-16 rounded-2xl bg-[#1A1B1E] border border-[#2A2B2F]/20 flex items-center justify-center text-white text-2xl font-black border border-white/30 overflow-hidden">
                           {u.profileImage ? (
                             <img src={u.profileImage.startsWith("http") ? u.profileImage : `${API_BASE}${u.profileImage}`} alt="" className="w-full h-full object-cover" />
                           ) : (
@@ -311,14 +311,14 @@ const UserManagement = () => {
                           <h2 className="text-xl font-black text-white">{u.name}</h2>
                           {u.businessName && <p className="text-white/80 text-sm">{u.businessName}</p>}
                           <div className="flex gap-2 mt-1 flex-wrap">
-                            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-white/20 text-white">{rc.label}</span>
+                            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#1A1B1E] border border-[#2A2B2F]/20 text-white">{rc.label}</span>
                             {isPending && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-400/30 text-yellow-100">Pending Approval</span>}
                             {u.isActive === false && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/40 text-red-100">Inactive</span>}
                             {u.isApproved && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-green-400/30 text-green-100">Verified</span>}
                           </div>
                         </div>
                       </div>
-                      <button onClick={() => setSelected(null)} className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-all shrink-0">
+                      <button onClick={() => setSelected(null)} className="w-8 h-8 rounded-xl bg-[#1A1B1E] border border-[#2A2B2F]/20 flex items-center justify-center text-white hover:bg-[#1A1B1E] border border-[#2A2B2F]/30 transition-all shrink-0">
                         <FaTimes />
                       </button>
                     </div>
@@ -337,8 +337,8 @@ const UserManagement = () => {
                         className={`flex items-center gap-2 px-4 py-2.5 font-bold rounded-xl text-sm transition-all disabled:opacity-60 ${u.isActive !== false ? "bg-orange-500/20 text-orange-400 border border-orange-500/30 hover:bg-orange-500/30" : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"}`}>
                         {u.isActive !== false ? <><FaBan /> Deactivate</> : <><FaToggleOn /> Activate</>}
                       </button>
-                      <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                        <span className="text-xs text-gray-400">Role:</span>
+                      <div className="flex items-center gap-2 bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-3 py-2">
+                        <span className="text-xs text-[#6B7280]">Role:</span>
                         <select value={u.role} onChange={e => handleRoleChange(u._id, e.target.value)}
                           className="bg-transparent text-sm text-white focus:outline-none" disabled={actionLoading}>
                           {["customer", "seller", "delivery", "provider", "architect", "admin"].map(r => (
@@ -355,8 +355,8 @@ const UserManagement = () => {
                     {/* Grid: Contact + Account */}
                     <div className="grid sm:grid-cols-2 gap-4">
                       {/* Contact Info */}
-                      <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2"><FaUser /> Contact Info</h3>
+                      <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-4 space-y-3">
+                        <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider flex items-center gap-2"><FaUser /> Contact Info</h3>
                         <InfoRow icon={<FaEnvelope />} label="Email" value={u.email} />
                         <InfoRow icon={<FaPhone />} label="Phone" value={u.phone} />
                         <InfoRow icon={<FaMapMarkerAlt />} label="Address" value={u.address} />
@@ -366,8 +366,8 @@ const UserManagement = () => {
                       </div>
 
                       {/* Account Info */}
-                      <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2"><FaChartBar /> Account Info</h3>
+                      <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-4 space-y-3">
+                        <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider flex items-center gap-2"><FaChartBar /> Account Info</h3>
                         <InfoRow icon={<FaClock />} label="Joined" value={new Date(u.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} />
                         <InfoRow icon={<FaShieldAlt />} label="Status" value={u.isActive !== false ? "Active" : "Inactive"} />
                         <InfoRow icon={<FaCheckCircle />} label="Approval" value={u.isApproved ? "Approved ✅" : "Pending ⏳"} />
@@ -433,8 +433,8 @@ const UserManagement = () => {
 
                     {/* Submitted Documents */}
                     {docs.length > 0 && (
-                      <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                      <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-4 space-y-3">
+                        <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider flex items-center gap-2">
                           <FaFileAlt /> Uploaded Documents ({docs.length})
                         </h3>
                         <div className="grid sm:grid-cols-2 gap-3">
@@ -450,9 +450,9 @@ const UserManagement = () => {
 
                     {/* No docs placeholder for partners */}
                     {docs.length === 0 && u.role !== "customer" && u.role !== "admin" && (
-                      <div className="bg-white/[0.03] border border-white/5 border-dashed rounded-2xl p-6 text-center">
-                        <FaFileAlt className="text-3xl text-gray-600 mx-auto mb-2" />
-                        <p className="text-gray-500 text-sm">No documents submitted by this partner</p>
+                      <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 border-dashed rounded-2xl p-6 text-center">
+                        <FaFileAlt className="text-3xl text-[#8E929C] mx-auto mb-2" />
+                        <p className="text-[#8E929C] text-sm">No documents submitted by this partner</p>
                       </div>
                     )}
                   </div>

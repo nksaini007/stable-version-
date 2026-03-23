@@ -8,12 +8,12 @@ import {
 import API, { API_BASE } from "../../../../../api/api";
 
 const STATUS_COLORS = {
-    draft: "bg-gray-500/20 text-gray-400",
+    draft: "bg-gray-500/20 text-[#6B7280]",
     pending_payment: "bg-yellow-500/20 text-yellow-400",
     pending_approval: "bg-orange-500/20 text-orange-400",
     active: "bg-green-500/20 text-green-400",
     paused: "bg-blue-500/20 text-blue-400",
-    completed: "bg-gray-500/20 text-gray-500",
+    completed: "bg-gray-500/20 text-[#8E929C]",
     rejected: "bg-red-500/20 text-red-400",
 };
 
@@ -82,7 +82,7 @@ export default function AdminAdCampaigns() {
                 <h1 className="text-2xl font-black text-white flex items-center gap-3">
                     <FaBullhorn className="text-orange-400" /> Ad Campaign Management
                 </h1>
-                <p className="text-gray-400 text-sm mt-1">Review and approve seller ad campaigns</p>
+                <p className="text-[#6B7280] text-sm mt-1">Review and approve seller ad campaigns</p>
             </div>
 
             {/* Stats */}
@@ -94,10 +94,10 @@ export default function AdminAdCampaigns() {
                         { label: "Pending Approval", val: stats.pendingApproval, icon: <FaClock />, color: "from-yellow-500 to-orange-500" },
                         { label: "Ad Revenue", val: `₹${stats.adRevenue?.toLocaleString()}`, icon: <FaMoneyBillWave />, color: "from-blue-500 to-cyan-500" },
                     ].map((s, i) => (
-                        <div key={i} className="bg-white/[0.03] border border-white/5 rounded-2xl p-4">
+                        <div key={i} className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-4">
                             <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white mb-3`}>{s.icon}</div>
                             <p className="text-2xl font-black text-white">{s.val}</p>
-                            <p className="text-gray-400 text-xs mt-1">{s.label}</p>
+                            <p className="text-[#6B7280] text-xs mt-1">{s.label}</p>
                         </div>
                     ))}
                 </div>
@@ -113,7 +113,7 @@ export default function AdminAdCampaigns() {
             <div className="flex flex-wrap gap-2">
                 {["all", "pending_approval", "active", "paused", "pending_payment", "rejected", "completed"].map((s) => (
                     <button key={s} onClick={() => setFilterStatus(s)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterStatus === s ? "bg-orange-500 text-white" : "bg-white/5 text-gray-400 hover:text-white"}`}>
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterStatus === s ? "bg-orange-500 text-white" : "bg-[#1A1B1E] border border-[#2A2B2F]/5 text-[#6B7280] hover:text-white"}`}>
                         {s === "all" ? "All" : s.replace("_", " ").toUpperCase()}
                     </button>
                 ))}
@@ -121,16 +121,16 @@ export default function AdminAdCampaigns() {
 
             {/* Campaign List */}
             <div className="space-y-4">
-                {loading && <div className="text-center py-12 text-gray-500">Loading campaigns...</div>}
+                {loading && <div className="text-center py-12 text-[#8E929C]">Loading campaigns...</div>}
                 {!loading && filtered.length === 0 && (
-                    <div className="text-center py-16 text-gray-500">
+                    <div className="text-center py-16 text-[#8E929C]">
                         <FaBullhorn className="text-5xl mx-auto mb-4 opacity-20" />
                         <p>No campaigns in this category.</p>
                     </div>
                 )}
                 {filtered.map((c) => (
                     <div key={c._id}
-                        className={`bg-white/[0.03] border rounded-2xl p-5 transition-all ${selected?._id === c._id ? "border-orange-500/40 bg-orange-500/5" : "border-white/5"}`}>
+                        className={`bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border rounded-2xl p-5 transition-all ${selected?._id === c._id ? "border-orange-500/40 bg-orange-500/5" : "border-white/5"}`}>
                         <div className="flex flex-wrap gap-4 items-start justify-between">
                             <div className="flex gap-4 items-start">
                                 {c.bannerImage && (
@@ -144,11 +144,11 @@ export default function AdminAdCampaigns() {
                                             {c.status?.replace("_", " ").toUpperCase()}
                                         </span>
                                     </div>
-                                    <p className="text-gray-400 text-sm">
+                                    <p className="text-[#6B7280] text-sm">
                                         <span className="font-semibold text-orange-400">{c.seller?.businessName || c.seller?.name}</span>
-                                        <span className="text-gray-500 ml-2">({c.seller?.email})</span>
+                                        <span className="text-[#8E929C] ml-2">({c.seller?.email})</span>
                                     </p>
-                                    <p className="text-gray-500 text-xs mt-1">
+                                    <p className="text-[#8E929C] text-xs mt-1">
                                         Type: {c.adType?.replace("_", " ")} · {c.targetCategory && `Category: ${c.targetCategory} ·`} Budget: ₹{c.budget?.toLocaleString()} · {c.durationDays} days
                                     </p>
                                     {c.status === "active" && (
@@ -162,10 +162,10 @@ export default function AdminAdCampaigns() {
                             <div className="flex gap-2 flex-wrap shrink-0">
                                 {/* Payment proof */}
                                 {c.latestPayment && (
-                                    <div className="text-xs bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                                        <p className="text-gray-400">Payment Ref:</p>
+                                    <div className="text-xs bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-3 py-2">
+                                        <p className="text-[#6B7280]">Payment Ref:</p>
                                         <p className="text-white font-semibold">{c.latestPayment.referenceNumber}</p>
-                                        <p className="text-gray-400">{c.latestPayment.paymentMethod} · ₹{c.latestPayment.amount}</p>
+                                        <p className="text-[#6B7280]">{c.latestPayment.paymentMethod} · ₹{c.latestPayment.amount}</p>
                                         {c.latestPayment.proofImage && (
                                             <a href={getOptimizedImage(c.latestPayment.proofImage, 1000)} target="_blank" rel="noreferrer"
                                                 className="text-blue-400 text-xs hover:underline mt-1 block">View Proof</a>
@@ -194,7 +194,7 @@ export default function AdminAdCampaigns() {
                                 <textarea value={actionNote} onChange={(e) => setActionNote(e.target.value)}
                                     placeholder="Admin note (required for rejection, optional for approval)"
                                     rows={2}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none resize-none placeholder-gray-600" />
+                                    className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none resize-none placeholder-gray-600" />
                                 <div className="flex gap-3">
                                     <button onClick={() => approve(c._id)}
                                         className="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl text-sm transition-all">
@@ -205,7 +205,7 @@ export default function AdminAdCampaigns() {
                                         <FaTimes /> Reject
                                     </button>
                                     <button onClick={() => { setSelected(null); setActionNote(""); }}
-                                        className="px-4 py-2.5 bg-white/5 text-gray-400 rounded-xl text-sm hover:bg-white/10 transition-all">
+                                        className="px-4 py-2.5 bg-[#1A1B1E] border border-[#2A2B2F]/5 text-[#6B7280] rounded-xl text-sm hover:bg-[#1A1B1E] border border-[#2A2B2F]/10 transition-all">
                                         Cancel
                                     </button>
                                 </div>

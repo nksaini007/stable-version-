@@ -134,7 +134,7 @@ export default function AdminDeliveryPricing() {
                     <h1 className="text-2xl font-black text-white flex items-center gap-3">
                         <FaTruck className="text-blue-400" /> Delivery Pricing Control
                     </h1>
-                    <p className="text-gray-400 text-sm mt-1">Manage delivery zones, vehicle rates, and multi-vehicle rules for North India</p>
+                    <p className="text-[#6B7280] text-sm mt-1">Manage delivery zones, vehicle rates, and multi-vehicle rules for North India</p>
                 </div>
                 <div className="flex gap-2">
                     <button onClick={handleSeed} disabled={seeding}
@@ -142,7 +142,7 @@ export default function AdminDeliveryPricing() {
                         <FaDatabase /> {seeding ? "Seeding..." : "Seed North India Defaults"}
                     </button>
                     <button onClick={openAdd}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all">
+                        className="flex items-center gap-2 px-4 py-2.5 bg-white text-black hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all">
                         <FaPlus /> Add Rule
                     </button>
                 </div>
@@ -156,10 +156,10 @@ export default function AdminDeliveryPricing() {
                     { label: "Coverage Zones", val: zones, icon: "🗺️", color: "from-orange-500 to-amber-500" },
                     { label: "Vehicle Types", val: vehicles, icon: "🚛", color: "from-purple-500 to-pink-500" },
                 ].map((s, i) => (
-                    <div key={i} className="bg-white/[0.03] border border-white/5 rounded-2xl p-4">
+                    <div key={i} className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-4">
                         <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-lg mb-3`}>{s.icon}</div>
                         <p className="text-2xl font-black text-white">{s.val}</p>
-                        <p className="text-gray-400 text-xs mt-1">{s.label}</p>
+                        <p className="text-[#6B7280] text-xs mt-1">{s.label}</p>
                     </div>
                 ))}
             </div>
@@ -171,10 +171,10 @@ export default function AdminDeliveryPricing() {
             )}
 
             {/* Tabs */}
-            <div className="flex gap-2 bg-white/[0.03] border border-white/5 p-1 rounded-xl w-fit">
+            <div className="flex gap-2 bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 p-1 rounded-xl w-fit">
                 {[["rules", "Pricing Rules"], ["calculator", "Charge Calculator"]].map(([k, l]) => (
                     <button key={k} onClick={() => setTab(k)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === k ? "bg-blue-600 text-white shadow" : "text-gray-400 hover:text-white"}`}>
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === k ? "bg-white text-black " : "text-[#6B7280] hover:text-white"}`}>
                         {l}
                     </button>
                 ))}
@@ -184,41 +184,41 @@ export default function AdminDeliveryPricing() {
             {tab === "rules" && (
                 <>
                     <div className="flex gap-2 items-center">
-                        <span className="text-gray-400 text-sm">Group by:</span>
+                        <span className="text-[#6B7280] text-sm">Group by:</span>
                         {[["zone", "Zone"], ["vehicle", "Vehicle Type"]].map(([k, l]) => (
                             <button key={k} onClick={() => setGroupBy(k)}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${groupBy === k ? "bg-blue-600 text-white" : "bg-white/5 text-gray-400 hover:text-white"}`}>
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${groupBy === k ? "bg-white text-black" : "bg-[#1A1B1E] border border-[#2A2B2F]/5 text-[#6B7280] hover:text-white"}`}>
                                 {l}
                             </button>
                         ))}
                     </div>
 
                     {loading ? (
-                        <div className="text-center py-12 text-gray-500">Loading pricing rules...</div>
+                        <div className="text-center py-12 text-[#8E929C]">Loading pricing rules...</div>
                     ) : (
                         Object.entries(grouped).map(([group, groupRules]) => (
                             <div key={group} className="space-y-2">
                                 <h3 className=" font-bold flex items-center gap-2">
                                     {groupBy === "vehicle" ? <span>{VEHICLE_ICONS[group]}</span> : <FaMapMarkerAlt className="text-blue-400" />}
                                     {groupBy === "vehicle" ? VEHICLE_LABELS[group] || group : group}
-                                    <span className="text-gray-500 text-xs font-normal">({groupRules.length} rules)</span>
+                                    <span className="text-[#8E929C] text-xs font-normal">({groupRules.length} rules)</span>
                                 </h3>
-                                <div className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden">
+                                <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl overflow-hidden">
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-sm">
                                             <thead>
-                                                <tr className="bg-white/[0.03]">
+                                                <tr className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03]">
                                                     {(groupBy === "zone"
                                                         ? ["Vehicle", "Max Weight", "Base Price", "Per Km", "Per Kg", "Min Charge", "Status", "Actions"]
                                                         : ["Zone", "States", "Max Weight", "Base Price", "Per Km", "Per Kg", "Status", "Actions"]
                                                     ).map((h) => (
-                                                        <th key={h} className="text-left px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                                                        <th key={h} className="text-left px-4 py-3 text-xs font-bold text-[#6B7280] uppercase tracking-wider whitespace-nowrap">{h}</th>
                                                     ))}
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {groupRules.map((r) => (
-                                                    <tr key={r._id} className="border-t border-white/5 hover:bg-white/[0.02]">
+                                                    <tr key={r._id} className="border-t border-white/5 hover:bg-[#1A1B1E] border border-[#2A2B2F]/[0.02]">
                                                         {groupBy === "zone" ? (
                                                             <>
                                                                 <td className="px-4 py-3 text-white font-semibold whitespace-nowrap">
@@ -229,13 +229,13 @@ export default function AdminDeliveryPricing() {
                                                         ) : (
                                                             <>
                                                                 <td className="px-4 py-3 text-white font-semibold">{r.zoneName}</td>
-                                                                <td className="px-4 py-3 text-gray-400 text-xs max-w-[150px] truncate">{r.states?.join(", ")}</td>
+                                                                <td className="px-4 py-3 text-[#6B7280] text-xs max-w-[150px] truncate">{r.states?.join(", ")}</td>
                                                             </>
                                                         )}
                                                         <td className="px-4 py-3 text-orange-400 font-bold">₹{r.basePrice}</td>
                                                         <td className="px-4 py-3 text-gray-300">₹{r.pricePerKm}/km</td>
                                                         <td className="px-4 py-3 text-gray-300">₹{r.pricePerKg}/kg</td>
-                                                        {groupBy === "zone" && <td className="px-4 py-3 text-gray-400">₹{r.minimumCharge || 0}</td>}
+                                                        {groupBy === "zone" && <td className="px-4 py-3 text-[#6B7280]">₹{r.minimumCharge || 0}</td>}
                                                         <td className="px-4 py-3">
                                                             <span className={`px-2 py-1 rounded-full text-xs font-bold ${r.isActive ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
                                                                 {r.isActive ? "Active" : "Off"}
@@ -263,7 +263,7 @@ export default function AdminDeliveryPricing() {
                         ))
                     )}
                     {!loading && rules.length === 0 && (
-                        <div className="text-center py-16 text-gray-500">
+                        <div className="text-center py-16 text-[#8E929C]">
                             <FaTruck className="text-5xl mx-auto mb-4 opacity-20" />
                             <p className="mb-4">No pricing rules configured.</p>
                             <button onClick={handleSeed} className="px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-sm transition-all">
@@ -277,36 +277,36 @@ export default function AdminDeliveryPricing() {
             {/* CALCULATOR TAB */}
             {tab === "calculator" && (
                 <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6 space-y-4">
+                    <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-6 space-y-4">
                         <h3 className="text-white font-bold flex items-center gap-2"><FaCalculator className="text-blue-400" /> Delivery Charge Calculator</h3>
-                        <p className="text-gray-400 text-sm">Preview how delivery charges are calculated for any order</p>
+                        <p className="text-[#6B7280] text-sm">Preview how delivery charges are calculated for any order</p>
                         <div>
-                            <label className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1 block">Delivery Pincode *</label>
+                            <label className="text-xs text-[#6B7280] font-bold uppercase tracking-wider mb-1 block">Delivery Pincode *</label>
                             <input value={calcForm.pincode} onChange={(e) => setCalcForm({ ...calcForm, pincode: e.target.value })}
                                 placeholder="e.g. 226001"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500/50 placeholder-gray-600" />
+                                className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/50 placeholder-gray-600" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1 block">Weight (kg) *</label>
+                                <label className="text-xs text-[#6B7280] font-bold uppercase tracking-wider mb-1 block">Weight (kg) *</label>
                                 <input type="number" value={calcForm.weightKg} onChange={(e) => setCalcForm({ ...calcForm, weightKg: e.target.value })}
                                     placeholder="e.g. 250"
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500/50 placeholder-gray-600" />
+                                    className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/50 placeholder-gray-600" />
                             </div>
                             <div>
-                                <label className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1 block">Volume (m³)</label>
+                                <label className="text-xs text-[#6B7280] font-bold uppercase tracking-wider mb-1 block">Volume (m³)</label>
                                 <input type="number" value={calcForm.volumeM3} onChange={(e) => setCalcForm({ ...calcForm, volumeM3: e.target.value })}
                                     placeholder="e.g. 2.5"
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500/50 placeholder-gray-600" />
+                                    className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/50 placeholder-gray-600" />
                             </div>
                             <div className="col-span-2">
-                                <label className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1 block">Est. Distance (km)</label>
+                                <label className="text-xs text-[#6B7280] font-bold uppercase tracking-wider mb-1 block">Est. Distance (km)</label>
                                 <input type="number" value={calcForm.estimatedKm} onChange={(e) => setCalcForm({ ...calcForm, estimatedKm: Number(e.target.value) })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500/50" />
+                                    className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-white/50" />
                             </div>
                         </div>
                         <button onClick={handleCalculate} disabled={calcLoading}
-                            className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-60">
+                            className="w-full py-3 bg-white text-black hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-60">
                             {calcLoading ? "Calculating..." : "Calculate Delivery Charge"}
                         </button>
                     </div>
@@ -314,7 +314,7 @@ export default function AdminDeliveryPricing() {
                     {/* Result */}
                     <div>
                         {calcResult && !calcResult.error && (
-                            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6 space-y-4">
+                            <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-6 space-y-4">
                                 <h3 className="text-white font-bold flex items-center gap-2"><FaCheckCircle className="text-green-400" /> Calculation Result</h3>
 
                                 {calcResult.multiVehicle && (
@@ -326,31 +326,31 @@ export default function AdminDeliveryPricing() {
 
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                        <span className="text-gray-400">Zone</span>
+                                        <span className="text-[#6B7280]">Zone</span>
                                         <span className="text-white font-semibold">{calcResult.zone}</span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                        <span className="text-gray-400">Vehicle Type</span>
+                                        <span className="text-[#6B7280]">Vehicle Type</span>
                                         <span className="text-white font-semibold">
                                             {VEHICLE_ICONS[calcResult.vehicleType]} {calcResult.vehicleLabel}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                        <span className="text-gray-400">Vehicles Needed</span>
+                                        <span className="text-[#6B7280]">Vehicles Needed</span>
                                         <span className={`font-bold ${calcResult.vehicleCount > 1 ? "text-orange-400" : "text-white"}`}>
                                             × {calcResult.vehicleCount}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                        <span className="text-gray-400">Base Charge</span>
+                                        <span className="text-[#6B7280]">Base Charge</span>
                                         <span className="text-gray-300">₹{calcResult.breakdown?.baseCharge}</span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                        <span className="text-gray-400">Weight Charge</span>
+                                        <span className="text-[#6B7280]">Weight Charge</span>
                                         <span className="text-gray-300">₹{calcResult.breakdown?.weightCharge}</span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                        <span className="text-gray-400">Distance Charge</span>
+                                        <span className="text-[#6B7280]">Distance Charge</span>
                                         <span className="text-gray-300">₹{calcResult.breakdown?.distanceCharge} ({calcResult.breakdown?.totalEstimatedKm} km)</span>
                                     </div>
                                     <div className="flex justify-between items-center py-3 bg-blue-500/10 rounded-xl px-3 border border-blue-500/20">
@@ -364,7 +364,7 @@ export default function AdminDeliveryPricing() {
                             <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-red-400">{calcResult.error}</div>
                         )}
                         {!calcResult && (
-                            <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-6 text-center text-gray-500">
+                            <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-6 text-center text-[#8E929C]">
                                 <FaTruck className="text-5xl mx-auto mb-4 opacity-20" />
                                 <p>Enter order details to calculate delivery charge</p>
                             </div>
@@ -376,62 +376,62 @@ export default function AdminDeliveryPricing() {
             {/* ADD / EDIT MODAL */}
             {modal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl my-8">
+                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6 w-full max-w-lg  my-8">
                         <div className="flex items-center justify-between mb-5">
                             <h3 className="text-white font-bold">{modal === "add" ? "Add Pricing Rule" : "Edit Pricing Rule"}</h3>
-                            <button onClick={() => setModal(null)} className="text-gray-400 hover:text-white"><FaTimes /></button>
+                            <button onClick={() => setModal(null)} className="text-[#6B7280] hover:text-white"><FaTimes /></button>
                         </div>
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-2">
-                                    <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Zone Name *</label>
+                                    <label className="text-xs text-[#6B7280] font-bold uppercase mb-1 block">Zone Name *</label>
                                     <input value={form.zoneName} onChange={(e) => setForm({ ...form, zoneName: e.target.value })}
                                         placeholder="e.g. Delhi NCR"
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
+                                        className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
                                 </div>
                                 <div className="col-span-2">
-                                    <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">States Covered (comma separated)</label>
+                                    <label className="text-xs text-[#6B7280] font-bold uppercase mb-1 block">States Covered (comma separated)</label>
                                     <input value={form.states?.join(", ")} onChange={(e) => setForm({ ...form, states: e.target.value.split(",").map((s) => s.trim()) })}
                                         placeholder="e.g. Delhi, Haryana, UP"
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
+                                        className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Vehicle Type *</label>
+                                    <label className="text-xs text-[#6B7280] font-bold uppercase mb-1 block">Vehicle Type *</label>
                                     <select value={form.vehicleType} onChange={(e) => setForm({ ...form, vehicleType: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none">
+                                        className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none">
                                         {Object.entries(VEHICLE_LABELS).map(([v, l]) => <option key={v} value={v} className="bg-[#0f172a]">{VEHICLE_ICONS[v]} {l}</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Vehicle Label</label>
+                                    <label className="text-xs text-[#6B7280] font-bold uppercase mb-1 block">Vehicle Label</label>
                                     <input value={form.vehicleLabel} onChange={(e) => setForm({ ...form, vehicleLabel: e.target.value })}
                                         placeholder="Display label"
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
+                                        className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Max Weight (kg) *</label>
+                                    <label className="text-xs text-[#6B7280] font-bold uppercase mb-1 block">Max Weight (kg) *</label>
                                     <input type="number" value={form.maxWeightKg} onChange={(e) => setForm({ ...form, maxWeightKg: Number(e.target.value) })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
+                                        className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Base Price (₹) *</label>
+                                    <label className="text-xs text-[#6B7280] font-bold uppercase mb-1 block">Base Price (₹) *</label>
                                     <input type="number" value={form.basePrice} onChange={(e) => setForm({ ...form, basePrice: Number(e.target.value) })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
+                                        className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Price per Km (₹)</label>
+                                    <label className="text-xs text-[#6B7280] font-bold uppercase mb-1 block">Price per Km (₹)</label>
                                     <input type="number" value={form.pricePerKm} onChange={(e) => setForm({ ...form, pricePerKm: Number(e.target.value) })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
+                                        className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Price per Kg (₹)</label>
+                                    <label className="text-xs text-[#6B7280] font-bold uppercase mb-1 block">Price per Kg (₹)</label>
                                     <input type="number" value={form.pricePerKg} onChange={(e) => setForm({ ...form, pricePerKg: Number(e.target.value) })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
+                                        className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-400 font-bold uppercase mb-1 block">Minimum Charge (₹)</label>
+                                    <label className="text-xs text-[#6B7280] font-bold uppercase mb-1 block">Minimum Charge (₹)</label>
                                     <input type="number" value={form.minimumCharge} onChange={(e) => setForm({ ...form, minimumCharge: Number(e.target.value) })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
+                                        className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
                                 </div>
                                 <div className="flex items-center gap-3 col-span-2">
                                     <input type="checkbox" id="isActive" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} />
@@ -440,11 +440,11 @@ export default function AdminDeliveryPricing() {
                             </div>
                             <div className="flex gap-3 pt-2">
                                 <button onClick={() => setModal(null)}
-                                    className="flex-1 py-2.5 bg-white/5 border border-white/10 text-gray-400 rounded-xl text-sm hover:bg-white/10 transition-all">
+                                    className="flex-1 py-2.5 bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 text-[#6B7280] rounded-xl text-sm hover:bg-[#1A1B1E] border border-[#2A2B2F]/10 transition-all">
                                     Cancel
                                 </button>
                                 <button onClick={handleSave} disabled={loading}
-                                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+                                    className="flex-1 py-2.5 bg-white text-black hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2">
                                     <FaSave /> {loading ? "Saving..." : "Save Rule"}
                                 </button>
                             </div>

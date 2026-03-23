@@ -103,17 +103,17 @@ const AdminSiteConfig = () => {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-gray-400">Loading Site Configuration...</div>;
+    if (loading) return <div className="p-8 text-center text-[#6B7280]">Loading Site Configuration...</div>;
 
     return (
         <div className="p-6 md:p-8 space-y-8">
             <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide">Website Content Management</h1>
-                <p className="text-gray-400 mt-2">Manage homepage banners, trending items, and site-wide content.</p>
+                <p className="text-[#6B7280] mt-2">Manage homepage banners, trending items, and site-wide content.</p>
             </div>
 
             {/* --- BANNER MANAGEMENT SECTION --- */}
-            <section className="bg-[#111827] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+            <section className="bg-[#111827] border border-white/5 rounded-2xl overflow-hidden ">
                 <div className="p-6 border-b border-white/10 flex justify-between items-center">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg">
@@ -123,7 +123,7 @@ const AdminSiteConfig = () => {
                     </div>
                     <button
                         onClick={handleSaveBanners}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium shadow-lg"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black hover:bg-gray-200 text-white rounded-lg transition-colors font-medium "
                     >
                         <FaSave /> Save Banners
                     </button>
@@ -131,19 +131,19 @@ const AdminSiteConfig = () => {
 
                 <div className="p-6 space-y-6">
                     {/* Add New Banner Form */}
-                    <form onSubmit={handleAddBanner} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                    <form onSubmit={handleAddBanner} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-[#1A1B1E] border border-[#2A2B2F]/5 rounded-xl border border-white/10">
                         <div className="col-span-1 md:col-span-4 font-semibold text-gray-300 mb-2">Add New Banner</div>
                         <input
                             type="text"
                             placeholder="Image URL (e.g. https://.../image.jpg)"
-                            className="px-4 py-2.5 bg-[#0f172a] border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500 col-span-1 md:col-span-2"
+                            className="px-4 py-2.5 bg-[#0f172a] border border-white/10 rounded-lg text-white focus:outline-none focus:border-white col-span-1 md:col-span-2"
                             value={newBanner.imageUrl}
                             onChange={(e) => setNewBanner({ ...newBanner, imageUrl: e.target.value })}
                         />
                         <input
                             type="text"
                             placeholder="Banner Title (Optional)"
-                            className="px-4 py-2.5 bg-[#0f172a] border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                            className="px-4 py-2.5 bg-[#0f172a] border border-white/10 rounded-lg text-white focus:outline-none focus:border-white"
                             value={newBanner.title}
                             onChange={(e) => setNewBanner({ ...newBanner, title: e.target.value })}
                         />
@@ -159,7 +159,7 @@ const AdminSiteConfig = () => {
                     <div className="space-y-4">
                         <h3 className="font-semibold text-gray-300">Active Banners ({banners.length})</h3>
                         {banners.length === 0 ? (
-                            <p className="text-gray-500 italic">No banners currently active.</p>
+                            <p className="text-[#8E929C] italic">No banners currently active.</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {banners.map((banner, index) => (
@@ -168,7 +168,7 @@ const AdminSiteConfig = () => {
                                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <button
                                                 onClick={() => handleRemoveBanner(banner.id)}
-                                                className="p-3 bg-red-500 text-white rounded-full hover:scale-110 transition-transform shadow-lg"
+                                                className="p-3 bg-red-500 text-white rounded-full hover:scale-110 transition-transform "
                                             >
                                                 <FaTrash />
                                             </button>
@@ -183,7 +183,7 @@ const AdminSiteConfig = () => {
             </section>
 
             {/* --- TRENDING ITEMS SECTION --- */}
-            <section className="bg-[#111827] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+            <section className="bg-[#111827] border border-white/5 rounded-2xl overflow-hidden ">
                 <div className="p-6 border-b border-white/10 flex justify-between items-center">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-orange-500/20 text-orange-400 rounded-lg">
@@ -193,7 +193,7 @@ const AdminSiteConfig = () => {
                     </div>
                     <button
                         onClick={handleSaveTrending}
-                        className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors font-medium shadow-lg"
+                        className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors font-medium "
                     >
                         <FaSave /> Save Trending List
                     </button>
@@ -223,26 +223,26 @@ const AdminSiteConfig = () => {
                         {/* Search Results */}
                         <div className="bg-[#0f172a] border border-white/5 rounded-xl min-h-[300px] max-h-[400px] overflow-y-auto p-2">
                             {isSearching ? (
-                                <div className="text-center p-8 text-gray-500">Searching...</div>
+                                <div className="text-center p-8 text-[#8E929C]">Searching...</div>
                             ) : searchResults.length > 0 ? (
                                 <div className="space-y-2">
                                     {searchResults.map(product => (
-                                        <div key={product._id} className="flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-white/10">
+                                        <div key={product._id} className="flex items-center justify-between p-3 bg-[#1A1B1E] border border-[#2A2B2F]/5 hover:bg-[#1A1B1E] border border-[#2A2B2F]/10 rounded-lg transition-colors border border-transparent hover:border-white/10">
                                             <div className="flex items-center gap-3 overflow-hidden">
                                                 <img
                                                     src={product.images?.[0]?.url || product.image || "https://via.placeholder.com/50"}
                                                     alt={product.name}
-                                                    className="w-10 h-10 object-cover rounded bg-white/10 shrink-0"
+                                                    className="w-10 h-10 object-cover rounded bg-[#1A1B1E] border border-[#2A2B2F]/10 shrink-0"
                                                 />
                                                 <div className="truncate">
                                                     <p className="text-sm font-medium text-white truncate">{product.name}</p>
-                                                    <p className="text-xs text-gray-500">₹{product.price}</p>
+                                                    <p className="text-xs text-[#8E929C]">₹{product.price}</p>
                                                 </div>
                                             </div>
                                             <button
                                                 onClick={() => handleAddTrending(product)}
                                                 disabled={trendingItemIds.includes(product._id)}
-                                                className={`p-2 rounded-lg ml-2 shrink-0 ${trendingItemIds.includes(product._id) ? "text-gray-600 bg-white/5 cursor-not-allowed" : "text-orange-400 bg-orange-500/10 hover:bg-orange-500/20"}`}
+                                                className={`p-2 rounded-lg ml-2 shrink-0 ${trendingItemIds.includes(product._id) ? "text-[#8E929C] bg-[#1A1B1E] border border-[#2A2B2F]/5 cursor-not-allowed" : "text-orange-400 bg-orange-500/10 hover:bg-orange-500/20"}`}
                                                 title="Add to Trending"
                                             >
                                                 <FaPlus />
@@ -251,7 +251,7 @@ const AdminSiteConfig = () => {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center p-8 text-gray-600 italic">No products found.</div>
+                                <div className="text-center p-8 text-[#8E929C] italic">No products found.</div>
                             )}
                         </div>
                     </div>
@@ -260,12 +260,12 @@ const AdminSiteConfig = () => {
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
                             <h3 className="font-semibold text-gray-300">Currently Featured ({trendingItemIds.length})</h3>
-                            <p className="text-xs text-gray-400 italic">Raw IDs (Data populated on load)</p>
+                            <p className="text-xs text-[#6B7280] italic">Raw IDs (Data populated on load)</p>
                         </div>
 
                         <div className="bg-orange-500/5 border border-orange-500/10 rounded-xl min-h-[300px] max-h-[400px] overflow-y-auto p-4 space-y-3">
                             {trendingItemIds.length === 0 ? (
-                                <div className="text-center p-8 text-gray-500">No trending items selected.</div>
+                                <div className="text-center p-8 text-[#8E929C]">No trending items selected.</div>
                             ) : (
                                 trendingItemIds.map(id => (
                                     <div key={id} className="flex flex-col gap-1 p-3 bg-[#111827] border border-white/10 rounded-lg group">
@@ -273,13 +273,13 @@ const AdminSiteConfig = () => {
                                             <code className="text-xs text-orange-300 font-mono tracking-wider">{id}</code>
                                             <button
                                                 onClick={() => handleRemoveTrending(id)}
-                                                className="text-gray-500 hover:text-red-400 transition-colors"
+                                                className="text-[#8E929C] hover:text-red-400 transition-colors"
                                             >
                                                 <FaTrash />
                                             </button>
                                         </div>
                                         {/* Note: Ideally we map the full product details here if we fetched populated admin config instead of raw array ids */}
-                                        <span className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Pending Sync...</span>
+                                        <span className="text-[10px] text-[#8E929C] uppercase tracking-widest mt-1">Pending Sync...</span>
                                     </div>
                                 ))
                             )}

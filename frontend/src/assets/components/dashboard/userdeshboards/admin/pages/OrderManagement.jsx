@@ -5,14 +5,14 @@ import { FaSearch, FaEye, FaTrash, FaEdit, FaClipboardList, FaClock, FaCheckCirc
 const statusMeta = (s) => {
   const map = {
     pending: { label: "Pending", color: "text-amber-600 bg-amber-50" },
-    shipped: { label: "Shipped", color: "text-blue-600 bg-blue-50" },
+    shipped: { label: "Shipped", color: "text-blue-400 bg-blue-50" },
     delivered: { label: "Delivered", color: "text-emerald-600 bg-emerald-50" },
     cancelled: { label: "Cancelled", color: "text-red-600 bg-red-50" },
-    confirmed: { label: "Confirmed", color: "text-indigo-600 bg-indigo-50" },
+    confirmed: { label: "Confirmed", color: "text-indigo-400 bg-indigo-50" },
     processing: { label: "Processing", color: "text-violet-600 bg-violet-50" },
   };
   const key = (s || "unknown").toLowerCase();
-  return map[key] || { label: s || "Unknown", color: "text-gray-500 bg-gray-50" };
+  return map[key] || { label: s || "Unknown", color: "text-[#8E929C] bg-[#121212]" };
 };
 
 const OrderManagement = () => {
@@ -74,8 +74,8 @@ const OrderManagement = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Order Management</h1>
-        <p className="text-sm text-gray-500 mt-1">Track and manage all customer orders</p>
+        <h1 className="text-2xl font-bold text-white">Order Management</h1>
+        <p className="text-sm text-[#8E929C] mt-1">Track and manage all customer orders</p>
       </div>
 
       {/* Status Filter Pills */}
@@ -89,12 +89,12 @@ const OrderManagement = () => {
         ].map(tab => (
           <button key={tab.key} onClick={() => setStatusFilter(tab.key)}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${statusFilter === tab.key
-                ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                ? "bg-white text-black  -blue-600/20"
+                : "bg-[#1A1B1E] border border-[#2A2B2F] text-[#8E929C] border border-[#2A2B2F] hover:bg-[#121212]"
               }`}>
             {tab.icon}
             {tab.label}
-            <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] ${statusFilter === tab.key ? "bg-white/20" : "bg-gray-100"
+            <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] ${statusFilter === tab.key ? "bg-[#1A1B1E] border border-[#2A2B2F]/20" : "bg-[#121212]"
               }`}>{tab.count}</span>
           </button>
         ))}
@@ -102,10 +102,10 @@ const OrderManagement = () => {
 
       {/* Search */}
       <div className="relative max-w-sm">
-        <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+        <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] text-sm" />
         <input type="text" placeholder="Search by ID, customer, or status..."
           value={search} onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-blue-400 outline-none bg-white" />
+          className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#2A2B2F] text-sm focus:ring-2 focus:ring-blue-400 outline-none bg-[#1A1B1E] border border-[#2A2B2F]" />
       </div>
 
       {/* Table */}
@@ -116,43 +116,43 @@ const OrderManagement = () => {
       ) : error ? (
         <div className="text-center py-16 text-red-500">{error}</div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">No orders found</div>
+        <div className="text-center py-16 text-[#6B7280]">No orders found</div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl border border-[#2A2B2F] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50/80 border-b border-gray-100">
-                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Order</th>
-                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Customer</th>
-                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Date</th>
-                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Payment</th>
-                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total</th>
-                  <th className="text-center px-5 py-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+                <tr className="bg-[#121212]/80 border-b border-[#2A2B2F]">
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider">Order</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider">Customer</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider">Date</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider">Status</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider">Payment</th>
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider">Total</th>
+                  <th className="text-center px-5 py-3 text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filtered.map(order => {
                   const meta = statusMeta(order.orderStatus);
                   return (
-                    <tr key={order._id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={order._id} className="hover:bg-[#121212]/50 transition-colors">
                       <td className="px-5 py-3">
-                        <p className="text-xs font-mono font-semibold text-gray-700">#{order._id?.slice(-6).toUpperCase()}</p>
+                        <p className="text-xs font-mono font-semibold text-gray-200">#{order._id?.slice(-6).toUpperCase()}</p>
                       </td>
                       <td className="px-5 py-3">
-                        <p className="text-sm text-gray-700">{order.shippingAddress?.fullName || "N/A"}</p>
+                        <p className="text-sm text-gray-200">{order.shippingAddress?.fullName || "N/A"}</p>
                       </td>
-                      <td className="px-5 py-3 text-xs text-gray-500">
+                      <td className="px-5 py-3 text-xs text-[#8E929C]">
                         {order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" }) : "—"}
                       </td>
                       <td className="px-5 py-3">
                         <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold ${meta.color}`}>{meta.label}</span>
                       </td>
-                      <td className="px-5 py-3 text-xs text-gray-500">
+                      <td className="px-5 py-3 text-xs text-[#8E929C]">
                         {order.paymentMethod || "—"} <span className={`ml-1 ${order.isPaid ? "text-emerald-600" : "text-amber-600"}`}>({order.isPaid ? "Paid" : "Unpaid"})</span>
                       </td>
-                      <td className="px-5 py-3 text-sm font-semibold text-gray-800">₹{order.totalPrice?.toLocaleString()}</td>
+                      <td className="px-5 py-3 text-sm font-semibold text-white">₹{order.totalPrice?.toLocaleString()}</td>
                       <td className="px-5 py-3">
                         <div className="flex justify-center gap-3">
                           <button onClick={() => handleDelete(order._id)} className="text-red-400 hover:text-red-600 transition text-sm"><FaTrash /></button>

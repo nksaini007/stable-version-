@@ -46,17 +46,17 @@ const AdminProductTable = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-lg font-bold text-gray-800">Master Product Data</h2>
-          <p className="text-sm text-gray-500">View and manage all products across all sellers on the platform.</p>
+          <h2 className="text-lg font-bold text-white">Master Product Data</h2>
+          <p className="text-sm text-[#8E929C]">View and manage all products across all sellers on the platform.</p>
         </div>
         <div className="relative w-full sm:w-80">
-          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] text-sm" />
           <input
             type="text"
             placeholder="Search products by name, category, or seller..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+            className="w-full pl-9 pr-4 py-2 rounded-xl border border-[#2A2B2F] text-sm focus:ring-2 focus:ring-blue-400 outline-none"
           />
         </div>
       </div>
@@ -66,29 +66,29 @@ const AdminProductTable = () => {
           <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200 shadow-sm text-gray-500">
+        <div className="text-center py-12 bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl border border-[#2A2B2F]  text-[#8E929C]">
           <FaBox className="text-4xl text-gray-300 mx-auto mb-3" />
           <p>No products found in the database.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden text-sm">
+        <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl border border-[#2A2B2F]  overflow-hidden text-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-[#121212] border-b border-[#2A2B2F]">
                 <tr>
-                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Product Details & ID</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Seller Details</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Pricing Tiers (₹)</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs">Stock & Status</th>
-                  <th className="px-4 py-3 font-semibold text-gray-600 uppercase text-xs text-right">Actions</th>
+                  <th className="px-4 py-3 font-semibold text-[#8E929C] uppercase text-xs">Product Details & ID</th>
+                  <th className="px-4 py-3 font-semibold text-[#8E929C] uppercase text-xs">Seller Details</th>
+                  <th className="px-4 py-3 font-semibold text-[#8E929C] uppercase text-xs">Pricing Tiers (₹)</th>
+                  <th className="px-4 py-3 font-semibold text-[#8E929C] uppercase text-xs">Stock & Status</th>
+                  <th className="px-4 py-3 font-semibold text-[#8E929C] uppercase text-xs text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-[#2A2B2F]">
                 {filteredProducts.map((product) => (
-                  <tr key={product._id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={product._id} className="hover:bg-[#121212] transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
+                        <div className="w-12 h-12 rounded-lg bg-[#121212] overflow-hidden flex-shrink-0 border border-[#2A2B2F]">
                           {product.images?.[0]?.url ? (
                             <img src={product.images[0].url} alt="" className="w-full h-full object-cover" />
                           ) : (
@@ -96,10 +96,10 @@ const AdminProductTable = () => {
                           )}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 line-clamp-1">{product.name}</p>
+                          <p className="font-semibold text-white line-clamp-1">{product.name}</p>
                           <div className="flex flex-col gap-0.5 mt-1">
-                            <span className="text-[10px] font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 w-fit">ID: {product._id}</span>
-                            <p className="text-xs text-gray-500"><span className="font-medium text-blue-600">{product.category}</span> {product.subcategory && `> ${product.subcategory}`}</p>
+                            <span className="text-[10px] font-mono text-blue-400 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 w-fit">ID: {product._id}</span>
+                            <p className="text-xs text-[#8E929C]"><span className="font-medium text-blue-400">{product.category}</span> {product.subcategory && `> ${product.subcategory}`}</p>
                           </div>
                         </div>
                       </div>
@@ -107,9 +107,9 @@ const AdminProductTable = () => {
                     <td className="px-4 py-3">
                       {product.seller ? (
                         <div className="space-y-1">
-                          <p className="font-bold text-gray-800 flex items-center gap-1.5"><FaStore className="text-blue-500 text-xs" /> {product.seller.name}</p>
-                          <p className="text-[11px] text-gray-500 leading-tight">{product.seller.email}</p>
-                          <p className="text-[11px] text-gray-400 font-medium">Role: <span className="text-blue-600">{product.seller.role}</span></p>
+                          <p className="font-bold text-white flex items-center gap-1.5"><FaStore className="text-blue-500 text-xs" /> {product.seller.name}</p>
+                          <p className="text-[11px] text-[#8E929C] leading-tight">{product.seller.email}</p>
+                          <p className="text-[11px] text-[#6B7280] font-medium">Role: <span className="text-blue-400">{product.seller.role}</span></p>
                         </div>
                       ) : (
                         <span className="text-red-400 text-xs italic">Seller Unavailable</span>
@@ -118,8 +118,8 @@ const AdminProductTable = () => {
                     <td className="px-4 py-3">
                       <div className="space-y-1 text-[11px]">
                         <div className="flex justify-between border-b border-gray-50 pb-0.5">
-                          <span className="text-gray-400">Normal:</span>
-                          <span className="font-bold text-gray-700">₹{product.pricingTiers?.normal || product.price || 0}</span>
+                          <span className="text-[#6B7280]">Normal:</span>
+                          <span className="font-bold text-gray-200">₹{product.pricingTiers?.normal || product.price || 0}</span>
                         </div>
                         <div className="flex justify-between border-b border-gray-50 pb-0.5">
                           <span className="text-orange-400 font-medium">Stinchar:</span>
@@ -127,7 +127,7 @@ const AdminProductTable = () => {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-blue-400 font-medium">Architect:</span>
-                          <span className="font-bold text-blue-600">₹{product.pricingTiers?.architect || 0}</span>
+                          <span className="font-bold text-blue-400">₹{product.pricingTiers?.architect || 0}</span>
                         </div>
                       </div>
                     </td>
@@ -136,7 +136,7 @@ const AdminProductTable = () => {
                         <p className={`text-xs font-bold ${product.stock > 10 ? 'text-emerald-600' : product.stock > 0 ? 'text-amber-500' : 'text-red-500'}`}>
                           QTY: {product.stock}
                         </p>
-                        <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-black uppercase ${product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
+                        <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-black uppercase ${product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-[#121212] text-[#8E929C]'}`}>
                           {product.isActive ? 'ACTIVE' : 'INACTIVE'}
                         </span>
                       </div>
@@ -144,7 +144,7 @@ const AdminProductTable = () => {
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => handleDelete(product._id)}
-                        className="p-2 text-red-400 hover:text-white hover:bg-red-500 rounded-lg transition-all border border-transparent hover:border-red-600 shadow-sm"
+                        className="p-2 text-red-400 hover:text-white hover:bg-red-500 rounded-lg transition-all border border-transparent hover:border-red-600 "
                         title="Force Delete Product"
                       >
                         <FaTrash className="text-sm" />
@@ -167,22 +167,22 @@ const ProductManagement = () => {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Product Data Management</h1>
-        <p className="text-gray-500 text-sm mt-1">Control all product listings and categories on the platform.</p>
+        <h1 className="text-2xl font-bold text-white">Product Data Management</h1>
+        <p className="text-[#8E929C] text-sm mt-1">Control all product listings and categories on the platform.</p>
       </div>
 
       {/* Custom Tabs */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-[#2A2B2F]">
         <button
           onClick={() => setActiveTab('products')}
-          className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'products' ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+          className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'products' ? 'border-blue-600 text-blue-400 bg-blue-50/50' : 'border-transparent text-[#8E929C] hover:text-gray-200 hover:bg-[#121212]'
             }`}
         >
           <FaBox className="text-lg" /> All Products
         </button>
         <button
           onClick={() => setActiveTab('categories')}
-          className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'categories' ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+          className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'categories' ? 'border-blue-600 text-blue-400 bg-blue-50/50' : 'border-transparent text-[#8E929C] hover:text-gray-200 hover:bg-[#121212]'
             }`}
         >
           <FaLayerGroup className="text-lg" /> Manage Categories

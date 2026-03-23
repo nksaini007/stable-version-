@@ -91,32 +91,32 @@ const PaymentManagement = () => {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Payment Management</h1>
-        <p className="text-gray-500 text-sm mt-1">Track all payments, revenue, and manage payment statuses</p>
+        <h1 className="text-2xl font-bold text-white">Payment Management</h1>
+        <p className="text-[#8E929C] text-sm mt-1">Track all payments, revenue, and manage payment statuses</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {[
-          { label: "Total Revenue", value: `₹${totalRevenue.toLocaleString()}`, icon: <FaMoneyBillWave />, bg: "bg-blue-50 text-blue-600" },
+          { label: "Total Revenue", value: `₹${totalRevenue.toLocaleString()}`, icon: <FaMoneyBillWave />, bg: "bg-blue-50 text-blue-400" },
           { label: "Paid", value: `₹${paidAmount.toLocaleString()}`, icon: <FaCheckCircle />, bg: "bg-emerald-50 text-emerald-600" },
           { label: "Unpaid", value: `₹${unpaidAmount.toLocaleString()}`, icon: <FaClock />, bg: "bg-amber-50 text-amber-600" },
           { label: "COD Orders", value: codOrders, icon: <FaMoneyCheck />, bg: "bg-violet-50 text-violet-600" },
           { label: "Online Payments", value: onlineOrders, icon: <FaCreditCard />, bg: "bg-cyan-50 text-cyan-600" },
         ].map((s, idx) => (
-          <div key={idx} className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 hover:shadow-md transition-shadow">
+          <div key={idx} className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl border border-[#2A2B2F] p-4 flex items-center gap-3 hover: transition-">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${s.bg}`}>{s.icon}</div>
             <div>
-              <p className="text-xs text-gray-500">{s.label}</p>
-              <p className="text-lg font-bold text-gray-800">{s.value}</p>
+              <p className="text-xs text-[#8E929C]">{s.label}</p>
+              <p className="text-lg font-bold text-white">{s.value}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Revenue Chart */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Monthly Revenue</h2>
+      <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl border border-[#2A2B2F] p-6">
+        <h2 className="text-lg font-semibold text-white mb-4">Monthly Revenue</h2>
         {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={chartData}>
@@ -130,7 +130,7 @@ const PaymentManagement = () => {
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-48 flex items-center justify-center text-gray-400 border-2 border-dashed rounded-xl">
+          <div className="h-48 flex items-center justify-center text-[#6B7280] border-2 border-dashed rounded-xl">
             No data yet
           </div>
         )}
@@ -150,8 +150,8 @@ const PaymentManagement = () => {
               key={tab.key}
               onClick={() => setFilter(tab.key)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === tab.key
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-white text-black"
+                  : "bg-[#121212] text-[#8E929C] hover:bg-[#2A2B2F]"
                 }`}
             >
               {tab.label}
@@ -159,13 +159,13 @@ const PaymentManagement = () => {
           ))}
         </div>
         <div className="relative">
-          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280] text-sm" />
           <input
             type="text"
             placeholder="Search by ID, name, email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none w-72"
+            className="pl-9 pr-4 py-2 rounded-lg border border-[#2A2B2F] text-sm focus:ring-2 focus:ring-0 outline-none w-72"
           />
         </div>
       </div>
@@ -176,36 +176,36 @@ const PaymentManagement = () => {
           <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
         </div>
       ) : filteredPayments.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">No payments found</div>
+        <div className="text-center py-12 text-[#6B7280]">No payments found</div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl border border-[#2A2B2F] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Order</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Customer</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Amount</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Method</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Payment</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Date</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Action</th>
+                <tr className="bg-[#121212] border-b border-[#2A2B2F]">
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#8E929C] uppercase">Order</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#8E929C] uppercase">Customer</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#8E929C] uppercase">Amount</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#8E929C] uppercase">Method</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#8E929C] uppercase">Status</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#8E929C] uppercase">Payment</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#8E929C] uppercase">Date</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-[#8E929C] uppercase">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-[#2A2B2F]">
                 {filteredPayments.map((p) => (
-                  <tr key={p._id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={p._id} className="hover:bg-[#121212] transition-colors">
                     <td className="px-4 py-3">
-                      <span className="text-sm font-mono font-medium text-gray-800">#{p._id.slice(-6).toUpperCase()}</span>
+                      <span className="text-sm font-mono font-medium text-white">#{p._id.slice(-6).toUpperCase()}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-sm text-gray-800">{p.customer?.name || "—"}</p>
-                      <p className="text-xs text-gray-400">{p.customer?.email || ""}</p>
+                      <p className="text-sm text-white">{p.customer?.name || "—"}</p>
+                      <p className="text-xs text-[#6B7280]">{p.customer?.email || ""}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-sm font-semibold text-gray-800">₹{p.totalPrice?.toLocaleString()}</p>
-                      <p className="text-xs text-gray-400">{p.itemCount} items</p>
+                      <p className="text-sm font-semibold text-white">₹{p.totalPrice?.toLocaleString()}</p>
+                      <p className="text-xs text-[#6B7280]">{p.itemCount} items</p>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${p.paymentMethod === "COD"
@@ -218,7 +218,7 @@ const PaymentManagement = () => {
                     <td className="px-4 py-3">
                       <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${p.orderStatus === "Delivered" ? "text-emerald-600 bg-emerald-50" :
                           p.orderStatus === "Cancelled" ? "text-red-600 bg-red-50" :
-                            "text-blue-600 bg-blue-50"
+                            "text-blue-400 bg-blue-50"
                         }`}>
                         {p.orderStatus}
                       </span>
@@ -234,7 +234,7 @@ const PaymentManagement = () => {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">
+                    <td className="px-4 py-3 text-sm text-[#8E929C]">
                       {new Date(p.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" })}
                     </td>
                     <td className="px-4 py-3">
@@ -247,7 +247,7 @@ const PaymentManagement = () => {
                           {markingId === p.orderId ? "..." : "Mark Paid"}
                         </button>
                       ) : (
-                        <span className="text-xs text-gray-400 italic">—</span>
+                        <span className="text-xs text-[#6B7280] italic">—</span>
                       )}
                     </td>
                   </tr>

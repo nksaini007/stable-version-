@@ -126,10 +126,10 @@ const AdminPlanCategoryDashboard = () => {
             <div className="max-w-7xl mx-auto">
                 {/* TITLE */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
-                        <FaLayerGroup className="text-blue-600" /> Manage Plan Categories
+                    <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                        <FaLayerGroup className="text-blue-400" /> Manage Plan Categories
                     </h1>
-                    <p className="text-gray-500 mt-1">
+                    <p className="text-[#8E929C] mt-1">
                         Create and manage categories for Construction & Architectural Plans
                     </p>
                 </div>
@@ -138,9 +138,9 @@ const AdminPlanCategoryDashboard = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-10"
+                    className="bg-[#1A1B1E] border border-[#2A2B2F] border border-[#2A2B2F] rounded-2xl p-6  mb-10"
                 >
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                    <h2 className="text-xl font-semibold text-white mb-4">
                         {editingCategoryId ? "Edit Category" : "Add New Category"}
                     </h2>
 
@@ -150,18 +150,18 @@ const AdminPlanCategoryDashboard = () => {
                             placeholder="Category name e.g., Modern Villa"
                             value={categoryName}
                             onChange={(e) => setCategoryName(e.target.value)}
-                            className="flex-1 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-200 outline-none"
+                            className="flex-1 p-3 border border-[#2A2B2F] rounded-xl focus:ring-2 focus:ring-blue-200 outline-none"
                         />
 
                         <input
                             type="file"
                             onChange={(e) => setCategoryImage(e.target.files[0])}
-                            className="border border-gray-200 rounded-xl p-2 bg-gray-50 text-sm"
+                            className="border border-[#2A2B2F] rounded-xl p-2 bg-[#121212] text-sm"
                         />
 
                         <button
                             onClick={handleAddOrEditCategory}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm font-medium transition-colors"
+                            className="bg-white text-black hover:bg-gray-200 text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2  font-medium transition-colors"
                         >
                             {editingCategoryId ? <FaSave /> : <FaPlus />}
                             {editingCategoryId ? "Save Changes" : "Create"}
@@ -174,7 +174,7 @@ const AdminPlanCategoryDashboard = () => {
                                     setEditingCategoryId(null);
                                     setCategoryImage(null);
                                 }}
-                                className="bg-gray-100 text-gray-600 hover:bg-gray-200 px-4 py-3 rounded-xl transition-colors"
+                                className="bg-[#121212] text-[#8E929C] hover:bg-[#2A2B2F] px-4 py-3 rounded-xl transition-colors"
                             >
                                 <FaTimes />
                             </button>
@@ -189,18 +189,18 @@ const AdminPlanCategoryDashboard = () => {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             key={cat._id}
-                            className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
+                            className="bg-[#1A1B1E] border border-[#2A2B2F] border border-[#2A2B2F] rounded-2xl p-5  hover: transition- flex flex-col justify-between"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-4">
                                     {cat.image ? (
-                                        <img src={getImageUrl(cat.image)} alt={cat.name} className="w-14 h-14 rounded-xl object-cover bg-gray-100" />
+                                        <img src={getImageUrl(cat.image)} alt={cat.name} className="w-14 h-14 rounded-xl object-cover bg-[#121212]" />
                                     ) : (
                                         <div className="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-blue-300">
                                             <FaLayerGroup className="text-2xl" />
                                         </div>
                                     )}
-                                    <h3 className="font-bold text-gray-800">{cat.name}</h3>
+                                    <h3 className="font-bold text-white">{cat.name}</h3>
                                 </div>
 
                                 <div className="flex flex-col gap-2">
@@ -220,7 +220,7 @@ const AdminPlanCategoryDashboard = () => {
                             </div>
 
                             {/* PLAN TYPES START */}
-                            <div className="mt-4 pt-4 border-t border-gray-100">
+                            <div className="mt-4 pt-4 border-t border-[#2A2B2F]">
                                 {/* ADD / EDIT PLAN TYPE */}
                                 <div className="bg-blue-50/50 p-3 rounded-xl mb-3 border border-blue-100">
                                     <input
@@ -250,12 +250,12 @@ const AdminPlanCategoryDashboard = () => {
                                             <button onClick={handleSavePlanType} className="bg-green-600 text-white px-3 py-1.5 text-sm font-medium rounded-lg flex-1 flex justify-center items-center gap-1">
                                                 <FaSave /> Save
                                             </button>
-                                            <button onClick={() => setEditingType({ catId: null, typeId: null, name: "", image: null })} className="bg-gray-200 text-gray-700 px-3 py-1.5 text-sm font-medium rounded-lg flex-1 flex justify-center items-center gap-1">
+                                            <button onClick={() => setEditingType({ catId: null, typeId: null, name: "", image: null })} className="bg-[#2A2B2F] text-gray-200 px-3 py-1.5 text-sm font-medium rounded-lg flex-1 flex justify-center items-center gap-1">
                                                 <FaTimes /> Cancel
                                             </button>
                                         </div>
                                     ) : (
-                                        <button onClick={() => handleAddPlanType(cat._id)} className="bg-blue-600 text-white px-3 py-1.5 text-sm font-medium rounded-lg w-full flex justify-center items-center gap-1">
+                                        <button onClick={() => handleAddPlanType(cat._id)} className="bg-white text-black px-3 py-1.5 text-sm font-medium rounded-lg w-full flex justify-center items-center gap-1">
                                             <FaPlus /> Add Plan Type
                                         </button>
                                     )}
@@ -275,7 +275,7 @@ const AdminPlanCategoryDashboard = () => {
                                         </div>
                                     ))}
                                     {(!cat.planTypes || cat.planTypes.length === 0) && (
-                                        <p className="text-xs text-gray-400 italic">No plan types added yet.</p>
+                                        <p className="text-xs text-[#6B7280] italic">No plan types added yet.</p>
                                     )}
                                 </div>
                             </div>
@@ -283,7 +283,7 @@ const AdminPlanCategoryDashboard = () => {
                     ))}
 
                     {categories.length === 0 && (
-                        <div className="col-span-full text-center py-10 bg-white rounded-2xl border border-gray-100 text-gray-500">
+                        <div className="col-span-full text-center py-10 bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl border border-[#2A2B2F] text-[#8E929C]">
                             No categories found. Start by creating one above.
                         </div>
                     )}

@@ -108,22 +108,22 @@ const ServiceManagement = () => {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-gray-500">Loading services...</div>;
+    if (loading) return <div className="p-8 text-center text-[#8E929C]">Loading services...</div>;
 
     const currentCategory = serviceCategories.find(c => c._id === selectedCategoryId);
 
     return (
         <div className="space-y-6">
-            <div className="flex border-b border-gray-200 mb-6">
+            <div className="flex border-b border-[#2A2B2F] mb-6">
                 <button
                     onClick={() => setActiveTab("services")}
-                    className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'services' ? 'border-orange-500 text-orange-600 bg-orange-50/30' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'services' ? 'border-orange-500 text-orange-600 bg-orange-50/30' : 'border-transparent text-[#8E929C] hover:text-gray-200'}`}
                 >
                     <FaTools className="inline mr-2" /> All Services
                 </button>
                 <button
                     onClick={() => setActiveTab("categories")}
-                    className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'categories' ? 'border-orange-500 text-orange-600 bg-orange-50/30' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'categories' ? 'border-orange-500 text-orange-600 bg-orange-50/30' : 'border-transparent text-[#8E929C] hover:text-gray-200'}`}
                 >
                     <FaLayerIcon className="inline mr-2" /> Manage Hierarchies
                 </button>
@@ -135,26 +135,26 @@ const ServiceManagement = () => {
                 <>
             <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Service Management</h1>
-                    <p className="text-sm text-gray-500 mt-1">Manage and track all platform services.</p>
+                    <h1 className="text-2xl font-bold text-white">Service Management</h1>
+                    <p className="text-sm text-[#8E929C] mt-1">Manage and track all platform services.</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => setShowModal(true)}
-                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-semibold shadow-sm transition"
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-semibold  transition"
                     >
                         + Add Service
                     </button>
-                    <div className="flex items-center gap-2 text-sm bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
-                        <span className="font-bold text-gray-800">{services.length}</span> Total Services
+                    <div className="flex items-center gap-2 text-sm bg-[#1A1B1E] border border-[#2A2B2F] px-4 py-2 rounded-xl  border border-[#2A2B2F]">
+                        <span className="font-bold text-white">{services.length}</span> Total Services
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl  border border-[#2A2B2F] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm whitespace-nowrap">
-                        <thead className="bg-gray-50 border-b border-gray-100 text-gray-600">
+                        <thead className="bg-[#121212] border-b border-[#2A2B2F] text-[#8E929C]">
                             <tr>
                                 <th className="px-6 py-4 font-semibold hidden md:table-cell">Thumbnail</th>
                                 <th className="px-6 py-4 font-semibold">Service Title</th>
@@ -166,15 +166,15 @@ const ServiceManagement = () => {
                         <tbody className="divide-y divide-gray-50">
                             {services.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                    <td colSpan={6} className="px-6 py-8 text-center text-[#8E929C]">
                                         No services found.
                                     </td>
                                 </tr>
                             ) : (
                                 services.map(svc => (
-                                    <tr key={svc._id} className="hover:bg-gray-50/50 transition">
+                                    <tr key={svc._id} className="hover:bg-[#121212]/50 transition">
                                         <td className="px-6 py-4 hidden md:table-cell">
-                                            <div className="w-16 h-12 rounded bg-gray-100 overflow-hidden flex items-center justify-center">
+                                            <div className="w-16 h-12 rounded bg-[#121212] overflow-hidden flex items-center justify-center">
                                                 {svc.images?.length > 0 ? (
                                                     <img src={`${svc.images[0]}`} alt="" className="w-full h-full object-cover" />
                                                 ) : (
@@ -183,10 +183,10 @@ const ServiceManagement = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <p className="font-bold text-gray-800">{svc.title}</p>
+                                            <p className="font-bold text-white">{svc.title}</p>
                                             <p className="text-xs text-blue-500 font-medium">{svc.category}</p>
                                         </td>
-                                        <td className="px-6 py-4 font-bold text-gray-900">
+                                        <td className="px-6 py-4 font-bold text-white">
                                             ₹{svc.price}
                                         </td>
                                         <td className="px-6 py-4 text-center">
@@ -198,14 +198,14 @@ const ServiceManagement = () => {
                                         <td className="px-6 py-4 text-right space-x-2">
                                             <button
                                                 onClick={() => toggleStatus(svc._id, svc.isActive)}
-                                                className={`p-2 rounded-lg border transition ${svc.isActive ? "bg-white border-orange-200 text-orange-500 hover:bg-orange-50" : "bg-white border-green-200 text-green-500 hover:bg-green-50"}`}
+                                                className={`p-2 rounded-lg border transition ${svc.isActive ? "bg-[#1A1B1E] border border-[#2A2B2F] border-orange-200 text-orange-500 hover:bg-orange-50" : "bg-[#1A1B1E] border border-[#2A2B2F] border-green-200 text-green-500 hover:bg-green-50"}`}
                                                 title={svc.isActive ? "Deactivate" : "Activate"}
                                             >
                                                 {svc.isActive ? <FaBan /> : <FaCheck />}
                                             </button>
                                             <button
                                                 onClick={() => deleteService(svc._id)}
-                                                className="p-2 rounded-lg bg-white border border-red-200 text-red-500 hover:bg-red-50 transition"
+                                                className="p-2 rounded-lg bg-[#1A1B1E] border border-[#2A2B2F] border border-red-200 text-red-500 hover:bg-red-50 transition"
                                                 title="Delete Service"
                                             >
                                                 <FaTrash />
@@ -221,24 +221,24 @@ const ServiceManagement = () => {
 
             {/* Add Service Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
-                        <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
-                            <h3 className="font-bold text-lg text-gray-800">Add New Service</h3>
-                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-red-500"><FaTimesCircle size={20} /></button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#121212]/60 backdrop-blur-sm p-4">
+                    <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl w-full max-w-lg overflow-hidden ">
+                        <div className="px-6 py-4 border-b flex justify-between items-center bg-[#121212]">
+                            <h3 className="font-bold text-lg text-white">Add New Service</h3>
+                            <button onClick={() => setShowModal(false)} className="text-[#6B7280] hover:text-red-500"><FaTimesCircle size={20} /></button>
                         </div>
                         <form onSubmit={handleCreateService} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                                <input type="text" required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none" placeholder="E.g. Standard Home Cleaning" />
+                                <label className="block text-sm font-medium text-gray-200 mb-1">Title</label>
+                                <input type="text" required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full border-2 border-[#2A2B2F] p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none" placeholder="E.g. Standard Home Cleaning" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                <textarea required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none" rows="3" placeholder="Describe what the service includes"></textarea>
+                                <label className="block text-sm font-medium text-gray-200 mb-1">Description</label>
+                                <textarea required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full border-2 border-[#2A2B2F] p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none" rows="3" placeholder="Describe what the service includes"></textarea>
                             </div>
                              <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                    <label className="block text-sm font-medium text-gray-200 mb-1">Category</label>
                                     <select 
                                         required 
                                         value={selectedCategoryId} 
@@ -247,7 +247,7 @@ const ServiceManagement = () => {
                                             setSelectedCategoryId(e.target.value);
                                             setFormData({ ...formData, category: cat?.name || "", subCategoryId: "" });
                                         }} 
-                                        className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none"
+                                        className="w-full border-2 border-[#2A2B2F] p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none"
                                     >
                                         <option value="">Select Category</option>
                                         {serviceCategories.map(c => (
@@ -256,12 +256,12 @@ const ServiceManagement = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
+                                    <label className="block text-sm font-medium text-gray-200 mb-1">Subcategory</label>
                                     <select 
                                         required 
                                         value={formData.subCategoryId} 
                                         onChange={e => setFormData({ ...formData, subCategoryId: e.target.value })} 
-                                        className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none"
+                                        className="w-full border-2 border-[#2A2B2F] p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none"
                                         disabled={!selectedCategoryId}
                                     >
                                         <option value="">Select Sub</option>
@@ -273,13 +273,13 @@ const ServiceManagement = () => {
                             </div>
                             <div className="grid grid-cols-1 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
-                                    <input type="number" required min="0" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} className="w-full border-2 border-gray-200 p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none" placeholder="999" />
+                                    <label className="block text-sm font-medium text-gray-200 mb-1">Price (₹)</label>
+                                    <input type="number" required min="0" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} className="w-full border-2 border-[#2A2B2F] p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none" placeholder="999" />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Service Images</label>
-                                <input type="file" multiple accept="image/*" onChange={e => setImages(e.target.files)} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100 transition" />
+                                <label className="block text-sm font-medium text-gray-200 mb-1">Service Images</label>
+                                <input type="file" multiple accept="image/*" onChange={e => setImages(e.target.files)} className="w-full text-sm text-[#8E929C] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100 transition" />
                             </div>
                             <button type="submit" disabled={submitting} className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold mt-4 transition disabled:opacity-50">
                                 {submitting ? "Creating..." : "Create Service"}

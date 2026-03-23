@@ -63,7 +63,7 @@ export default function AdminPricingControl() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-[60vh]">
-                <FaSync className="text-gray-400 animate-spin text-3xl" />
+                <FaSync className="text-[#6B7280] animate-spin text-3xl" />
             </div>
         );
     }
@@ -72,10 +72,10 @@ export default function AdminPricingControl() {
         <div className="p-6 space-y-8 animate-in fade-in duration-700">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-black text-gray-500 flex items-center gap-3">
-                    <FaMoneyBillWave className="text-gray-400" /> Platform Pricing Control
+                <h1 className="text-3xl font-black text-[#8E929C] flex items-center gap-3">
+                    <FaMoneyBillWave className="text-[#6B7280]" /> Platform Pricing Control
                 </h1>
-                <p className="text-gray-400 mt-2">Manage commissions, delivery fees, and automation settings.</p>
+                <p className="text-[#6B7280] mt-2">Manage commissions, delivery fees, and automation settings.</p>
             </div>
 
             {message && (
@@ -92,12 +92,12 @@ export default function AdminPricingControl() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
                 {/* Commission Setting */}
-                <div className="bg-white/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
+                <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
                     <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 mb-5 group-hover:scale-110 transition-transform">
                         <FaPercentage size={20} />
                     </div>
-                    <h3 className="text-gray-500 font-bold text-lg mb-1">Platform Commission</h3>
-                    <p className="text-gray-400 text-xs mb-6">Percentage fee taken from every seller sale.</p>
+                    <h3 className="text-[#8E929C] font-bold text-lg mb-1">Platform Commission</h3>
+                    <p className="text-[#6B7280] text-xs mb-6">Percentage fee taken from every seller sale.</p>
                     
                     <div className="relative">
                         <input 
@@ -105,85 +105,85 @@ export default function AdminPricingControl() {
                             step="0.1"
                             value={settings.platformCommissionRate}
                             onChange={(e) => setSettings({...settings, platformCommissionRate: Number(e.target.value)})}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-gray-500 font-black text-2xl focus:outline-none focus:border-blue-500/50 transition-all"
+                            className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-2xl px-5 py-4 text-[#8E929C] font-black text-2xl focus:outline-none focus:border-white/50 transition-all"
                         />
-                        <span className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xl">%</span>
+                        <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[#6B7280] font-bold text-xl">%</span>
                     </div>
                 </div>
 
                 {/* Delivery Setting */}
-                <div className="bg-white/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
+                <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
                     <div className="w-12 h-12 rounded-2xl bg-green-500/20 flex items-center justify-center text-green-400 mb-5 group-hover:scale-110 transition-transform">
                         <FaTruck size={20} />
                     </div>
-                    <h3 className="text-gray-500 font-bold text-lg mb-1">Free Delivery</h3>
-                    <p className="text-gray-400 text-xs mb-6">Enable to zero out all delivery charges platform-wide.</p>
+                    <h3 className="text-[#8E929C] font-bold text-lg mb-1">Free Delivery</h3>
+                    <p className="text-[#6B7280] text-xs mb-6">Enable to zero out all delivery charges platform-wide.</p>
                     
-                    <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl px-5 py-4">
-                        <span className="text-gray-500 font-bold">Status: {settings.isDeliveryFree ? "FREE" : "PAID"}</span>
+                    <div className="flex items-center justify-between bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-2xl px-5 py-4">
+                        <span className="text-[#8E929C] font-bold">Status: {settings.isDeliveryFree ? "FREE" : "PAID"}</span>
                         <button 
                             onClick={() => setSettings({...settings, isDeliveryFree: !settings.isDeliveryFree})}
                             className={`w-14 h-7 rounded-full transition-all relative ${settings.isDeliveryFree ? "bg-green-500" : "bg-gray-700"}`}
                         >
-                            <div className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-all ${settings.isDeliveryFree ? "left-8" : "left-1"}`} />
+                            <div className={`absolute top-1 w-5 h-5 rounded-full bg-[#1A1B1E] border border-[#2A2B2F] transition-all ${settings.isDeliveryFree ? "left-8" : "left-1"}`} />
                         </button>
                     </div>
                 </div>
 
                 {/* Ad Activation Setting */}
-                <div className="bg-white/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
+                <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
                     <div className="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-400 mb-5 group-hover:scale-110 transition-transform">
                         <FaRocket size={20} />
                     </div>
-                    <h3 className="text-gray-500 font-bold text-lg mb-1">Instant Ad Launch</h3>
-                    <p className="text-gray-400 text-xs mb-6">If enabled, ads activate immediately without payment/approval.</p>
+                    <h3 className="text-[#8E929C] font-bold text-lg mb-1">Instant Ad Launch</h3>
+                    <p className="text-[#6B7280] text-xs mb-6">If enabled, ads activate immediately without payment/approval.</p>
                     
-                    <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl px-5 py-4">
-                        <span className="text-gray-500 font-bold">{settings.adAutoActivate ? "INSTANT" : "MANUAL"}</span>
+                    <div className="flex items-center justify-between bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-2xl px-5 py-4">
+                        <span className="text-[#8E929C] font-bold">{settings.adAutoActivate ? "INSTANT" : "MANUAL"}</span>
                         <button 
                             onClick={() => setSettings({...settings, adAutoActivate: !settings.adAutoActivate})}
                             className={`w-14 h-7 rounded-full transition-all relative ${settings.adAutoActivate ? "bg-purple-500" : "bg-gray-700"}`}
                         >
-                            <div className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-all ${settings.adAutoActivate ? "left-8" : "left-1"}`} />
+                            <div className={`absolute top-1 w-5 h-5 rounded-full bg-[#1A1B1E] border border-[#2A2B2F] transition-all ${settings.adAutoActivate ? "left-8" : "left-1"}`} />
                         </button>
                     </div>
                 </div>
 
                 {/* Min Order Value Setting */}
-                <div className="bg-white/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
+                <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
                     <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 mb-5 group-hover:scale-110 transition-transform">
                         <FaMoneyBillWave size={20} />
                     </div>
-                    <h3 className="text-gray-500 font-bold text-lg mb-1">Min Order for Direct Purchase</h3>
-                    <p className="text-gray-400 text-xs mb-6">Orders below this amount will require a quotation review.</p>
+                    <h3 className="text-[#8E929C] font-bold text-lg mb-1">Min Order for Direct Purchase</h3>
+                    <p className="text-[#6B7280] text-xs mb-6">Orders below this amount will require a quotation review.</p>
                     
                     <div className="relative">
                         <input 
                             type="number" 
                             value={settings.minCartValue}
                             onChange={(e) => setSettings({...settings, minCartValue: Number(e.target.value)})}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-gray-500 font-black text-2xl focus:outline-none focus:border-amber-500/50 transition-all"
+                            className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-2xl px-5 py-4 text-[#8E929C] font-black text-2xl focus:outline-none focus:border-amber-500/50 transition-all"
                         />
-                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xl ml-[-15px]">₹</span>
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[#6B7280] font-bold text-xl ml-[-15px]">₹</span>
                     </div>
                 </div>
 
                 {/* Max Order Value Setting */}
-                <div className="bg-white/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
+                <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 backdrop-blur-md rounded-3xl p-6 hover:border-white/10 transition-all group">
                     <div className="w-12 h-12 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 mb-5 group-hover:scale-110 transition-transform">
                         <FaRocket size={20} />
                     </div>
-                    <h3 className="text-gray-500 font-bold text-lg mb-1">Max Order for Direct Purchase</h3>
-                    <p className="text-gray-400 text-xs mb-6">Orders above this amount will trigger a mandatory quotation request.</p>
+                    <h3 className="text-[#8E929C] font-bold text-lg mb-1">Max Order for Direct Purchase</h3>
+                    <p className="text-[#6B7280] text-xs mb-6">Orders above this amount will trigger a mandatory quotation request.</p>
                     
                     <div className="relative">
                         <input 
                             type="number" 
                             value={settings.maxCartValue}
                             onChange={(e) => setSettings({...settings, maxCartValue: Number(e.target.value)})}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-gray-500 font-black text-2xl focus:outline-none focus:border-pink-500/50 transition-all"
+                            className="w-full bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-2xl px-5 py-4 text-[#8E929C] font-black text-2xl focus:outline-none focus:border-pink-500/50 transition-all"
                         />
-                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xl ml-[-15px]">₹</span>
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[#6B7280] font-bold text-xl ml-[-15px]">₹</span>
                     </div>
                 </div>
 
@@ -194,7 +194,7 @@ export default function AdminPricingControl() {
                 <button 
                     onClick={handleSave}
                     disabled={saving}
-                    className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-gray-400 hover:from-gray-400 hover:to-gray-300 text-white px-8 py-4 rounded-3xl font-black text-lg transition-all shadow-[0_10px_30px_rgba(59,130,246,0.3)] hover:shadow-[0_15px_40px_rgba(59,130,246,0.5)] active:scale-95 disabled:opacity-50"
+                    className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-gray-400 hover:from-gray-400 hover:to-gray-300 text-white px-8 py-4 rounded-3xl font-black text-lg transition-all -[0_10px_30px_rgba(59,130,246,0.3)] hover:-[0_15px_40px_rgba(59,130,246,0.5)] active:scale-95 disabled:opacity-50"
                 >
                     {saving ? <FaSync className="animate-spin" /> : <FaSave />}
                     {saving ? "Saving Changes..." : "Save Configuration"}
@@ -208,7 +208,7 @@ export default function AdminPricingControl() {
                 </div>
                 <div>
                     <h4 className="text-orange-400 font-bold mb-1">Impact Warning</h4>
-                    <p className="text-gray-400 text-sm">Changing these values will affect all future transactions and campaigns immediately. Existing ad campaigns and ongoing orders will not be retrospectively changed.</p>
+                    <p className="text-[#6B7280] text-sm">Changing these values will affect all future transactions and campaigns immediately. Existing ad campaigns and ongoing orders will not be retrospectively changed.</p>
                 </div>
             </div>
         </div>

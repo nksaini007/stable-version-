@@ -10,7 +10,7 @@ delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-.png",
 });
 
 // Role colors
@@ -53,7 +53,7 @@ const createUserIcon = (user) => {
     const html = hasImage
         ? `<div style="
             width: 40px; height: 40px; border-radius: 50%;
-            border: 3px solid ${color}; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: 3px solid ${color}; box-: 0 2px 10px rgba(0,0,0,0.3);
             overflow: hidden; background: white;
           ">
             <img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:${color};color:white;font-weight:bold;font-size:16px;\\'>${initial}</div>'" />
@@ -66,7 +66,7 @@ const createUserIcon = (user) => {
           "></div>`
         : `<div style="
             width: 40px; height: 40px; border-radius: 50%;
-            border: 3px solid ${color}; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: 3px solid ${color}; box-: 0 2px 10px rgba(0,0,0,0.3);
             background: ${color}; display: flex; align-items: center; justify-content: center;
             color: white; font-weight: bold; font-size: 16px; font-family: sans-serif;
           ">${initial}</div>
@@ -198,32 +198,32 @@ const AdminUserMap = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-3">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">User Locations</h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <h1 className="text-2xl font-bold text-white">User Locations</h1>
+                    <p className="text-sm text-[#8E929C] mt-1">
                         {totalWithLocation} users mapped / {users.length} total
                     </p>
                 </div>
-                <div className="flex items-center gap-2 text-sm bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
+                <div className="flex items-center gap-2 text-sm bg-[#1A1B1E] border border-[#2A2B2F] px-4 py-2 rounded-xl  border border-[#2A2B2F]">
                     <FaMapMarkerAlt className="text-blue-500" />
-                    <span className="font-bold text-gray-800">{filteredUsers.length}</span> on map
+                    <span className="font-bold text-white">{filteredUsers.length}</span> on map
                 </div>
             </div>
 
             {/* Search + Filters */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
+            <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl border border-[#2A2B2F] p-4 space-y-3">
                 {/* Search Bar */}
                 <div className="relative" ref={searchRef}>
-                    <div className="flex items-center gap-2 border-2 border-gray-200 rounded-xl px-4 py-2.5 focus-within:border-blue-400 transition bg-gray-50">
-                        <FaSearch className="text-gray-400 text-sm" />
+                    <div className="flex items-center gap-2 border-2 border-[#2A2B2F] rounded-xl px-4 py-2.5 focus-within:border-blue-400 transition bg-[#121212]">
+                        <FaSearch className="text-[#6B7280] text-sm" />
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search user by name, email, phone, city, or role..."
-                            className="flex-1 bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400"
+                            className="flex-1 bg-transparent outline-none text-sm text-white placeholder-gray-400"
                         />
                         {searchQuery && (
-                            <button onClick={clearSearch} className="text-gray-400 hover:text-red-500 transition">
+                            <button onClick={clearSearch} className="text-[#6B7280] hover:text-red-500 transition">
                                 <FaTimes />
                             </button>
                         )}
@@ -231,7 +231,7 @@ const AdminUserMap = () => {
 
                     {/* Search Dropdown */}
                     {showSearchDropdown && (
-                        <div className="absolute z-30 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden max-h-80 overflow-y-auto">
+                        <div className="absolute z-30 w-full mt-1 bg-[#1A1B1E] border border-[#2A2B2F] border border-[#2A2B2F] rounded-xl  overflow-hidden max-h-80 overflow-y-auto">
                             {searchResults.map((user) => (
                                 <button
                                     key={user._id}
@@ -249,8 +249,8 @@ const AdminUserMap = () => {
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-gray-800 truncate">{user.name}</p>
-                                        <p className="text-[11px] text-gray-400 truncate">{user.email} {user.location?.city ? `• ${user.location.city}` : ""}</p>
+                                        <p className="text-sm font-semibold text-white truncate">{user.name}</p>
+                                        <p className="text-[11px] text-[#6B7280] truncate">{user.email} {user.location?.city ? `• ${user.location.city}` : ""}</p>
                                     </div>
                                     <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border shrink-0 ${roleBadgeColors[user.role]}`}>
                                         {user.role}
@@ -263,10 +263,10 @@ const AdminUserMap = () => {
 
                 {/* Role Filters */}
                 <div className="flex flex-wrap items-center gap-2">
-                    <FaFilter className="text-gray-400 text-sm" />
+                    <FaFilter className="text-[#6B7280] text-sm" />
                     <button
                         onClick={() => setRoleFilter("all")}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${roleFilter === "all" ? "bg-gray-800 text-white border-gray-800" : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"}`}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${roleFilter === "all" ? "bg-[#1A1B1E] text-white border-gray-800" : "bg-[#121212] text-[#8E929C] border-[#2A2B2F] hover:bg-[#121212]"}`}
                     >
                         All ({totalWithLocation})
                     </button>
@@ -276,9 +276,9 @@ const AdminUserMap = () => {
                             <button
                                 key={role}
                                 onClick={() => setRoleFilter(role)}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition flex items-center gap-1.5 ${roleFilter === role ? "bg-gray-800 text-white border-gray-800" : `${roleBadgeColors[role]} hover:opacity-80`}`}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition flex items-center gap-1.5 ${roleFilter === role ? "bg-[#1A1B1E] text-white border-gray-800" : `${roleBadgeColors[role]} hover:opacity-80`}`}
                             >
-                                <span className={`w-2 h-2 rounded-full ${roleFilter === role ? "bg-white" : roleDotColors[role]}`}></span>
+                                <span className={`w-2 h-2 rounded-full ${roleFilter === role ? "bg-[#1A1B1E] border border-[#2A2B2F]" : roleDotColors[role]}`}></span>
                                 {role.charAt(0).toUpperCase() + role.slice(1)} ({roleCount})
                             </button>
                         );
@@ -287,12 +287,12 @@ const AdminUserMap = () => {
             </div>
 
             {/* Map */}
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm" style={{ height: "550px" }}>
+            <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl border border-[#2A2B2F] overflow-hidden " style={{ height: "550px" }}>
                 {filteredUsers.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-gray-300">
                         <FaMapMarkerAlt className="text-5xl mb-3" />
-                        <p className="text-lg font-semibold text-gray-500">No users with location data</p>
-                        <p className="text-sm text-gray-400 mt-1">
+                        <p className="text-lg font-semibold text-[#8E929C]">No users with location data</p>
+                        <p className="text-sm text-[#6B7280] mt-1">
                             {totalWithoutLocation > 0
                                 ? `${totalWithoutLocation} users haven't set their location yet.`
                                 : "Users need to set their location in their profile."}
@@ -306,8 +306,8 @@ const AdminUserMap = () => {
                         scrollWheelZoom={true}
                     >
                         <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                         />
                         {flyTarget && <FlyToLocation center={flyTarget} zoom={14} />}
                         {filteredUsers.map(user => (
@@ -320,7 +320,7 @@ const AdminUserMap = () => {
                                 <Popup>
                                     <div className="min-w-[220px]">
                                         {/* Popup Header with Image */}
-                                        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
+                                        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[#2A2B2F]">
                                             <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: roleColors[user.role] }}>
                                                 {user.profileImage ? (
                                                     <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" />
@@ -331,7 +331,7 @@ const AdminUserMap = () => {
                                                 )}
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <p className="font-bold text-gray-800 text-sm truncate">{user.name}</p>
+                                                <p className="font-bold text-white text-sm truncate">{user.name}</p>
                                                 <span className={`inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border mt-0.5 ${roleBadgeColors[user.role]}`}>
                                                     {user.role}
                                                 </span>
@@ -339,21 +339,21 @@ const AdminUserMap = () => {
                                         </div>
                                         {/* Popup Details */}
                                         <div className="space-y-1.5 text-xs">
-                                            <p className="flex items-center gap-2 text-gray-600">
-                                                <FaEnvelope className="text-gray-400 shrink-0" /> <span className="truncate">{user.email}</span>
+                                            <p className="flex items-center gap-2 text-[#8E929C]">
+                                                <FaEnvelope className="text-[#6B7280] shrink-0" /> <span className="truncate">{user.email}</span>
                                             </p>
                                             {user.phone && (
-                                                <p className="flex items-center gap-2 text-gray-600">
-                                                    <FaPhone className="text-gray-400 shrink-0" /> {user.phone}
+                                                <p className="flex items-center gap-2 text-[#8E929C]">
+                                                    <FaPhone className="text-[#6B7280] shrink-0" /> {user.phone}
                                                 </p>
                                             )}
                                             {user.location?.city && (
-                                                <p className="flex items-center gap-2 text-gray-600">
-                                                    <FaMapMarkerAlt className="text-gray-400 shrink-0" /> {user.location.city}
+                                                <p className="flex items-center gap-2 text-[#8E929C]">
+                                                    <FaMapMarkerAlt className="text-[#6B7280] shrink-0" /> {user.location.city}
                                                 </p>
                                             )}
                                             {user.address && (
-                                                <p className="flex items-center gap-2 text-gray-600 truncate">
+                                                <p className="flex items-center gap-2 text-[#8E929C] truncate">
                                                     🏠 <span className="truncate">{user.address}</span>
                                                 </p>
                                             )}
@@ -368,8 +368,8 @@ const AdminUserMap = () => {
 
             {/* Info Note */}
             {totalWithoutLocation > 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
-                    <strong>Note:</strong> {totalWithoutLocation} user{totalWithoutLocation !== 1 ? "s" : ""} haven't set their location yet.
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-sm text-amber-500">
+                    <strong className="text-amber-400">Note:</strong> {totalWithoutLocation} user{totalWithoutLocation !== 1 ? "s" : ""} haven't set their location yet.
                     Location can be set from the user's profile settings.
                 </div>
             )}
