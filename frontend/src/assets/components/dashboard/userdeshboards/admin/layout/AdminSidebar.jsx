@@ -85,12 +85,12 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
   return (
     <aside
       className={`${collapsed ? "w-[72px]" : "w-64"
-        } h-screen bg-gradient-to-b from-[#0a0a0a] via-[#111111] to-[#050505] flex flex-col transition-all duration-400 ease-out border-r border-white/5 relative shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.5)] z-40`}
+        } h-screen bg-[#1A1B1E] flex flex-col transition-all duration-400 ease-out border-r border-[#2A2B2F] relative shrink-0 z-40`}
     >
       {/* Collapse Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-8 w-6 h-6 bg-gray-800/80 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:border-white/20 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:scale-110 transition-all duration-300 z-50 cursor-pointer shadow-lg"
+        className="absolute -right-3 top-8 w-6 h-6 bg-[#2A2B2F] rounded-full border border-[#1A1B1E] flex items-center justify-center text-gray-400 hover:text-white hover:scale-110 transition-all duration-300 z-50 cursor-pointer shadow"
       >
         <FaChevronLeft
           className={`text-[10px] transition-transform duration-500 ease-spring ${collapsed ? "rotate-180" : ""
@@ -99,25 +99,25 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
       </button>
 
       {/* Logo */}
-      <div className={`px-5 py-6 border-b border-white/5 shrink-0 transition-all duration-300 ${collapsed ? "text-center" : ""}`}>
+      <div className={`px-5 py-6 shrink-0 transition-all duration-300 ${collapsed ? "text-center" : "pl-6"}`}>
         {collapsed ? (
-          <img src={logo} alt="S" className="w-10 h-10 mx-auto rounded-xl object-cover shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 hover:scale-105 hover:rotate-3 cursor-pointer" />
+          <div className="w-8 h-8 mx-auto bg-white rounded flex items-center justify-center cursor-pointer">
+            <span className="text-[#1A1B1E] font-black text-xl italic">T</span>
+          </div>
         ) : (
-          <div className="flex items-center gap-4 cursor-pointer group">
-            <img src={logo} alt="S" className="w-10 h-10 rounded-xl object-cover shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 group-hover:scale-110 group-hover:rotate-6" />
+          <div className="flex items-center gap-3 cursor-pointer group">
+            <div className="w-6 h-6 bg-white rounded flex items-center justify-center shrink-0">
+              <span className="text-[#1A1B1E] font-black text-sm italic">T</span>
+            </div>
             <div className="transition-transform duration-300 group-hover:translate-x-1">
-              <h2 className="text-[16px] font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-300 tracking-wider">
-                STINCHAR
+              <h2 className="text-[18px] font-bold text-white tracking-wide">
+                Tempo
               </h2>
-              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-[0.2em] mt-0.5">
-                Admin Panel
-              </p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Custom Scrollbar Styles for Webkit */}
       <style>
         {`
           .admin-sidebar-scroll::-webkit-scrollbar {
@@ -127,12 +127,11 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
             background: transparent;
           }
           .admin-sidebar-scroll::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.5), transparent);
+            background: #2A2B2F;
             border-radius: 10px;
           }
           .admin-sidebar-scroll:hover::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, rgba(59, 130, 246, 0.3), rgba(99, 102, 241, 0.8), rgba(59, 130, 246, 0.3));
-            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+            background: #3A3B3F;
           }
         `}
       </style>
@@ -144,8 +143,9 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
           <div key={groupIdx} className="space-y-1.5">
             {/* Section Header */}
             {!collapsed && (
-              <h3 className="px-4 mb-3 text-[10px] font-bold text-gray-400/70 uppercase tracking-[0.15em]">
-                {group.title}
+              <h3 className="px-6 mb-2 mt-4 text-[11px] font-semibold text-[#8E929C] flex items-center justify-between">
+                <span>{group.title}</span>
+                <FaChevronLeft className="text-[8px] -rotate-90" />
               </h3>
             )}
 
@@ -157,23 +157,25 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
                 end={item.path === "/admin"}
                 title={collapsed ? item.name : ""}
                 className={({ isActive }) =>
-                  `group relative flex items-center ${collapsed ? "justify-center" : "px-4"
-                  } gap-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-300 ease-out overflow-hidden ${isActive
-                    ? "bg-blue-600/10 text-blue-400 shadow-[inset_4px_0_0_0_#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.1)]"
-                    : "text-gray-400 hover:text-white hover:bg-white/5 border-l-4 border-transparent hover:shadow-[inset_2px_0_0_0_rgba(255,255,255,0.2)]"
+                  `group relative flex items-center ${collapsed ? "justify-center mx-2 rounded-lg" : "px-6"
+                  } gap-4 py-2 text-[13px] font-medium transition-colors duration-200 ease-out overflow-hidden ${isActive
+                    ? `text-white ${collapsed ? 'bg-[#2A2B2F]' : ''}`
+                    : "text-[#8E929C] hover:text-white"
                   }`
                 }
               >
-                {/* Background Glow Effect on Active */}
+                {/* Flat Active Style */}
                 {({ isActive }) => (
                   <>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-blue-600/10 to-transparent opacity-0 transition-opacity duration-300 ${isActive ? "opacity-100" : "group-hover:opacity-50"}`}></div>
-
-                    <span className={`relative text-[16px] flex-shrink-0 transition-transform duration-300 ${isActive ? "scale-110 text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]" : "group-hover:scale-110 group-hover:text-gray-300"}`}>
+                    {!collapsed && isActive && (
+                      <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-white rounded-r-sm"></div>
+                    )}
+                    
+                    <span className={`relative text-[15px] flex-shrink-0 transition-colors duration-200 ${isActive ? "text-white" : "text-[#8E929C] group-hover:text-white"}`}>
                       {item.icon}
                     </span>
                     {!collapsed && (
-                      <span className={`relative transition-all duration-300 ${isActive ? "font-semibold tracking-wide text-white" : "group-hover:translate-x-1"}`}>
+                      <span className={`relative transition-colors duration-200 ${isActive ? "font-semibold text-white" : "text-[#8E929C] group-hover:text-white"}`}>
                         {item.name}
                       </span>
                     )}
@@ -185,32 +187,54 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
         ))}
       </nav>
 
-      {/* User Info + Logout stick to bottom */}
-      <div className="p-4 border-t border-white/5 space-y-3 shrink-0 bg-[#050505]/80 backdrop-blur-md">
-        {!collapsed && user && (
-          <div className="p-3 rounded-2xl bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/5 flex items-center gap-3 backdrop-blur-sm shadow-inner transition-all duration-300 hover:border-white/10 hover:bg-white/10 cursor-default group">
-            <div className="w-8 h-8 rounded-full bg-gray-500/20 text-gray-400 flex items-center justify-center font-bold uppercase shrink-0 ring-1 ring-gray-500/30 group-hover:ring-gray-400 transition-all duration-300">
-              {user.name ? user.name.charAt(0) : "U"}
-            </div>
-            <div className="overflow-hidden">
-              <p className="text-xs font-bold text-gray-200 truncate group-hover:text-white transition-colors">
-                {user.name}
-              </p>
-              <p className="text-[10px] text-gray-500 truncate group-hover:text-gray-300/80 transition-colors">
-                {user.email}
-              </p>
+      {/* Free Trial Banner / Bottom Widgets */}
+      <div className="p-4 space-y-3 shrink-0">
+        {!collapsed && (
+          <div className="p-4 rounded-2xl bg-[#121212] border border-[#2A2B2F] relative overflow-hidden group mb-4">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50"></div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-white font-black italic">T</span>
+                <p className="text-sm font-semibold text-white">Free Trial Version</p>
+              </div>
+              <p className="text-[#8E929C] text-xs mb-3">You have 4 days left.<br />Upgrade to continue</p>
+              <button className="text-xs text-[#8E929C] font-medium hover:text-white transition-colors">Select plan {'>'}</button>
             </div>
           </div>
         )}
+
+        {/* User Info */}
+        {!collapsed && user && (
+          <div className="flex items-center justify-between p-2 rounded-xl bg-[#121212] border border-[#2A2B2F] cursor-pointer hover:bg-[#2A2B2F] transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded bg-[#2A2B2F] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                {user.name ? user.name.charAt(0) : "U"}
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-xs font-semibold text-white truncate">
+                  {user.name || "Nero Design"}
+                </p>
+                <p className="text-[10px] text-[#8E929C] truncate">
+                  {user.email || "nerodesigner@mail.com"}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-0.5 text-[#8E929C] pr-1">
+              <FaChevronLeft className="text-[8px] rotate-90" />
+              <FaChevronLeft className="text-[8px] -rotate-90" />
+            </div>
+          </div>
+        )}
+
+        {/* Logout (condensed) */}
         <button
           onClick={handleLogout}
           title="Logout"
-          className={`group w-full flex items-center ${collapsed ? "justify-center" : "justify-center"
-            } gap-2.5 px-4 py-2.5 rounded-xl text-[13px] font-bold text-red-400/80 hover:text-white bg-red-500/5 hover:bg-red-500 border border-red-500/10 hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] transition-all duration-300 cursor-pointer overflow-hidden relative`}
+          className={`flex items-center ${collapsed ? "justify-center w-full" : "justify-center w-full"
+            } gap-2.5 py-2 rounded-xl text-xs font-semibold text-[#8E929C] hover:text-white hover:bg-[#2A2B2F] transition-colors`}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"></div>
-          <FaSignOutAlt className="text-[14px] z-10 transition-transform duration-300 group-hover:-translate-x-1" />
-          {!collapsed && <span className="z-10 tracking-wide">Logout</span>}
+          <FaSignOutAlt className="text-sm" />
+          {!collapsed && <span>Logout</span>}
         </button>
       </div>
     </aside>

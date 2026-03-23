@@ -133,11 +133,22 @@ const AdminHome = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-wide drop-shadow-sm">Dashboard Overview</h1>
-        <p className="text-sm text-gray-400 mt-1">Welcome back! Here's what's happening today.</p>
+    <div className="space-y-6 p-4 md:p-6 lg:p-8">
+      {/* Header Area (Tempo Style) */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex bg-[#1A1B1E] border border-[#2A2B2F] rounded-lg p-1 w-max">
+          <button className="px-4 py-1.5 bg-[#2A2B2F] text-white text-xs font-semibold rounded-md shadow-sm">30 Days</button>
+          <button className="px-4 py-1.5 text-[#8E929C] hover:text-white text-xs font-semibold rounded-md transition-colors">3 Months</button>
+          <button className="px-4 py-1.5 text-[#8E929C] hover:text-white text-xs font-semibold rounded-md transition-colors">1 year</button>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 bg-[#1A1B1E] border border-[#2A2B2F] text-[#8E929C] hover:text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors">
+            <FaClipboardList /> Export
+          </button>
+          <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors">
+            New <FaChevronRight className="rotate-90 text-[10px]" />
+          </button>
+        </div>
       </div>
 
       {/* Primary Stat Cards */}
@@ -146,16 +157,17 @@ const AdminHome = () => {
           <div
             key={idx}
             onClick={() => card.path && navigate(card.path)}
-            className="bg-[#111111]/80 backdrop-blur-xl rounded-2xl border border-white/5 p-5 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:border-white/10 transition-all duration-300 cursor-pointer group"
+            className="bg-[#1A1B1E] rounded-xl border border-[#2A2B2F] p-5 cursor-pointer hover:border-gray-600 transition-all duration-300"
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${card.bg} ${card.text}`}>
-                {card.icon}
-              </div>
-              <FaChevronRight className="text-gray-500 text-xs group-hover:text-blue-400 transition-colors" />
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-[#8E929C] text-sm">{card.icon}</span>
+              <span className="text-xs text-[#8E929C] font-medium">{card.name}</span>
             </div>
-            <p className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors tracking-tight">{card.value}</p>
-            <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider font-semibold">{card.name}</p>
+            <p className="text-[22px] font-bold text-white mb-2">{card.value}</p>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-semibold text-emerald-400">+12%</span>
+              <span className="text-[10px] text-[#8E929C]">· Last 30 Days</span>
+            </div>
           </div>
         ))}
       </div>
@@ -196,15 +208,33 @@ const AdminHome = () => {
       </div>
 
       {/* Charts + Recent Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
         {/* Revenue Chart */}
-        <div className="lg:col-span-2 bg-[#111111]/80 backdrop-blur-xl rounded-2xl border border-white/5 p-6 hover:shadow-[0_0_20px_rgba(255,255,255,0.02)] transition-all duration-300">
-          <div className="flex items-center justify-between mb-5">
+        <div className="lg:col-span-2 bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl p-6 relative">
+          <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-base font-semibold text-white tracking-wide">Revenue Trend</h2>
-              <p className="text-xs text-gray-400 mt-1">Monthly revenue over last 12 months</p>
+              <div className="flex items-center gap-2 mb-2">
+                <FaChartLine className="text-[#8E929C] text-sm" />
+                <h2 className="text-xs font-semibold text-[#8E929C]">Revenue Flow</h2>
+              </div>
+              <p className="text-2xl font-bold text-white mb-1">₹{(stats?.totalRevenue || 0).toLocaleString()}</p>
+              <div className="flex items-center gap-1.5 text-[10px]">
+                <span className="font-semibold text-emerald-400">+20%</span>
+                <span className="text-[#8E929C]">· Last 30 Days</span>
+              </div>
             </div>
-            <div className="text-[10px] uppercase font-bold text-gray-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full tracking-wider">Last 12 months</div>
+            <button className="text-[#8E929C] hover:text-white">···</button>
+          </div>
+          
+          {/* Subtle info box overlapping chart */}
+          <div className="absolute left-6 top-32 z-10 bg-[#2A2B2F]/60 backdrop-blur-md border border-[#3A3B3F] p-3 rounded-lg w-48 hidden md:block">
+            <p className="text-[10px] text-white font-bold mb-1">New Record Achieved!</p>
+            <p className="text-[#8E929C] text-[9px] leading-relaxed mb-2">This month had the highest revenue since start.</p>
+            <div className="flex items-center justify-between text-[#8E929C]">
+              <FaChevronLeft className="text-[8px] cursor-pointer hover:text-white" />
+              <div className="flex gap-1"><div className="w-3 h-0.5 bg-white rounded"></div><div className="w-1 h-0.5 bg-gray-500 rounded"></div></div>
+              <FaChevronRight className="text-[8px] cursor-pointer hover:text-white" />
+            </div>
           </div>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={260}>
@@ -247,58 +277,55 @@ const AdminHome = () => {
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#6366f1"
-                  strokeWidth={2.5}
-                  fill="url(#adminRevenueGrad)"
+                  stroke="#A78BFA"
+                  strokeWidth={2}
+                  fill="transparent"
                 />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-60 flex items-center justify-center text-gray-500 border border-dashed border-white/10 rounded-xl bg-white/5">
+            <div className="h-60 flex items-center justify-center text-[#8E929C] text-xs">
               No revenue data
             </div>
           )}
         </div>
 
-        {/* Recent Orders */}
-        <div className="bg-[#111111]/80 backdrop-blur-xl rounded-2xl border border-white/5 p-5 hover:shadow-[0_0_20px_rgba(255,255,255,0.02)] transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold text-white tracking-wide">Recent Orders</h2>
-            <button
-              onClick={() => navigate("/admin/orders")}
-              className="text-[11px] uppercase font-bold text-blue-400 hover:text-blue-300 transition-colors drop-shadow-[0_0_5px_rgba(96,165,250,0.4)]"
-            >
-              View All →
-            </button>
+        {/* Recent Orders Tempo List */}
+        <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl p-5">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2">
+              <FaClock className="text-[#8E929C] text-sm" />
+              <h2 className="text-xs font-semibold text-[#8E929C]">Recent Orders Breakdown</h2>
+            </div>
+            <button className="text-[#8E929C] hover:text-white">···</button>
           </div>
-          <div className="space-y-2.5">
+          <div className="space-y-0 text-sm">
             {recentOrders.length > 0 ? (
-              recentOrders.slice(0, 8).map((order, idx) => (
+              recentOrders.slice(0, 5).map((order, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-3 mb-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-all duration-300"
+                  className="flex items-center justify-between py-3 border-b border-[#2A2B2F] last:border-0 hover:bg-white/[0.02] transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 flex items-center justify-center text-xs font-bold shadow-[0_0_8px_rgba(59,130,246,0.3)]">
-                      {(order.shippingAddress?.fullName || "?").charAt(0).toUpperCase()}
-                    </div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
                     <div>
-                      <p className="text-xs font-semibold text-white truncate max-w-[110px] tracking-wide">
+                      <p className="text-xs text-[#8E929C]">
                         {order.shippingAddress?.fullName || "Customer"}
-                      </p>
-                      <p className="text-[10px] font-medium text-gray-500 mt-0.5">
-                        #{order._id?.slice(-5)}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-bold text-white tracking-wide mb-1">
+                    <p className="text-xs font-medium text-white mb-0.5">
                       ₹{order.totalPrice?.toLocaleString()}
                     </p>
                     <span
-                      className={`inline-block text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${statusColor(
-                        order.orderStatus
-                      )}`}
+                      className={`inline-block text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                        order.orderStatus?.toLowerCase() === 'delivered' 
+                        ? 'bg-emerald-500/10 text-emerald-400' 
+                        : order.orderStatus?.toLowerCase() === 'cancelled'
+                        ? 'bg-rose-500/10 text-rose-400'
+                        : 'bg-indigo-500/10 text-indigo-400'
+                      }`}
                     >
                       {order.orderStatus || "Pending"}
                     </span>
