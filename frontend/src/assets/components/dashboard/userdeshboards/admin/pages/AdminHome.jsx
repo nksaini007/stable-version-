@@ -100,44 +100,44 @@ const AdminHome = () => {
   }
 
   const statCards = [
-    { name: "Total Users", value: stats?.users || 0, icon: <FaUsers />, bg: "bg-blue-50", text: "text-blue-600", path: "/admin/users" },
-    { name: "Products", value: stats?.products || 0, icon: <FaBox />, bg: "bg-emerald-50", text: "text-emerald-600", path: "/admin/products" },
-    { name: "Total Orders", value: stats?.orders || 0, icon: <FaClipboardList />, bg: "bg-violet-50", text: "text-violet-600", path: "/admin/orders" },
-    { name: "Revenue", value: `₹${(stats?.totalRevenue || 0).toLocaleString()}`, icon: <FaMoneyBillWave />, bg: "bg-amber-50", text: "text-amber-600", path: "/admin/payments" },
+    { name: "Total Users", value: stats?.users || 0, icon: <FaUsers />, bg: "bg-blue-500/20", text: "text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.6)]", path: "/admin/users" },
+    { name: "Products", value: stats?.products || 0, icon: <FaBox />, bg: "bg-emerald-500/20", text: "text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]", path: "/admin/products" },
+    { name: "Total Orders", value: stats?.orders || 0, icon: <FaClipboardList />, bg: "bg-violet-500/20", text: "text-violet-400 drop-shadow-[0_0_8px_rgba(167,139,250,0.6)]", path: "/admin/orders" },
+    { name: "Revenue", value: `₹${(stats?.totalRevenue || 0).toLocaleString()}`, icon: <FaMoneyBillWave />, bg: "bg-amber-500/20", text: "text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]", path: "/admin/payments" },
   ];
 
   const secondaryCards = [
-    { name: "Paid Revenue", value: `₹${(stats?.paidRevenue || 0).toLocaleString()}`, icon: <FaCheckCircle />, bg: "bg-green-50", text: "text-green-600" },
-    { name: "Pending Revenue", value: `₹${(stats?.pendingRevenue || 0).toLocaleString()}`, icon: <FaClock />, bg: "bg-orange-50", text: "text-orange-600" },
-    { name: "Delivered", value: stats?.deliveredOrders || 0, icon: <FaTruck />, bg: "bg-cyan-50", text: "text-cyan-600" },
-    { name: "Cancelled", value: stats?.cancelledOrders || 0, icon: <FaTimesCircle />, bg: "bg-red-50", text: "text-red-600" },
+    { name: "Paid Revenue", value: `₹${(stats?.paidRevenue || 0).toLocaleString()}`, icon: <FaCheckCircle />, bg: "bg-green-500/20", text: "text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]" },
+    { name: "Pending Revenue", value: `₹${(stats?.pendingRevenue || 0).toLocaleString()}`, icon: <FaClock />, bg: "bg-orange-500/20", text: "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.6)]" },
+    { name: "Delivered", value: stats?.deliveredOrders || 0, icon: <FaTruck />, bg: "bg-cyan-500/20", text: "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]" },
+    { name: "Cancelled", value: stats?.cancelledOrders || 0, icon: <FaTimesCircle />, bg: "bg-red-500/20", text: "text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.6)]" },
   ];
 
   const quickLinks = [
-    { name: "Services", count: extraCounts.services, icon: <FaTools />, path: "/admin/services", color: "border-orange-200 bg-orange-50 text-orange-700" },
-    { name: "Bookings", count: extraCounts.bookings, icon: <FaCalendarAlt />, path: "/admin/bookings", color: "border-blue-200 bg-blue-50 text-blue-700" },
-    { name: "Plan Categories", count: extraCounts.planCategories, icon: <FaLayerGroup />, path: "/admin/plan-categories", color: "border-indigo-200 bg-indigo-50 text-indigo-700" },
-    { name: "Blueprints", count: extraCounts.plans, icon: <FaMap />, path: "/admin/plans", color: "border-teal-200 bg-teal-50 text-teal-700" },
-    { name: "Inquiries", count: extraCounts.messages, icon: <FaEnvelope />, path: "/admin/messages", color: "border-pink-200 bg-pink-50 text-pink-700" },
-    { name: "Posts", count: extraCounts.posts, icon: <FaNewspaper />, path: "/admin/posts", color: "border-purple-200 bg-purple-50 text-purple-700" },
+    { name: "Services", count: extraCounts.services, icon: <FaTools />, path: "/admin/services", color: "border-orange-500/30 bg-orange-500/10 text-orange-400 hover:shadow-[0_0_15px_rgba(249,115,22,0.15)] hover:border-orange-400/50" },
+    { name: "Bookings", count: extraCounts.bookings, icon: <FaCalendarAlt />, path: "/admin/bookings", color: "border-blue-500/30 bg-blue-500/10 text-blue-400 hover:shadow-[0_0_15px_rgba(59,130,246,0.15)] hover:border-blue-400/50" },
+    { name: "Plan Categories", count: extraCounts.planCategories, icon: <FaLayerGroup />, path: "/admin/plan-categories", color: "border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:shadow-[0_0_15px_rgba(99,102,241,0.15)] hover:border-indigo-400/50" },
+    { name: "Blueprints", count: extraCounts.plans, icon: <FaMap />, path: "/admin/plans", color: "border-teal-500/30 bg-teal-500/10 text-teal-400 hover:shadow-[0_0_15px_rgba(20,184,166,0.15)] hover:border-teal-400/50" },
+    { name: "Inquiries", count: extraCounts.messages, icon: <FaEnvelope />, path: "/admin/messages", color: "border-pink-500/30 bg-pink-500/10 text-pink-400 hover:shadow-[0_0_15px_rgba(236,72,153,0.15)] hover:border-pink-400/50" },
+    { name: "Posts", count: extraCounts.posts, icon: <FaNewspaper />, path: "/admin/posts", color: "border-purple-500/30 bg-purple-500/10 text-purple-400 hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] hover:border-purple-400/50" },
   ];
 
   const statusColor = (s) => {
     const map = {
-      pending: "text-amber-600 bg-amber-50",
-      shipped: "text-blue-600 bg-blue-50",
-      delivered: "text-emerald-600 bg-emerald-50",
-      cancelled: "text-red-600 bg-red-50",
+      pending: "text-amber-400 bg-amber-500/20 border-amber-500/30",
+      shipped: "text-blue-400 bg-blue-500/20 border-blue-500/30",
+      delivered: "text-emerald-400 bg-emerald-500/20 border-emerald-500/30",
+      cancelled: "text-red-400 bg-red-500/20 border-red-500/30",
     };
-    return map[(s || "").toLowerCase()] || "text-gray-500 bg-gray-50";
+    return map[(s || "").toLowerCase()] || "text-gray-400 bg-white/5 border-white/10";
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
-        <p className="text-sm text-gray-500 mt-1">Welcome back! Here's what's happening today.</p>
+        <h1 className="text-2xl font-bold text-white tracking-wide drop-shadow-sm">Dashboard Overview</h1>
+        <p className="text-sm text-gray-400 mt-1">Welcome back! Here's what's happening today.</p>
       </div>
 
       {/* Primary Stat Cards */}
@@ -146,16 +146,16 @@ const AdminHome = () => {
           <div
             key={idx}
             onClick={() => card.path && navigate(card.path)}
-            className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-lg transition-all duration-300 cursor-pointer group"
+            className="bg-[#111111]/80 backdrop-blur-xl rounded-2xl border border-white/5 p-5 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:border-white/10 transition-all duration-300 cursor-pointer group"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm ${card.bg} ${card.text}`}>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${card.bg} ${card.text}`}>
                 {card.icon}
               </div>
-              <FaChevronRight className="text-gray-300 text-xs group-hover:text-blue-500 transition-colors" />
+              <FaChevronRight className="text-gray-500 text-xs group-hover:text-blue-400 transition-colors" />
             </div>
-            <p className="text-2xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">{card.value}</p>
-            <p className="text-xs text-gray-400 mt-0.5">{card.name}</p>
+            <p className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors tracking-tight">{card.value}</p>
+            <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider font-semibold">{card.name}</p>
           </div>
         ))}
       </div>
@@ -163,13 +163,13 @@ const AdminHome = () => {
       {/* Secondary Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {secondaryCards.map((card, idx) => (
-          <div key={idx} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm ${card.bg} ${card.text}`}>
+          <div key={idx} className="bg-[#111111]/80 backdrop-blur-xl rounded-xl border border-white/5 p-4 flex items-center gap-4 hover:border-white/10 hover:bg-white/5 transition-all duration-300">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${card.bg} ${card.text}`}>
               {card.icon}
             </div>
             <div>
-              <p className="text-lg font-bold text-gray-800">{card.value}</p>
-              <p className="text-[11px] text-gray-400">{card.name}</p>
+              <p className="text-lg font-bold text-white tracking-tight">{card.value}</p>
+              <p className="text-[10px] uppercase font-semibold text-gray-400 tracking-wider mt-0.5">{card.name}</p>
             </div>
           </div>
         ))}
@@ -177,34 +177,34 @@ const AdminHome = () => {
 
       {/* Quick Access Links */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Quick Access</h2>
+        <h2 className="text-base font-semibold text-white mb-4 tracking-wide">Quick Access</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {quickLinks.map((link, idx) => (
             <div
               key={idx}
               onClick={() => navigate(link.path)}
-              className={`rounded-xl border p-4 cursor-pointer hover:shadow-md transition-all duration-200 ${link.color}`}
+              className={`rounded-xl border p-4 cursor-pointer transition-all duration-300 bg-[#111111]/80 backdrop-blur-xl z-10 ${link.color}`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-lg">{link.icon}</span>
-                <span className="text-xl font-bold">{link.count}</span>
+                <span className="text-xl drop-shadow-md">{link.icon}</span>
+                <span className="text-xl font-bold drop-shadow-md">{link.count}</span>
               </div>
-              <p className="text-xs font-semibold">{link.name}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider">{link.name}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Charts + Recent Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         {/* Revenue Chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="lg:col-span-2 bg-[#111111]/80 backdrop-blur-xl rounded-2xl border border-white/5 p-6 hover:shadow-[0_0_20px_rgba(255,255,255,0.02)] transition-all duration-300">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-base font-semibold text-gray-800">Revenue Trend</h2>
-              <p className="text-xs text-gray-400 mt-0.5">Monthly revenue over last 12 months</p>
+              <h2 className="text-base font-semibold text-white tracking-wide">Revenue Trend</h2>
+              <p className="text-xs text-gray-400 mt-1">Monthly revenue over last 12 months</p>
             </div>
-            <div className="text-xs text-gray-400 bg-gray-50 px-3 py-1 rounded-full">Last 12 months</div>
+            <div className="text-[10px] uppercase font-bold text-gray-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full tracking-wider">Last 12 months</div>
           </div>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={260}>
@@ -217,16 +217,16 @@ const AdminHome = () => {
                 </defs>
                 <XAxis
                   dataKey="month"
-                  stroke="#cbd5e1"
+                  stroke="#333"
                   fontSize={11}
-                  tick={{ fill: "#94a3b8" }}
+                  tick={{ fill: "#666" }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  stroke="#cbd5e1"
+                  stroke="#333"
                   fontSize={11}
-                  tick={{ fill: "#94a3b8" }}
+                  tick={{ fill: "#666" }}
                   axisLine={false}
                   tickLine={false}
                   tickFormatter={(v) =>
@@ -235,12 +235,12 @@ const AdminHome = () => {
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1e293b",
+                    backgroundColor: "#050505",
                     borderRadius: "12px",
-                    border: "none",
+                    border: "1px solid rgba(255,255,255,0.1)",
                     color: "#fff",
                     fontSize: "12px",
-                    boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
                   }}
                   formatter={(v) => [`₹${v.toLocaleString()}`, "Revenue"]}
                 />
@@ -254,19 +254,19 @@ const AdminHome = () => {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-60 flex items-center justify-center text-gray-300 border-2 border-dashed rounded-xl">
+            <div className="h-60 flex items-center justify-center text-gray-500 border border-dashed border-white/10 rounded-xl bg-white/5">
               No revenue data
             </div>
           )}
         </div>
 
         {/* Recent Orders */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="bg-[#111111]/80 backdrop-blur-xl rounded-2xl border border-white/5 p-5 hover:shadow-[0_0_20px_rgba(255,255,255,0.02)] transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold text-gray-800">Recent Orders</h2>
+            <h2 className="text-base font-semibold text-white tracking-wide">Recent Orders</h2>
             <button
               onClick={() => navigate("/admin/orders")}
-              className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+              className="text-[11px] uppercase font-bold text-blue-400 hover:text-blue-300 transition-colors drop-shadow-[0_0_5px_rgba(96,165,250,0.4)]"
             >
               View All →
             </button>
@@ -276,27 +276,27 @@ const AdminHome = () => {
               recentOrders.slice(0, 8).map((order, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-3 rounded-xl bg-gray-50/70 hover:bg-gray-100/80 transition-colors"
+                  className="flex items-center justify-between p-3 mb-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-all duration-300"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 flex items-center justify-center text-xs font-bold shadow-[0_0_8px_rgba(59,130,246,0.3)]">
                       {(order.shippingAddress?.fullName || "?").charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-gray-700 truncate max-w-[110px]">
+                      <p className="text-xs font-semibold text-white truncate max-w-[110px] tracking-wide">
                         {order.shippingAddress?.fullName || "Customer"}
                       </p>
-                      <p className="text-[10px] text-gray-400">
+                      <p className="text-[10px] font-medium text-gray-500 mt-0.5">
                         #{order._id?.slice(-5)}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-semibold text-gray-800">
+                    <p className="text-xs font-bold text-white tracking-wide mb-1">
                       ₹{order.totalPrice?.toLocaleString()}
                     </p>
                     <span
-                      className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusColor(
+                      className={`inline-block text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${statusColor(
                         order.orderStatus
                       )}`}
                     >
