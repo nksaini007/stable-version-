@@ -31,7 +31,7 @@ const getPublicConfig = async (req, res) => {
         }
 
         // Only return active banners
-        const activeBanners = config.banners.filter(b => b.isActive);
+        const activeBanners = (config.banners || []).filter(b => b.isActive);
 
         res.status(200).json({
             banners: activeBanners,

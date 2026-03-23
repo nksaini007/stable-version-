@@ -10,9 +10,6 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]);
 // Load env variables
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
 
 // ✅ Middleware
@@ -153,6 +150,8 @@ app.use((err, req, res, next) => {
 
 // ✅ Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, "0.0.0.0", () =>
-  console.log(`🚀 Server running on port ${PORT}`)
-);
+connectDB().then(() => {
+  app.listen(PORT, "0.0.0.0", () =>
+    console.log(`🚀 Server running on port ${PORT}`)
+  );
+});
