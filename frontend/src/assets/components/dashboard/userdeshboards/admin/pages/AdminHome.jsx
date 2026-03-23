@@ -29,12 +29,20 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
 } from "recharts";
 
 const AdminHome = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [chartData, setChartData] = useState([]);
+  const [userGrowthData, setUserGrowthData] = useState([]);
+  const [orderStatusData, setOrderStatusData] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
   const [extraCounts, setExtraCounts] = useState({
     services: 0,
@@ -49,10 +57,12 @@ const AdminHome = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, chartRes, ordersRes] = await Promise.all([
+        const [statsRes, chartRes, ordersRes, userGrowthRes, orderStatusRes] = await Promise.all([
           API.get("/payments/admin/stats"),
           API.get("/payments/admin/revenue-chart"),
           API.get("/payments/admin/recent-orders"),
+          API.get("/query/user-growth").catch(() => ({ data: { months: [], values: [] } })),
+          API.get("/query/order-status").catch(() => ({ data: [] })),
         ]);
 
         setStats(statsRes.data);
@@ -65,6 +75,13 @@ const AdminHome = () => {
         }
 
         setRecentOrders(ordersRes.data || []);
+
+        const uGrowth = userGrowthRes.data || {};
+        if (uGrowth.months && uGrowth.values) {
+          setUserGrowthData(uGrowth.months.map((m, i) => ({ month: m, users: uGrowth.values[i] || 0 })));
+        }
+
+        setOrderStatusData(orderStatusRes.data || []);
 
         // Fetch extra counts in parallel (fail gracefully)
         const results = await Promise.allSettled([
@@ -340,6 +357,63 @@ const AdminHome = () => {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* New Analytics Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+        {/* User Growth Bar Chart */}
+        <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xs font-semibold text-[#8E929C]">User Registration Growth</h2>
+          </div>
+          {userGrowthData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={userGrowthData}>
+                <XAxis dataKey="month" stroke="#333" fontSize={11} tick={{ fill: "#666" }} axisLine={false} tickLine={false} />
+                <YAxis stroke="#333" fontSize={11} tick={{ fill: "#666" }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: "#050505", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", fontSize: "12px" }}
+                  formatter={(v) => [v, "New Users"]}
+                />
+                <Bar dataKey="users" fill="#4ADE80" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-60 flex items-center justify-center text-[#8E929C] text-xs">No user growth data</div>
+          )}
+        </div>
+
+        {/* Orders Breakdown Pie Chart */}
+        <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl p-6 flex flex-col items-center">
+          <div className="w-full flex justify-between items-center mb-2">
+            <h2 className="text-xs font-semibold text-[#8E929C]">Order Status Breakdown</h2>
+          </div>
+          {orderStatusData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie
+                  data={orderStatusData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={5}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {orderStatusData.map((entry, index) => {
+                    const colors = ["#818CF8", "#34D399", "#FBBF24", "#F87171", "#60A5FA"];
+                    return <Cell key={"cell-" + index} fill={colors[index % colors.length]} />;
+                  })}
+                </Pie>
+                <Tooltip contentStyle={{ backgroundColor: "#050505", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", fontSize: "12px" }} />
+                <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: "11px", color: "#8E929C" }} />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-60 flex items-center justify-center text-[#8E929C] text-xs w-full">No order data</div>
+          )}
         </div>
       </div>
     </div>

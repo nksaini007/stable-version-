@@ -107,6 +107,7 @@ app.use("/api/config", require("./routes/configRoutes")); // ✅ website config
 app.use("/api/ads", adRoutes); // ✅ seller ad campaigns
 app.use("/api/delivery-pricing", deliveryPricingRoutes); // ✅ delivery pricing rules
 app.use("/api/service-categories", serviceCategoryRoutes); // ✅ service categories
+app.use("/api/query", require("./routes/queryRoutes")); // ✅ custom queries and charts
 
 // ✅ Test & Health Routes
 app.get("/", (req, res) => {

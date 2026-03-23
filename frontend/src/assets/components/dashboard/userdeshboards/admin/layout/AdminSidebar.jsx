@@ -23,7 +23,8 @@ import {
   FaBullhorn,
   FaTag,
   FaSlidersH,
-  FaFileInvoice
+  FaFileInvoice,
+  FaDatabase
 } from "react-icons/fa";
 import { AuthContext } from "../../../../../context/AuthContext";
 import logo from "../../../../../logo.png";
@@ -69,6 +70,7 @@ const menuGroups = [
       { name: "Inquiries", path: "/admin/messages", icon: <FaEnvelope /> },
       { name: "Site Content", path: "/admin/site-config", icon: <FaLayerGroup /> },
       { name: "Admin Pricing Control", path: "/admin/pricing-control", icon: <FaSlidersH /> },
+      { name: "Custom Query", path: "/admin/custom-query", icon: <FaDatabase /> },
     ]
   }
 ];
