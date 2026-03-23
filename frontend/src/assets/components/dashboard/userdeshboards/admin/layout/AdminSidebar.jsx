@@ -113,7 +113,7 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
             </div>
             <div className="transition-transform duration-300 group-hover:translate-x-1">
               <h2 className="text-[18px] font-bold text-white tracking-wide">
-                Tempo
+                Stinchar
               </h2>
             </div>
           </div>
@@ -172,7 +172,7 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
                     {!collapsed && isActive && (
                       <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-white rounded-r-sm"></div>
                     )}
-                    
+
                     <span className={`relative text-[15px] flex-shrink-0 transition-colors duration-200 ${isActive ? "text-white" : "text-[#8E929C] group-hover:text-white"}`}>
                       {item.icon}
                     </span>
@@ -190,55 +190,7 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
       </nav>
 
       {/* Free Trial Banner / Bottom Widgets */}
-      <div className="p-4 space-y-3 shrink-0">
-        {!collapsed && (
-          <div className="p-4 rounded-2xl bg-[#121212] border border-[#2A2B2F] relative overflow-hidden group mb-4">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50"></div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-white font-black italic">T</span>
-                <p className="text-sm font-semibold text-white">Free Trial Version</p>
-              </div>
-              <p className="text-[#8E929C] text-xs mb-3">You have 4 days left.<br />Upgrade to continue</p>
-              <button className="text-xs text-[#8E929C] font-medium hover:text-white transition-colors">Select plan {'>'}</button>
-            </div>
-          </div>
-        )}
 
-        {/* User Info */}
-        {!collapsed && user && (
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#121212] border border-[#2A2B2F] cursor-pointer hover:bg-[#2A2B2F] transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded bg-[#2A2B2F] text-white flex items-center justify-center font-bold text-sm shrink-0">
-                {user.name ? user.name.charAt(0) : "U"}
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-xs font-semibold text-white truncate">
-                  {user.name || "Nero Design"}
-                </p>
-                <p className="text-[10px] text-[#8E929C] truncate">
-                  {user.email || "nerodesigner@mail.com"}
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-0.5 text-[#8E929C] pr-1">
-              <FaChevronLeft className="text-[8px] rotate-90" />
-              <FaChevronLeft className="text-[8px] -rotate-90" />
-            </div>
-          </div>
-        )}
-
-        {/* Logout (condensed) */}
-        <button
-          onClick={handleLogout}
-          title="Logout"
-          className={`flex items-center ${collapsed ? "justify-center w-full" : "justify-center w-full"
-            } gap-2.5 py-2 rounded-xl text-xs font-semibold text-[#8E929C] hover:text-white hover:bg-[#2A2B2F] transition-colors`}
-        >
-          <FaSignOutAlt className="text-sm" />
-          {!collapsed && <span>Logout</span>}
-        </button>
-      </div>
     </aside>
   );
 };

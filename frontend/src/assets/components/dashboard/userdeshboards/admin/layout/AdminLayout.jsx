@@ -22,7 +22,7 @@ const AdminLayout = () => {
       <main className="flex-1 overflow-y-auto flex flex-col relative w-full">
         {/* Top bar (Tempo Style) */}
         <div className="sticky top-0 z-20 h-16 bg-[#121212] border-b border-[#2A2B2F] flex items-center justify-between px-8 shrink-0">
-          
+
           {/* Breadcrumb / Title */}
           <div className="flex items-center gap-3">
             <BsGrid1X2Fill className="text-gray-400 text-sm" />
@@ -31,19 +31,9 @@ const AdminLayout = () => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
-            
+
             {/* Search Pill */}
-            <div className="flex items-center bg-[#1A1B1E] border border-[#2A2B2F] rounded-full px-4 py-1.5 h-9 w-[280px] hover:border-gray-600 transition-colors">
-              <FaSearch className="text-gray-500 text-xs shrink-0" />
-              <input 
-                type="text" 
-                placeholder="Search Anything..." 
-                className="bg-transparent border-none outline-none text-xs text-gray-300 w-full px-2 placeholder-gray-500"
-              />
-              <div className="flex items-center justify-center bg-[#2A2B2F] rounded text-[9px] font-bold text-gray-400 px-1.5 py-0.5 shrink-0">
-                ⌘K
-              </div>
-            </div>
+
 
             <div className="w-px h-5 bg-[#2A2B2F] mx-1"></div>
 
@@ -58,7 +48,7 @@ const AdminLayout = () => {
             </button>
           </div>
         </div>
-        
+
         {/* Page Content */}
         <div className="p-8 flex-1 overflow-y-auto bg-[#121212]">
           <Outlet />
