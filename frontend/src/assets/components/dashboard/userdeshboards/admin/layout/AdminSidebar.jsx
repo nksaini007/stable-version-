@@ -190,7 +190,43 @@ const AdminSidebar = ({ collapsed, setCollapsed }) => {
       </nav>
 
       {/* Free Trial Banner / Bottom Widgets */}
+      <div className="p-4 space-y-3 shrink-0">
 
+
+        {/* User Info */}
+        {!collapsed && user && (
+          <div className="flex items-center justify-between p-2 rounded-xl bg-[#121212] border border-[#2A2B2F] cursor-pointer hover:bg-[#2A2B2F] transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded bg-[#2A2B2F] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                {user.name ? user.name.charAt(0) : "U"}
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-xs font-semibold text-white truncate">
+                  {user.name || "Nero Design"}
+                </p>
+                <p className="text-[10px] text-[#8E929C] truncate">
+                  {user.email || "nerodesigner@mail.com"}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-0.5 text-[#8E929C] pr-1">
+              <FaChevronLeft className="text-[8px] rotate-90" />
+              <FaChevronLeft className="text-[8px] -rotate-90" />
+            </div>
+          </div>
+        )}
+
+        {/* Logout (condensed) */}
+        <button
+          onClick={handleLogout}
+          title="Logout"
+          className={`flex items-center ${collapsed ? "justify-center w-full" : "justify-center w-full"
+            } gap-2.5 py-2 rounded-xl text-xs font-semibold text-[#8E929C] hover:text-white hover:bg-[#2A2B2F] transition-colors`}
+        >
+          <FaSignOutAlt className="text-sm" />
+          {!collapsed && <span>Logout</span>}
+        </button>
+      </div>
     </aside>
   );
 };
