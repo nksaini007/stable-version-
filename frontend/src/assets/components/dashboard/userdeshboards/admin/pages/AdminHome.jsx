@@ -19,6 +19,8 @@ import {
   FaCalendarAlt,
   FaNewspaper,
   FaChevronRight,
+  FaChevronLeft,
+  FaChartLine,
 } from "react-icons/fa";
 import {
   XAxis,
