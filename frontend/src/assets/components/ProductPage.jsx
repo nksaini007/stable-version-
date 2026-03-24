@@ -185,9 +185,14 @@ const ProductPage = () => {
                 )}
 
                 {showAR && productInfo?.arModelUrl ? (
-                  <div className="w-full h-[520px] rounded-lg overflow-hidden bg-white z-10 relative">
-                    {/* You can change the 3D background color here by changing bgColor (e.g., bgColor="bg-gray-100" or bgColor="bg-black") */}
-                    <ARViewer src={productInfo.arModelUrl} scale={productInfo.arModelScale} rotation={productInfo.arModelRotation} bgColor="bg-orange-200" />
+                  <div className="w-full h-[520px] rounded-lg overflow-hidden bg-[#0a0a0a] z-10 relative">
+                    {/* Premium dark gradient with upper spotlight effect */}
+                    <ARViewer 
+                      src={productInfo.arModelUrl} 
+                      scale={productInfo.arModelScale} 
+                      rotation={productInfo.arModelRotation} 
+                      bgColor="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-[#0a0a0a]" 
+                    />
                   </div>
                 ) : selectedImage ? (
                   <img
