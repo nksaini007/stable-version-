@@ -88,6 +88,15 @@ const productSchema = new mongoose.Schema(
       default: true,
     },
 
+    // AR Feature
+    arModelUrl: { 
+      type: String, 
+      trim: true,
+      match: [/^https?:\/\/.+/, 'Please provide a valid HTTP/HTTPS URL for the 3D model']
+    },
+    arModelScale: { type: String, trim: true },
+    arModelRotation: { type: String, trim: true },
+
     // New Pricing Tiers
     pricingTiers: {
       architect: { type: Number, default: 0 },

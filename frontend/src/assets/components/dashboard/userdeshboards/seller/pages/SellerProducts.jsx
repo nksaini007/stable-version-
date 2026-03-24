@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import API from "../../../../../api/api";
-import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox } from "react-icons/fa";
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox, FaCube } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../../../../../utils/imageUtils";
+import ARViewer from "../../../../../ARViewer";
 
 const SellerProducts = () => {
     const [products, setProducts] = useState([]);
@@ -15,6 +16,7 @@ const SellerProducts = () => {
         name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "",
         material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "", 
         image: null, imageLink: "",
+        arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg",
         pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] }
     });
 
@@ -47,6 +49,7 @@ const SellerProducts = () => {
             name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", 
             brand: "", material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", 
             features: "", care_instructions: "", image: null, imageLink: "",
+            arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg",
             pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] }
         });
         setEditing(null); setPreview(null); setShowForm(false);
@@ -54,6 +57,13 @@ const SellerProducts = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Basic AR URL validation to prevent malicious schemas (e.g., javascript:)
+        if (form.arModelUrl && !form.arModelUrl.match(/^https?:\/\/.+/)) {
+            alert("Please enter a valid HTTP/HTTPS URL for the 3D model.");
+            return;
+        }
+
         try {
             const formData = new FormData();
             Object.entries(form).forEach(([k, v]) => { 
@@ -87,6 +97,7 @@ const SellerProducts = () => {
             weight: p.weight || "", warranty: p.warranty || "", origin: p.origin || "", 
             features: (p.features || []).join(", "), care_instructions: p.care_instructions || "", 
             image: null, imageLink: p.images?.[0]?.public_id === 'external' ? p.images[0].url : "",
+            arModelUrl: p.arModelUrl || "", arModelScale: p.arModelScale || "1 1 1", arModelRotation: p.arModelRotation || "0deg 0deg 0deg",
             pricingTiers: p.pricingTiers || { architect: "", stinchar: "", normal: "", bulk: [] }
         });
         setEditing(p);
@@ -236,6 +247,28 @@ const SellerProducts = () => {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+
+                        {/* AR Features */}
+                        <div className="p-4 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-4">
+                            <h4 className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider">
+                                <FaCube /> Augmented Reality (3D Model)
+                            </h4>
+                            <div className="grid sm:grid-cols-1 gap-4">
+                                <input name="arModelUrl" placeholder="3D Model URL (.glb, .gltf, .usdz)" value={form.arModelUrl} onChange={handleChange} className={inputCls} />
+                            </div>
+                            <div className="grid sm:grid-cols-2 gap-4">
+                                <input name="arModelScale" placeholder="Scale (e.g., 1 1 1)" value={form.arModelScale} onChange={handleChange} className={inputCls} />
+                                <input name="arModelRotation" placeholder="Rotation (e.g., 0deg 90deg 0deg)" value={form.arModelRotation} onChange={handleChange} className={inputCls} />
+                            </div>
+                            {form.arModelUrl && (
+                                <div className="mt-4 pt-4 border-t border-purple-100">
+                                    <h5 className="text-xs font-semibold text-purple-600 mb-2">3D Model Preview</h5>
+                                    <div className="h-64 rounded-xl overflow-hidden border border-purple-200 bg-white">
+                                        <ARViewer src={form.arModelUrl} scale={form.arModelScale} rotation={form.arModelRotation} />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <textarea name="care_instructions" placeholder="Care Instructions" value={form.care_instructions} onChange={handleChange} rows={2} className={inputCls} />

@@ -5,9 +5,11 @@ import Nev from "./Nev";
 import Footer from "./Footer";
 import { CartContext } from "../context/CartContext";
 import { Star, CheckCircle, XCircle, ShieldCheck, Truck, Sparkles } from "lucide-react";
+import { FaCube } from "react-icons/fa";
 import ReviewSection from "./ReviewSection";
 import API from "../api/api";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
+import ARViewer from "./ARViewer";
 
 const Skeleton = () => (
   <div className="animate-pulse">
@@ -71,6 +73,7 @@ const ProductPage = () => {
   const [error, setError] = useState("");
   const [added, setAdded] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [showAR, setShowAR] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -167,11 +170,25 @@ const ProductPage = () => {
             <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100">
               <div className="relative">
                 {productInfo.badge && (
-                  <span className="absolute top-3 left-3 bg-indigo-600 text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+                  <span className="absolute top-3 left-3 bg-indigo-600 text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1 z-10">
                     <Sparkles className="h-4 w-4" /> {productInfo.badge}
                   </span>
                 )}
-                {selectedImage ? (
+                
+                {productInfo?.arModelUrl && (
+                  <button
+                    onClick={() => setShowAR(!showAR)}
+                    className="absolute top-3 right-3 z-20 bg-white/90 backdrop-blur-sm text-purple-700 hover:text-purple-900 border border-purple-200 px-4 py-2 rounded-full shadow-lg font-bold flex items-center gap-2 transition-all hover:scale-105"
+                  >
+                    <FaCube /> {showAR ? "Close AR" : "View in AR"}
+                  </button>
+                )}
+
+                {showAR && productInfo?.arModelUrl ? (
+                  <div className="w-full h-[520px] rounded-lg overflow-hidden bg-white z-10 relative">
+                    <ARViewer src={productInfo.arModelUrl} scale={productInfo.arModelScale} rotation={productInfo.arModelRotation} />
+                  </div>
+                ) : selectedImage ? (
                   <img
                     src={selectedImage}
                     alt={productInfo.name}
