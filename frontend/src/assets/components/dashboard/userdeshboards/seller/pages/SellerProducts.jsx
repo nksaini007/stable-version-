@@ -251,20 +251,32 @@ const SellerProducts = () => {
 
                         {/* AR Features */}
                         <div className="p-4 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-4">
-                            <h4 className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider">
-                                <FaCube /> Augmented Reality (3D Model)
-                            </h4>
+                            <div>
+                                <h4 className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider">
+                                    <FaCube /> Augmented Reality (3D Model)
+                                </h4>
+                                <p className="text-[10px] text-purple-600 mt-1 font-medium">To enable AR, paste a secure (HTTPS) link to an externally hosted .glb or .gltf 3D model file.</p>
+                            </div>
                             <div className="grid sm:grid-cols-1 gap-4">
-                                <input name="arModelUrl" placeholder="3D Model URL (.glb, .gltf, .usdz)" value={form.arModelUrl} onChange={handleChange} className={inputCls} />
+                                <div>
+                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">3D MODEL URL</label>
+                                    <input name="arModelUrl" placeholder="e.g. https://example.com/model.glb" value={form.arModelUrl} onChange={handleChange} className={inputCls} />
+                                </div>
                             </div>
                             <div className="grid sm:grid-cols-2 gap-4">
-                                <input name="arModelScale" placeholder="Scale (e.g., 1 1 1)" value={form.arModelScale} onChange={handleChange} className={inputCls} />
-                                <input name="arModelRotation" placeholder="Rotation (e.g., 0deg 90deg 0deg)" value={form.arModelRotation} onChange={handleChange} className={inputCls} />
+                                <div>
+                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">SCALE (OPTIONAL)</label>
+                                    <input name="arModelScale" placeholder="e.g. 1 1 1" value={form.arModelScale} onChange={handleChange} className={inputCls} />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">ROTATION (OPTIONAL)</label>
+                                    <input name="arModelRotation" placeholder="e.g. 0deg 90deg 0deg" value={form.arModelRotation} onChange={handleChange} className={inputCls} />
+                                </div>
                             </div>
                             {form.arModelUrl && (
                                 <div className="mt-4 pt-4 border-t border-purple-100">
-                                    <h5 className="text-xs font-semibold text-purple-600 mb-2">3D Model Preview</h5>
-                                    <div className="h-64 rounded-xl overflow-hidden border border-purple-200 bg-white">
+                                    <h5 className="text-[10px] font-bold text-purple-700 uppercase mb-2">3D Model Preview</h5>
+                                    <div className="h-64 rounded-xl overflow-hidden border border-purple-200 bg-white shadow-inner">
                                         <ARViewer src={form.arModelUrl} scale={form.arModelScale} rotation={form.arModelRotation} />
                                     </div>
                                 </div>
