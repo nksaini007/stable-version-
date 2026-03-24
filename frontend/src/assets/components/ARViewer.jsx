@@ -5,7 +5,7 @@ const ARViewer = ({ src, alt = 'A 3D model', scale = '1 1 1', rotation = '0deg 0
   if (!src) return null;
 
   return (
-    <div className={`ar-viewer-container relative w-full h-full min-h-[400px] flex items-center justify-center ${bgColor} rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[inner_0_2px_30px_rgba(255,255,255,0.05)]`}>
+    <div className={`ar-viewer-container relative w-full h-full min-h-[400px] flex items-center justify-center ${bgColor} border border-orange-200 rounded-xl overflow-hidden`}>
       <model-viewer
         src={src}
         alt={alt}
@@ -13,9 +13,7 @@ const ARViewer = ({ src, alt = 'A 3D model', scale = '1 1 1', rotation = '0deg 0
         camera-controls
         ar
         ar-modes="webxr scene-viewer quick-look"
-        shadow-intensity="2"
-        shadow-softness="1"
-        exposure="1.1"
+        shadow-intensity="1"
         scale={scale}
         orientation={rotation}
         style={{ width: '100%', height: '100%', minHeight: '400px' }}
