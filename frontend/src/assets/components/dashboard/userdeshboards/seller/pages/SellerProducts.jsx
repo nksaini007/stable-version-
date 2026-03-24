@@ -72,6 +72,9 @@ const SellerProducts = () => {
                         formData.append(k, JSON.stringify(v));
                     } else if (k === 'features' && typeof v === 'string') {
                         formData.append(k, v);
+                    } else if ((k === 'arModelScale' || k === 'arModelRotation') && !form.arModelUrl) {
+                        // Skip AR metadata if no AR URL is provided to prevent DB pollution
+                        return;
                     } else {
                         formData.append(k, v);
                     }

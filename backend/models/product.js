@@ -92,7 +92,13 @@ const productSchema = new mongoose.Schema(
     arModelUrl: { 
       type: String, 
       trim: true,
-      match: [/^https?:\/\/.+/, 'Please provide a valid HTTP/HTTPS URL for the 3D model']
+      validate: {
+        validator: function(v) {
+          // Allow empty string or secure HTTP/HTTPS URL
+          return !v || /^https?:\/\/.+/.test(v);
+        },
+        message: 'Please provide a valid HTTP/HTTPS URL for the 3D model'
+      }
     },
     arModelScale: { type: String, trim: true },
     arModelRotation: { type: String, trim: true },
