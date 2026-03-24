@@ -58,11 +58,7 @@ const SellerProducts = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Basic AR URL validation to prevent malicious schemas (e.g., javascript:)
-        if (form.arModelUrl && !form.arModelUrl.match(/^https?:\/\/.+/)) {
-            alert("Please enter a valid HTTP/HTTPS URL for the 3D model.");
-            return;
-        }
+        // Removed strict HTTP validation. We now allow UUIDs or basic string embed codes.
 
         try {
             const formData = new FormData();
@@ -72,6 +68,13 @@ const SellerProducts = () => {
                         formData.append(k, JSON.stringify(v));
                     } else if (k === 'features' && typeof v === 'string') {
                         formData.append(k, v);
+                    } else if (k === 'arModelUrl') {
+                        let finalModelId = v;
+                        if (finalModelId) {
+                            const match = finalModelId.match(/data-model=["']([^"']+)["']/);
+                            if (match) finalModelId = match[1];
+                        }
+                        formData.append(k, finalModelId);
                     } else if ((k === 'arModelScale' || k === 'arModelRotation') && !form.arModelUrl) {
                         // Skip AR metadata if no AR URL is provided to prevent DB pollution
                         return;
@@ -252,27 +255,27 @@ const SellerProducts = () => {
                             </div>
                         </div>
 
-                        {/* AR Features */}
+                        {/* AR Features (Clooned) */}
                         <div className="p-4 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-4">
                             <div>
                                 <h4 className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider">
-                                    <FaCube /> Augmented Reality (3D Model)
+                                    <FaCube /> 3D Model Embed (Clooned)
                                 </h4>
-                                <p className="text-[10px] text-purple-600 mt-1 font-medium">To enable AR, paste a secure (HTTPS) link to an externally hosted .glb or .gltf 3D model file.</p>
+                                <p className="text-[10px] text-purple-600 mt-1 font-medium">To enable AR, paste your Clooned embed code or just the <strong>data-model</strong> ID.</p>
                             </div>
                             <div className="grid sm:grid-cols-1 gap-4">
                                 <div>
-                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">3D MODEL URL</label>
-                                    <input name="arModelUrl" placeholder="e.g. https://example.com/model.glb" value={form.arModelUrl} onChange={handleChange} className={inputCls} />
+                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">CLOONED ID OR EMBED SNIPPET</label>
+                                    <input name="arModelUrl" placeholder='e.g. e3f39f03-4cd3-4d23-8015...' value={form.arModelUrl} onChange={handleChange} className={inputCls} />
                                 </div>
                             </div>
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">SCALE (OPTIONAL)</label>
+                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">SCALE (Optional, if applicable)</label>
                                     <input name="arModelScale" placeholder="e.g. 1 1 1" value={form.arModelScale} onChange={handleChange} className={inputCls} />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">ROTATION (OPTIONAL)</label>
+                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">ROTATION (Optional, if applicable)</label>
                                     <input name="arModelRotation" placeholder="e.g. 0deg 90deg 0deg" value={form.arModelRotation} onChange={handleChange} className={inputCls} />
                                 </div>
                             </div>
