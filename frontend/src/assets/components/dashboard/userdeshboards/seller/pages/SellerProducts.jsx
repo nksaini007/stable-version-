@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../../../../api/api";
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox, FaCube } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../../../../../utils/imageUtils";
-import ARViewer from "../../../../../ARViewer";
+import ARViewer from "../../../../ARViewer";
 
 const SellerProducts = () => {
     const [products, setProducts] = useState([]);
