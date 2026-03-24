@@ -186,7 +186,8 @@ const ProductPage = () => {
 
                 {showAR && productInfo?.arModelUrl ? (
                   <div className="w-full h-[520px] rounded-lg overflow-hidden bg-white z-10 relative">
-                    <ARViewer src={productInfo.arModelUrl} scale={productInfo.arModelScale} rotation={productInfo.arModelRotation} />
+                    {/* You can change the 3D background color here by changing bgColor (e.g., bgColor="bg-gray-100" or bgColor="bg-black") */}
+                    <ARViewer src={productInfo.arModelUrl} scale={productInfo.arModelScale} rotation={productInfo.arModelRotation} bgColor="bg-orange-200" />
                   </div>
                 ) : selectedImage ? (
                   <img

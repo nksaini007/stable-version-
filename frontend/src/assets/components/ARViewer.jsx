@@ -1,11 +1,11 @@
 import React from 'react';
 import '@google/model-viewer';
 
-const ARViewer = ({ src, alt = 'A 3D model', scale = '1 1 1', rotation = '0deg 0deg 0deg' }) => {
+const ARViewer = ({ src, alt = 'A 3D model', scale = '1 1 1', rotation = '0deg 0deg 0deg', bgColor = 'bg-gray-50' }) => {
   if (!src) return null;
 
   return (
-    <div className="ar-viewer-container relative w-full h-full min-h-[400px] flex items-center justify-center bg-gray-50 border border-purple-100 rounded-xl overflow-hidden">
+    <div className={`ar-viewer-container relative w-full h-full min-h-[400px] flex items-center justify-center ${bgColor} border border-purple-100 rounded-xl overflow-hidden`}>
       <model-viewer
         src={src}
         alt={alt}
