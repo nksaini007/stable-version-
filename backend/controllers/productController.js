@@ -129,6 +129,9 @@ const createProduct = async (req, res) => {
       imageLink, // New field for external URL
       pricingTiers, // JSON string or object
       recommendations, // array of IDs
+      arModelUrl,
+      arModelScale,
+      arModelRotation,
     } = req.body;
 
     let image = req.file ? req.file.path : null;
@@ -167,6 +170,9 @@ const createProduct = async (req, res) => {
       seller: req.user._id,
       pricingTiers: typeof pricingTiers === 'string' ? JSON.parse(pricingTiers) : pricingTiers,
       recommendations: typeof recommendations === 'string' ? JSON.parse(recommendations) : recommendations,
+      arModelUrl,
+      arModelScale,
+      arModelRotation,
     });
 
     res.status(201).json(product);
