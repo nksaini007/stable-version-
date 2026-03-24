@@ -134,13 +134,18 @@ const createProduct = async (req, res) => {
       arModelRotation,
     } = req.body;
 
-    let image = req.file ? req.file.path : null;
-    let public_id = req.file ? req.file.filename : (imageLink ? 'external' : null);
+    let image = req.files && req.files.image ? req.files.image[0].path : null;
+    let public_id = req.files && req.files.image ? req.files.image[0].filename : (imageLink ? 'external' : null);
     
     // If no file, but a link is provided, use the link
     if (!image && imageLink) {
         image = imageLink;
         public_id = 'external';
+    }
+
+    let finalArModelUrl = arModelUrl;
+    if (req.files && req.files.arModelFile) {
+        finalArModelUrl = req.files.arModelFile[0].path;
     }
 
     // Convert features from text → array if needed
@@ -170,7 +175,7 @@ const createProduct = async (req, res) => {
       seller: req.user._id,
       pricingTiers: typeof pricingTiers === 'string' ? JSON.parse(pricingTiers) : pricingTiers,
       recommendations: typeof recommendations === 'string' ? JSON.parse(recommendations) : recommendations,
-      arModelUrl,
+      arModelUrl: finalArModelUrl,
       arModelScale,
       arModelRotation,
     });
@@ -191,13 +196,17 @@ const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    let image = req.file ? req.file.path : undefined;
-    let public_id = req.file ? req.file.filename : (updates.imageLink ? 'external' : undefined);
+    let image = req.files && req.files.image ? req.files.image[0].path : undefined;
+    let public_id = req.files && req.files.image ? req.files.image[0].filename : (updates.imageLink ? 'external' : undefined);
 
     // If no file but imageLink provided in updates
     if (!image && updates.imageLink) {
         image = updates.imageLink;
         public_id = 'external';
+    }
+
+    if (req.files && req.files.arModelFile) {
+        updates.arModelUrl = req.files.arModelFile[0].path;
     }
 
     // Admin override: Admin can update any product, seller can only update their own

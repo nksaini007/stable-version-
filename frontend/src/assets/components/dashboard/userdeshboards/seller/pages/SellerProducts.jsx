@@ -16,7 +16,7 @@ const SellerProducts = () => {
         name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "",
         material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "", 
         image: null, imageLink: "",
-        arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg",
+        arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg", arModelFile: null,
         pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] }
     });
 
@@ -49,7 +49,7 @@ const SellerProducts = () => {
             name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", 
             brand: "", material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", 
             features: "", care_instructions: "", image: null, imageLink: "",
-            arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg",
+            arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg", arModelFile: null,
             pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] }
         });
         setEditing(null); setPreview(null); setShowForm(false);
@@ -68,17 +68,14 @@ const SellerProducts = () => {
                         formData.append(k, JSON.stringify(v));
                     } else if (k === 'features' && typeof v === 'string') {
                         formData.append(k, v);
-                    } else if (k === 'arModelUrl') {
-                        let finalModelId = v;
-                        if (finalModelId) {
-                            const match = finalModelId.match(/data-model=["']([^"']+)["']/);
-                            if (match) finalModelId = match[1];
-                        }
-                        formData.append(k, finalModelId);
-                    } else if ((k === 'arModelScale' || k === 'arModelRotation') && !form.arModelUrl) {
-                        // Skip AR metadata if no AR URL is provided to prevent DB pollution
+                    } else if (k === 'arModelUrl' && !form.arModelFile) {
+                        formData.append(k, v);
+                    } else if (k === 'arModelFile' && v instanceof File) {
+                        formData.append('arModelFile', v);
+                    } else if ((k === 'arModelScale' || k === 'arModelRotation') && !form.arModelUrl && !form.arModelFile) {
+                        // Skip AR metadata if no AR model is provided to prevent DB pollution
                         return;
-                    } else {
+                    } else if (k !== 'arModelUrl' && k !== 'arModelFile') {
                         formData.append(k, v);
                     }
                 }
@@ -103,7 +100,7 @@ const SellerProducts = () => {
             weight: p.weight || "", warranty: p.warranty || "", origin: p.origin || "", 
             features: (p.features || []).join(", "), care_instructions: p.care_instructions || "", 
             image: null, imageLink: p.images?.[0]?.public_id === 'external' ? p.images[0].url : "",
-            arModelUrl: p.arModelUrl || "", arModelScale: p.arModelScale || "1 1 1", arModelRotation: p.arModelRotation || "0deg 0deg 0deg",
+            arModelUrl: p.arModelUrl || "", arModelScale: p.arModelScale || "1 1 1", arModelRotation: p.arModelRotation || "0deg 0deg 0deg", arModelFile: null,
             pricingTiers: p.pricingTiers || { architect: "", stinchar: "", normal: "", bulk: [] }
         });
         setEditing(p);
@@ -255,19 +252,37 @@ const SellerProducts = () => {
                             </div>
                         </div>
 
-                        {/* AR Features (Clooned) */}
+                        {/* Native AR Features */}
                         <div className="p-4 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-4">
                             <div>
                                 <h4 className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider">
-                                    <FaCube /> 3D Model Embed (Clooned)
+                                    <FaCube /> 3D Model Upload (AR Camera Support)
                                 </h4>
-                                <p className="text-[10px] text-purple-600 mt-1 font-medium">To enable AR, paste your Clooned embed code or just the <strong>data-model</strong> ID.</p>
+                                <p className="text-[10px] text-purple-600 mt-1 font-medium">To enable "View in Room" from user phone cameras, upload a direct .glb / .usdz file or link.</p>
                             </div>
-                            <div className="grid sm:grid-cols-1 gap-4">
-                                <div>
-                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">CLOONED ID OR EMBED SNIPPET</label>
-                                    <input name="arModelUrl" placeholder='e.g. e3f39f03-4cd3-4d23-8015...' value={form.arModelUrl} onChange={handleChange} className={inputCls} />
+                            <div className="flex flex-col gap-3">
+                                <label className="text-[10px] font-bold text-purple-600 block mb-1">3D MODEL SOURCE (FILE OR URL)</label>
+                                <div className="flex items-center gap-3">
+                                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-purple-200 cursor-pointer hover:bg-purple-100/50 text-sm text-purple-700 font-semibold bg-white transition-all shadow-sm">
+                                        <FaCube className="text-purple-500" /> Upload .glb File
+                                        <input type="file" accept=".glb,.gltf,.usdz" className="hidden" onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if(file) {
+                                                setForm({ ...form, arModelFile: file, arModelUrl: "" });
+                                            }
+                                        }} />
+                                    </label>
+                                    <input 
+                                        name="arModelUrl" 
+                                        placeholder="Or paste direct .glb File URL..." 
+                                        value={form.arModelUrl} 
+                                        onChange={(e) => {
+                                            setForm({ ...form, arModelUrl: e.target.value, arModelFile: null });
+                                        }} 
+                                        className={inputCls} 
+                                    />
                                 </div>
+                                {(form.arModelFile) && <p className="text-xs text-emerald-600 font-medium">✓ File selected: {form.arModelFile.name}</p>}
                             </div>
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <div>
@@ -279,11 +294,15 @@ const SellerProducts = () => {
                                     <input name="arModelRotation" placeholder="e.g. 0deg 90deg 0deg" value={form.arModelRotation} onChange={handleChange} className={inputCls} />
                                 </div>
                             </div>
-                            {form.arModelUrl && (
+                            {(form.arModelUrl || form.arModelFile) && (
                                 <div className="mt-4 pt-4 border-t border-purple-100">
                                     <h5 className="text-[10px] font-bold text-purple-700 uppercase mb-2">3D Model Preview</h5>
                                     <div className="h-64 rounded-xl overflow-hidden border border-purple-200 bg-white shadow-inner">
-                                        <ARViewer src={form.arModelUrl} scale={form.arModelScale} rotation={form.arModelRotation} />
+                                        <ARViewer 
+                                            src={form.arModelFile ? URL.createObjectURL(form.arModelFile) : form.arModelUrl} 
+                                            scale={form.arModelScale} 
+                                            rotation={form.arModelRotation} 
+                                        />
                                     </div>
                                 </div>
                             )}

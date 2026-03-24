@@ -44,11 +44,16 @@ router.get("/", protect, getSellerProducts);
 // ✅ Get single product by ID (Must be below other exact matches!)
 router.get("/:id", getProductById);
 
+const cpUpload = upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'arModelFile', maxCount: 1 }
+]);
+
 // ✅ Create new product (Seller)
-router.post("/", protect, upload.single("image"), createProduct);
+router.post("/", protect, cpUpload, createProduct);
 
 // ✅ Update product (Seller)
-router.put("/:id", protect, upload.single("image"), updateProduct);
+router.put("/:id", protect, cpUpload, updateProduct);
 
 // ✅ Delete product (Seller)
 router.delete("/:id", protect, deleteProduct);
