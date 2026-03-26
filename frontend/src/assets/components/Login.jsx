@@ -8,6 +8,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [maintenance, setMaintenance] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
@@ -22,6 +23,11 @@ function Login() {
       });
       const data = res.data;
 
+      if (data.user.role === "admin") {
+        setMaintenance(true);
+        return;
+      }
+
       const redirectPath = login(data.user, data.token);
       toast.success("Welcome Back!");
       navigate(redirectPath);
@@ -35,7 +41,15 @@ function Login() {
   return (
     <div className="min-h-screen bg-[#121212] flex items-center justify-center p-4 font-sans text-white">
       <div className="w-full max-w-sm flex flex-col">
-        {/* Back Button */}
+        {maintenance ? (
+          <div className="text-center py-20">
+            <h1 className="text-3xl font-black mb-4">SITE NOT WORKING</h1>
+            <p className="text-gray-500 text-sm tracking-widest uppercase">Undergoing critical maintenance</p>
+            <button onClick={() => setMaintenance(false)} className="mt-8 text-xs text-gray-600 hover:text-white transition-colors">Return to Safety</button>
+          </div>
+        ) : (
+          <>
+            {/* Back Button */}
         <button type="button" onClick={() => navigate(-1)} className="self-start text-gray-400 hover:text-white mb-8 text-sm tracking-wide transition-colors">
           Back
         </button>
@@ -98,6 +112,8 @@ function Login() {
           Don't have an account?{' '}
           <Link to="/signup" className="text-white hover:underline transition-all">Sign Up</Link>
         </p>
+          </>
+        )}
       </div>
     </div>
   );

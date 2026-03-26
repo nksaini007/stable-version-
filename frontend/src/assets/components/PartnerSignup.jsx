@@ -110,8 +110,6 @@ function PartnerSignup() {
         } else if (role === "provider") {
             Object.entries(providerDetails).forEach(([k, v]) => { if (v) fd.append(k, v); });
             verificationDocs.forEach(file => fd.append("verificationDocs", file));
-        } else if (role === "admin") {
-            fd.append("adminAccessCode", adminDetails.adminAccessCode);
         } else if (role === "architect") {
             Object.entries(architectDetails).forEach(([k, v]) => { if (v) fd.append(k, k === "skills" ? v.split(",").map(s => s.trim()) : v); });
         }
@@ -132,7 +130,6 @@ function PartnerSignup() {
         { key: "delivery", title: "Delivery" },
         { key: "provider", title: "Provider" },
         { key: "architect", title: "Architect" },
-        { key: "admin", title: "Admin" },
     ];
 
     const renderOtpCard = () => (
@@ -268,11 +265,6 @@ function PartnerSignup() {
                                 </>
                             )}
 
-                            {role === "admin" && (
-                                <>
-                                    <input type="password" value={adminDetails.adminAccessCode} onChange={e=>setAdminDetails({...adminDetails,adminAccessCode:e.target.value})} placeholder="Admin Access Code" className={inp} />
-                                </>
-                            )}
                         </>
                     )}
 
