@@ -479,8 +479,11 @@ const AdminCategoryDashboard = () => {
                 className="flex-1 p-3 bg-[#121212] border border-[#2A2B2F] rounded-lg text-white"
               />
 
+              <input
+                type="file"
+                onChange={(e) => setCategoryImage(e.target.files[0])}
                 className="border border-[#2A2B2F] bg-[#121212] rounded-lg p-2 text-[#8E929C] text-sm"
-
+              />
               <button
                 onClick={handleAddOrEditCategory}
                 className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg flex items-center gap-2"
