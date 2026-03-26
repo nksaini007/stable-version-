@@ -37,6 +37,8 @@ const uploadProfile = multer({
 /**
  * POST /api/users/signup — Customer signup (default)
  */
+const createUser = async (req, res) => {
+  try {
     const {
       name, password, role, phone, address, pincode,
       aadhaarNumber, gstNumber, businessName, panNumber, businessAddress,
