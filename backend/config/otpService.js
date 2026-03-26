@@ -88,8 +88,18 @@ const sendViaGmail = async (to, subject, htmlContent) => {
         console.log(`[Gmail SMTP] ✅ Email sent to ${to} | MessageId: ${info.messageId}`);
         return { success: true, messageId: info.messageId };
     } catch (err) {
-        console.error(`[Gmail SMTP] ❌ Error:`, err.message);
-        return { success: false, error: err.message, code: err.code };
+        console.error(`[Gmail SMTP] ❌ Error Flow:`, {
+            message: err.message,
+            code: err.code,
+            command: err.command,
+            response: err.response
+        });
+        
+        let customError = err.message;
+        if (err.code === 'ETIMEDOUT') customError = "Connection timed out. Render/ISP might be blocking SMTP ports.";
+        if (err.code === 'EAUTH') customError = "Gmail Authentication failed. Check App Password.";
+        
+        return { success: false, error: customError, code: err.code };
     }
 };
 
