@@ -226,7 +226,8 @@ const AnimatedCard = () => {
             <div className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] rounded-[2.5rem] overflow-hidden shadow-2xl bg-neutral-800 relative group border border-neutral-800">
               {/* Replace url with specific user upload if desired */}
               <img
-                src="https://image2url.com/r2/default/images/1774156367779-ef5ba5aa-29aa-4d80-a3f1-627d52dbd842.jpeg"
+                // src="https://image2url.com/r2/default/images/1774156367779-ef5ba5aa-29aa-4d80-a3f1-627d52dbd842.jpeg"
+                src="https://image2url.com/r2/default/images/1774492546335-556040b6-2941-454d-86e9-17ecd3f365bd.jpeg"
                 alt="Main Visual"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-in-out"
               />
@@ -298,104 +299,104 @@ const AnimatedCard = () => {
         <div className="flex-1 w-full bg-gray-50 text-gray-900 pb-16">
           <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-8 py-8 md:py-12">
 
-          {/* Status Handling */}
-          {
-            loading && (
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="w-12 h-12 border-4 border-gray-200 border-t-neutral-800 rounded-full animate-spin mb-4 shadow-sm"></div>
-                <p className="text-gray-500 font-medium tracking-wide">Gathering files...</p>
-              </div>
-            )
-          }
-
-          {
-            error && (
-              <div className="max-w-md mx-auto bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded-xl text-center shadow-sm">
-                <span className="font-semibold">Oops!</span> {error}
-              </div>
-            )
-          }
-
-          {
-            !loading && !error && hasSearched && results.length === 0 && (
-              <div className="text-center py-24 bg-white rounded-[2rem] border border-gray-100 shadow-sm max-w-3xl mx-auto">
-                <div className="text-5xl mb-4 opacity-50">🔍</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">No items found</h3>
-                <p className="text-gray-500">We couldn't find anything matching "{searchQuery}". Try a broader term.</p>
-              </div>
-            )
-          }
-
-          {/* Results Grid (Clean & Modern Structure) */}
-          <AnimatePresence>
-            {!loading && results.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="w-full"
-              >
-                <div className="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
-                  <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                    Results for <span className="text-neutral-500 font-medium">"{searchQuery}"</span>
-                  </h2>
-                  <span className="px-3 py-1 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-semibold shadow-sm">
-                    {results.length} Found
-                  </span>
+            {/* Status Handling */}
+            {
+              loading && (
+                <div className="flex flex-col items-center justify-center py-16">
+                  <div className="w-12 h-12 border-4 border-gray-200 border-t-neutral-800 rounded-full animate-spin mb-4 shadow-sm"></div>
+                  <p className="text-gray-500 font-medium tracking-wide">Gathering files...</p>
                 </div>
+              )
+            }
 
-                <div className="grid grid-cols-2 lg:grid-cols-8 gap-2 xl:gap-2">
-                  {results.map((product, i) => {
-                    const isLastElement = i === results.length - 1;
-                    return (
-                      <motion.div
-                        ref={isLastElement ? lastElementRef : null}
-                        key={`${product._id}-${i}`}
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: (i % 10) * 0.03, duration: 0.4 }}
-                        onClick={() => navigate(`/product/${product._id}`)}
-                        className="group cursor-pointer flex flex-col bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-1"
-                      >
-                        {/* Image Container - Clean and perfectly rounded */}
-                        <div className="w-full aspect-[4/4] bg-gray-50 rounded-xl overflow-hidden mb-4 relative">
-                          <img
-                            src={product.images?.[0]?.url ? `${product.images[0].url}` : product.image || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"}
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        </div>
-
-                        {/* Content Details - Soft and legible */}
-                        <div className="px-2 flex flex-col flex-1 pb-1">
-                          <h3 className="text-sm font-semibold text-gray-900 leading-tight mb-1.5 line-clamp-1 group-hover:text-neutral-600 transition-colors">
-                            {product.name}
-                          </h3>
-                          <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">
-                            {product.description}
-                          </p>
-                          <div className="mt-auto flex justify-between items-end">
-                            <span className="text-[17px] font-black text-gray-900">
-                              ₹{product.price}
-                            </span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )
-                  })}
+            {
+              error && (
+                <div className="max-w-md mx-auto bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded-xl text-center shadow-sm">
+                  <span className="font-semibold">Oops!</span> {error}
                 </div>
+              )
+            }
 
-                {/* Clean Infinite Scroll Loader */}
-                {loadingMore && (
-                  <div className="flex justify-center py-12 mt-8">
-                    <div className="w-10 h-10 border-4 border-gray-100 border-t-orange-500 rounded-full animate-spin"></div>
+            {
+              !loading && !error && hasSearched && results.length === 0 && (
+                <div className="text-center py-24 bg-white rounded-[2rem] border border-gray-100 shadow-sm max-w-3xl mx-auto">
+                  <div className="text-5xl mb-4 opacity-50">🔍</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">No items found</h3>
+                  <p className="text-gray-500">We couldn't find anything matching "{searchQuery}". Try a broader term.</p>
+                </div>
+              )
+            }
+
+            {/* Results Grid (Clean & Modern Structure) */}
+            <AnimatePresence>
+              {!loading && results.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="w-full"
+                >
+                  <div className="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
+                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                      Results for <span className="text-neutral-500 font-medium">"{searchQuery}"</span>
+                    </h2>
+                    <span className="px-3 py-1 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-semibold shadow-sm">
+                      {results.length} Found
+                    </span>
                   </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-8 gap-2 xl:gap-2">
+                    {results.map((product, i) => {
+                      const isLastElement = i === results.length - 1;
+                      return (
+                        <motion.div
+                          ref={isLastElement ? lastElementRef : null}
+                          key={`${product._id}-${i}`}
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: (i % 10) * 0.03, duration: 0.4 }}
+                          onClick={() => navigate(`/product/${product._id}`)}
+                          className="group cursor-pointer flex flex-col bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                        >
+                          {/* Image Container - Clean and perfectly rounded */}
+                          <div className="w-full aspect-[4/4] bg-gray-50 rounded-xl overflow-hidden mb-4 relative">
+                            <img
+                              src={product.images?.[0]?.url ? `${product.images[0].url}` : product.image || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"}
+                              alt={product.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          </div>
+
+                          {/* Content Details - Soft and legible */}
+                          <div className="px-2 flex flex-col flex-1 pb-1">
+                            <h3 className="text-sm font-semibold text-gray-900 leading-tight mb-1.5 line-clamp-1 group-hover:text-neutral-600 transition-colors">
+                              {product.name}
+                            </h3>
+                            <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">
+                              {product.description}
+                            </p>
+                            <div className="mt-auto flex justify-between items-end">
+                              <span className="text-[17px] font-black text-gray-900">
+                                ₹{product.price}
+                              </span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Clean Infinite Scroll Loader */}
+                  {loadingMore && (
+                    <div className="flex justify-center py-12 mt-8">
+                      <div className="w-10 h-10 border-4 border-gray-100 border-t-orange-500 rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
       )}
     </div>
   );
