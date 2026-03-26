@@ -7,7 +7,7 @@ const ArchitectWork = require("../models/ArchitectWork");
 const path = require("path");
 const fs = require("fs");
 const { deleteImage } = require("../config/cloudinary");
-const { generateOTP, sendEmailOTP, sendPhoneOTPViaEmail } = require("../config/otpService");
+const { generateOTP, sendEmailOTP, sendPhoneOTPViaEmail, verifyEmailConfig: checkEmailConfig } = require("../config/otpService");
 
 // ==================== MULTER CONFIG ====================
 const { storage } = require("../config/cloudinary");
@@ -37,10 +37,8 @@ const uploadProfile = multer({
 /**
  * POST /api/users/signup — Customer signup (default)
  */
-const createUser = async (req, res) => {
-  try {
     const {
-      name, email, password, role, phone, address, pincode,
+      name, password, role, phone, address, pincode,
       aadhaarNumber, gstNumber, businessName, panNumber, businessAddress,
       businessCategory, bankAccount, ifscCode, companyRegistrationNumber, tradeLicenseNumber, fssaiLicense,
       storeDescription, supportPhone, supportEmail, businessType, socialLinks,
@@ -48,6 +46,7 @@ const createUser = async (req, res) => {
       serviceCategory, serviceDescription, experience,
       adminAccessCode, bio, coaRegistration
     } = req.body;
+    const email = req.body.email?.toLowerCase();
 
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "Email already registered" });
@@ -130,7 +129,8 @@ const createUser = async (req, res) => {
  */
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { password } = req.body;
+    const email = req.body.email?.toLowerCase();
     if (!email || !password) return res.status(400).json({ message: "Email and password required" });
 
     const user = await User.findOne({ email });
@@ -162,7 +162,8 @@ const loginUser = async (req, res) => {
  */
 const adminSecretLogin = async (req, res) => {
   try {
-    const { adminKey, email, password } = req.body;
+    const { adminKey, password } = req.body;
+    const email = req.body.email?.toLowerCase();
 
     // 1. Validate the master key before even touching DB
     if (!adminKey || adminKey !== process.env.ADMIN_MASTER_KEY) {
@@ -535,7 +536,8 @@ const getArchitectPublicProfile = async (req, res) => {
 const sendOTP = async (req, res) => {
     console.log(`[sendOTP] Request received. Body:`, JSON.stringify(req.body));
     try {
-        const { email, phone, type } = req.body;
+        const { phone, type } = req.body;
+        const email = req.body.email?.toLowerCase();
 
         if (!type || !["email", "phone"].includes(type)) {
             return res.status(400).json({ message: "Invalid OTP type. Must be 'email' or 'phone'." });
@@ -603,7 +605,8 @@ const sendOTP = async (req, res) => {
  */
 const verifyOTP = async (req, res) => {
     try {
-        const { email, phone, otp, type } = req.body;
+        const { phone, otp, type } = req.body;
+        const email = req.body.email?.toLowerCase();
         let query = type === "email" ? { email, type: "email" } : { phone, type: "phone" };
         
         const otpDoc = await Otp.findOne(query);
@@ -628,7 +631,8 @@ const verifyOTP = async (req, res) => {
  */
 const resetPassword = async (req, res) => {
   try {
-    const { email, newPassword } = req.body;
+    const { newPassword } = req.body;
+    const email = req.body.email?.toLowerCase();
     if (!email || !newPassword) return res.status(400).json({ message: "Email and new password required" });
     
     const otpDoc = await Otp.findOne({ email, type: "email", isVerified: true });
@@ -646,6 +650,14 @@ const resetPassword = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+/**
+ * GET /api/users/test-email-config
+ */
+const verifyEmailConfig = async (req, res) => {
+  const status = await checkEmailConfig();
+  res.json(status);
 };
 
 module.exports = {
@@ -669,4 +681,5 @@ module.exports = {
   sendOTP,
   verifyOTP,
   resetPassword,
+  verifyEmailConfig,
 };

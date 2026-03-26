@@ -46,8 +46,11 @@ const sendViaBrevo = async (to, subject, htmlContent) => {
             console.log(`[Brevo] ✅ Email sent to ${to} | MessageId: ${data.messageId}`);
             return { success: true, messageId: data.messageId };
         } else {
-            console.error(`[Brevo] ❌ API Error:`, data);
-            return { success: false, error: data.message || JSON.stringify(data) };
+            console.error(`[Brevo] ❌ API Error Details:`, JSON.stringify(data, null, 2));
+            let detail = data.message || "Unknown Brevo Error";
+            if (data.code === "unauthorized") detail = "Invalid API Key";
+            if (data.code === "account_not_active") detail = "Brevo account deactivated";
+            return { success: false, error: detail };
         }
     } catch (err) {
         console.error(`[Brevo] ❌ Network Error:`, err.message);
@@ -127,7 +130,10 @@ const sendEmailOTP = async (email, otp) => {
         console.log(`[otpService] Using Brevo API to send OTP to: ${email}`);
         const result = await sendViaBrevo(email, subject, html);
         if (result.success) return result;
-        console.warn(`[otpService] Brevo failed, trying Gmail SMTP fallback...`);
+        console.error(`[otpService] Brevo delivery failed for ${email}:`, result.error);
+        console.warn(`[otpService] Trying Gmail SMTP fallback...`);
+    } else {
+        console.warn(`[otpService] Skipping Brevo (BREVO_API_KEY missing)`);
     }
 
     // Fallback to Gmail SMTP (works locally, blocked on Render free tier)

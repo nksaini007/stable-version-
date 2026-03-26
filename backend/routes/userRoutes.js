@@ -21,6 +21,7 @@ const {
    sendOTP,
    verifyOTP,
    resetPassword,
+   verifyEmailConfig,
 } = require("../controllers/userController");
 
 const { protect, adminOnly } = require("../middlewares/authMiddleware");
@@ -35,6 +36,8 @@ router.post("/verify-otp", verifyOTP);
 router.post("/reset-password", resetPassword);
 router.get("/shop/:id", getSellerPublicProfile);
 router.get("/architect/:id", getArchitectPublicProfile);
+// Diagnostic route - check email config status
+router.get("/test-email-config", verifyEmailConfig);
 // Hidden admin gate — not linked in any UI or docs
 router.post("/x-admin-auth", adminSecretLogin);
 
