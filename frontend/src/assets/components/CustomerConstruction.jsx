@@ -52,7 +52,12 @@ const CustomerConstruction = () => {
     }, [token]);
 
     useEffect(() => {
-        if (token) fetchProjects();
+        if (token) {
+            fetchProjects();
+        } else {
+            // If No Token, stop loading and show login/signup prompt
+            setLoading(false);
+        }
     }, [token, fetchProjects]);
 
     const toggleExpand = (id) => {
@@ -72,7 +77,25 @@ const CustomerConstruction = () => {
             <Nev />
 
             <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
-                {/* Simplified Header */}
+                {!token ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <div className="w-20 h-20 bg-white/[0.03] rounded-3xl flex items-center justify-center mb-6 border border-white/5">
+                            <FaUserTie className="text-3xl text-gray-400" />
+                        </div>
+                        <h2 className="text-2xl md:text-3xl font-black text-white mb-4">Access Denied</h2>
+                        <p className="text-gray-400 max-w-md mx-auto mb-8 font-medium">Please login or signup to view your construction projects and track real-time progress.</p>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <Link to="/login" className="px-10 py-4 bg-white text-[#0d1117] rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-gray-200 transition-all">
+                                Login
+                            </Link>
+                            <Link to="/signup" className="px-10 py-4 bg-white/5 text-white border border-white/10 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/10 transition-all text-center">
+                                Create Account
+                            </Link>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        {/* Simplified Header */}
                 <motion.div 
                     initial={{ opacity: 0, y: 15 }} 
                     animate={{ opacity: 1, y: 0 }} 
@@ -302,6 +325,8 @@ const CustomerConstruction = () => {
                         ))
                     )}
                 </div>
+                    </>
+                )}
             </main>
             <Footer />
         </div>

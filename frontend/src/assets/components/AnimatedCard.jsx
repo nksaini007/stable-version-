@@ -239,7 +239,7 @@ const AnimatedCard = () => {
                   STINCHAR INNOVATIONS
                 </span>
                 <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight drop-shadow-md">
-                  BY<br />NK_SAINI
+                  BY<br />NK_SAINI and Team
                 </h1>
               </div>
             </div>
