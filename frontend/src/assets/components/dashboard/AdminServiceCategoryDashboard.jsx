@@ -110,20 +110,20 @@ const AdminServiceCategoryDashboard = () => {
   };
 
   return (
-    <div className="bg-white border border-orange-100 rounded-2xl p-6 shadow-md">
+    <div className="bg-[#121212] min-h-screen py-6 px-4">
       <div className="flex items-center gap-3 mb-8">
-        <FaLayerGroup className="text-orange-500 text-2xl" />
-        <h2 className="text-xl font-bold text-gray-800">Service Category Management</h2>
+        <FaLayerGroup className="text-blue-500 text-2xl" />
+        <h2 className="text-xl font-bold text-white">Service Category Hub</h2>
       </div>
 
       {/* ADD CATEGORY */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-orange-50/50 rounded-xl p-6 mb-10 border border-orange-100"
+        className="bg-[#1A1B1E] rounded-2xl p-6 mb-10 border border-[#2A2B2F]"
       >
-        <h3 className="text-sm font-bold text-orange-600 uppercase tracking-wider mb-4">
-          {editingCategoryId ? "Edit Service Category" : "Add New Service Category"}
+        <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-6 px-1">
+          {editingCategoryId ? "Update Service Category" : "Draft New Service Category"}
         </h3>
 
         <div className="flex flex-wrap gap-4">
@@ -132,18 +132,18 @@ const AdminServiceCategoryDashboard = () => {
             placeholder="Category name (e.g. Home Cleaning)"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
-            className="flex-1 p-3 border border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-400 outline-none"
+            className="flex-1 p-4 bg-[#121212] border border-[#2A2B2F] rounded-xl text-white focus:ring-1 focus:ring-blue-500 outline-none transition-all"
           />
 
           <input
             type="file"
             onChange={(e) => setCategoryImage(e.target.files[0])}
-            className="border border-orange-200 rounded-xl p-2 bg-white text-sm"
+            className="border border-[#2A2B2F] bg-[#121212] rounded-xl p-3 text-xs text-[#8E929C]"
           />
 
           <button
             onClick={handleAddOrEditCategory}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition shadow-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl flex items-center gap-2 font-bold transition shadow-lg shadow-blue-500/10"
           >
             {editingCategoryId ? <FaSave /> : <FaPlus />}
             {editingCategoryId ? "Save" : "Create"}
@@ -156,7 +156,7 @@ const AdminServiceCategoryDashboard = () => {
                 setEditingCategoryId(null);
                 setCategoryImage(null);
               }}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-3 rounded-xl transition"
+              className="bg-[#2A2B2F] hover:bg-[#323338] text-white px-5 py-4 rounded-xl transition"
             >
               <FaTimes />
             </button>
@@ -167,35 +167,35 @@ const AdminServiceCategoryDashboard = () => {
       {/* CATEGORY GRID */}
       <div className="grid md:grid-cols-2 gap-8">
         {categories.map((cat) => (
-          <div key={cat._id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex flex-col hover:border-orange-200 transition">
+          <div key={cat._id} className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl p-6 shadow-sm flex flex-col hover:border-blue-500/20 transition-colors group">
 
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex items-center gap-4">
                 {cat.image && (
-                  <img src={getImageUrl(cat.image)} alt="" className="w-14 h-14 rounded-2xl object-cover shadow-sm" />
+                  <img src={getImageUrl(cat.image)} alt="" className="w-16 h-16 rounded-2xl object-cover border border-[#2A2B2F]" />
                 )}
                 <div>
-                    <h4 className="font-bold text-lg text-gray-800 capitalize">{cat.name}</h4>
-                    <p className="text-xs text-gray-500">{cat.subcategories?.length || 0} Subcategories</p>
+                    <h4 className="font-bold text-lg text-white capitalize tracking-tight">{cat.name}</h4>
+                    <p className="text-xs text-[#8E929C]">{cat.subcategories?.length || 0} Subcategories</p>
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <button onClick={() => handleEditCategory(cat)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition">
+              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => handleEditCategory(cat)} className="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition">
                   <FaEdit />
                 </button>
-                <button onClick={() => handleDeleteCategory(cat._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition">
+                <button onClick={() => handleDeleteCategory(cat._id)} className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition">
                   <FaTrash />
                 </button>
               </div>
             </div>
 
             {/* ADD / EDIT SUB */}
-            <div className="bg-gray-50 p-4 rounded-xl mb-4 border border-gray-100">
-              <p className="text-xs font-bold text-gray-400 uppercase mb-3">
-                {editingSub.catId === cat._id ? "Editing Subcategory" : "Add Subcategory"}
+            <div className="bg-[#121212] p-5 rounded-2xl mb-6 border border-[#2A2B2F]">
+              <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mb-4 px-1">
+                {editingSub.catId === cat._id ? "Adjusting Subcategory" : "Draft Subcategory"}
               </p>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <input
                   type="text"
                   placeholder="Subcategory name"
@@ -205,10 +205,10 @@ const AdminServiceCategoryDashboard = () => {
                       ? setEditingSub({ ...editingSub, name: e.target.value })
                       : setSubName(e.target.value)
                   }
-                  className="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-orange-400 outline-none"
+                  className="w-full p-3 bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none"
                 />
 
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-3 items-center">
                     <input
                         type="file"
                         onChange={(e) =>
@@ -216,21 +216,21 @@ const AdminServiceCategoryDashboard = () => {
                             ? setEditingSub({ ...editingSub, image: e.target.files[0] })
                             : setSubImage(e.target.files[0])
                         }
-                        className="flex-1 text-xs file:hidden"
+                        className="flex-1 text-[10px] text-[#6B7280] file:hidden"
                     />
 
                     {editingSub.catId === cat._id ? (
-                        <div className="flex gap-1">
-                            <button onClick={handleSaveSubcategory} className="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition shadow-sm">
+                        <div className="flex gap-2">
+                            <button onClick={handleSaveSubcategory} className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 transition">
                             <FaSave />
                             </button>
-                            <button onClick={() => setEditingSub({ catId: null, subId: null, name: "", image: null })} className="bg-gray-300 text-gray-700 p-2 rounded-lg">
+                            <button onClick={() => setEditingSub({ catId: null, subId: null, name: "", image: null })} className="bg-[#2A2B2F] text-white p-2.5 rounded-xl">
                                 <FaTimes />
                             </button>
                         </div>
                     ) : (
-                        <button onClick={() => handleAddSubcategory(cat._id)} className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition shadow-sm font-bold text-sm">
-                        <FaPlus /> Add
+                        <button onClick={() => handleAddSubcategory(cat._id)} className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition font-bold text-xs uppercase tracking-tighter">
+                        <FaPlus className="inline mr-1" /> Add
                         </button>
                     )}
                 </div>
@@ -238,22 +238,22 @@ const AdminServiceCategoryDashboard = () => {
             </div>
 
             {/* SUB LIST */}
-            <div className="flex flex-wrap gap-2 overflow-y-auto max-h-40 p-1">
+            <div className="flex flex-wrap gap-2 overflow-y-auto max-h-48 p-1">
               {cat.subcategories?.map((sub) => (
-                <div key={sub._id} className="bg-white border border-gray-200 px-3 py-1.5 rounded-xl text-sm flex gap-3 items-center shadow-sm group hover:border-orange-300 transition">
-                  {sub.image && <img src={getImageUrl(sub.image)} className="w-5 h-5 rounded-md object-cover" />}
-                  <span className="font-medium text-gray-700">{sub.name}</span>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                    <button onClick={() => handleEditSubcategory(cat._id, sub)} className="text-blue-500 hover:scale-110">
+                <div key={sub._id} className="bg-[#121212] border border-[#2A2B2F] px-4 py-2 rounded-2xl text-xs flex gap-3 items-center shadow-sm group hover:border-blue-500/40 transition-colors">
+                  {sub.image && <img src={getImageUrl(sub.image)} className="w-6 h-6 rounded-lg object-cover border border-[#2A2B2F]" />}
+                  <span className="font-medium text-[#8E929C] group-hover:text-blue-400 transition-colors">{sub.name}</span>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-auto">
+                    <button onClick={() => handleEditSubcategory(cat._id, sub)} className="text-blue-500 hover:scale-110 transition-transform">
                         <FaEdit size={12} />
                     </button>
-                    <button onClick={() => handleDeleteSubcategory(cat._id, sub._id)} className="text-red-500 hover:scale-110">
+                    <button onClick={() => handleDeleteSubcategory(cat._id, sub._id)} className="text-red-500 hover:scale-110 transition-transform">
                         <FaTimes size={12} />
                     </button>
                   </div>
                 </div>
               ))}
-              {cat.subcategories.length === 0 && <p className="text-xs text-gray-400 italic">No subcategories yet</p>}
+              {cat.subcategories.length === 0 && <p className="text-[10px] text-[#6B7280] italic px-1">No services listed yet</p>}
             </div>
 
           </div>

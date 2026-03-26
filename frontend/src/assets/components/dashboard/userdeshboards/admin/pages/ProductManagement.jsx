@@ -56,7 +56,7 @@ const AdminProductTable = () => {
             placeholder="Search products by name, category, or seller..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-[#2A2B2F] text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+            className="w-full pl-9 pr-4 py-2 bg-[#121212] border border-[#2A2B2F] rounded-xl text-sm focus:ring-1 focus:ring-blue-500 outline-none text-white placeholder-[#6B7280]"
           />
         </div>
       </div>
@@ -98,8 +98,10 @@ const AdminProductTable = () => {
                         <div>
                           <p className="font-semibold text-white line-clamp-1">{product.name}</p>
                           <div className="flex flex-col gap-0.5 mt-1">
-                            <span className="text-[10px] font-mono text-blue-400 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 w-fit">ID: {product._id}</span>
-                            <p className="text-xs text-[#8E929C]"><span className="font-medium text-blue-400">{product.category}</span> {product.subcategory && `> ${product.subcategory}`}</p>
+                          <div className="flex flex-col gap-1 mt-1.5">
+                            <span className="text-[9px] font-mono text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 w-fit uppercase tracking-tighter">ID: {product._id?.slice(-8)}</span>
+                            <p className="text-[10px] text-[#8E929C]"><span className="font-bold text-blue-500">{product.category}</span> {product.subcategory && `> ${product.subcategory}`}</p>
+                          </div>
                           </div>
                         </div>
                       </div>
@@ -117,18 +119,20 @@ const AdminProductTable = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="space-y-1 text-[11px]">
-                        <div className="flex justify-between border-b border-gray-50 pb-0.5">
+                      <div className="space-y-1 text-[10px] bg-[#121212] p-1.5 rounded-lg border border-[#2A2B2F]">
+                        <div className="flex justify-between border-b border-[#2A2B2F] pb-1">
                           <span className="text-[#6B7280]">Normal:</span>
-                          <span className="font-bold text-gray-200">₹{product.pricingTiers?.normal || product.price || 0}</span>
+                          <span className="font-bold text-gray-200 ml-2">₹{product.pricingTiers?.normal || product.price || 0}</span>
                         </div>
-                        <div className="flex justify-between border-b border-gray-50 pb-0.5">
-                          <span className="text-orange-400 font-medium">Stinchar:</span>
-                          <span className="font-bold text-orange-600">₹{product.pricingTiers?.stinchar || 0}</span>
+                        <div className="flex justify-between border-b border-[#2A2B2F] pb-1">
+                          <span className="text-orange-400 font-bold">Stinchar:</span>
+                          <span className="font-bold text-white ml-2">₹{product.pricingTiers?.stinchar || 0}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-blue-400 font-medium">Architect:</span>
-                          <span className="font-bold text-blue-400">₹{product.pricingTiers?.architect || 0}</span>
+                          <span className="text-blue-400 font-bold">Architect:</span>
+                          <span className="font-bold text-white ml-2">₹{product.pricingTiers?.architect || 0}</span>
                         </div>
+                      </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -136,7 +140,7 @@ const AdminProductTable = () => {
                         <p className={`text-xs font-bold ${product.stock > 10 ? 'text-emerald-600' : product.stock > 0 ? 'text-amber-500' : 'text-red-500'}`}>
                           QTY: {product.stock}
                         </p>
-                        <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-black uppercase ${product.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-[#121212] text-[#8E929C]'}`}>
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${product.isActive ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-[#2A2B2F] text-[#8E929C]'}`}>
                           {product.isActive ? 'ACTIVE' : 'INACTIVE'}
                         </span>
                       </div>
@@ -175,14 +179,14 @@ const ProductManagement = () => {
       <div className="flex border-b border-[#2A2B2F]">
         <button
           onClick={() => setActiveTab('products')}
-          className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'products' ? 'border-blue-600 text-blue-400 bg-blue-50/50' : 'border-transparent text-[#8E929C] hover:text-gray-200 hover:bg-[#121212]'
+          className={`flex items-center gap-2 px-8 py-4 font-bold text-sm transition-all border-b-2 ${activeTab === 'products' ? 'border-blue-500 text-blue-400 bg-blue-500/5' : 'border-transparent text-[#8E929C] hover:text-gray-200 hover:bg-[#1A1B1E]'
             }`}
         >
           <FaBox className="text-lg" /> All Products
         </button>
         <button
           onClick={() => setActiveTab('categories')}
-          className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${activeTab === 'categories' ? 'border-blue-600 text-blue-400 bg-blue-50/50' : 'border-transparent text-[#8E929C] hover:text-gray-200 hover:bg-[#121212]'
+          className={`flex items-center gap-2 px-8 py-4 font-bold text-sm transition-all border-b-2 ${activeTab === 'categories' ? 'border-blue-500 text-blue-400 bg-blue-500/5' : 'border-transparent text-[#8E929C] hover:text-gray-200 hover:bg-[#1A1B1E]'
             }`}
         >
           <FaLayerGroup className="text-lg" /> Manage Categories

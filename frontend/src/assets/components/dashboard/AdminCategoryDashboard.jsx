@@ -447,15 +447,15 @@ const AdminCategoryDashboard = () => {
     <>
      
 
-      <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 py-16 px-6">
+      <div className="min-h-screen bg-[#121212] py-16 px-6">
         <div className="max-w-7xl mx-auto">
 
           {/* TITLE */}
           <div className="text-center mb-12">
             <h1 className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent flex items-left justify-center gap-3">
-              <FaLayerGroup /> Admin Category Dashboard
+              <FaLayerGroup /> Product Category Explorer
             </h1>
-            <p className="text-slate-600 mt-2">
+            <p className="text-[#8E929C] mt-2">
               Manage categories & subcategories
             </p>
           </div>
@@ -464,9 +464,9 @@ const AdminCategoryDashboard = () => {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white border border-blue-100 rounded-2xl p-6 shadow mb-10"
+            className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl p-6 shadow-sm mb-10"
           >
-            <h2 className="text-xl font-semibold text-blue-600 mb-4">
+            <h2 className="text-sm font-bold text-blue-400 capitalize mb-4">
               {editingCategoryId ? "Edit Category" : "Add Category"}
             </h2>
 
@@ -476,14 +476,10 @@ const AdminCategoryDashboard = () => {
                 placeholder="Category name"
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
-                className="flex-1 p-3 border border-blue-200 rounded-lg"
+                className="flex-1 p-3 bg-[#121212] border border-[#2A2B2F] rounded-lg text-white"
               />
 
-              <input
-                type="file"
-                onChange={(e) => setCategoryImage(e.target.files[0])}
-                className="border border-blue-200 rounded-lg p-2"
-              />
+                className="border border-[#2A2B2F] bg-[#121212] rounded-lg p-2 text-[#8E929C] text-sm"
 
               <button
                 onClick={handleAddOrEditCategory}
@@ -499,7 +495,7 @@ const AdminCategoryDashboard = () => {
                     setCategoryName("");
                     setEditingCategoryId(null);
                   }}
-                  className="bg-gray-200 px-4 py-3 rounded-lg"
+                  className="bg-[#2A2B2F] text-white px-4 py-3 rounded-lg hover:bg-[#323338]"
                 >
                   <FaTimes />
                 </button>
@@ -510,14 +506,14 @@ const AdminCategoryDashboard = () => {
           {/* CATEGORY GRID */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.map((cat) => (
-              <div key={cat._id} className="bg-white border border-blue-100 rounded-2xl p-5 shadow flex flex-col">
+              <div key={cat._id} className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl p-5 shadow-sm flex flex-col hover:border-blue-500/30 transition-colors">
 
-                <div className="flex justify-between mb-3">
+                <div className="flex justify-between mb-4">
                   <div className="flex items-center gap-3">
                     {cat.image && (
-                      <img src={getOptimizedImage(cat.image)} alt="" className="w-12 h-12 rounded-xl" />
+                      <img src={getOptimizedImage(cat.image)} alt="" className="w-12 h-12 rounded-xl object-cover border border-[#2A2B2F]" />
                     )}
-                    <h3 className="font-semibold text-lg capitalize">{cat.name}</h3>
+                    <h3 className="font-bold text-lg capitalize text-white">{cat.name}</h3>
                   </div>
 
                   <div className="flex gap-2">
@@ -531,7 +527,8 @@ const AdminCategoryDashboard = () => {
                 </div>
 
                 {/* ADD / EDIT SUB */}
-                <div className="bg-blue-50 p-3 rounded-lg mb-3">
+                <div className="bg-[#121212] p-4 rounded-xl mb-4 border border-[#2A2B2F]">
+                  <p className="text-[10px] font-bold text-[#6B7280] uppercase mb-3 px-1">{editingSub.catId === cat._id ? "Editing Sub" : "Add Subcategory"}</p>
                   <input
                     type="text"
                     placeholder="Subcategory name"
@@ -541,46 +538,56 @@ const AdminCategoryDashboard = () => {
                         ? setEditingSub({ ...editingSub, name: e.target.value })
                         : setSubName(e.target.value)
                     }
-                    className="w-full mb-2 p-2 border rounded"
+                    className="w-full mb-3 p-2.5 bg-[#1A1B1E] border border-[#2A2B2F] rounded-lg text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none"
                   />
 
-                  <input
-                    type="file"
-                    onChange={(e) =>
-                      editingSub.catId === cat._id
-                        ? setEditingSub({ ...editingSub, image: e.target.files[0] })
-                        : setSubImage(e.target.files[0])
-                    }
-                    className="w-full mb-2"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      onChange={(e) =>
+                        editingSub.catId === cat._id
+                          ? setEditingSub({ ...editingSub, image: e.target.files[0] })
+                          : setSubImage(e.target.files[0])
+                      }
+                      className="flex-1 text-[10px] text-[#6B7280]"
+                    />
 
-                  {editingSub.catId === cat._id ? (
-                    <button onClick={handleSaveSubcategory} className="bg-green-600 text-white px-3 py-1 rounded">
-                      <FaSave />
-                    </button>
-                  ) : (
-                    <button onClick={() => handleAddSubcategory(cat._id)} className="bg-blue-600 text-white px-3 py-1 rounded">
-                      <FaPlus />
-                    </button>
-                  )}
+                    {editingSub.catId === cat._id ? (
+                      <div className="flex gap-1">
+                        <button onClick={handleSaveSubcategory} className="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700">
+                          <FaSave />
+                        </button>
+                        <button onClick={() => setEditingSub({ catId: null, subId: null, name: "", image: null })} className="bg-[#2A2B2F] text-white p-2 rounded-lg">
+                          <FaTimes />
+                        </button>
+                      </div>
+                    ) : (
+                      <button onClick={() => handleAddSubcategory(cat._id)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-bold">
+                        <FaPlus size={12}/>
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* SUB LIST */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mt-auto p-1">
                   {cat.subcategories.map((sub) => (
-                    <div key={sub._id} className="bg-blue-100 px-3 py-1 rounded-full text-sm flex gap-2 items-center">
+                    <div key={sub._id} className="bg-[#121212] border border-[#2A2B2F] px-3 py-1.5 rounded-xl text-xs text-[#8E929C] flex gap-2 items-center hover:border-blue-500/50 transition-colors group">
                       {sub.image && (
-                        <img src={getOptimizedImage(sub.image)} alt="" className="w-5 h-5 rounded-full object-cover" />
+                        <img src={getOptimizedImage(sub.image)} alt="" className="w-5 h-5 rounded-md object-cover" />
                       )}
-                      {sub.name}
-                      <button onClick={() => handleEditSubcategory(cat._id, sub)} className="text-blue-600">
-                        <FaEdit />
-                      </button>
-                      <button onClick={() => handleDeleteSubcategory(cat._id, sub._id)} className="text-red-600">
-                        <FaTimes />
-                      </button>
+                      <span className="flex-1">{sub.name}</span>
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => handleEditSubcategory(cat._id, sub)} className="text-blue-400 hover:text-blue-300">
+                          <FaEdit size={12}/>
+                        </button>
+                        <button onClick={() => handleDeleteSubcategory(cat._id, sub._id)} className="text-red-400 hover:text-red-300">
+                          <FaTimes size={12}/>
+                        </button>
+                      </div>
                     </div>
                   ))}
+                  {cat.subcategories.length === 0 && <p className="text-[10px] text-[#6B7280] italic">No subcategories yet</p>}
                 </div>
 
               </div>

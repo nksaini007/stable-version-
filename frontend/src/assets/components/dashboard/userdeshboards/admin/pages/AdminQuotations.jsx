@@ -100,53 +100,53 @@ const AdminQuotations = () => {
     if (loading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-cyan-500" /></div>;
 
     return (
-        <div className="p-6 bg-slate-50 min-h-screen font-mono">
-            <h2 className="text-3xl font-black uppercase mb-8 border-b-4 border-slate-900 pb-2">Quotation_Portal</h2>
+        <div className="p-6 bg-[#121212] min-h-screen text-white">
+            <h2 className="text-2xl font-black uppercase mb-8 border-b border-[#2A2B2F] pb-4 tracking-widest">Quotation Portal</h2>
 
-            {message && <div className="mb-6 p-4 bg-cyan-50 text-cyan-800 border-2 border-cyan-200 font-bold uppercase text-xs">{message}</div>}
+            {message && <div className="mb-6 p-4 bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold uppercase text-xs rounded-xl">{message}</div>}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* List */}
                 <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-slate-500 uppercase mb-2">&gt; ACTIVE_REQUESTS</h3>
+                    <h3 className="text-[10px] font-bold text-[#8E929C] uppercase tracking-widest mb-6 px-1">ACTIVE REQUESTS</h3>
                     {quotations.map(q => (
                         <div 
                             key={q._id} 
                             onClick={() => handleSelect(q)}
-                            className={`p-4 border-2 transition-all cursor-pointer ${selected?._id === q._id ? 'border-cyan-500 bg-[#1A1B1E] border border-[#2A2B2F] -[4px_4px_0px_rgba(6,182,212,1)]' : 'border-slate-200 bg-[#1A1B1E] border border-[#2A2B2F] hover:border-slate-400 '}`}
+                            className={`p-6 rounded-2xl border transition-all cursor-pointer ${selected?._id === q._id ? 'border-blue-500 bg-[#1A1B1E] shadow-lg shadow-blue-500/5' : 'border-[#2A2B2F] bg-[#1A1B1E] hover:border-[#323338]'}`}
                         >
                             <div className="flex justify-between items-center mb-2">
-                                <span className="font-black">ID_{q._id.slice(-8)}</span>
-                                <span className={`text-[10px] px-2 py-1 font-bold uppercase ${q.status === 'Requested' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>
+                                <span className="font-bold text-white tracking-tight">#{q._id.slice(-8)}</span>
+                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${q.status === 'Requested' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
                                     {q.status}
                                 </span>
                             </div>
-                            <div className="text-xs text-slate-500 mb-1 flex items-center gap-1"><User size={10}/> {q.user?.name}</div>
-                            <div className="text-sm font-bold text-cyan-600 uppercase">₹{q.totalPrice.toFixed(2)}</div>
+                            <div className="text-xs text-[#8E929C] mb-2 flex items-center gap-2"><User size={12} className="text-[#6B7280]"/> {q.user?.name}</div>
+                            <div className="text-sm font-bold text-blue-400">₹{q.totalPrice.toLocaleString()}</div>
                         </div>
                     ))}
                 </div>
 
                 {/* Editor */}
                 {selected ? (
-                    <div className="bg-[#1A1B1E] border border-[#2A2B2F] border-4 border-slate-900 p-8 -[10px_10px_0px_rgba(0,0,0,1)] sticky top-24">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-black uppercase">Edit_Quotation</h3>
-                            <button onClick={() => setSelected(null)} className="text-xs font-bold text-pink-500 hover:underline">CLOSE_PANEL</button>
+                    <div className="bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl p-8 sticky top-24 shadow-2xl">
+                        <div className="flex justify-between items-center mb-8">
+                            <h3 className="text-lg font-bold text-white uppercase tracking-widest">Adjust Quotation</h3>
+                            <button onClick={() => setSelected(null)} className="text-[10px] font-bold text-red-400 hover:text-red-300 uppercase tracking-widest transition-colors">Close Panel</button>
                         </div>
 
-                        <div className="bg-slate-50 p-4 border border-slate-200 mb-6 text-xs space-y-1">
-                            <p className="flex items-center gap-2 font-bold"><User size={12}/> {selected.user?.name} ({selected.user?.email})</p>
-                            <p className="flex items-center gap-2"><Phone size={12}/> {selected.shippingAddress?.phone}</p>
-                            <p className="flex items-center gap-2"><MapPin size={12}/> {selected.shippingAddress?.address}, {selected.shippingAddress?.city}</p>
+                        <div className="bg-[#121212] p-6 rounded-xl border border-[#2A2B2F] mb-8 text-[11px] space-y-3">
+                            <p className="flex items-center gap-3 font-bold text-white"><User size={14} className="text-blue-500"/> {selected.user?.name} ({selected.user?.email})</p>
+                            <p className="flex items-center gap-3 text-[#8E929C]"><Phone size={14} className="text-[#6B7280]"/> {selected.shippingAddress?.phone}</p>
+                            <p className="flex items-center gap-3 text-[#8E929C] leading-relaxed"><MapPin size={14} className="text-[#6B7280]"/> {selected.shippingAddress?.address}, {selected.shippingAddress?.city}</p>
                         </div>
 
-                        <div className="mb-6 space-y-6">
-                            <h4 className="text-xs font-bold text-slate-400 uppercase">Line_Items:</h4>
+                        <div className="mb-8 space-y-6">
+                            <h4 className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mb-4">Line Items</h4>
                             {editData.items.map((item, idx) => (
-                                <div key={idx} className={`p-4 border-2 ${item.isAvailable ? 'border-slate-100' : 'border-red-200 bg-red-50'} rounded-xl space-y-4`}>
+                                <div key={idx} className={`p-6 rounded-2xl border-2 transition-colors ${item.isAvailable ? 'border-[#2A2B2F] bg-[#121212]/50' : 'border-red-900/50 bg-red-950/20'} space-y-6`}>
                                     <div className="flex gap-4">
-                                        <div className="w-16 h-16 bg-slate-100 rounded border border-slate-200 overflow-hidden shrink-0">
+                                        <div className="w-20 h-20 bg-[#1A1B1E] rounded-xl border border-[#2A2B2F] overflow-hidden shrink-0">
                                             <img 
                                                 src={getOptimizedImage(item.product?.images?.[0]?.url || item.image, 200)} 
                                                 alt="" 
@@ -154,64 +154,71 @@ const AdminQuotations = () => {
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex justify-between items-start">
-                                                <p className="text-xs font-black uppercase truncate">{item.name}</p>
-                                                <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1 rounded">ID_{item.product?._id?.slice(-6) || 'N/A'}</span>
+                                            <div className="flex justify-between items-start gap-2">
+                                                <p className="text-xs font-bold text-white truncate uppercase tracking-tight">{item.name}</p>
+                                                <span className="text-[9px] font-mono text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 shrink-0">#{item.product?._id?.slice(-6) || 'N/A'}</span>
                                             </div>
-                                            <p className="text-[10px] text-slate-500 mt-1 uppercase">Seller: {item.seller?.name || item.product?.seller?.name || 'Unknown'}</p>
-                                            <p className="text-[10px] text-orange-600 font-bold mt-1 uppercase">
-                                                STINCHAR_PURCHASE: ₹{item.product?.pricingTiers?.stinchar ?? '0'}
-                                            </p>
-                                            <p className="text-[10px] text-emerald-600 font-black uppercase">
-                                                MARGIN: ₹{(item.price - (item.product?.pricingTiers?.stinchar || 0)).toFixed(2)}
-                                            </p>
-                                            <p className="text-[10px] text-slate-400">Qty: {item.qty} | Base: ₹{item.product?.price || '?'}</p>
+                                            <p className="text-[10px] text-[#8E929C] mt-2 uppercase">Seller: <span className="text-[#6B7280]">{item.seller?.name || item.product?.seller?.name || 'STINCHAR'}</span></p>
+                                            
+                                            <div className="mt-4 grid grid-cols-2 gap-2">
+                                                <div className="p-2 bg-[#121212] rounded-lg border border-[#2A2B2F]">
+                                                    <p className="text-[8px] text-[#6B7280] uppercase">Cost (Stinchar):</p>
+                                                    <p className="text-[10px] text-orange-400 font-bold">₹{item.product?.pricingTiers?.stinchar ?? '0'}</p>
+                                                </div>
+                                                <div className="p-2 bg-[#121212] rounded-lg border border-[#2A2B2F]">
+                                                    <p className="text-[8px] text-[#6B7280] uppercase">Admin Margin:</p>
+                                                    <p className={`text-[10px] font-bold ${item.price - (item.product?.pricingTiers?.stinchar || 0) > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+                                                        ₹{(item.price - (item.product?.pricingTiers?.stinchar || 0)).toFixed(2)}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <p className="text-[9px] text-[#6B7280] mt-3 uppercase tracking-tighter">Qty: {item.qty} | Public Price: ₹{item.product?.price || '?'}</p>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Adjusted_Price (₹):</label>
+                                            <label className="text-[9px] font-bold text-[#6B7280] uppercase tracking-widest mb-2 block px-1">Adjust Price (₹):</label>
                                             <input 
                                                 type="number" 
                                                 value={item.price} 
                                                 onChange={(e) => handleItemPriceChange(idx, e.target.value)}
-                                                className="w-full p-2 border-2 border-slate-200 font-bold text-xs focus:border-cyan-500 outline-none"
+                                                className="w-full p-3 bg-[#1A1B1E] border border-[#2A2B2F] rounded-xl font-bold text-sm text-white focus:border-blue-500 outline-none transition-colors"
                                             />
                                         </div>
                                         <div className="flex flex-col justify-end">
                                             <button 
                                                 onClick={() => handleItemToggleAvailability(idx)}
-                                                className={`py-2 px-3 text-[10px] font-bold uppercase rounded border-2 transition-all ${item.isAvailable ? 'border-amber-500 text-amber-600 hover:bg-amber-50' : 'border-emerald-500 bg-emerald-500 text-white'}`}
+                                                className={`py-3 px-4 text-[10px] font-bold uppercase rounded-xl border transition-all ${item.isAvailable ? 'border-amber-500/50 text-amber-500 hover:bg-amber-500/5' : 'bg-emerald-500 text-white border-transparent shadow-lg shadow-emerald-500/10'}`}
                                             >
-                                                {item.isAvailable ? "MARK_UNAVAILABLE" : "MARK_AVAILABLE"}
+                                                {item.isAvailable ? "MARK UNAVAILABLE" : "RESTORE AVAILABILITY"}
                                             </button>
                                         </div>
                                     </div>
 
                                     {!item.isAvailable && (
-                                        <div className="pt-2 border-t border-red-100">
-                                            <label className="text-[9px] font-bold text-red-400 uppercase">Recommended_Alternative (Product ID):</label>
+                                        <div className="pt-6 border-t border-red-900/30">
+                                            <label className="text-[9px] font-bold text-red-400 uppercase tracking-widest mb-3 block px-1">Recommended Alternative:</label>
                                                 <div className="flex-1 relative">
                                                     <div className="flex gap-2">
                                                         <input 
                                                             type="text" 
-                                                            placeholder="Search alternative by name..."
+                                                            placeholder="Search alternative products..."
                                                             value={activeSearchIdx === idx ? searchTerms : (typeof item.alternativeProduct === 'object' ? item.alternativeProduct?.name : (item.alternativeProduct || ""))} 
                                                             onFocus={() => setActiveSearchIdx(idx)}
                                                             onChange={(e) => handleSearchProducts(e.target.value)}
-                                                            className="flex-1 p-2 border-2 border-red-200 text-[10px] outline-none focus:border-red-400"
+                                                            className="flex-1 p-3 bg-[#1A1B1E] border border-red-900/40 rounded-xl text-[11px] text-white outline-none focus:border-red-500"
                                                         />
                                                         {activeSearchIdx === idx && searchResults.length > 0 && (
-                                                            <div className="absolute top-full left-0 right-0 bg-[#1A1B1E] border border-[#2A2B2F] border-2 border-slate-900 z-50  mt-1 max-h-40 overflow-y-auto">
+                                                            <div className="absolute bottom-full left-0 right-0 bg-[#1A1B1E] border border-[#2A2B2F] rounded-2xl z-50 mb-2 max-h-48 overflow-y-auto shadow-2xl p-2">
                                                                 {searchResults.map((res) => (
                                                                     <div 
                                                                         key={res._id} 
                                                                         onClick={() => handleSelectAlternative(idx, res)}
-                                                                        className="p-2 hover:bg-cyan-50 cursor-pointer text-[10px] border-b border-slate-100 flex justify-between"
+                                                                        className="p-3 hover:bg-[#121212] rounded-xl cursor-pointer text-[10px] border-b border-[#2A2B2F] last:border-0 flex justify-between group"
                                                                     >
-                                                                        <span className="font-bold">{res.name}</span>
-                                                                        <span className="text-slate-400">₹{res.price}</span>
+                                                                        <span className="font-bold text-[#8E929C] group-hover:text-white transition-colors">{res.name}</span>
+                                                                        <span className="text-blue-400">₹{res.price}</span>
                                                                     </div>
                                                                 ))}
                                                             </div>
@@ -219,9 +226,9 @@ const AdminQuotations = () => {
                                                         <button 
                                                             type="button"
                                                             onClick={() => setActiveSearchIdx(activeSearchIdx === idx ? null : idx)}
-                                                            className="p-2 bg-slate-900 text-white rounded hover:bg-cyan-600 transition-all"
+                                                            className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/10"
                                                         >
-                                                            <Search size={14} />
+                                                            <Search size={16} />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -231,38 +238,38 @@ const AdminQuotations = () => {
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 mb-6">
+                        <div className="grid grid-cols-1 gap-6 mb-8">
                             <div>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase">Shipping_Adjustment:</label>
+                                <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mb-2 block px-1">Shipping Adjustment (₹):</label>
                                 <input 
                                     type="number" 
                                     value={editData.shippingPrice} 
                                     onChange={(e) => setEditData({...editData, shippingPrice: parseFloat(e.target.value) || 0})}
-                                    className="w-full p-2 border-2 border-slate-200 font-bold text-sm focus:border-cyan-500 outline-none"
+                                    className="w-full p-4 bg-[#121212] border border-[#2A2B2F] rounded-xl font-bold text-sm text-white focus:border-blue-500 outline-none transition-colors"
                                 />
                             </div>
                             <div>
-                                <label className="text-[10px] font-bold text-slate-400 uppercase">Internal_Note:</label>
+                                <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mb-2 block px-1">Internal Review Note:</label>
                                 <textarea 
                                     value={editData.adminNote} 
                                     onChange={(e) => setEditData({...editData, adminNote: e.target.value})}
-                                    className="w-full p-2 border-2 border-slate-200 text-xs focus:border-cyan-500 outline-none"
-                                    rows={2}
+                                    className="w-full p-4 bg-[#121212] border border-[#2A2B2F] rounded-xl text-xs text-[#8E929C] focus:border-blue-500 outline-none transition-colors"
+                                    rows={3}
                                 />
                             </div>
                         </div>
 
                         <button 
                             onClick={handleUpdate}
-                            className="w-full py-4 bg-slate-900 text-white font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-cyan-600 transition-all -[6px_6px_0px_rgba(6,182,212,0.3)]"
+                            className="w-full py-5 bg-blue-600 text-white font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 rounded-2xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/10"
                         >
-                            <Send size={18} /> Send_Quotation
+                            <Send size={18} /> Send Quotation
                         </button>
                     </div>
                 ) : (
-                    <div className="hidden lg:flex flex-col items-center justify-center opacity-20 border-4 border-dashed border-slate-300">
-                        <Loader2 size={64} className="mb-4" />
-                        <p className="font-bold text-xl uppercase tracking-[0.3em]">SELECT_REQUEST</p>
+                    <div className="hidden lg:flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-[#2A2B2F] rounded-3xl">
+                        <Loader2 size={64} className="mb-4 text-[#8E929C]" />
+                        <p className="font-bold text-sm uppercase tracking-[0.5em] text-[#6B7280]">Select Request</p>
                     </div>
                 )}
             </div>
