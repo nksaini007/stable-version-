@@ -92,10 +92,18 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
                     <div className="flex items-center gap-3 px-3 py-2">
                         <div className="w-9 h-9 rounded-full bg-[#1A1A1C] border border-white/5 flex items-center justify-center text-gray-400 text-xs font-bold uppercase overflow-hidden shadow-inner">
                             {user.profileImg ? (
-                                <img src={user.profileImg} alt={user.name} className="w-full h-full object-cover grayscale opacity-80" />
-                            ) : (
-                                <span>{user.name?.charAt(0)}</span>
-                            )}
+                                <img 
+                                    src={user.profileImg} 
+                                    alt={user.name} 
+                                    className="w-full h-full object-cover grayscale opacity-80" 
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = "";
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
+                            ) : null}
+                            <span>{user.name?.charAt(0)}</span>
                         </div>
                         <div className="overflow-hidden">
                             <p className="text-[12px] font-semibold text-white truncate lowercase ">{user.name}</p>

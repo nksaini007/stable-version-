@@ -24,7 +24,9 @@ const ArchitectDashboard = () => {
 
     // Project Updates (Feed) state
     const [showUpdateForm, setShowUpdateForm] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false); // Fix: Added missing state
     const [updateTitle, setUpdateTitle] = useState("");
+    const [updatePhase, setUpdatePhase] = useState(""); // Fix: Added missing state
     const [updateContent, setUpdateContent] = useState("");
     const [updateImageFiles, setUpdateImageFiles] = useState([]);
     const [projectUpdates, setProjectUpdates] = useState([]);
@@ -145,6 +147,32 @@ const ArchitectDashboard = () => {
             toast.error(error.response?.data?.message || "Failed to post update");
         } finally {
             setPostingUpdate(false);
+        }
+    };
+
+    // Fix: Added missing handleUpdateSubmit for the milestone modal
+    const handleUpdateSubmit = async (e) => {
+        e.preventDefault();
+        if (!selectedProject) return;
+        try {
+            setLoading(true);
+            const formData = new FormData();
+            formData.append("title", updatePhase);
+            formData.append("content", updateContent);
+            // Reusing updateImageFiles for consistency if any were selected
+            // But this modal doesn't have an image input in its current JSX form
+            
+            await WebAPI.post(`/construction/project/${selectedProject._id}/update`, formData);
+            
+            toast.success("Milestone logged successfully!");
+            setUpdatePhase("");
+            setUpdateContent("");
+            setShowUpdateModal(false);
+            fetchProjectUpdates(selectedProject._id);
+        } catch (error) {
+            toast.error("Failed to log milestone.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -733,12 +761,20 @@ const ArchitectDashboard = () => {
                                         <div className="mt-10 pt-8 border-t border-white/10">
                                             <div className="flex items-center justify-between mb-6">
                                                 <h3 className="text-xl font-bold text-white flex items-center gap-2"><FaBullhorn className="text-indigo-400" /> Project Updates</h3>
-                                                <button
-                                                    onClick={() => setShowUpdateForm(!showUpdateForm)}
-                                                    className="px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-300 hover:text-white rounded-xl text-xs font-bold transition-all border border-indigo-500/30"
-                                                >
-                                                    {showUpdateForm ? 'Cancel' : '+ Post Update'}
-                                                </button>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => setShowUpdateModal(true)}
+                                                        className="px-4 py-2 bg-white text-black hover:bg-gray-200 rounded-xl text-xs font-bold transition-all shadow-lg"
+                                                    >
+                                                        Log Milestone
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setShowUpdateForm(!showUpdateForm)}
+                                                        className="px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-300 hover:text-white rounded-xl text-xs font-bold transition-all border border-indigo-500/30"
+                                                    >
+                                                        {showUpdateForm ? 'Cancel' : '+ Post Update'}
+                                                    </button>
+                                                </div>
                                             </div>
 
                                             {/* Post Update Form */}
