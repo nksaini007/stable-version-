@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     FaHeadset, FaPlus, FaTicketAlt, FaSpinner, FaTimes, FaReply,
-    FaCircle, FaRegClock, FaCheckCircle, FaExclamationCircle, FaUserShield
+    FaCircle, FaRegClock, FaCheckCircle, FaExclamationCircle, FaUserShield, FaInbox, FaHistory
 } from "react-icons/fa";
 
 const ArchitectSupport = () => {
@@ -50,7 +50,7 @@ const ArchitectSupport = () => {
             await API.post(`/support/${activeTicket._id}/reply`, { text: replyText });
             setReplyText("");
             fetchTicketDetails(activeTicket._id);
-            fetchTickets(); // refresh list to update status if it changed to In Progress
+            fetchTickets(); 
         } catch (err) {
             toast.error("Failed to send reply");
         } finally {
@@ -58,147 +58,140 @@ const ArchitectSupport = () => {
         }
     };
 
-    const getStatusColor = (status) => {
+    const getStatusStyle = (status) => {
         switch (status) {
-            case "Open": return "text-blue-400 bg-blue-500/10 border-blue-500/30";
-            case "In Progress": return "text-amber-400 bg-amber-500/10 border-amber-500/30";
-            case "Resolved": return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
-            case "Closed": return "text-gray-400 bg-gray-500/10 border-gray-500/30";
-            default: return "text-white bg-white/10";
-        }
-    };
-
-    const getPriorityIcon = (priority) => {
-        switch (priority) {
-            case "Urgent": return <FaExclamationCircle className="text-red-500" />;
-            case "High": return <FaCircle className="text-orange-500 text-[10px]" />;
-            case "Medium": return <FaCircle className="text-blue-500 text-[10px]" />;
-            case "Low": return <FaCircle className="text-gray-500 text-[10px]" />;
-            default: return null;
+            case "Open": return "bg-white/5 border-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]";
+            case "In Progress": return "bg-white/[0.02] border-white/10 text-gray-400";
+            case "Resolved": return "bg-white text-black border-white";
+            case "Closed": return "bg-transparent border-white/5 text-gray-600";
+            default: return "bg-white/10 border-white/20 text-white";
         }
     };
 
     if (loading) return (
-        <div className="flex items-center justify-center min-h-screen bg-[#0a0f1c]">
-            <div className="w-16 h-16 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#080808]">
+            <FaSpinner className="text-4xl animate-spin text-gray-800 mb-6" />
+            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-[0.3em]">Synching Communication Channels...</p>
         </div>
     );
 
     return (
-        <div className="p-4 md:p-8 text-white min-h-screen bg-[#0a0f1c]">
-            {/* Header */}
-            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-                <h1 className="text-3xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">
-                    Client Support Tickets
-                </h1>
-                <p className="text-gray-400 mt-2 flex items-center gap-2 text-sm">
-                    <FaHeadset className="text-indigo-400" /> Respond to client queries regarding your assigned projects
+        <div className="p-6 md:p-12 text-white min-h-screen bg-[#080808] font-sans selection:bg-white/10 flex flex-col">
+            {/* Header Area */}
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+                <div className="flex items-center gap-3 mb-4">
+                    <span className="w-2 h-2 rounded-full bg-white opacity-20"></span>
+                    <span className="text-[10px] text-gray-600 font-bold uppercase tracking-[0.3em]">Client Relations</span>
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight uppercase">Support Interface</h1>
+                <p className="text-gray-500 mt-4 text-sm tracking-widest uppercase max-w-2xl leading-relaxed">
+                    Direct communication node for active project inquiries and technical assistance.
                 </p>
             </motion.div>
 
-            <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-200px)] min-h-[600px]">
+            <div className="flex flex-col xl:flex-row gap-10 flex-1 min-h-[700px]">
                 {/* Tickets List (Left Panel) */}
-                <div className="w-full lg:w-1/3 bg-[#1e293b]/60 border border-white/10 rounded-3xl overflow-hidden flex flex-col">
-                    <div className="p-5 border-b border-white/5 bg-[#1e293b]/80">
-                        <h3 className="font-bold text-white flex items-center gap-2">
-                            <FaTicketAlt className="text-indigo-400" /> Inbox
-                            <span className="bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded-full ml-auto">
-                                {tickets.filter(t => t.status === "Open" || t.status === "In Progress").length} Active
-                            </span>
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                    className="w-full xl:w-[400px] bg-[#121214] border border-white/[0.03] rounded-[2.5rem] overflow-hidden flex flex-col">
+                    <div className="p-8 border-b border-white/[0.03] flex justify-between items-center">
+                        <h3 className="text-[11px] text-gray-700 font-black uppercase tracking-[0.3em] flex items-center gap-3">
+                            <FaInbox className="opacity-30" /> Manifest
                         </h3>
+                        <span className="px-3 py-1 bg-white/[0.02] border border-white/[0.05] rounded-lg text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                            {tickets.filter(t => t.status !== "Closed" && t.status !== "Resolved").length} Active
+                        </span>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-3 space-y-2 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3 scroller-hide">
                         {tickets.length === 0 ? (
-                            <div className="py-12 text-center text-gray-500 text-sm">No support tickets found for your projects.</div>
+                            <div className="py-20 text-center flex flex-col items-center opacity-20">
+                                <FaHistory size={40} className="mb-6" />
+                                <p className="text-[9px] font-black uppercase tracking-[0.3em]">Inbox Empty</p>
+                            </div>
                         ) : (
                             tickets.map((t) => (
-                                <button
-                                    key={t._id}
-                                    onClick={() => fetchTicketDetails(t._id)}
-                                    className={`w-full text-left p-4 rounded-2xl transition-all border ${activeTicket?._id === t._id ? "bg-indigo-500/10 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]" : "bg-[#0f172a]/50 border-white/5 hover:border-white/20"}`}
-                                >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded border ${getStatusColor(t.status)}`}>
+                                <button key={t._id} onClick={() => fetchTicketDetails(t._id)}
+                                    className={`w-full text-left p-6 rounded-[1.8rem] transition-all duration-500 border group ${
+                                        activeTicket?._id === t._id ? "bg-white/[0.05] border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.02)]" : "bg-[#0C0C0C]/50 border-white/[0.03] hover:border-white/10"
+                                    }`}>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border ${getStatusStyle(t.status)}`}>
                                             {t.status}
                                         </span>
-                                        <div className="flex items-center gap-1 text-xs font-bold bg-[#1e293b] px-2 py-0.5 rounded">
-                                            {getPriorityIcon(t.priority)} <span className="text-gray-400">{t.priority}</span>
-                                        </div>
+                                        <span className="text-[8px] text-gray-700 font-black uppercase tracking-[0.2em]">{t.priority}</span>
                                     </div>
-                                    <h4 className="font-bold text-white text-sm mb-1 line-clamp-1">{t.subject}</h4>
-                                    <p className="text-xs text-indigo-300 mb-2 truncate">Project: {t.projectId?.name}</p>
-                                    <div className="flex justify-between items-center text-[10px] text-gray-500">
-                                        <span>{t.customerId?.name}</span>
-                                        <span className="flex items-center gap-1"><FaRegClock /> {new Date(t.createdAt).toLocaleDateString()}</span>
+                                    <h4 className="font-bold text-white text-[14px] mb-2 uppercase tracking-tight line-clamp-1 group-hover:tracking-wider transition-all duration-500">{t.subject}</h4>
+                                    <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest truncate mb-4">OBJ: {t.projectId?.name || "UNLINKED"}</p>
+                                    <div className="flex justify-between items-center pt-4 border-t border-white/[0.03]">
+                                        <span className="text-[9px] text-gray-700 font-black uppercase tracking-widest">{t.customerId?.name}</span>
+                                        <span className="text-[9px] text-gray-800 flex items-center gap-1.5"><FaRegClock className="opacity-30" /> {new Date(t.createdAt).toLocaleDateString()}</span>
                                     </div>
                                 </button>
                             ))
                         )}
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Ticket Details & Chat (Right Panel) */}
-                <div className="w-full lg:w-2/3 bg-[#1e293b]/60 border border-white/10 rounded-3xl overflow-hidden flex flex-col relative">
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+                    className="flex-1 bg-[#121214] border border-white/[0.03] rounded-[2.5rem] overflow-hidden flex flex-col relative min-h-[600px]">
                     {activeTicket ? (
                         <>
                             {/* Ticket Header */}
-                            <div className="p-6 border-b border-white/5 bg-[#1e293b]/80 shrink-0">
-                                <div className="flex flex-wrap items-center gap-3 mb-3">
-                                    <span className={`text-[11px] uppercase font-bold px-3 py-1 rounded border ${getStatusColor(activeTicket.status)}`}>
+                            <div className="p-10 border-b border-white/[0.03] bg-[#0C0C0C]/50 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.01] rounded-full blur-3xl -mr-32 -mt-32"></div>
+                                <div className="flex flex-wrap items-center gap-4 mb-6 relative z-10">
+                                    <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-xl border ${getStatusStyle(activeTicket.status)}`}>
                                         {activeTicket.status}
                                     </span>
-                                    <span className="text-xs text-gray-400 bg-[#0f172a] px-3 py-1 rounded border border-white/5">
-                                        Project: <strong className="text-white">{activeTicket.projectId?.name || "N/A"}</strong>
+                                    <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest bg-white/[0.02] px-4 py-1.5 rounded-xl border border-white/[0.05]">
+                                        VECTOR: {activeTicket.projectId?.name || "GENERAL"}
                                     </span>
-                                    <span className="text-xs text-gray-400 bg-[#0f172a] px-3 py-1 rounded border border-white/5">
-                                        Category: <strong className="text-white">{activeTicket.category}</strong>
+                                    <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest bg-white/[0.02] px-4 py-1.5 rounded-xl border border-white/[0.05]">
+                                        CATEGORY: {activeTicket.category}
                                     </span>
                                 </div>
-                                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">{activeTicket.subject}</h2>
-                                <div className="flex items-center gap-3 text-sm">
-                                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold text-white">
+                                <h2 className="text-3xl font-bold text-white mb-6 uppercase tracking-tight relative z-10">{activeTicket.subject}</h2>
+                                <div className="flex items-center gap-4 relative z-10">
+                                    <div className="w-10 h-10 rounded-xl bg-white text-black flex items-center justify-center font-black text-xs">
                                         {activeTicket.customerId?.name?.charAt(0) || "C"}
                                     </div>
-                                    <span className="text-gray-300">Opened by <strong className="text-white">{activeTicket.customerId?.name}</strong></span>
+                                    <div>
+                                        <p className="text-[10px] text-gray-700 font-black uppercase tracking-widest mb-0.5">Originator</p>
+                                        <p className="text-white text-[13px] font-bold uppercase tracking-tight">{activeTicket.customerId?.name}</p>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Thread / Chat Area */}
-                            <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide bg-[#0a0f1c]/50">
+                            <div className="flex-1 overflow-y-auto p-10 space-y-10 scroller-hide bg-[#0C0C0C]/20">
                                 {activeTicket.thread.map((msg, i) => {
                                     const isMe = msg.sender?._id === user?._id;
                                     const isAdmin = msg.senderRole === "admin";
-                                    const isCustomer = msg.senderRole === "customer";
 
                                     return (
-                                        <div key={i} className={`flex gap-4 ${isMe ? "flex-row-reverse" : ""}`}>
-                                            {/* Avatar */}
-                                            <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md mt-1"
-                                                style={{
-                                                    background: isMe ? "linear-gradient(135deg, #6366f1, #a855f7)" :
-                                                        isAdmin ? "linear-gradient(135deg, #ef4444, #f97316)" :
-                                                            "linear-gradient(135deg, #3b82f6, #0ea5e9)"
-                                                }}>
+                                        <div key={i} className={`flex gap-6 ${isMe ? "flex-row-reverse" : ""}`}>
+                                            <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-black font-black text-xs shadow-xl transition-all duration-500 ${
+                                                isMe ? "bg-white" : isAdmin ? "bg-gray-800 text-white" : "bg-white/[0.05] text-white border border-white/10"
+                                            }`}>
                                                 {isAdmin ? <FaUserShield /> : (msg.sender?.name?.charAt(0) || "U")}
                                             </div>
 
-                                            {/* Message Bubble */}
-                                            <div className={`max-w-[80%] ${isMe ? "items-end" : "items-start"} flex flex-col`}>
-                                                <div className={`mb-1 flex items-center gap-2 ${isMe ? "flex-row-reverse" : ""}`}>
-                                                    <span className="text-xs font-bold text-gray-300">{msg.sender?.name || "Unknown"}</span>
-                                                    <span className={`text-[9px] uppercase font-bold px-1.5 py-0.5 rounded border border-white/10 ${isAdmin ? "bg-red-500/20 text-red-400" : isMe ? "bg-indigo-500/20 text-indigo-300" : "bg-blue-500/20 text-blue-300"
-                                                        }`}>
+                                            <div className={`max-w-[70%] ${isMe ? "items-end" : "items-start"} flex flex-col`}>
+                                                <div className={`mb-3 flex items-center gap-3 ${isMe ? "flex-row-reverse" : ""}`}>
+                                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{msg.sender?.name || "EXTERNAL"}</span>
+                                                    <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-white/5 ${
+                                                        isAdmin ? "text-red-400" : isMe ? "text-gray-500" : "text-white"
+                                                    }`}>
                                                         {msg.senderRole}
                                                     </span>
-                                                    <span className="text-[10px] text-gray-600">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                    <span className="text-[9px] text-gray-800 font-bold uppercase tracking-widest">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                 </div>
-                                                <div className={`p-4 rounded-2xl text-sm whitespace-pre-wrap ${isMe
-                                                    ? "bg-indigo-500 text-white rounded-tr-sm"
-                                                    : isAdmin
-                                                        ? "bg-[#1e293b] text-gray-200 border border-red-500/30 rounded-tl-sm shadow-[0_0_10px_rgba(239,68,68,0.05)]"
-                                                        : "bg-[#1e293b] text-gray-200 border border-white/5 rounded-tl-sm"
-                                                    }`}>
+                                                <div className={`p-8 rounded-[2rem] text-[13px] leading-relaxed tracking-wide shadow-2xl ${
+                                                    isMe ? "bg-white text-black rounded-tr-md" : 
+                                                    isAdmin ? "bg-[#121214] text-white border border-white/[0.05] rounded-tl-md" : 
+                                                    "bg-white/[0.03] text-gray-400 border border-white/[0.03] rounded-tl-md"
+                                                }`}>
                                                     {msg.text}
                                                 </div>
                                             </div>
@@ -209,44 +202,35 @@ const ArchitectSupport = () => {
 
                             {/* Reply Input */}
                             {activeTicket.status !== "Closed" ? (
-                                <div className="p-4 bg-[#1e293b]/90 border-t border-white/5 shrink-0">
-                                    <form onSubmit={handleReply} className="flex gap-3">
-                                        <textarea
-                                            value={replyText}
-                                            onChange={(e) => setReplyText(e.target.value)}
-                                            placeholder="Type your reply to the client..."
-                                            className="flex-1 bg-[#0f172a] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 resize-none h-12 min-h-[48px] max-h-32 transition-all scrollbar-hide"
-                                            rows="1"
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter" && !e.shiftKey) {
-                                                    e.preventDefault();
-                                                    handleReply(e);
-                                                }
-                                            }}
+                                <div className="p-8 bg-[#0C0C0C]/50 border-t border-white/[0.03]">
+                                    <form onSubmit={handleReply} className="flex gap-4">
+                                        <textarea value={replyText} onChange={(e) => setReplyText(e.target.value)}
+                                            placeholder="DECLARE RESPONSE MESSAGE..."
+                                            className="flex-1 bg-white/[0.02] border border-white/[0.05] rounded-[1.5rem] px-8 py-5 text-[13px] text-white focus:outline-none focus:border-white/20 resize-none h-16 min-h-[64px] max-h-48 transition-all scroller-hide uppercase tracking-widest placeholder:text-gray-900"
+                                            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleReply(e); } }}
                                         />
-                                        <button
-                                            type="submit"
-                                            disabled={!replyText.trim() || replying}
-                                            className="shrink-0 px-6 bg-indigo-500 hover:bg-indigo-600 rounded-xl font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                                        >
-                                            {replying ? <FaSpinner className="animate-spin" /> : <FaReply />} Send
+                                        <button type="submit" disabled={!replyText.trim() || replying}
+                                            className="shrink-0 px-10 bg-white text-black rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.3em] hover:bg-gray-200 transition-all shadow-xl disabled:opacity-20 flex items-center gap-3">
+                                            {replying ? <FaSpinner className="animate-spin text-[14px]" /> : <FaReply size={12} />} EXECUTE
                                         </button>
                                     </form>
                                 </div>
                             ) : (
-                                <div className="p-4 bg-gray-500/10 border-t border-gray-500/20 text-center text-sm font-bold text-gray-500 shrink-0">
-                                    This ticket is closed. No further replies can be added.
+                                <div className="p-8 bg-transparent border-t border-white/[0.01] text-center text-[10px] font-black text-gray-800 uppercase tracking-[0.4em]">
+                                    Terminal Closed: Post-Operational Log
                                 </div>
                             )}
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-8 text-center">
-                            <FaHeadset className="text-6xl mb-4 text-gray-700" />
-                            <h3 className="text-xl font-bold text-gray-400">Select a Ticket</h3>
-                            <p className="mt-2 text-sm max-w-xs">Choose a support ticket from the list to view details and reply to the client.</p>
+                        <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-20 text-center">
+                            <div className="w-24 h-24 bg-white/[0.01] border border-white/[0.03] border-dashed rounded-[2rem] flex items-center justify-center text-gray-800 mb-10">
+                                <FaHeadset size={40} className="opacity-10" />
+                            </div>
+                            <h3 className="text-[12px] font-bold text-gray-600 uppercase tracking-[0.4em]">Node selection required</h3>
+                            <p className="mt-4 text-[10px] text-gray-800 font-bold uppercase tracking-widest max-w-xs leading-relaxed">Choose an active communication bridge from the catalog to initiate protocol.</p>
                         </div>
                     )}
-                </div>
+                </motion.div>
             </div>
         </div>
     );

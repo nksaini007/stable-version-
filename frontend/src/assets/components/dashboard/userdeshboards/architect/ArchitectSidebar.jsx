@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FaHome, FaHardHat, FaSignOutAlt, FaChevronLeft, FaUser, FaRegCalendarAlt, FaFileAlt, FaChartLine, FaPalette, FaUsers, FaCubes, FaHeadset, FaBuilding } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../../../../context/AuthContext";
 import logo from "../../../../logo.png";
 
@@ -26,34 +27,37 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
 
     return (
         <aside
-            className={`${collapsed ? "w-[72px]" : "w-64"
-                } min-h-screen bg-gradient-to-b from-[#0f172a] via-[#1e293b] to-[#0f172a] flex flex-col transition-all duration-300 ease-in-out border-r border-white/5 relative`}
+            className={`${collapsed ? "w-[80px]" : "w-72"
+                } min-h-screen bg-[#0C0C0C] flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white-[0.03] relative z-50`}
         >
             <button
                 onClick={() => setCollapsed(!collapsed)}
-                className="absolute -right-3 top-7 w-6 h-6 bg-[#1e293b] border border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#334155] transition-all z-50 shadow-lg"
+                className="absolute -right-3 top-10 w-6 h-6 bg-[#1A1A1C] border border-white/5 rounded-full flex items-center justify-center text-gray-500 hover:text-white transition-all z-50 shadow-2xl"
             >
                 <FaChevronLeft
-                    className={`text-[10px] transition-transform duration-300 ${collapsed ? "rotate-180" : ""
+                    className={`text-[9px] transition-transform duration-500 ${collapsed ? "rotate-180" : ""
                         }`}
                 />
             </button>
 
-            <div className={`px-5 py-6 border-b border-white/5 ${collapsed ? "text-center" : ""}`}>
+            <div className={`px-6 py-10 ${collapsed ? "text-center" : ""}`}>
                 {collapsed ? (
-                    <img src={logo} alt="S" className="w-9 h-9 mx-auto rounded-xl object-cover shadow-lg shadow-indigo-500/20" />
+                    <img src={logo} alt="S" className="w-10 h-10 mx-auto rounded-2xl object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-500" />
                 ) : (
-                    <div className="flex items-center gap-3">
-                        <img src={logo} alt="S" className="w-9 h-9 rounded-xl object-cover shadow-lg shadow-indigo-500/20" />
-                        <div>
-                            <h2 className="text-[15px] font-bold text-white tracking-wide">Architect Panel</h2>
-                            <p className="text-[10px] text-indigo-400 font-medium uppercase tracking-widest">Stinchar</p>
+                    <div className="flex items-center gap-4 group cursor-pointer">
+                        <div className="relative">
+                            <img src={logo} alt="S" className="w-11 h-11 rounded-2xl object-cover shadow-2xl shadow-white/5 group-hover:scale-105 transition-transform duration-500" />
+                            <div className="absolute inset-0 rounded-2xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                        <div className="overflow-hidden">
+                            <h2 className="text-[14px] font-bold text-white tracking-[0.1em] uppercase whitespace-nowrap">Architect</h2>
+                            <p className="text-[9px] text-gray-500 font-medium uppercase tracking-[0.2em] mt-0.5">Stinchar Studio</p>
                         </div>
                     </div>
                 )}
             </div>
 
-            <nav className="flex-1 px-3 py-5 space-y-1">
+            <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto no-scrollbar">
                 {menuItems.map((item) => (
                     <NavLink
                         key={item.name}
@@ -62,33 +66,47 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
                         title={collapsed ? item.name : ""}
                         className={({ isActive }) =>
                             `group flex items-center ${collapsed ? "justify-center" : ""
-                            } gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${isActive
-                                ? "bg-gradient-to-r from-indigo-600/90 to-purple-600/90 text-white shadow-lg shadow-indigo-600/20"
-                                : "text-gray-400 hover:text-white hover:bg-white/5"
+                            } gap-4 px-4 py-3.5 rounded-2xl text-[13px] font-medium transition-all duration-500 ${isActive
+                                ? "bg-[#1A1A1C] text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] border border-white/[0.05]"
+                                : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.02]"
                             }`
                         }
                     >
-                        <span className="text-[15px] flex-shrink-0">{item.icon}</span>
-                        {!collapsed && <span>{item.name}</span>}
+                        <span className={`text-[17px] transition-all duration-500 flex-shrink-0 group-hover:scale-110`}>
+                            {item.icon}
+                        </span>
+                        {!collapsed && <span className="tracking-wide">{item.name}</span>}
+                        {isActive && !collapsed && (
+                            <motion.div layoutId="active-pill" className="ml-auto w-1 h-1 rounded-full bg-white shadow-[0_0_8px_white]"></motion.div>
+                        )}
                     </NavLink>
                 ))}
             </nav>
 
-            <div className="px-3 py-4 border-t border-white/5 space-y-2">
+            <div className="px-5 py-8 border-t border-white-[0.03] space-y-4 bg-[#090909]/50 backdrop-blur-md">
                 {!collapsed && user && (
-                    <div className="px-3 py-2 rounded-xl bg-white/5 border border-white/5">
-                        <p className="text-xs font-semibold text-white truncate">{user.name}</p>
-                        <p className="text-[10px] text-gray-500 truncate">{user.email}</p>
+                    <div className="flex items-center gap-3 px-3 py-2">
+                        <div className="w-9 h-9 rounded-full bg-[#1A1A1C] border border-white/5 flex items-center justify-center text-gray-400 text-xs font-bold uppercase overflow-hidden shadow-inner">
+                            {user.profileImg ? (
+                                <img src={user.profileImg} alt={user.name} className="w-full h-full object-cover grayscale opacity-80" />
+                            ) : (
+                                <span>{user.name?.charAt(0)}</span>
+                            )}
+                        </div>
+                        <div className="overflow-hidden">
+                            <p className="text-[12px] font-semibold text-white truncate lowercase ">{user.name}</p>
+                            <p className="text-[9px] text-gray-600 truncate uppercase tracking-tighter">{user.email}</p>
+                        </div>
                     </div>
                 )}
                 <button
                     onClick={handleLogout}
                     title="Logout"
                     className={`w-full flex items-center ${collapsed ? "justify-center" : ""
-                        } gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all`}
+                        } gap-4 px-4 py-3.5 rounded-2xl text-[13px] font-medium text-gray-500 hover:text-red-400 hover:bg-red-500/[0.03] transition-all duration-500 group`}
                 >
-                    <FaSignOutAlt className="text-[15px]" />
-                    {!collapsed && <span>Logout</span>}
+                    <FaSignOutAlt className="text-[17px] group-hover:scale-110 transition-transform" />
+                    {!collapsed && <span className="tracking-wide">Logout</span>}
                 </button>
             </div>
         </aside>
