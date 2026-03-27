@@ -4,7 +4,7 @@ import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import { AuthContext } from "../../../../../context/AuthContext";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCheckCircle, FaSpinner, FaCloudUploadAlt, FaBuilding, FaTasks, FaHardHat, FaMapMarkerAlt, FaTimes, FaSearch, FaFilter, FaArrowRight, FaImage, FaCalendarAlt, FaBullhorn, FaPaperPlane, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaCheckCircle, FaSpinner, FaCloudUploadAlt, FaBuilding, FaTasks, FaHardHat, FaMapMarkerAlt, FaTimes, FaSearch, FaFilter, FaArrowRight, FaImage, FaCalendarAlt, FaRegCalendarAlt, FaBullhorn, FaPaperPlane, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const ArchitectDashboard = () => {
     const { token, user } = useContext(AuthContext);
