@@ -72,12 +72,16 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
                             }`
                         }
                     >
-                        <span className={`text-[17px] transition-all duration-500 flex-shrink-0 group-hover:scale-110`}>
-                            {item.icon}
-                        </span>
-                        {!collapsed && <span className="tracking-wide">{item.name}</span>}
-                        {isActive && !collapsed && (
-                            <motion.div layoutId="active-pill" className="ml-auto w-1 h-1 rounded-full bg-white shadow-[0_0_8px_white]"></motion.div>
+                        {({ isActive }) => (
+                            <>
+                                <span className={`text-[17px] transition-all duration-500 flex-shrink-0 group-hover:scale-110`}>
+                                    {item.icon}
+                                </span>
+                                {!collapsed && <span className="tracking-wide">{item.name}</span>}
+                                {isActive && !collapsed && (
+                                    <motion.div layoutId="active-pill" className="ml-auto w-1 h-1 rounded-full bg-white shadow-[0_0_8px_white]"></motion.div>
+                                )}
+                            </>
                         )}
                     </NavLink>
                 ))}
