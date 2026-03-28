@@ -4,7 +4,8 @@ import {
   FaEnvelope, FaPhone, FaUser, FaMapMarkerAlt, FaEdit, FaCalendarAlt,
   FaCamera, FaSave, FaTimes, FaLock, FaStore, FaTruck, FaShieldAlt,
   FaCog, FaSpinner, FaFacebook, FaInstagram, FaTwitter, FaLinkedin,
-  FaChevronRight, FaRegHandshake, FaToolbox, FaGlobe
+  FaChevronRight, FaRegHandshake, FaToolbox, FaGlobe, FaUniversity,
+  FaCreditCard, FaFileContract, FaLink
 } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import API from "../api/api";
@@ -31,28 +32,20 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const Profile = () => {
   const { user, setUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("overview");
-
-  const [changingPw, setChangingPw] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState({ text: "", type: "" });
   const [newImage, setNewImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [newBanner, setNewBanner] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState({ text: "", type: "" });
-
+  
   const [form, setForm] = useState({});
   const [pwForm, setPwForm] = useState({ currentPassword: "", newPassword: "" });
-
-  // Location state
   const [locationData, setLocationData] = useState({ lat: "", lng: "", city: "" });
-  
-  // Service Categories for Providers
-  const [serviceCategories, setServiceCategories] = useState([]);
-
-  // Search location by city name using OpenStreetMap Nominatim
   const [citySearch, setCitySearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [serviceCategories, setServiceCategories] = useState([]);
 
   useEffect(() => {
     if (user) {
@@ -110,7 +103,18 @@ const Profile = () => {
     fetchServiceCats();
   }, []);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes(".")) {
+      const [parent, child] = name.split(".");
+      setForm({
+        ...form,
+        [parent]: { ...form[parent], [child]: value }
+      });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
+  };
 
   const handleImageChange = (e, type) => {
     const file = e.target.files[0];
@@ -125,119 +129,30 @@ const Profile = () => {
 
   const handleUseGPS = () => {
     if (!navigator.geolocation) {
-      setMsg({ text: "Geolocation is not supported by your browser.", type: "error" });
+      setMsg({ text: "Geolocation is not supported.", type: "error" });
       return;
     }
-
     setSearching(true);
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
         try {
-          const resp = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-          );
+          const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
           const data = await resp.json();
           const cityName = data.address?.city || data.address?.town || data.address?.village || "";
-          
-          setLocationData({
-            lat: latitude,
-            lng: longitude,
-            city: cityName,
-          });
+          setLocationData({ lat: latitude, lng: longitude, city: cityName });
           setCitySearch(data.display_name.split(",").slice(0, 2).join(","));
-          setMsg({ text: "Location detected successfully!", type: "success" });
         } catch (e) {
           setLocationData({ lat: latitude, lng: longitude, city: "" });
-          setMsg({ text: "Location detected, but failed to find city name.", type: "warning" });
         } finally {
           setSearching(false);
-          setTimeout(() => setMsg({ text: "", type: "" }), 3000);
         }
       },
-      (error) => {
+      () => {
         setSearching(false);
-        setMsg({ text: "Unable to retrieve your location. Please check permissions.", type: "error" });
-        setTimeout(() => setMsg({ text: "", type: "" }), 3000);
+        setMsg({ text: "GPS Access Denied.", type: "error" });
       }
     );
-  };
-
-  const MapEvents = () => {
-    const map = useMap();
-    useMapEvents({
-      click(e) {
-        handleReverseGeocode(e.latlng.lat, e.latlng.lng);
-      },
-    });
-
-    useEffect(() => {
-      if (locationData.lat && locationData.lng) {
-        map.setView([locationData.lat, locationData.lng], 13);
-      }
-    }, [locationData.lat, locationData.lng, map]);
-
-    return null;
-  };
-
-  const handleReverseGeocode = async (lat, lng) => {
-    setSearching(true);
-    try {
-      const resp = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-      );
-      const data = await resp.json();
-      const cityName = data.address?.city || data.address?.town || data.address?.village || "";
-      setLocationData({ lat, lng, city: cityName });
-      setCitySearch(data.display_name.split(",").slice(0, 2).join(","));
-    } catch (e) {
-      setLocationData({ ...locationData, lat, lng });
-    } finally {
-      setSearching(false);
-    }
-  };
-
-  const handleSearchLocation = async () => {
-    const query = citySearch.trim() || form.address?.trim();
-    if (!query) {
-      setMsg({ text: "Please enter a city or address to search.", type: "error" });
-      setTimeout(() => setMsg({ text: "", type: "" }), 3000);
-      return;
-    }
-    setSearching(true);
-    setSearchResults([]);
-    try {
-      const resp = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`
-      );
-      const results = await resp.json();
-      if (results.length === 0) {
-        setMsg({ text: "No locations found. Try a different search term.", type: "error" });
-        setTimeout(() => setMsg({ text: "", type: "" }), 3000);
-      } else {
-        setSearchResults(results);
-      }
-    } catch (e) {
-      console.error("Location search failed:", e);
-      setMsg({ text: "Location search failed. Check your internet connection.", type: "error" });
-      setTimeout(() => setMsg({ text: "", type: "" }), 3000);
-    } finally {
-      setSearching(false);
-    }
-  };
-
-  const handleSelectLocation = (result) => {
-    const cityName = result.address?.city || result.address?.town || result.address?.village ||
-      result.display_name.split(",")[0] || "";
-    setLocationData({
-      lat: parseFloat(result.lat),
-      lng: parseFloat(result.lon),
-      city: cityName,
-    });
-    setCitySearch(result.display_name.split(",").slice(0, 2).join(","));
-    setSearchResults([]);
-    setMsg({ text: `Location set: ${cityName}`, type: "success" });
-    setTimeout(() => setMsg({ text: "", type: "" }), 4000);
   };
 
   const handleSave = async (e) => {
@@ -246,577 +161,475 @@ const Profile = () => {
     setMsg({ text: "", type: "" });
     try {
       const formData = new FormData();
-      Object.entries(form).forEach(([k, v]) => { 
-        if (k === "socialLinks") {
-          formData.append(k, JSON.stringify(v));
-        } else if (v !== undefined && v !== null) {
-          formData.append(k, v); 
-        }
+      Object.entries(form).forEach(([k, v]) => {
+        if (k === "socialLinks") formData.append(k, JSON.stringify(v));
+        else if (v !== undefined && v !== null) formData.append(k, v);
       });
       if (newImage) formData.append("profileImage", newImage);
       if (newBanner) formData.append("shopBanner", newBanner);
-
-      if (locationData.lat && locationData.lng) {
+      if (locationData.lat) {
         formData.append("location[lat]", locationData.lat);
         formData.append("location[lng]", locationData.lng);
         formData.append("location[city]", locationData.city);
       }
-
-      const { data } = await API.put("/users/me", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
+      const { data } = await API.put("/users/me", formData, { headers: { "Content-Type": "multipart/form-data" } });
       if (data.user) {
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
       }
-      setMsg({ text: "Profile updated successfully.", type: "success" });
-      setNewImage(null);
-      setNewBanner(null);
+      setMsg({ text: "Identity Synchronization Complete", type: "success" });
       setTimeout(() => setMsg({ text: "", type: "" }), 3000);
     } catch (err) {
-      setMsg({ text: err.response?.data?.message || err.response?.data?.error || "Update failed", type: "error" });
+      setMsg({ text: err.response?.data?.message || "Sync Failed", type: "error" });
     } finally {
       setSaving(false);
     }
   };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setMsg({ text: "", type: "" });
-    try {
-      await API.put("/users/me/password", pwForm);
-      setMsg({ text: "Password changed successfully.", type: "success" });
-      setPwForm({ currentPassword: "", newPassword: "" });
-      setTimeout(() => setMsg({ text: "", type: "" }), 3000);
-    } catch (err) {
-      setMsg({ text: err.response?.data?.message || "Password change failed", type: "error" });
-    } finally {
-      setSaving(false);
-    }
+  const roleMeta = {
+    customer: { icon: <FaUser />, label: "Global Resident", color: "blue" },
+    seller: { icon: <FaStore />, label: "Certified Merchant", color: "emerald" },
+    delivery: { icon: <FaTruck />, label: "Logistics Partner", color: "orange" },
+    admin: { icon: <FaShieldAlt />, label: "System Architect", color: "purple" },
+    architect: { icon: <FaGlobe />, label: "Design Professional", color: "cyan" },
+    provider: { icon: <FaRegHandshake />, label: "Service Specialist", color: "amber" },
   };
+  const rm = roleMeta[user?.role] || roleMeta.customer;
+
+  const TabButton = ({ id, label, icon }) => (
+    <button
+      onClick={() => { setActiveTab(id); setMsg({ text: "", type: "" }); }}
+      className={`flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all duration-500 relative group overflow-hidden ${
+        activeTab === id ? "text-white bg-blue-600 shadow-xl shadow-blue-500/20" : "text-white/40 hover:text-white"
+      }`}
+    >
+      <span className={activeTab === id ? "text-white scale-110" : "text-white/20 group-hover:text-blue-400 group-hover:scale-110 transition-transform"}>
+        {icon}
+      </span>
+      <span className="relative z-10">{label}</span>
+      {activeTab === id && <motion.div layoutId="tab-active" className="absolute left-0 w-1 h-1/2 bg-white rounded-r-full" />}
+    </button>
+  );
+
+  const InfoCard = ({ title, icon, children, className = "" }) => (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+      className={`bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden group ${className}`}
+    >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xl text-blue-400">
+          {icon}
+        </div>
+        <h3 className="text-xl font-black text-white tracking-tight">{title}</h3>
+      </div>
+      <div className="relative z-10">{children}</div>
+    </motion.div>
+  );
+
+  const InputField = ({ label, name, value, type = "text", placeholder, icon, ...props }) => (
+    <div className="space-y-2">
+      <label className="block text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">{label}</label>
+      <div className="relative group">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-blue-400 transition-colors">
+          {icon}
+        </div>
+        <input
+          name={name} value={value} type={type} onChange={handleChange} placeholder={placeholder}
+          className="w-full bg-white/[0.04] border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 transition-all"
+          {...props}
+        />
+      </div>
+    </div>
+  );
 
   const profileImg = imagePreview || (user?.profileImage ? `${user.profileImage}` : null);
   const bannerImg = bannerPreview || (user?.shopBanner ? `${user.shopBanner}` : null);
 
-  const roleMeta = {
-    customer: { icon: <FaUser />, color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", label: "Customer" },
-    seller: { icon: <FaStore />, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", label: "Seller" },
-    delivery: { icon: <FaTruck />, color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20", label: "Delivery" },
-    admin: { icon: <FaShieldAlt />, color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/20", label: "Administrator" },
-    architect: { icon: <FaGlobe />, color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/20", label: "Architect" },
-    provider: { icon: <FaRegHandshake />, color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", label: "Service Provider" },
-  };
-
-  const rm = roleMeta[user?.role] || roleMeta.customer;
-  
-  const inputClasses = "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-sm";
-  const labelClasses = "block text-xs font-semibold text-white/50 mb-2 uppercase tracking-wider";
-
-  const tabs = [
-    { id: "overview", label: "Overview", icon: <FaUser /> },
-    { id: "settings", label: "Edit Profile", icon: <FaCog /> },
-    { id: "security", label: "Security", icon: <FaLock /> },
-  ];
-
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-[#E2E8F0] flex flex-col font-sans selection:bg-blue-500/30">
-      <Nev />
-      
-      {/* Dynamic Background Glows */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-sky-500/5 rounded-full blur-[100px]"></div>
-      </div>
-
-      <div className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-12 mt-16">
+    <div className="min-h-screen bg-[#050505] text-[#E2E8F0] flex flex-col md:flex-row font-sans selection:bg-blue-500/30 overflow-x-hidden">
+      {/* Fixed Desktop Sidebar */}
+      <aside className="hidden md:flex w-72 lg:w-80 bg-[#0D0D0D] border-r border-white/5 flex-col fixed h-screen z-50">
+        <div className="p-10">
+          <Link to="/" className="flex items-center gap-3 mb-16">
+            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#050505] font-black italic">S</div>
+            <span className="text-2xl font-black text-white tracking-tighter">STINCHAR</span>
+          </Link>
+          
+          <nav className="flex flex-col gap-4">
+            <TabButton id="overview" label="Core Intelligence" icon={<FaUser />} />
+            <TabButton id="settings" label="Identity Tuning" icon={<FaCog />} />
+            <TabButton id="security" label="Quantum Access" icon={<FaLock />} />
+          </nav>
+        </div>
         
-        {/* Profile Hero Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative mb-8 rounded-3xl overflow-hidden shadow-2xl border border-white/5 group"
-        >
-          {/* Banner Area */}
-          <div className="h-48 md:h-64 relative bg-[#1A1B1E]">
-            {bannerImg ? (
-              <img src={bannerImg} alt="Banner" className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105" />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-[#1A1B1E] via-[#0D0D0D] to-[#1A1B1E]"></div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] to-transparent"></div>
+        <div className="mt-auto p-10">
+          <div className="bg-white/5 rounded-3xl p-6 border border-white/5">
+             <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Session Node</p>
+             <p className="text-xs font-bold truncate">{user?.email}</p>
           </div>
+        </div>
+      </aside>
 
-          {/* User Info Overlap */}
-          <div className="px-6 md:px-12 pb-8 flex flex-col md:flex-row items-center md:items-end justify-between -mt-12 md:-mt-20 relative z-10 transition-all">
-            <div className="flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
-              <div className="relative group/avatar">
-                <div className="w-32 h-32 md:w-44 md:h-44 rounded-3xl border-4 border-[#0D0D0D] bg-[#1A1B1E] shadow-2xl overflow-hidden flex items-center justify-center relative ring-1 ring-white/10 group-hover/avatar:ring-blue-500/50 transition-all duration-300">
-                  {profileImg ? (
-                    <img src={profileImg} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <FaUser className="text-5xl text-white/10" />
-                  )}
+      {/* Main Content Area */}
+      <main className="flex-1 md:ml-72 lg:ml-80 transition-all">
+        {/* Mobile Top Nav */}
+        <div className="md:hidden sticky top-0 bg-[#0D0D0D]/80 backdrop-blur-3xl border-b border-white/5 p-4 z-50 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-[10px] font-black">S</div>
+            <span className="text-sm font-black">STINCHAR</span>
+          </div>
+          <button onClick={() => setActiveTab(activeTab === "overview" ? "settings" : "overview")} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+             <FaCog className="text-white" />
+          </button>
+        </div>
+
+        {/* Global Notifications */}
+        <AnimatePresence>
+          {msg.text && (
+            <motion.div initial={{ y: -100 }} animate={{ y: 0 }} exit={{ y: -100 }}
+              className={`fixed top-6 left-1/2 -translate-x-1/2 z-[100] px-8 py-4 rounded-full backdrop-blur-2xl border flex items-center gap-4 shadow-2xl ${
+                msg.type === "error" ? "bg-red-500/20 border-red-500/30" : "bg-emerald-500/20 border-emerald-500/30"
+              }`}
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${msg.type === "error" ? "bg-red-500/40" : "bg-emerald-500/40"}`}>
+                {msg.type === "error" ? <FaTimes size={12}/> : <FaShieldAlt size={12}/>}
+              </div>
+              <span className="text-xs font-black uppercase tracking-widest">{msg.text}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Massive Hero Section */}
+        <section className="relative h-64 md:h-96 w-full overflow-hidden">
+           {bannerImg ? (
+             <img src={bannerImg} className="w-full h-full object-cover grayscale opacity-40 hover:grayscale-0 transition-all duration-1000" alt="Banner" />
+           ) : (
+             <div className="w-full h-full bg-gradient-to-br from-[#1A1B1E] to-[#0D0D0D]"></div>
+           )}
+           <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
+           
+           <div className="absolute bottom-0 left-0 w-full p-8 md:p-16 flex flex-col md:flex-row items-center md:items-end gap-10">
+              <div className="relative group">
+                <div className="w-32 h-32 md:w-52 md:h-52 rounded-[2.5rem] bg-[#050505] border-8 border-[#050505] shadow-2xl overflow-hidden ring-1 ring-white/10 transition-transform duration-500 group-hover:scale-105">
+                  {profileImg ? <img src={profileImg} className="w-full h-full object-cover" alt="Profile" /> : <div className="w-full h-full flex items-center justify-center bg-white/5"><FaUser size={40} className="text-white/10" /></div>}
                 </div>
                 {activeTab === "settings" && (
-                  <div className="absolute bottom-2 right-2 p-2 bg-blue-600 rounded-lg shadow-lg border border-white/20 transform scale-0 group-hover/avatar:scale-100 transition-transform cursor-pointer">
-                    <FaCamera size={14} className="text-white" />
-                  </div>
+                  <label className="absolute bottom-4 right-4 w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center cursor-pointer shadow-xl border border-white/20 hover:scale-110 transition-all">
+                    <FaCamera className="text-white" />
+                    <input type="file" className="hidden" onChange={(e) => handleImageChange(e, "profile")} />
+                  </label>
                 )}
               </div>
               
-              <div className="mb-2">
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
-                  <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">{user?.name || "Global Resident"}</h1>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.1em] border ${rm.bg} ${rm.color}`}>
-                    {rm.icon} {rm.label}
+              <div className="flex-1 text-center md:text-left pb-4">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-4">
+                  <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase">{user?.name || "ANONYMOUS"}</h1>
+                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase border border-current opacity-60 tracking-widest`}>
+                    {rm.label}
                   </span>
                 </div>
-                <p className="text-white/60 text-sm md:text-lg max-w-xl line-clamp-2 md:line-clamp-none font-medium">
-                  {user?.bio || "Minimalism is the ultimate sophistication."}
-                </p>
+                <p className="text-white/40 text-lg md:text-xl font-medium max-w-2xl italic">"{user?.bio || "Architecting digital realities in total minimalism."}"</p>
               </div>
-            </div>
 
-            <div className="mt-8 md:mt-0 flex gap-3">
-              <button 
-                onClick={() => setActiveTab("settings")}
-                className="px-6 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-semibold transition-all flex items-center gap-2"
-              >
-                <FaEdit size={14} className="text-blue-400" />
-                Edit Account
-              </button>
-            </div>
-          </div>
-        </motion.div>
+              <div className="pb-4 hidden lg:block">
+                 <div className="flex gap-4">
+                   <div className="bg-white/5 backdrop-blur-xl px-10 py-6 rounded-3xl border border-white/10 text-center">
+                     <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1">Status</p>
+                     <p className="text-lg font-black text-emerald-400">ACTIVE</p>
+                   </div>
+                   <div className="bg-white/5 backdrop-blur-xl px-10 py-6 rounded-3xl border border-white/10 text-center">
+                     <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1">Index</p>
+                     <p className="text-lg font-black text-blue-400">{user?.role?.toUpperCase()}</p>
+                   </div>
+                 </div>
+              </div>
+           </div>
+        </section>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          
-          {/* Navigation Sidebar */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="w-full lg:w-72 shrink-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-4 p-8 relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl"></div>
-            <nav className="flex flex-row lg:flex-col gap-2 overflow-x-auto no-scrollbar lg:overflow-visible relative z-10">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => { setActiveTab(tab.id); setMsg({ text: "", type: "" }); }}
-                  className={`flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold whitespace-nowrap transition-all duration-300 relative group ${
-                    activeTab === tab.id
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                    : "text-white/40 hover:text-white hover:bg-white/5"
-                    }`}
-                >
-                  <span className={`transition-colors duration-300 ${activeTab === tab.id ? "text-white" : "text-white/20 group-hover:text-blue-400"}`}>
-                    {tab.icon}
-                  </span>
-                  {tab.label}
-                  {activeTab === tab.id && (
-                    <motion.div layoutId="tab-active" className="absolute right-3 w-1.5 h-1.5 rounded-full bg-white"></motion.div>
-                  )}
-                </button>
-              ))}
-            </nav>
-          </motion.div>
-
-          {/* Main Content Pane */}
-          <div className="flex-1 min-w-0 w-full">
-            
-            {/* Global Notifications */}
-            <AnimatePresence>
-              {msg.text && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -20, scale: 0.95 }} 
-                  animate={{ opacity: 1, y: 0, scale: 1 }} 
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className={`mb-8 p-4 rounded-2xl flex items-center gap-4 border backdrop-blur-md shadow-xl ${
-                    msg.type === "error" 
-                    ? "bg-red-500/10 border-red-500/30 text-red-200" 
-                    : "bg-emerald-500/10 border-emerald-500/30 text-emerald-200"
-                    }`}
-                >
-                  <div className={`p-2 rounded-lg ${msg.type === "error" ? "bg-red-500/20" : "bg-emerald-500/20"}`}>
-                    {msg.type === "error" ? <FaTimes /> : <FaShieldAlt />}
-                  </div>
-                  <div className="text-sm font-bold tracking-wide uppercase">{msg.text}</div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <motion.div 
-              key={activeTab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl p-8 md:p-12 relative"
-            >
-              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] -z-10"></div>
-
-              {/* OVERVIEW TAB */}
-              {activeTab === "overview" && (
-                <div className="space-y-12">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
-                      <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
-                      Identity & Contact
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      <div className="bg-white/5 border border-white/10 px-6 py-5 rounded-3xl hover:border-blue-500/30 transition-all">
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">Digital Address</p>
-                        <p className="text-lg font-bold truncate">{user?.email}</p>
-                        <FaEnvelope className="text-blue-500/30 ml-auto -mt-4" />
+        {/* Dynamic Content Switching */}
+        <div className="max-w-[1600px] mx-auto p-6 md:p-16">
+          <AnimatePresence mode="wait">
+            {activeTab === "overview" && (
+              <motion.div key="overview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                  {/* Left Column - Core Info */}
+                  <div className="lg:col-span-8 space-y-10">
+                    <InfoCard title="Identity Meta" icon={<FaUser />}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Digital Address</p><p className="text-xl font-bold">{user?.email}</p></div>
+                        <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Telecom Interface</p><p className="text-xl font-bold">{user?.phone || "Disconnected"}</p></div>
+                        <div className="md:col-span-2"><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Physical Anchor</p><p className="text-white/70">{user?.address || "No address assigned"} {user?.pincode ? `[ Grid: ${user.pincode} ]` : ""}</p></div>
                       </div>
-                      <div className="bg-white/5 border border-white/10 px-6 py-5 rounded-3xl hover:border-blue-500/30 transition-all">
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">Telecom Connect</p>
-                        <p className="text-lg font-bold">{user?.phone || "Not Linked"}</p>
-                        <FaPhone className="text-emerald-500/30 ml-auto -mt-4" />
-                      </div>
-                      <div className="bg-white/5 border border-white/10 px-6 py-5 rounded-3xl hover:border-blue-500/30 transition-all">
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">Loyalty Since</p>
-                        <p className="text-lg font-bold">
-                          {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" }) : "N/A"}
-                        </p>
-                        <FaCalendarAlt className="text-purple-500/30 ml-auto -mt-4" />
-                      </div>
-                    </div>
-                  </div>
+                    </InfoCard>
 
-                  {user?.location?.lat && (
-                    <div>
-                      <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
-                        <span className="w-2 h-8 bg-emerald-500 rounded-full"></span>
-                        Geographic Anchor
-                      </h3>
-                      <div className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden">
-                        <div className="p-8 pb-4">
-                          <p className="text-2xl font-black">{user.location.city || "Coordinates Set"}</p>
-                          <p className="text-white/40 text-sm mt-1">{user.location.lat}, {user.location.lng}</p>
+                    {/* Specialized Engine Sections */}
+                    {user?.role === "seller" && (
+                      <InfoCard title="Commerce Engine" icon={<FaStore />}>
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Business Handle</p><p className="text-xl font-bold">{user.businessName}</p></div>
+                            <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Regulatory Segment</p><p className="text-xl font-bold">{user.gstNumber}</p></div>
+                            <div className="md:col-span-2"><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Entity Description</p><p className="text-white/60 italic">{user.storeDescription}</p></div>
+                         </div>
+                      </InfoCard>
+                    )}
+
+                    {user?.role === "architect" && (
+                      <InfoCard title="Design Schematics" icon={<FaGlobe />}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                          <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Architecture License</p><p className="text-xl font-bold">{user.coaRegistration}</p></div>
+                          <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Technical Arsenal</p><div className="flex flex-wrap gap-2">{user.skills?.map(s => <span key={s} className="px-3 py-1 bg-white/5 border border-white/5 rounded-lg text-xs font-bold">{s}</span>)}</div></div>
                         </div>
-                        <div className="h-48 w-full bg-[#1A1B1E] relative grayscale hover:grayscale-0 transition-all duration-500">
-                           <MapContainer
-                              center={[user.location.lat, user.location.lng]}
-                              zoom={10}
-                              style={{ height: "100%", width: "100%" }}
-                              scrollWheelZoom={false}
-                              dragging={false}
-                              zoomControl={false}
-                            >
+                      </InfoCard>
+                    )}
+
+                    {user?.role === "provider" && (
+                        <InfoCard title="Specialist Core" icon={<FaToolbox />}>
+                           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                              <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Domain</p><p className="text-xl font-bold">{user.serviceCategory}</p></div>
+                              <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Expertise</p><p className="text-xl font-bold">{user.serviceSubCategory}</p></div>
+                              <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Market Tenure</p><p className="text-xl font-bold">{user.experience} Years</p></div>
+                              <div className="md:col-span-3"><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Capability Description</p><p className="text-white/60 italic">{user.serviceDescription}</p></div>
+                           </div>
+                        </InfoCard>
+                    )}
+
+                    {user?.role === "delivery" && (
+                      <InfoCard title="Logistics Vector" icon={<FaTruck />}>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                          <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Vehicle Signature</p><p className="text-xl font-bold uppercase">{user.vehicleType}</p></div>
+                          <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">License ID</p><p className="text-xl font-bold">{user.licenseNumber}</p></div>
+                          <div><p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Operational Grid</p><p className="text-xl font-bold">{user.deliveryAreaPincode}</p></div>
+                        </div>
+                      </InfoCard>
+                    )}
+                  </div>
+
+                  {/* Right Column - Compliance & Location */}
+                  <div className="lg:col-span-4 space-y-10">
+                    <InfoCard title="Global Positioning" icon={<FaMapMarkerAlt />}>
+                       <div className="h-64 rounded-3xl overflow-hidden grayscale brightness-50 contrast-125 mb-8 border border-white/10 group-hover:grayscale-0 transition-all duration-700">
+                          {user?.location?.lat && (
+                            <MapContainer center={[user.location.lat, user.location.lng]} zoom={11} style={{ height: "100%", width: "100%" }} zoomControl={false} dragging={false} scrollWheelZoom={false}>
                               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                               <Marker position={[user.location.lat, user.location.lng]} />
                             </MapContainer>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                          )}
+                       </div>
+                       <div className="flex justify-between items-center px-4">
+                         <div><p className="text-[10px] font-bold text-white/20 mb-1">GRID COORDINATES</p><p className="text-sm font-black tracking-tighter text-blue-400">{user?.location?.lat || "0.00"}, {user?.location?.lng || "0.00"}</p></div>
+                         <div className="text-right"><p className="text-[10px] font-bold text-white/20 mb-1">LOCALITY</p><p className="text-sm font-black tracking-tighter uppercase">{user?.location?.city || "Unknown Node"}</p></div>
+                       </div>
+                    </InfoCard>
 
-                  {/* Professional Context Card */}
-                  {user?.role !== "customer" && (
-                    <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/10 border border-white/10 rounded-[2.5rem] p-8 md:p-12">
-                      <div className="flex flex-col md:flex-row gap-8 items-start">
-                        <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-3xl">
-                          {rm.icon}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-2xl font-black text-white mb-4">Professional Ecosystem</h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                            {user?.role === "seller" && (
-                              <>
-                                <div><p className={labelClasses}>Business Authority</p><p className="text-lg font-bold">{user.businessName}</p></div>
-                                <div><p className={labelClasses}>Regulatory ID</p><p className="text-lg font-bold uppercase">{user.gstNumber || "Unverified"}</p></div>
-                                <div className="md:col-span-2"><p className={labelClasses}>Global Narrative</p><p className="text-white/70 italic">{user.storeDescription || "No description provided."}</p></div>
-                              </>
-                            )}
-                            {user?.role === "architect" && (
-                              <>
-                                <div><p className={labelClasses}>Professional License</p><p className="text-lg font-bold">{user.coaRegistration}</p></div>
-                                <div><p className={labelClasses}>Specialized Arsenal</p><div className="flex flex-wrap gap-2">{user.skills.map(s => <span key={s} className="px-3 py-1 bg-white/10 rounded-lg text-xs font-bold border border-white/10">{s}</span>)}</div></div>
-                              </>
-                            )}
-                            {user?.role === "provider" && (
-                              <>
-                                <div><p className={labelClasses}>Core Domain</p><p className="text-lg font-bold">{user.serviceCategory}</p></div>
-                                <div><p className={labelClasses}>Specialization</p><p className="text-lg font-bold">{user.serviceSubCategory}</p></div>
-                                <div><p className={labelClasses}>Market Tenure</p><p className="text-lg font-bold">{user.experience} Global Cycles</p></div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                    <InfoCard title="Compliance Ledger" icon={<FaShieldAlt />}>
+                       <div className="space-y-6">
+                          <div className="flex justify-between border-b border-white/5 pb-4"><span className="text-xs text-white/30 font-bold uppercase tracking-widest">KYC Status</span><span className="text-xs font-black text-emerald-400">VERIFIED</span></div>
+                          <div className="flex justify-between border-b border-white/5 pb-4"><span className="text-xs text-white/30 font-bold uppercase tracking-widest">Aadhaar Interface</span><span className="text-xs font-black">•••• {user?.aadhaarNumber?.slice(-4) || "MISSING"}</span></div>
+                          {user?.panNumber && <div className="flex justify-between border-b border-white/5 pb-4"><span className="text-xs text-white/30 font-bold uppercase tracking-widest">Tax Identity</span><span className="text-xs font-black">{user.panNumber}</span></div>}
+                          {user?.role !== "customer" && <div className="flex justify-between border-b border-white/5 pb-4"><span className="text-xs text-white/30 font-bold uppercase tracking-widest">Banking Node</span><span className="text-xs font-black text-blue-400">ENCRYPTED</span></div>}
+                       </div>
+                    </InfoCard>
+                  </div>
                 </div>
-              )}
+              </motion.div>
+            )}
 
-              {/* SETTINGS TAB */}
-              {activeTab === "settings" && (
-                <form onSubmit={handleSave} className="space-y-12">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-3xl font-black text-white">Refine Identity</h2>
-                    <FaCog className="text-blue-500 text-2xl opacity-20" />
+            {activeTab === "settings" && (
+              <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <form onSubmit={handleSave} className="space-y-16">
+                  {/* Persona Section */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <InfoCard title="Identity Calibration" icon={<FaUser />} className="lg:col-span-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <InputField label="Assigned Handle" name="name" value={form.name} icon={<FaUser />} />
+                        <InputField label="Telecom Connect" name="phone" value={form.phone} icon={<FaPhone />} />
+                        <InputField label="Global Matrix (Email)" name="email" value={user?.email} icon={<FaEnvelope />} disabled className="opacity-50 cursor-not-allowed" />
+                        <div className="md:col-span-2 lg:col-span-3">
+                           <InputField label="Identity Narrative (Bio)" name="bio" value={form.bio} icon={<FaEdit />} placeholder="A brief manifesto or professional summary..." />
+                        </div>
+                      </div>
+                    </InfoCard>
+
+                    <InfoCard title="Spatial Targeting" icon={<FaMapMarkerAlt />}>
+                       <div className="space-y-8">
+                          <div className="flex gap-4">
+                             <input type="text" value={citySearch} onChange={e => setCitySearch(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-sm" placeholder="Sync city or address..." />
+                             <button type="button" onClick={handleUseGPS} className="bg-blue-600 px-6 rounded-2xl text-xs font-black uppercase tracking-widest active:scale-95 transition-all">
+                                {searching ? <FaSpinner className="animate-spin" /> : <FaMapMarkerAlt />}
+                             </button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-6">
+                            <InputField label="Coordinate X (Lat)" value={locationData.lat} disabled />
+                            <InputField label="Coordinate Y (Lng)" value={locationData.lng} disabled />
+                            <div className="col-span-2"><InputField label="Identified Sector (City)" value={locationData.city} readOnly /></div>
+                          </div>
+                       </div>
+                    </InfoCard>
+
+                    <InfoCard title="Address Infrastructure" icon={<FaMapMarkerAlt />}>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div className="md:col-span-2"><InputField label="Street Logic" name="address" value={form.address} icon={<FaMapMarkerAlt />} /></div>
+                          <InputField label="Grid Index (Pincode)" name="pincode" value={form.pincode} icon={<FaMapMarkerAlt />} />
+                       </div>
+                    </InfoCard>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    {/* Media Assets */}
-                    <div className="space-y-6 md:col-span-2 bg-white/5 border border-white/10 p-8 rounded-[2.5rem]">
-                      <h4 className="text-sm font-black text-blue-400 uppercase tracking-[0.2em] mb-4">Visual Branding</h4>
-                      <div className="flex flex-wrap gap-8">
-                        <div>
-                          <p className={labelClasses}>Portrait Upload</p>
-                          <div className="group relative w-24 h-24">
-                            <div className="w-full h-full rounded-2xl bg-[#0D0D0D] border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden">
-                              {profileImg ? <img src={profileImg} className="w-full h-full object-cover" /> : <FaUser className="text-white/10" />}
-                            </div>
-                            <label className="absolute inset-0 cursor-pointer flex items-center justify-center bg-blue-600/60 opacity-0 group-hover:opacity-100 transition-all rounded-2xl">
-                              <FaCamera className="text-white" />
-                              <input type="file" className="hidden" onChange={(e) => handleImageChange(e, "profile")} />
-                            </label>
-                          </div>
-                        </div>
-                        {user?.role === "seller" && (
-                          <div className="flex-1">
-                            <p className={labelClasses}>Commercial Banner</p>
-                            <label className="block w-full h-24 rounded-2xl bg-[#0D0D0D] border-2 border-dashed border-white/20 hover:border-blue-500/50 transition-all cursor-pointer relative overflow-hidden group">
-                              {bannerImg ? <img src={bannerImg} className="w-full h-full object-cover opacity-30" /> : null}
-                              <div className="absolute inset-0 flex items-center justify-center gap-3">
-                                <FaCamera className="text-white/20 group-hover:text-blue-400" />
-                                <span className="text-white/20 font-black uppercase text-[10px] tracking-widest">Update Banner</span>
+                  {/* Role Specific Expansion - Professional Engine */}
+                  {user?.role !== "customer" && (
+                    <InfoCard title="Professional System Configuration" icon={<FaToolbox />}>
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                          {user?.role === "seller" && (
+                            <>
+                              <InputField label="Merchant Title" name="businessName" value={form.businessName} icon={<FaStore />} />
+                              <div className="space-y-2">
+                                <label className="block text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Entity Logic</label>
+                                <select name="businessType" value={form.businessType} onChange={handleChange} className="w-full bg-white/[0.04] border border-white/10 rounded-2xl py-4 px-6 text-sm text-white focus:ring-2 focus:ring-blue-500/30 transition-all appearance-none">
+                                   <option value="" className="bg-[#050505]">Select Type</option>
+                                   <option value="Individual" className="bg-[#050505]">Individual Interface</option>
+                                   <option value="Partnership" className="bg-[#050505]">Consortium</option>
+                                   <option value="Company" className="bg-[#050505]">Corporate Entity</option>
+                                </select>
                               </div>
-                              <input type="file" className="hidden" onChange={(e) => handleImageChange(e, "banner")} />
-                            </label>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                              <InputField label="Merchant Category" name="businessCategory" value={form.businessCategory} icon={<FaToolbox />} />
+                              <div className="md:col-span-2 lg:col-span-3">
+                                <InputField label="Commercial Manifest (Description)" name="storeDescription" value={form.storeDescription} icon={<FaEdit />} />
+                              </div>
+                              <InputField label="Support Interface (Phone)" name="supportPhone" value={form.supportPhone} icon={<FaPhone />} />
+                              <InputField label="Support Protocol (Email)" name="supportEmail" value={form.supportEmail} icon={<FaEnvelope />} />
+                            </>
+                          )}
+                          
+                          {user?.role === "architect" && (
+                            <>
+                              <InputField label="Professional Registry (COA)" name="coaRegistration" value={form.coaRegistration} icon={<FaShieldAlt />} />
+                              <InputField label="Contact Interface" name="contactInfo" value={form.contactInfo} icon={<FaLink />} />
+                              <div className="md:col-span-2 lg:col-span-3">
+                                <InputField label="Skill-based Arsenal (Separated by Commas)" name="skills" value={form.skills} icon={<FaEdit />} />
+                              </div>
+                            </>
+                          )}
 
-                    {/* Standard Inputs */}
-                    <div className="md:col-span-2 space-y-8">
-                       <h4 className="text-sm font-black text-emerald-400 uppercase tracking-[0.2em]">Personal Manifest</h4>
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div><label className={labelClasses}>Full Legal Name</label><input name="name" value={form.name} onChange={handleChange} className={inputClasses} placeholder="John Doe" /></div>
-                        <div><label className={labelClasses}>Digital Tether (Phone)</label><input name="phone" value={form.phone} onChange={handleChange} className={inputClasses} placeholder="+91 XXXX XXX XXX" /></div>
-                        <div className="md:col-span-2"><label className={labelClasses}>Identity Narrative (Bio)</label><textarea name="bio" value={form.bio} onChange={handleChange} rows={3} className={inputClasses + " resize-none"} placeholder="Write your professional story..." /></div>
-                        <div><label className={labelClasses}>Street Infrastructure</label><input name="address" value={form.address} onChange={handleChange} className={inputClasses} /></div>
-                        <div><label className={labelClasses}>Locality Index (Pincode)</label><input name="pincode" value={form.pincode} onChange={handleChange} className={inputClasses} /></div>
+                          {user?.role === "provider" && (
+                            <>
+                              <InputField label="Primary Domain" name="serviceCategory" value={form.serviceCategory} icon={<FaToolbox />} />
+                              <InputField label="Secondary Expertise" name="serviceSubCategory" value={form.serviceSubCategory} icon={<FaToolbox />} />
+                              <InputField label="Market Tenure (Years)" name="experience" value={form.experience} icon={<FaCalendarAlt />} />
+                              <div className="md:col-span-2 lg:col-span-3">
+                                <InputField label="Service Specification" name="serviceDescription" value={form.serviceDescription} icon={<FaEdit />} />
+                              </div>
+                            </>
+                          )}
+
+                          {user?.role === "delivery" && (
+                             <>
+                               <InputField label="Logistics Unit (Vehicle)" name="vehicleType" value={form.vehicleType} icon={<FaTruck />} />
+                               <InputField label="Regulatory Permit (License)" name="licenseNumber" value={form.licenseNumber} icon={<FaShieldAlt />} />
+                               <InputField label="Unit Registry (RC Number)" name="rcBookNumber" value={form.rcBookNumber} icon={<FaFileContract />} />
+                               <InputField label="Operational Grid (Pincode)" name="deliveryAreaPincode" value={form.deliveryAreaPincode} icon={<FaMapMarkerAlt />} />
+                             </>
+                          )}
                        </div>
-                    </div>
+                    </InfoCard>
+                  )}
 
-                    {/* Location Intelligence Section */}
-                    <div className="md:col-span-2 bg-white/5 border border-white/10 rounded-[2.5rem] p-8 md:p-12 overflow-hidden relative">
-                        <div className="absolute top-0 right-0 p-8">
-                          <FaMapMarkerAlt className="text-blue-500/10 text-8xl" />
-                        </div>
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 relative z-10">
-                          <div>
-                            <h4 className="text-sm font-black text-blue-400 uppercase tracking-[0.2em] mb-1">Universal Positioning</h4>
-                            <p className="text-white/40 text-xs">Sync your physical location with our global spatial grid.</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={handleUseGPS}
-                            disabled={searching}
-                            className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 disabled:opacity-50 flex items-center gap-2"
-                          >
-                            <FaMapMarkerAlt /> 
-                            {searching ? "Detecting..." : "Sync GPS Core"}
-                          </button>
-                        </div>
+                  {/* Compliance & Banking Engine - Data Rich Sections */}
+                  <InfoCard title="Compliance & Monetary Infrastructure" icon={<FaShieldAlt />}>
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                        <InputField label="Universal ID (Aadhaar)" name="aadhaarNumber" value={form.aadhaarNumber} icon={<FaShieldAlt />} />
+                        {(user?.role === "seller" || user?.role === "admin") && (
+                          <>
+                            <InputField label="GST System ID" name="gstNumber" value={form.gstNumber} icon={<FaFileContract />} />
+                            <InputField label="Tax Nexus (PAN)" name="panNumber" value={form.panNumber} icon={<FaFileContract />} />
+                            <InputField label="Corporate Registry Index" name="companyRegistrationNumber" value={form.companyRegistrationNumber} icon={<FaFileContract />} />
+                            <InputField label="Trade Authorization ID" name="tradeLicenseNumber" value={form.tradeLicenseNumber} icon={<FaFileContract />} />
+                            <InputField label="Food Safety Protocol (FSSAI)" name="fssaiLicense" value={form.fssaiLicense} icon={<FaFileContract />} />
+                          </>
+                        )}
+                        {user?.role !== "customer" && (
+                          <>
+                            <InputField label="Banking Core (Account)" name="bankAccount" value={form.bankAccount} icon={<FaUniversity />} />
+                            <InputField label="Inter-Bank Protocol (IFSC)" name="ifscCode" value={form.ifscCode} icon={<FaCreditCard />} />
+                          </>
+                        )}
+                     </div>
+                  </InfoCard>
 
-                        {/* Integrated Map */}
-                        <div className="w-full h-80 rounded-3xl border border-white/10 overflow-hidden mb-10 shadow-inner relative z-0">
-                           <MapContainer
-                                center={[locationData.lat || 20.5937, locationData.lng || 78.9629]}
-                                zoom={locationData.lat ? 13 : 5}
-                                style={{ height: "100%", width: "100%", filter: "invert(90%) hue-rotate(180deg) brightness(1.2)" }}
-                              >
-                                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                                <MapEvents />
-                                {locationData.lat && locationData.lng && (
-                                  <Marker
-                                    position={[locationData.lat, locationData.lng]}
-                                    draggable={true}
-                                    eventHandlers={{
-                                      dragend: (e) => {
-                                        const marker = e.target;
-                                        const { lat, lng } = marker.getLatLng();
-                                        handleReverseGeocode(lat, lng);
-                                      },
-                                    }}
-                                  />
-                                )}
-                              </MapContainer>
-                        </div>
+                  {/* Social Grid Protocol */}
+                  {user?.role === "seller" && (
+                    <InfoCard title="Network Connectivity" icon={<FaLink />}>
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                          <InputField label="Facebook Node" name="socialLinks.facebook" value={form.socialLinks?.facebook} icon={<FaFacebook />} />
+                          <InputField label="Instagram Node" name="socialLinks.instagram" value={form.socialLinks?.instagram} icon={<FaInstagram />} />
+                          <InputField label="Twitter Node" name="socialLinks.twitter" value={form.socialLinks?.twitter} icon={<FaTwitter />} />
+                          <InputField label="LinkedIn Node" name="socialLinks.linkedin" value={form.socialLinks?.linkedin} icon={<FaLinkedin />} />
+                       </div>
+                    </InfoCard>
+                  )}
 
-                        {/* Search & Results */}
-                        <div className="relative mb-8 z-20">
-                          <div className="flex gap-4">
-                            <div className="relative flex-1">
-                              <FaGlobe className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
-                              <input
-                                type="text"
-                                value={citySearch}
-                                onChange={(e) => setCitySearch(e.target.value)}
-                                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearchLocation(); } }}
-                                className={inputClasses + " pl-12"}
-                                placeholder="Search city or specific grid location..."
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              onClick={handleSearchLocation}
-                              disabled={searching}
-                              className="px-8 py-3 bg-white/10 hover:bg-white/15 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/5"
-                            >
-                               {searching ? <FaSpinner className="animate-spin" /> : "Search Grid"}
-                            </button>
-                          </div>
-
-                          <AnimatePresence>
-                            {searchResults.length > 0 && (
-                              <motion.div 
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                className="absolute z-60 w-full mt-4 bg-[#1A1B1E] border border-white/10 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-3xl"
-                              >
-                                {searchResults.map((result, idx) => (
-                                  <button
-                                    key={idx}
-                                    type="button"
-                                    onClick={() => handleSelectLocation(result)}
-                                    className="w-full text-left px-6 py-4 hover:bg-white/5 transition border-b border-white/5 last:border-b-0 group"
-                                  >
-                                    <div className="flex items-center gap-4">
-                                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-blue-600/20 transition-all">
-                                        <FaMapMarkerAlt className="text-white/20 group-hover:text-blue-400" />
-                                      </div>
-                                      <div>
-                                        <p className="text-sm font-bold text-white">{result.display_name.split(",").slice(0, 3).join(",")}</p>
-                                        <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-1">Full Coordinate Path</p>
-                                      </div>
-                                    </div>
-                                  </button>
-                                ))}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-[#0D0D0D] p-5 rounded-2xl border border-white/5">
-                              <label className={labelClasses}>Locality Segment</label>
-                              <input value={locationData.city} onChange={(e) => setLocationData({ ...locationData, city: e.target.value })} className="w-full bg-transparent border-none p-0 text-white font-bold focus:ring-0" placeholder="City" />
-                            </div>
-                            <div className="bg-[#0D0D0D] p-5 rounded-2xl border border-white/5">
-                              <label className={labelClasses}>Lat Grid</label>
-                              <input value={locationData.lat} className="w-full bg-transparent border-none p-0 text-white/50 font-bold focus:ring-0 cursor-default" readOnly />
-                            </div>
-                            <div className="bg-[#0D0D0D] p-5 rounded-2xl border border-white/5">
-                              <label className={labelClasses}>Long Grid</label>
-                              <input value={locationData.lng} className="w-full bg-transparent border-none p-0 text-white/50 font-bold focus:ring-0 cursor-default" readOnly />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Final Action Hub */}
-                    <div className="md:col-span-2 pt-12 flex flex-col md:flex-row justify-end items-center gap-6">
-                      <button 
-                        type="button" 
-                        onClick={() => setActiveTab("overview")} 
-                        className="text-white/40 hover:text-white font-black uppercase text-xs tracking-widest transition-all"
-                      >
-                        Abort Changes
-                      </button>
-                      <button 
-                        type="submit" 
-                        disabled={saving} 
-                        className="w-full md:w-auto px-12 py-5 rounded-3xl bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/30 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-                      >
-                        {saving ? <FaSpinner className="animate-spin" /> : <FaSave />}
-                        {saving ? "Transmitting..." : "Apply Identity Shift"}
-                      </button>
-                    </div>
+                  {/* Persistence Hub */}
+                  <div className="flex flex-col md:flex-row justify-end items-center gap-8 pt-10 border-t border-white/5">
+                    <button type="button" onClick={() => setActiveTab("overview")} className="text-white/30 hover:text-white text-xs font-black uppercase tracking-widest transition-all">Cancel Synchronization</button>
+                    <button type="submit" disabled={saving} className="w-full md:w-auto bg-white text-black px-16 py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] shadow-2xl hover:bg-white/90 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-4">
+                       {saving ? <FaSpinner className="animate-spin" /> : <FaSave />}
+                       {saving ? "SYNCING..." : "DEPLOY CHANGES"}
+                    </button>
                   </div>
                 </form>
-              )}
+              </motion.div>
+            )}
 
-              {/* SECURITY TAB */}
-              {activeTab === "security" && (
-                <div className="max-w-xl mx-auto py-12">
-                   <div className="text-center mb-16">
-                     <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-[2rem] flex items-center justify-center text-4xl mx-auto mb-6">
-                       <FaLock className="text-blue-500" />
-                     </div>
-                     <h2 className="text-3xl font-black text-white mb-4">Encryption Logic</h2>
-                     <p className="text-white/40 font-medium">Update your cryptographic access tokens regularly.</p>
-                   </div>
-
-                   <form onSubmit={handlePasswordChange} className="space-y-8">
-                      <div>
-                        <label className={labelClasses}>Current Access Key</label>
-                        <input type="password" required className={inputClasses} value={pwForm.currentPassword} onChange={(e) => setPwForm({ ...pwForm, currentPassword: e.target.value })} placeholder="••••••••" />
-                      </div>
-                      <div>
-                        <label className={labelClasses}>New Access Key</label>
-                        <input type="password" required className={inputClasses} value={pwForm.newPassword} onChange={(e) => setPwForm({ ...pwForm, newPassword: e.target.value })} placeholder="••••••••" />
-                      </div>
-
-                      <div className="pt-8">
-                        <button 
-                          type="submit" 
-                          disabled={saving} 
-                          className="w-full py-5 rounded-3xl bg-white text-[#0D0D0D] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:shadow-2xl transition-all active:scale-95 disabled:opacity-50"
-                        >
-                          {saving ? "Re-Encrypting..." : "Finalize Key Update"}
-                        </button>
-                      </div>
+            {activeTab === "security" && (
+              <motion.div key="security" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="max-w-2xl mx-auto py-20">
+                <InfoCard title="Access Key Rotation" icon={<FaLock />}>
+                   <form onSubmit={async (e) => {
+                     e.preventDefault();
+                     setSaving(true);
+                     try {
+                        await API.put("/users/me/password", pwForm);
+                        setMsg({ text: "Passkey Updated Successfully", type: "success" });
+                        setPwForm({ currentPassword: "", newPassword: "" });
+                     } catch (err) {
+                        setMsg({ text: err.response?.data?.message || "Rotation Failed", type: "error" });
+                     } finally { setSaving(false); }
+                   }} className="space-y-10">
+                      <InputField label="Current Protocol Key" type="password" value={pwForm.currentPassword} onChange={e => setPwForm({...pwForm, currentPassword: e.target.value})} icon={<FaLock />} placeholder="••••••••" />
+                      <InputField label="New Protocol Key" type="password" value={pwForm.newPassword} onChange={e => setPwForm({...pwForm, newPassword: e.target.value})} icon={<FaLock />} placeholder="••••••••" />
+                      <button type="submit" disabled={saving} className="w-full bg-blue-600 text-white py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] shadow-xl hover:bg-blue-500 transition-all disabled:opacity-50">
+                         {saving ? "RE-ENCRYPTING..." : "COMMIT ROTATION"}
+                      </button>
                    </form>
-
-                   <div className="mt-20 p-8 border border-white/5 bg-white/[0.02] rounded-[2rem]">
-                      <h4 className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <FaShieldAlt /> Protocol Security
-                      </h4>
-                      <p className="text-xs text-white/30 leading-relaxed font-medium">
-                        Stinchar utilizes end-to-end encryption for all session tokens. 
-                        Changing your password will terminate all active background sessions for your security.
-                      </p>
-                   </div>
-                </div>
-              )}
-            </motion.div>
-          </div>
+                </InfoCard>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
+
+        {/* Mobile Bottom Navigation Bar */}
+        <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] bg-[#0D0D0D]/90 backdrop-blur-2xl border border-white/10 p-2 rounded-[2rem] shadow-2xl z-50 flex justify-between gap-1">
+            {[
+              { id: "overview", icon: <FaUser />, label: "Node" },
+              { id: "settings", icon: <FaCog />, label: "Tune" },
+              { id: "security", icon: <FaLock />, label: "Crypt" }
+            ].map(tab => (
+              <button 
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex flex-col items-center justify-center py-3 rounded-2xl gap-1 transition-all ${activeTab === tab.id ? "bg-blue-600 text-white" : "text-white/20"}`}
+              >
+                {tab.icon}
+                <span className="text-[8px] font-black uppercase tracking-widest">{tab.label}</span>
+              </button>
+            ))}
+        </div>
+      </main>
+      
+      {/* Decorative Grid Overlays */}
+      <div className="fixed inset-0 pointer-events-none opacity-20 -z-50">
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-sky-500/5 rounded-full blur-[100px]"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
       </div>
-
-      {/* Futuristic Social Links Footer Section (Only in Overview) */}
-      {activeTab === "overview" && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="max-w-7xl mx-auto w-full px-4 md:px-8 mb-20"
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-             <a href={user?.socialLinks?.facebook} target="_blank" className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-center text-2xl hover:bg-blue-600/10 hover:text-blue-500 hover:border-blue-500/30 transition-all grayscale opacity-50 hover:grayscale-0 hover:opacity-100"><FaFacebook /></a>
-             <a href={user?.socialLinks?.instagram} target="_blank" className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-center text-2xl hover:bg-pink-600/10 hover:text-pink-500 hover:border-pink-500/30 transition-all grayscale opacity-50 hover:grayscale-0 hover:opacity-100"><FaInstagram /></a>
-             <a href={user?.socialLinks?.twitter} target="_blank" className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-center text-2xl hover:bg-sky-600/10 hover:text-sky-500 hover:border-sky-500/30 transition-all grayscale opacity-50 hover:grayscale-0 hover:opacity-100"><FaTwitter /></a>
-             <a href={user?.socialLinks?.linkedin} target="_blank" className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-center text-2xl hover:bg-blue-700/10 hover:text-blue-700 hover:border-blue-700/30 transition-all grayscale opacity-50 hover:grayscale-0 hover:opacity-100"><FaLinkedin /></a>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Floating Action Hint */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <Link 
-          to="/dashboard" 
-          className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center shadow-2xl shadow-blue-500/50 hover:scale-110 active:scale-95 transition-all text-white group"
-        >
-          <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
-        </Link>
-      </div>
-
     </div>
   );
 };
