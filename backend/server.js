@@ -83,6 +83,7 @@ const supportRoutes = require("./routes/supportRoutes"); // ✅ support tickets
 const adRoutes = require("./routes/adRoutes"); // ✅ seller ad campaigns
 const deliveryPricingRoutes = require("./routes/deliveryPricingRoutes"); // ✅ delivery pricing
 const serviceCategoryRoutes = require("./routes/serviceCategoryRoutes"); // ✅ service categories
+const followRoutes = require("./routes/followRoutes"); // ✅ follow system
 
 // ✅ Use routes
 app.use("/api/quotations", quotationRoutes); // ✅ quotation routes
@@ -107,6 +108,7 @@ app.use("/api/config", require("./routes/configRoutes")); // ✅ website config
 app.use("/api/ads", adRoutes); // ✅ seller ad campaigns
 app.use("/api/delivery-pricing", deliveryPricingRoutes); // ✅ delivery pricing rules
 app.use("/api/service-categories", serviceCategoryRoutes); // ✅ service categories
+app.use("/api/follow", followRoutes); // ✅ follow system
 app.use("/api/query", require("./routes/queryRoutes")); // ✅ custom queries and charts
 
 // ✅ Test & Health Routes

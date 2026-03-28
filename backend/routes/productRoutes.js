@@ -11,6 +11,7 @@ const {
   getSellerProducts,
   getPublicSellerProducts,
   getAdminProducts,
+  toggleProductLike,
 } = require("../controllers/productController");
 
 const { protect, sellerOnly, adminOnly } = require("../middlewares/authMiddleware");
@@ -54,6 +55,9 @@ router.post("/", protect, cpUpload, createProduct);
 
 // ✅ Update product (Seller)
 router.put("/:id", protect, cpUpload, updateProduct);
+
+// ✅ Toggle like on a product (Any logged-in user)
+router.post("/:id/like", protect, toggleProductLike);
 
 // ✅ Delete product (Seller)
 router.delete("/:id", protect, deleteProduct);

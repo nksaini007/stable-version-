@@ -324,6 +324,36 @@ const getPublicSellerProducts = async (req, res) => {
   }
 };
 
+/**
+ * POST /api/products/:id/like — Toggle like on a product
+ */
+const toggleProductLike = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    const userId = req.user._id;
+    const alreadyLiked = product.likes.includes(userId);
+
+    if (alreadyLiked) {
+      product.likes = product.likes.filter(id => id.toString() !== userId.toString());
+    } else {
+      product.likes.push(userId);
+    }
+
+    product.likesCount = product.likes.length;
+    await product.save();
+
+    res.json({
+      liked: !alreadyLiked,
+      likesCount: product.likesCount,
+    });
+  } catch (err) {
+    console.error("Like toggle error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   createProduct,
   getProducts,
@@ -333,6 +363,7 @@ module.exports = {
   getSellerProducts,
   getPublicSellerProducts,
   getAdminProducts,
+  toggleProductLike,
 };
 
 // // };

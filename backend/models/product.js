@@ -116,6 +116,10 @@ const productSchema = new mongoose.Schema(
         ref: 'Product',
       },
     ],
+
+    // Social — Likes
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    likesCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

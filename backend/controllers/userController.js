@@ -222,6 +222,7 @@ const updateMyProfile = async (req, res) => {
       name, phone, bio, address, pincode, aadhaarNumber,
       businessName, gstNumber, panNumber, businessAddress, businessCategory, bankAccount, ifscCode, companyRegistrationNumber, tradeLicenseNumber, fssaiLicense,
       storeDescription, supportPhone, supportEmail, businessType, socialLinks,
+      tagline, storePolicies, returnPolicy, shippingInfo, workingHours, established,
       vehicleType, licenseNumber, rcBookNumber, deliveryAreaPincode,
       serviceCategory, serviceCategoryId, serviceSubCategory, serviceSubCategoryId, serviceDescription, experience, offeredServices,
       coaRegistration, location
@@ -257,6 +258,12 @@ const updateMyProfile = async (req, res) => {
       if (supportPhone) user.supportPhone = supportPhone;
       if (supportEmail) user.supportEmail = supportEmail;
       if (businessType) user.businessType = businessType;
+      if (tagline !== undefined) user.tagline = tagline;
+      if (storePolicies !== undefined) user.storePolicies = storePolicies;
+      if (returnPolicy !== undefined) user.returnPolicy = returnPolicy;
+      if (shippingInfo !== undefined) user.shippingInfo = shippingInfo;
+      if (workingHours !== undefined) user.workingHours = workingHours;
+      if (established) user.established = established;
       if (socialLinks) {
         try {
           const links = typeof socialLinks === "string" ? JSON.parse(socialLinks) : socialLinks;
@@ -489,15 +496,29 @@ const changeUserRole = async (req, res) => {
 const getSellerPublicProfile = async (req, res) => {
   try {
     const sellerId = req.params.id;
-    // Fetch user but ONLY return non-sensitive public details
-    const seller = await User.findById(sellerId).select("name businessName profileImage shopBanner bio role isActive");
+    const seller = await User.findById(sellerId).select(
+      "name businessName profileImage shopBanner bio role isActive " +
+      "tagline storeDescription storePolicies returnPolicy shippingInfo " +
+      "workingHours established socialLinks location businessCategory " +
+      "businessType followers following createdAt"
+    );
 
     if (!seller) return res.status(404).json({ message: "Seller not found" });
     if (seller.role !== "seller" || !seller.isActive) {
       return res.status(403).json({ message: "This account is not an active seller shop." });
     }
 
-    res.json(seller);
+    const Product = require("../models/product");
+    const productCount = await Product.countDocuments({ seller: sellerId, isActive: true });
+
+    const sellerData = seller.toObject();
+    sellerData.followersCount = seller.followers?.length || 0;
+    sellerData.followingCount = seller.following?.length || 0;
+    sellerData.productCount = productCount;
+    delete sellerData.followers;
+    delete sellerData.following;
+
+    res.json(sellerData);
   } catch (err) {
     res.status(500).json({ error: "Failed to load seller profile" });
   }
@@ -509,9 +530,8 @@ const getSellerPublicProfile = async (req, res) => {
 const getArchitectPublicProfile = async (req, res) => {
   try {
     const architectId = req.params.id;
-    // Fetch user public details
     const architect = await User.findById(architectId)
-      .select("name bio profileImage skills contactInfo coaRegistration location role isActive");
+      .select("name bio profileImage skills contactInfo coaRegistration location role isActive followers following createdAt");
 
     if (!architect) return res.status(404).json({ message: "Architect not found" });
     if (architect.role !== "architect" || !architect.isActive) {
@@ -525,7 +545,14 @@ const getArchitectPublicProfile = async (req, res) => {
       isPublic: true
     }).sort({ createdAt: -1 });
 
-    res.json({ architect, portfolio });
+    const architectData = architect.toObject();
+    architectData.followersCount = architect.followers?.length || 0;
+    architectData.followingCount = architect.following?.length || 0;
+    architectData.projectCount = portfolio.length;
+    delete architectData.followers;
+    delete architectData.following;
+
+    res.json({ architect: architectData, portfolio });
   } catch (err) {
     res.status(500).json({ error: "Failed to load architect profile" });
   }

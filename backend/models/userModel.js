@@ -82,6 +82,18 @@ const userSchema = new mongoose.Schema({
   coaRegistration: String,
   assignedProjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ConstructionProject' }],
 
+  // SOCIAL — Follow System
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+
+  // ENHANCED SELLER FIELDS
+  tagline: { type: String, default: "" },
+  storePolicies: { type: String, default: "" },
+  returnPolicy: { type: String, default: "" },
+  shippingInfo: { type: String, default: "" },
+  workingHours: { type: String, default: "" },
+  established: { type: Date, default: null },
+
   // OTP Verification fields
   otp: String,
   otpExpires: Date,

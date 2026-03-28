@@ -81,6 +81,12 @@ const Profile = () => {
         supportPhone: user.supportPhone || "",
         supportEmail: user.supportEmail || "",
         businessType: user.businessType || "",
+        tagline: user.tagline || "",
+        storePolicies: user.storePolicies || "",
+        returnPolicy: user.returnPolicy || "",
+        shippingInfo: user.shippingInfo || "",
+        workingHours: user.workingHours || "",
+        established: user.established ? new Date(user.established).toISOString().split('T')[0] : "",
         socialLinks: user.socialLinks || { facebook: "", instagram: "", twitter: "", linkedin: "" },
       });
       setLocationData({
@@ -497,6 +503,18 @@ const Profile = () => {
                               </div>
                               <InputField label="Support Interface (Phone)" name="supportPhone" value={form.supportPhone} icon={<FaPhone />} />
                               <InputField label="Support Protocol (Email)" name="supportEmail" value={form.supportEmail} icon={<FaEnvelope />} />
+                              <InputField label="Tagline / Handle" name="tagline" value={form.tagline} icon={<FaEdit />} placeholder="@yourshop" />
+                              <InputField label="Working Hours" name="workingHours" value={form.workingHours} icon={<FaCog />} placeholder="Mon-Sat, 9AM-6PM" />
+                              <InputField label="Established Since" name="established" value={form.established} type="date" icon={<FaCalendarAlt />} />
+                              <div className="md:col-span-2 lg:col-span-3">
+                                <InputField label="Return Policy" name="returnPolicy" value={form.returnPolicy} icon={<FaEdit />} placeholder="Describe your return/exchange policy..." />
+                              </div>
+                              <div className="md:col-span-2 lg:col-span-3">
+                                <InputField label="Shipping Information" name="shippingInfo" value={form.shippingInfo} icon={<FaEdit />} placeholder="Shipping rates, delivery times..." />
+                              </div>
+                              <div className="md:col-span-2 lg:col-span-3">
+                                <InputField label="Store Policies" name="storePolicies" value={form.storePolicies} icon={<FaEdit />} placeholder="Any additional store policies..." />
+                              </div>
                             </>
                           )}
                           
