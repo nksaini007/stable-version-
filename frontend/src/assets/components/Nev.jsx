@@ -54,12 +54,12 @@ const Nev = () => {
           <div className="flex items-center justify-between h-[60px] md:h-[64px]">
 
             {/* LOGO */}
-            {/* <Link to="/" className="flex items-center gap-2.5 z-10">
+            <Link to="/" className="flex items-center gap-2.5 z-10">
               <img src={logo} alt="Stinchar Logo" className="h-8 md:h-9 w-auto object-contain" />
               <span className="text-xl md:text-[22px] font-black text-white tracking-tight">
                 Stin<span className="text-gray-400">char</span>
               </span>
-            </Link> */}
+            </Link>
 
             {/* DESKTOP LINKS */}
             <div className="hidden lg:flex items-center">

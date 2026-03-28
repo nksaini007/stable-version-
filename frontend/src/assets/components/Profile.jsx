@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FaEnvelope, FaPhone, FaUser, FaMapMarkerAlt, FaEdit, FaCalendarAlt,
   FaCamera, FaSave, FaTimes, FaLock, FaStore, FaTruck, FaShieldAlt,
-  FaCog, FaSpinner
+  FaCog, FaSpinner, FaFacebook, FaInstagram, FaTwitter, FaLinkedin,
+  FaChevronRight, FaRegHandshake, FaToolbox, FaGlobe
 } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import API from "../api/api";
@@ -47,6 +48,11 @@ const Profile = () => {
   
   // Service Categories for Providers
   const [serviceCategories, setServiceCategories] = useState([]);
+
+  // Search location by city name using OpenStreetMap Nominatim
+  const [citySearch, setCitySearch] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -111,7 +117,7 @@ const Profile = () => {
     if (type === "profile") {
       setNewImage(file);
       if (file) setImagePreview(URL.createObjectURL(file));
-    } else    if (type === "banner") {
+    } else if (type === "banner") {
       setNewBanner(file);
       if (file) setBannerPreview(URL.createObjectURL(file));
     }
@@ -157,7 +163,6 @@ const Profile = () => {
     );
   };
 
-  // Map sub-component for handling clicks and updates
   const MapEvents = () => {
     const map = useMap();
     useMapEvents({
@@ -191,11 +196,6 @@ const Profile = () => {
       setSearching(false);
     }
   };
-
-  // Search location by city name using OpenStreetMap Nominatim (works on HTTP)
-  const [citySearch, setCitySearch] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [searching, setSearching] = useState(false);
 
   const handleSearchLocation = async () => {
     const query = citySearch.trim() || form.address?.trim();
@@ -236,7 +236,7 @@ const Profile = () => {
     });
     setCitySearch(result.display_name.split(",").slice(0, 2).join(","));
     setSearchResults([]);
-    setMsg({ text: `Location set: ${cityName} (${parseFloat(result.lat).toFixed(4)}, ${parseFloat(result.lon).toFixed(4)})`, type: "success" });
+    setMsg({ text: `Location set: ${cityName}`, type: "success" });
     setTimeout(() => setMsg({ text: "", type: "" }), 4000);
   };
 
@@ -256,7 +256,6 @@ const Profile = () => {
       if (newImage) formData.append("profileImage", newImage);
       if (newBanner) formData.append("shopBanner", newBanner);
 
-      // Send location as JSON fields
       if (locationData.lat && locationData.lng) {
         formData.append("location[lat]", locationData.lat);
         formData.append("location[lng]", locationData.lng);
@@ -302,488 +301,522 @@ const Profile = () => {
   const bannerImg = bannerPreview || (user?.shopBanner ? `${user.shopBanner}` : null);
 
   const roleMeta = {
-    customer: { icon: <FaUser />, color: "text-slate-700", bg: "bg-slate-100 border-slate-200" },
-    seller: { icon: <FaStore />, color: "text-indigo-700", bg: "bg-indigo-50 border-indigo-200" },
-    delivery: { icon: <FaTruck />, color: "text-blue-700", bg: "bg-blue-50 border-blue-200" },
-    admin: { icon: <FaShieldAlt />, color: "text-purple-700", bg: "bg-purple-50 border-purple-200" },
-    architect: { icon: <FaUser />, color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
+    customer: { icon: <FaUser />, color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", label: "Customer" },
+    seller: { icon: <FaStore />, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", label: "Seller" },
+    delivery: { icon: <FaTruck />, color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20", label: "Delivery" },
+    admin: { icon: <FaShieldAlt />, color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/20", label: "Administrator" },
+    architect: { icon: <FaGlobe />, color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/20", label: "Architect" },
+    provider: { icon: <FaRegHandshake />, color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", label: "Service Provider" },
   };
 
   const rm = roleMeta[user?.role] || roleMeta.customer;
-  const inputClasses = "w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow text-sm shadow-sm";
-  const labelClasses = "block text-sm font-medium text-gray-700 mb-1";
+  
+  const inputClasses = "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-sm";
+  const labelClasses = "block text-xs font-semibold text-white/50 mb-2 uppercase tracking-wider";
 
   const tabs = [
     { id: "overview", label: "Overview", icon: <FaUser /> },
-    { id: "settings", label: "Settings", icon: <FaCog /> },
+    { id: "settings", label: "Edit Profile", icon: <FaCog /> },
     { id: "security", label: "Security", icon: <FaLock /> },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#0D0D0D] text-[#E2E8F0] flex flex-col font-sans selection:bg-blue-500/30">
       <Nev />
-      <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 mt-16">
+      
+      {/* Dynamic Background Glows */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-sky-500/5 rounded-full blur-[100px]"></div>
+      </div>
 
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage your account settings and preferences.</p>
-        </div>
+      <div className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-12 mt-16">
+        
+        {/* Profile Hero Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative mb-8 rounded-3xl overflow-hidden shadow-2xl border border-white/5 group"
+        >
+          {/* Banner Area */}
+          <div className="h-48 md:h-64 relative bg-[#1A1B1E]">
+            {bannerImg ? (
+              <img src={bannerImg} alt="Banner" className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105" />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-[#1A1B1E] via-[#0D0D0D] to-[#1A1B1E]"></div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] to-transparent"></div>
+          </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+          {/* User Info Overlap */}
+          <div className="px-6 md:px-12 pb-8 flex flex-col md:flex-row items-center md:items-end justify-between -mt-12 md:-mt-20 relative z-10 transition-all">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
+              <div className="relative group/avatar">
+                <div className="w-32 h-32 md:w-44 md:h-44 rounded-3xl border-4 border-[#0D0D0D] bg-[#1A1B1E] shadow-2xl overflow-hidden flex items-center justify-center relative ring-1 ring-white/10 group-hover/avatar:ring-blue-500/50 transition-all duration-300">
+                  {profileImg ? (
+                    <img src={profileImg} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <FaUser className="text-5xl text-white/10" />
+                  )}
+                </div>
+                {activeTab === "settings" && (
+                  <div className="absolute bottom-2 right-2 p-2 bg-blue-600 rounded-lg shadow-lg border border-white/20 transform scale-0 group-hover/avatar:scale-100 transition-transform cursor-pointer">
+                    <FaCamera size={14} className="text-white" />
+                  </div>
+                )}
+              </div>
+              
+              <div className="mb-2">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
+                  <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">{user?.name || "Global Resident"}</h1>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.1em] border ${rm.bg} ${rm.color}`}>
+                    {rm.icon} {rm.label}
+                  </span>
+                </div>
+                <p className="text-white/60 text-sm md:text-lg max-w-xl line-clamp-2 md:line-clamp-none font-medium">
+                  {user?.bio || "Minimalism is the ultimate sophistication."}
+                </p>
+              </div>
+            </div>
 
-          {/* Left Sidebar Menu */}
-          <div className="lg:w-64 shrink-0">
-            <nav className="flex flex-row lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0">
+            <div className="mt-8 md:mt-0 flex gap-3">
+              <button 
+                onClick={() => setActiveTab("settings")}
+                className="px-6 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-semibold transition-all flex items-center gap-2"
+              >
+                <FaEdit size={14} className="text-blue-400" />
+                Edit Account
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          
+          {/* Navigation Sidebar */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="w-full lg:w-72 shrink-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-4 p-8 relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl"></div>
+            <nav className="flex flex-row lg:flex-col gap-2 overflow-x-auto no-scrollbar lg:overflow-visible relative z-10">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => { setActiveTab(tab.id); setMsg({ text: "", type: "" }); }}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.id
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  className={`flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold whitespace-nowrap transition-all duration-300 relative group ${
+                    activeTab === tab.id
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                    : "text-white/40 hover:text-white hover:bg-white/5"
                     }`}
                 >
-                  <span className={activeTab === tab.id ? "text-indigo-600" : "text-gray-400"}>{tab.icon}</span>
+                  <span className={`transition-colors duration-300 ${activeTab === tab.id ? "text-white" : "text-white/20 group-hover:text-blue-400"}`}>
+                    {tab.icon}
+                  </span>
                   {tab.label}
+                  {activeTab === tab.id && (
+                    <motion.div layoutId="tab-active" className="absolute right-3 w-1.5 h-1.5 rounded-full bg-white"></motion.div>
+                  )}
                 </button>
               ))}
             </nav>
-          </div>
+          </motion.div>
 
-          {/* Main Content Area */}
-          <div className="flex-1 min-w-0">
-
-            {/* Contextual Messaging */}
+          {/* Main Content Pane */}
+          <div className="flex-1 min-w-0 w-full">
+            
+            {/* Global Notifications */}
             <AnimatePresence>
               {msg.text && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
-                  className={`mb-6 p-4 rounded-lg flex items-start gap-3 border ${msg.type === "error" ? "bg-red-50 border-red-200 text-red-800" : "bg-green-50 border-green-200 text-green-800"
-                    }`}>
-                  <div className="text-sm font-medium">{msg.text}</div>
+                <motion.div 
+                  initial={{ opacity: 0, y: -20, scale: 0.95 }} 
+                  animate={{ opacity: 1, y: 0, scale: 1 }} 
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className={`mb-8 p-4 rounded-2xl flex items-center gap-4 border backdrop-blur-md shadow-xl ${
+                    msg.type === "error" 
+                    ? "bg-red-500/10 border-red-500/30 text-red-200" 
+                    : "bg-emerald-500/10 border-emerald-500/30 text-emerald-200"
+                    }`}
+                >
+                  <div className={`p-2 rounded-lg ${msg.type === "error" ? "bg-red-500/20" : "bg-emerald-500/20"}`}>
+                    {msg.type === "error" ? <FaTimes /> : <FaShieldAlt />}
+                  </div>
+                  <div className="text-sm font-bold tracking-wide uppercase">{msg.text}</div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <motion.div 
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl p-8 md:p-12 relative"
+            >
+              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] -z-10"></div>
 
               {/* OVERVIEW TAB */}
               {activeTab === "overview" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col">
-                  {/* Banner */}
-                  <div className="h-48 w-full bg-slate-800 relative">
-                    {bannerImg && <img src={bannerImg} alt="Banner" className="w-full h-full object-cover opacity-80" />}
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent"></div>
+                <div className="space-y-12">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
+                      <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
+                      Identity & Contact
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="bg-white/5 border border-white/10 px-6 py-5 rounded-3xl hover:border-blue-500/30 transition-all">
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">Digital Address</p>
+                        <p className="text-lg font-bold truncate">{user?.email}</p>
+                        <FaEnvelope className="text-blue-500/30 ml-auto -mt-4" />
+                      </div>
+                      <div className="bg-white/5 border border-white/10 px-6 py-5 rounded-3xl hover:border-blue-500/30 transition-all">
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">Telecom Connect</p>
+                        <p className="text-lg font-bold">{user?.phone || "Not Linked"}</p>
+                        <FaPhone className="text-emerald-500/30 ml-auto -mt-4" />
+                      </div>
+                      <div className="bg-white/5 border border-white/10 px-6 py-5 rounded-3xl hover:border-blue-500/30 transition-all">
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">Loyalty Since</p>
+                        <p className="text-lg font-bold">
+                          {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" }) : "N/A"}
+                        </p>
+                        <FaCalendarAlt className="text-purple-500/30 ml-auto -mt-4" />
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Avatar & Basic Info */}
-                  <div className="px-8 pb-8 relative">
-                    <div className="flex justify-between items-end -mt-16 mb-6">
-                      <div className="relative">
-                        <div className="w-32 h-32 rounded-full border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center relative z-10">
-                          {profileImg ? (
-                            <img src={profileImg} alt="Profile" className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                              <FaUser className="text-5xl text-slate-300" />
-                            </div>
-                          )}
+                  {user?.location?.lat && (
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
+                        <span className="w-2 h-8 bg-emerald-500 rounded-full"></span>
+                        Geographic Anchor
+                      </h3>
+                      <div className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden">
+                        <div className="p-8 pb-4">
+                          <p className="text-2xl font-black">{user.location.city || "Coordinates Set"}</p>
+                          <p className="text-white/40 text-sm mt-1">{user.location.lat}, {user.location.lng}</p>
+                        </div>
+                        <div className="h-48 w-full bg-[#1A1B1E] relative grayscale hover:grayscale-0 transition-all duration-500">
+                           <MapContainer
+                              center={[user.location.lat, user.location.lng]}
+                              zoom={10}
+                              style={{ height: "100%", width: "100%" }}
+                              scrollWheelZoom={false}
+                              dragging={false}
+                              zoomControl={false}
+                            >
+                              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                              <Marker position={[user.location.lat, user.location.lng]} />
+                            </MapContainer>
                         </div>
                       </div>
-                      <div className="mb-2 relative z-10">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold uppercase tracking-wider border ${rm.bg} ${rm.color}`}>
-                          {rm.icon} {user?.role}
-                        </span>
-                      </div>
                     </div>
+                  )}
 
-                    <div className="mb-8">
-                      <h2 className="text-2xl font-bold text-gray-900">{user?.name || "Anonymous User"}</h2>
-                      <p className="text-gray-500 mt-1">{user?.bio || "No professional bio provided."}</p>
-                    </div>
-
-                    {/* Info Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider border-b border-gray-100 pb-2">Contact Details</h3>
-                        <div className="flex items-start gap-3 text-sm">
-                          <FaEnvelope className="text-gray-400 mt-1" />
-                          <div><p className="text-gray-500">Email Address</p><p className="font-medium text-gray-900">{user?.email}</p></div>
+                  {/* Professional Context Card */}
+                  {user?.role !== "customer" && (
+                    <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/10 border border-white/10 rounded-[2.5rem] p-8 md:p-12">
+                      <div className="flex flex-col md:flex-row gap-8 items-start">
+                        <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-3xl">
+                          {rm.icon}
                         </div>
-                        <div className="flex items-start gap-3 text-sm">
-                          <FaPhone className="text-gray-400 mt-1" />
-                          <div><p className="text-gray-500">Phone Number</p><p className="font-medium text-gray-900">{user?.phone || "Not provided"}</p></div>
-                        </div>
-                        <div className="flex items-start gap-3 text-sm">
-                          <FaMapMarkerAlt className="text-gray-400 mt-1" />
-                          <div><p className="text-gray-500">Address</p><p className="font-medium text-gray-900">{user?.address ? `${user.address}, ${user.pincode}` : "Not provided"}</p></div>
-                        </div>
-                        <div className="flex items-start gap-3 text-sm">
-                          <FaMapMarkerAlt className="text-gray-400 mt-1" />
-                          <div>
-                            <p className="text-gray-500">GPS Location</p>
-                            <p className="font-medium text-gray-900">
-                              {user?.location?.city ? `${user.location.city}` : ""}
-                              {user?.location?.lat ? ` (${Number(user.location.lat).toFixed(4)}, ${Number(user.location.lng).toFixed(4)})` : " Not set"}
-                            </p>
+                        <div className="flex-1">
+                          <h4 className="text-2xl font-black text-white mb-4">Professional Ecosystem</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                            {user?.role === "seller" && (
+                              <>
+                                <div><p className={labelClasses}>Business Authority</p><p className="text-lg font-bold">{user.businessName}</p></div>
+                                <div><p className={labelClasses}>Regulatory ID</p><p className="text-lg font-bold uppercase">{user.gstNumber || "Unverified"}</p></div>
+                                <div className="md:col-span-2"><p className={labelClasses}>Global Narrative</p><p className="text-white/70 italic">{user.storeDescription || "No description provided."}</p></div>
+                              </>
+                            )}
+                            {user?.role === "architect" && (
+                              <>
+                                <div><p className={labelClasses}>Professional License</p><p className="text-lg font-bold">{user.coaRegistration}</p></div>
+                                <div><p className={labelClasses}>Specialized Arsenal</p><div className="flex flex-wrap gap-2">{user.skills.map(s => <span key={s} className="px-3 py-1 bg-white/10 rounded-lg text-xs font-bold border border-white/10">{s}</span>)}</div></div>
+                              </>
+                            )}
+                            {user?.role === "provider" && (
+                              <>
+                                <div><p className={labelClasses}>Core Domain</p><p className="text-lg font-bold">{user.serviceCategory}</p></div>
+                                <div><p className={labelClasses}>Specialization</p><p className="text-lg font-bold">{user.serviceSubCategory}</p></div>
+                                <div><p className={labelClasses}>Market Tenure</p><p className="text-lg font-bold">{user.experience} Global Cycles</p></div>
+                              </>
+                            )}
                           </div>
                         </div>
-                        <div className="flex items-start gap-3 text-sm">
-                          <FaCalendarAlt className="text-gray-400 mt-1" />
-                          <div><p className="text-gray-500">Member Since</p><p className="font-medium text-gray-900">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" }) : "N/A"}</p></div>
-                        </div>
-                      </div>
-
-                      {/* Role Specific Details Overview */}
-                      <div className="space-y-4">
-                        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider border-b border-gray-100 pb-2">Professional Details</h3>
-                        {user?.role === "seller" && (
-                          <>
-                            <div className="flex justify-between text-sm"><span className="text-gray-500">Business</span><span className="font-medium text-gray-900">{user?.businessName || "-"}</span></div>
-                            <div className="flex justify-between text-sm"><span className="text-gray-500">Category</span><span className="font-medium text-gray-900">{user?.businessCategory || "-"}</span></div>
-                            <div className="flex justify-between text-sm"><span className="text-gray-500">GSTIN</span><span className="font-medium text-gray-900">{user?.gstNumber || "-"}</span></div>
-                          </>
-                        )}
-                        {user?.role === "architect" && (
-                          <>
-                            <div className="flex flex-col text-sm"><span className="text-gray-500 mb-1">Core Skills</span><div className="flex flex-wrap gap-2">{user?.skills?.length ? user.skills.map((s, i) => <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs border border-gray-200">{s}</span>) : "-"}</div></div>
-                            <div className="flex justify-between text-sm mt-3"><span className="text-gray-500">Contact Info</span><span className="font-medium text-gray-900">{user?.contactInfo || "-"}</span></div>
-                          </>
-                        )}
-                        {user?.role === "delivery" && (
-                          <>
-                            <div className="flex justify-between text-sm"><span className="text-gray-500">Vehicle Type</span><span className="font-medium text-gray-900">{user?.vehicleType || "-"}</span></div>
-                            <div className="flex justify-between text-sm"><span className="text-gray-500">License No</span><span className="font-medium text-gray-900">{user?.licenseNumber || "-"}</span></div>
-                            <div className="flex justify-between text-sm"><span className="text-gray-500">Service Area</span><span className="font-medium text-gray-900">{user?.deliveryAreaPincode || "-"}</span></div>
-                          </>
-                        )}
-                        {user?.role === "provider" && (
-                          <>
-                            <div className="flex justify-between text-sm"><span className="text-gray-500">Service Category</span><span className="font-medium text-gray-900">{user?.serviceCategory || "-"}</span></div>
-                            <div className="flex justify-between text-sm"><span className="text-gray-500">Specialty</span><span className="font-medium text-gray-900">{user?.serviceSubCategory || "-"}</span></div>
-                            <div className="flex justify-between text-sm"><span className="text-gray-500">Experience</span><span className="font-medium text-gray-900">{user?.experience || "-"} Yrs</span></div>
-                          </>
-                        )}
-                        {user?.role === "customer" && (
-                          <div className="text-sm text-gray-500 italic">No additional professional parameters.</div>
-                        )}
                       </div>
                     </div>
-                  </div>
-                </motion.div>
+                  )}
+                </div>
               )}
 
               {/* SETTINGS TAB */}
               {activeTab === "settings" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 border-t border-transparent">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-4">Profile Settings</h2>
+                <form onSubmit={handleSave} className="space-y-12">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-3xl font-black text-white">Refine Identity</h2>
+                    <FaCog className="text-blue-500 text-2xl opacity-20" />
+                  </div>
 
-                  <form onSubmit={handleSave} className="space-y-8">
-                    {/* Media Uploads */}
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-4">Media & Identification</h3>
-                      <div className="flex flex-col sm:flex-row gap-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 rounded-full bg-gray-100 border border-gray-200 overflow-hidden">
-                            {profileImg ? <img src={profileImg} alt="Avatar" className="w-full h-full object-cover" /> : <FaUser className="w-full h-full p-4 text-gray-300" />}
-                          </div>
-                          <div>
-                            <label className="cursor-pointer bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1.5 rounded-md text-sm font-medium shadow-sm transition inline-block">
-                              Change Avatar
-                              <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, "profile")} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    {/* Media Assets */}
+                    <div className="space-y-6 md:col-span-2 bg-white/5 border border-white/10 p-8 rounded-[2.5rem]">
+                      <h4 className="text-sm font-black text-blue-400 uppercase tracking-[0.2em] mb-4">Visual Branding</h4>
+                      <div className="flex flex-wrap gap-8">
+                        <div>
+                          <p className={labelClasses}>Portrait Upload</p>
+                          <div className="group relative w-24 h-24">
+                            <div className="w-full h-full rounded-2xl bg-[#0D0D0D] border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden">
+                              {profileImg ? <img src={profileImg} className="w-full h-full object-cover" /> : <FaUser className="text-white/10" />}
+                            </div>
+                            <label className="absolute inset-0 cursor-pointer flex items-center justify-center bg-blue-600/60 opacity-0 group-hover:opacity-100 transition-all rounded-2xl">
+                              <FaCamera className="text-white" />
+                              <input type="file" className="hidden" onChange={(e) => handleImageChange(e, "profile")} />
                             </label>
-                            <p className="text-xs text-gray-500 mt-1">JPG, GIF or PNG. 1MB max.</p>
                           </div>
                         </div>
-
                         {user?.role === "seller" && (
-                          <div className="flex items-center gap-4">
-                            <div className="w-24 h-16 rounded bg-gray-100 border border-gray-200 overflow-hidden">
-                              {bannerImg ? <img src={bannerImg} alt="Banner" className="w-full h-full object-cover" /> : <FaCamera className="w-full h-full p-4 text-gray-300" />}
-                            </div>
-                            <div>
-                              <label className="cursor-pointer bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1.5 rounded-md text-sm font-medium shadow-sm transition inline-block">
-                                Set Banner
-                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, "banner")} />
-                              </label>
-                            </div>
+                          <div className="flex-1">
+                            <p className={labelClasses}>Commercial Banner</p>
+                            <label className="block w-full h-24 rounded-2xl bg-[#0D0D0D] border-2 border-dashed border-white/20 hover:border-blue-500/50 transition-all cursor-pointer relative overflow-hidden group">
+                              {bannerImg ? <img src={bannerImg} className="w-full h-full object-cover opacity-30" /> : null}
+                              <div className="absolute inset-0 flex items-center justify-center gap-3">
+                                <FaCamera className="text-white/20 group-hover:text-blue-400" />
+                                <span className="text-white/20 font-black uppercase text-[10px] tracking-widest">Update Banner</span>
+                              </div>
+                              <input type="file" className="hidden" onChange={(e) => handleImageChange(e, "banner")} />
+                            </label>
                           </div>
                         )}
                       </div>
                     </div>
 
                     {/* Standard Inputs */}
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-4">Personal & Compliance Information</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div><label className={labelClasses}>Full Name</label><input name="name" value={form.name} onChange={handleChange} className={inputClasses} /></div>
-                        <div><label className={labelClasses}>Phone Number</label><input name="phone" value={form.phone} onChange={handleChange} className={inputClasses} /></div>
-                        <div className="md:col-span-2"><label className={labelClasses}>Professional Bio</label><textarea name="bio" value={form.bio} onChange={handleChange} rows={3} className={inputClasses} placeholder="Brief description at the top of your profile." /></div>
-                        <div><label className={labelClasses}>Address (Street, City)</label><input name="address" value={form.address} onChange={handleChange} className={inputClasses} /></div>
-                        <div><label className={labelClasses}>Pincode / Zip</label><input name="pincode" value={form.pincode} onChange={handleChange} className={inputClasses} /></div>
-                        <div className="md:col-span-2"><label className={labelClasses}>Aadhaar Number (Compliance)</label><input name="aadhaarNumber" value={form.aadhaarNumber} onChange={handleChange} className={inputClasses} placeholder="12-digit Aadhaar UID" /></div>
+                    <div className="md:col-span-2 space-y-8">
+                       <h4 className="text-sm font-black text-emerald-400 uppercase tracking-[0.2em]">Personal Manifest</h4>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label className={labelClasses}>Full Legal Name</label><input name="name" value={form.name} onChange={handleChange} className={inputClasses} placeholder="John Doe" /></div>
+                        <div><label className={labelClasses}>Digital Tether (Phone)</label><input name="phone" value={form.phone} onChange={handleChange} className={inputClasses} placeholder="+91 XXXX XXX XXX" /></div>
+                        <div className="md:col-span-2"><label className={labelClasses}>Identity Narrative (Bio)</label><textarea name="bio" value={form.bio} onChange={handleChange} rows={3} className={inputClasses + " resize-none"} placeholder="Write your professional story..." /></div>
+                        <div><label className={labelClasses}>Street Infrastructure</label><input name="address" value={form.address} onChange={handleChange} className={inputClasses} /></div>
+                        <div><label className={labelClasses}>Locality Index (Pincode)</label><input name="pincode" value={form.pincode} onChange={handleChange} className={inputClasses} /></div>
+                       </div>
+                    </div>
 
-                        {/* Location Section */}
-                        <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-xl p-5">
-                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                            <div>
-                              <h4 className="text-sm font-semibold text-blue-900 flex items-center gap-2"><FaMapMarkerAlt /> Precise Live Location</h4>
-                              <p className="text-xs text-blue-600 mt-0.5">Use GPS or click on the map to set your location</p>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={handleUseGPS}
-                              disabled={searching}
-                              className="px-4 py-2 bg-white border border-blue-200 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm"
-                            >
-                              <FaMapMarkerAlt className="text-blue-500" />
-                              Use My GPS Location
-                            </button>
+                    {/* Location Intelligence Section */}
+                    <div className="md:col-span-2 bg-white/5 border border-white/10 rounded-[2.5rem] p-8 md:p-12 overflow-hidden relative">
+                        <div className="absolute top-0 right-0 p-8">
+                          <FaMapMarkerAlt className="text-blue-500/10 text-8xl" />
+                        </div>
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 relative z-10">
+                          <div>
+                            <h4 className="text-sm font-black text-blue-400 uppercase tracking-[0.2em] mb-1">Universal Positioning</h4>
+                            <p className="text-white/40 text-xs">Sync your physical location with our global spatial grid.</p>
                           </div>
+                          <button
+                            type="button"
+                            onClick={handleUseGPS}
+                            disabled={searching}
+                            className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 disabled:opacity-50 flex items-center gap-2"
+                          >
+                            <FaMapMarkerAlt /> 
+                            {searching ? "Detecting..." : "Sync GPS Core"}
+                          </button>
+                        </div>
 
-                          {/* Map Widget */}
-                          <div className="w-full h-64 rounded-xl border-2 border-white shadow-md overflow-hidden mb-6 relative z-0">
-                            <MapContainer
-                              center={[locationData.lat || 20.5937, locationData.lng || 78.9629]}
-                              zoom={locationData.lat ? 13 : 5}
-                              style={{ height: "100%", width: "100%" }}
-                            >
-                              <TileLayer
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                              />
-                              <MapEvents />
-                              {locationData.lat && locationData.lng && (
-                                <Marker
-                                  position={[locationData.lat, locationData.lng]}
-                                  draggable={true}
-                                  eventHandlers={{
-                                    dragend: (e) => {
-                                      const marker = e.target;
-                                      const { lat, lng } = marker.getLatLng();
-                                      handleReverseGeocode(lat, lng);
-                                    },
-                                  }}
-                                />
-                              )}
-                            </MapContainer>
-                          </div>
+                        {/* Integrated Map */}
+                        <div className="w-full h-80 rounded-3xl border border-white/10 overflow-hidden mb-10 shadow-inner relative z-0">
+                           <MapContainer
+                                center={[locationData.lat || 20.5937, locationData.lng || 78.9629]}
+                                zoom={locationData.lat ? 13 : 5}
+                                style={{ height: "100%", width: "100%", filter: "invert(90%) hue-rotate(180deg) brightness(1.2)" }}
+                              >
+                                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                <MapEvents />
+                                {locationData.lat && locationData.lng && (
+                                  <Marker
+                                    position={[locationData.lat, locationData.lng]}
+                                    draggable={true}
+                                    eventHandlers={{
+                                      dragend: (e) => {
+                                        const marker = e.target;
+                                        const { lat, lng } = marker.getLatLng();
+                                        handleReverseGeocode(lat, lng);
+                                      },
+                                    }}
+                                  />
+                                )}
+                              </MapContainer>
+                        </div>
 
-                          {/* City Search */}
-                          <div className="relative mb-4">
-                            <div className="flex gap-2">
+                        {/* Search & Results */}
+                        <div className="relative mb-8 z-20">
+                          <div className="flex gap-4">
+                            <div className="relative flex-1">
+                              <FaGlobe className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
                               <input
                                 type="text"
                                 value={citySearch}
                                 onChange={(e) => setCitySearch(e.target.value)}
                                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleSearchLocation(); } }}
-                                className={inputClasses + " flex-1"}
-                                placeholder="Or search your city manually..."
+                                className={inputClasses + " pl-12"}
+                                placeholder="Search city or specific grid location..."
                               />
-                              <button
-                                type="button"
-                                onClick={handleSearchLocation}
-                                disabled={searching}
-                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition disabled:opacity-60 whitespace-nowrap"
-                              >
-                                {searching ? <><FaSpinner className="animate-spin" /> Searching...</> : <><FaMapMarkerAlt /> Search</>}
-                              </button>
                             </div>
+                            <button
+                              type="button"
+                              onClick={handleSearchLocation}
+                              disabled={searching}
+                              className="px-8 py-3 bg-white/10 hover:bg-white/15 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/5"
+                            >
+                               {searching ? <FaSpinner className="animate-spin" /> : "Search Grid"}
+                            </button>
+                          </div>
 
-                            {/* Search Results Dropdown */}
+                          <AnimatePresence>
                             {searchResults.length > 0 && (
-                              <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+                              <motion.div 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="absolute z-60 w-full mt-4 bg-[#1A1B1E] border border-white/10 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-3xl"
+                              >
                                 {searchResults.map((result, idx) => (
                                   <button
                                     key={idx}
                                     type="button"
                                     onClick={() => handleSelectLocation(result)}
-                                    className="w-full text-left px-4 py-3 hover:bg-blue-50 transition border-b border-gray-100 last:border-b-0 flex items-start gap-3"
+                                    className="w-full text-left px-6 py-4 hover:bg-white/5 transition border-b border-white/5 last:border-b-0 group"
                                   >
-                                    <FaMapMarkerAlt className="text-blue-500 mt-1 shrink-0" />
-                                    <div>
-                                      <p className="text-sm font-medium text-gray-800">{result.display_name.split(",").slice(0, 3).join(",")}</p>
-                                      <p className="text-[11px] text-gray-400 mt-0.5">{result.display_name}</p>
+                                    <div className="flex items-center gap-4">
+                                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-blue-600/20 transition-all">
+                                        <FaMapMarkerAlt className="text-white/20 group-hover:text-blue-400" />
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-bold text-white">{result.display_name.split(",").slice(0, 3).join(",")}</p>
+                                        <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-1">Full Coordinate Path</p>
+                                      </div>
                                     </div>
                                   </button>
                                 ))}
-                              </div>
+                              </motion.div>
                             )}
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                              <label className={labelClasses}>City</label>
-                              <input value={locationData.city} onChange={(e) => setLocationData({ ...locationData, city: e.target.value })} className={inputClasses} placeholder="City name" />
-                            </div>
-                            <div>
-                              <label className={labelClasses}>Latitude</label>
-                              <input type="number" step="any" value={locationData.lat} onChange={(e) => setLocationData({ ...locationData, lat: e.target.value })} className={inputClasses} placeholder="Coordinates" readOnly />
-                            </div>
-                            <div>
-                              <label className={labelClasses}>Longitude</label>
-                              <input type="number" step="any" value={locationData.lng} onChange={(e) => setLocationData({ ...locationData, lng: e.target.value })} className={inputClasses} placeholder="Coordinates" readOnly />
-                            </div>
-                          </div>
-                          {locationData.lat && locationData.lng && (
-                            <p className="text-xs text-green-700 mt-3 flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-                              ✅ Current Selection: <strong>{locationData.city || "Point on Map"}</strong> ({Number(locationData.lat).toFixed(4)}, {Number(locationData.lng).toFixed(4)})
-                            </p>
-                          )}
+                          </AnimatePresence>
                         </div>
-                      </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-[#0D0D0D] p-5 rounded-2xl border border-white/5">
+                              <label className={labelClasses}>Locality Segment</label>
+                              <input value={locationData.city} onChange={(e) => setLocationData({ ...locationData, city: e.target.value })} className="w-full bg-transparent border-none p-0 text-white font-bold focus:ring-0" placeholder="City" />
+                            </div>
+                            <div className="bg-[#0D0D0D] p-5 rounded-2xl border border-white/5">
+                              <label className={labelClasses}>Lat Grid</label>
+                              <input value={locationData.lat} className="w-full bg-transparent border-none p-0 text-white/50 font-bold focus:ring-0 cursor-default" readOnly />
+                            </div>
+                            <div className="bg-[#0D0D0D] p-5 rounded-2xl border border-white/5">
+                              <label className={labelClasses}>Long Grid</label>
+                              <input value={locationData.lng} className="w-full bg-transparent border-none p-0 text-white/50 font-bold focus:ring-0 cursor-default" readOnly />
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Role Specific Inputs */}
-                    {user?.role === "seller" && (
-                      <div className="pt-6 border-t border-gray-100">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-4">Business & Legal Details</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div><label className={labelClasses}>Business Name</label><input name="businessName" value={form.businessName} onChange={handleChange} className={inputClasses} /></div>
-                          <div>
-                            <label className={labelClasses}>Business Type</label>
-                            <select name="businessType" value={form.businessType} onChange={handleChange} className={inputClasses}>
-                              <option value="">Select Type</option>
-                              <option value="Individual">Individual</option>
-                              <option value="Partnership">Partnership</option>
-                              <option value="Company">Company</option>
-                            </select>
-                          </div>
-                          <div><label className={labelClasses}>Business Category</label><input name="businessCategory" value={form.businessCategory} onChange={handleChange} className={inputClasses} /></div>
-                          <div><label className={labelClasses}>GST Number</label><input name="gstNumber" value={form.gstNumber} onChange={handleChange} className={inputClasses} /></div>
-                          <div><label className={labelClasses}>PAN Number</label><input name="panNumber" value={form.panNumber} onChange={handleChange} className={inputClasses} /></div>
-                          <div><label className={labelClasses}>Support Phone</label><input name="supportPhone" value={form.supportPhone} onChange={handleChange} className={inputClasses} /></div>
-                          <div><label className={labelClasses}>Support Email</label><input name="supportEmail" value={form.supportEmail} onChange={handleChange} className={inputClasses} /></div>
-                          <div className="md:col-span-2"><label className={labelClasses}>Shop Description</label><textarea name="storeDescription" value={form.storeDescription} onChange={handleChange} rows={2} className={inputClasses} placeholder="Tell customers about your shop..." /></div>
-                          
-                          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label className={labelClasses}>Facebook URL</label><input value={form.socialLinks?.facebook} onChange={(e) => setForm({...form, socialLinks: {...form.socialLinks, facebook: e.target.value}})} className={inputClasses} /></div>
-                            <div><label className={labelClasses}>Instagram URL</label><input value={form.socialLinks?.instagram} onChange={(e) => setForm({...form, socialLinks: {...form.socialLinks, instagram: e.target.value}})} className={inputClasses} /></div>
-                            <div><label className={labelClasses}>Twitter URL</label><input value={form.socialLinks?.twitter} onChange={(e) => setForm({...form, socialLinks: {...form.socialLinks, twitter: e.target.value}})} className={inputClasses} /></div>
-                            <div><label className={labelClasses}>LinkedIn URL</label><input value={form.socialLinks?.linkedin} onChange={(e) => setForm({...form, socialLinks: {...form.socialLinks, linkedin: e.target.value}})} className={inputClasses} /></div>
-                          </div>
-
-                          <div><label className={labelClasses}>Company Reg. No.</label><input name="companyRegistrationNumber" value={form.companyRegistrationNumber} onChange={handleChange} className={inputClasses} /></div>
-                          <div><label className={labelClasses}>Trade / FSSAI License</label><input name="tradeLicenseNumber" value={form.tradeLicenseNumber} onChange={handleChange} className={inputClasses} /></div>
-                          <div className="md:col-span-2"><label className={labelClasses}>Business Address</label><input name="businessAddress" value={form.businessAddress} onChange={handleChange} className={inputClasses} /></div>
-                        </div>
-                      </div>
-                    )}
-
-                    {user?.role === "architect" && (
-                      <div className="pt-6 border-t border-gray-100">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-4">Architectural Portfolio & Legal</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="md:col-span-2"><label className={labelClasses}>CoA Registration</label><input name="coaRegistration" value={form.coaRegistration} onChange={handleChange} className={inputClasses} placeholder="CA/YYYY/XXXXX Format" /></div>
-                          <div className="md:col-span-2"><label className={labelClasses}>Skills & Software (Comma separated)</label><input name="skills" value={form.skills} onChange={handleChange} className={inputClasses} placeholder="e.g. AutoCAD, Revit, 3ds Max, Urban Planning" /></div>
-                          <div className="md:col-span-2"><label className={labelClasses}>Secondary Contact Info</label><input name="contactInfo" value={form.contactInfo} onChange={handleChange} className={inputClasses} placeholder="Alternate email or phone" /></div>
-                        </div>
-                      </div>
-                    )}
-
-                    {user?.role === "delivery" && (
-                      <div className="pt-6 border-t border-gray-100">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-4">Delivery & Fleet Compliance</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div><label className={labelClasses}>Vehicle Type</label><input name="vehicleType" value={form.vehicleType} onChange={handleChange} className={inputClasses} placeholder="e.g. Mini Truck, Van" /></div>
-                          <div><label className={labelClasses}>License Number</label><input name="licenseNumber" value={form.licenseNumber} onChange={handleChange} className={inputClasses} /></div>
-                          <div><label className={labelClasses}>RC Book Number</label><input name="rcBookNumber" value={form.rcBookNumber} onChange={handleChange} className={inputClasses} /></div>
-                          <div><label className={labelClasses}>Service Area Pincode</label><input name="deliveryAreaPincode" value={form.deliveryAreaPincode} onChange={handleChange} className={inputClasses} /></div>
-                        </div>
-                      </div>
-                    )}
-
-                    {user?.role === "provider" && (
-                      <div className="pt-6 border-t border-gray-100">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-4">Service Provider Details</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                           <div>
-                              <label className={labelClasses}>Primary Category</label>
-                              <select 
-                                name="serviceCategoryId" 
-                                value={form.serviceCategoryId} 
-                                onChange={(e) => {
-                                  const cat = serviceCategories.find(c => c._id === e.target.value);
-                                  setForm({ ...form, serviceCategoryId: e.target.value, serviceCategory: cat?.name || "", serviceSubCategoryId: "", serviceSubCategory: "" });
-                                }} 
-                                className={inputClasses}
-                              >
-                                <option value="">Select Category</option>
-                                {serviceCategories.map(c => (
-                                  <option key={c._id} value={c._id}>{c.name}</option>
-                                ))}
-                              </select>
-                           </div>
-                           <div>
-                              <label className={labelClasses}>Sub-Specialty</label>
-                              <select 
-                                name="serviceSubCategoryId" 
-                                value={form.serviceSubCategoryId} 
-                                onChange={(e) => {
-                                  const cat = serviceCategories.find(c => c._id === form.serviceCategoryId);
-                                  const sub = cat?.subcategories.find(s => s._id === e.target.value);
-                                  setForm({ ...form, serviceSubCategoryId: e.target.value, serviceSubCategory: sub?.name || "" });
-                                }} 
-                                className={inputClasses}
-                                disabled={!form.serviceCategoryId}
-                              >
-                                <option value="">Select Specialty</option>
-                                {serviceCategories.find(c => c._id === form.serviceCategoryId)?.subcategories.map(s => (
-                                  <option key={s._id} value={s._id}>{s.name}</option>
-                                ))}
-                              </select>
-                           </div>
-                           <div><label className={labelClasses}>Years of Experience</label><input name="experience" type="number" value={form.experience} onChange={handleChange} className={inputClasses} placeholder="e.g. 5" /></div>
-                           <div className="md:col-span-2"><label className={labelClasses}>Service Description</label><textarea name="serviceDescription" value={form.serviceDescription} onChange={handleChange} rows={3} className={inputClasses} placeholder="Describe the specific services you offer..." /></div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Submit Actions */}
-                    <div className="pt-6 border-t border-gray-100 flex justify-end gap-3 z-10">
-                      <button type="button" onClick={() => setActiveTab("overview")} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 text-sm font-medium transition cursor-pointer">Cancel</button>
-                      <button type="submit" disabled={saving} className="px-5 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 shadow-sm transition disabled:opacity-70 flex items-center gap-2 cursor-pointer">
-                        {saving ? "Saving..." : <><FaSave /> Save Changes</>}
+                    {/* Final Action Hub */}
+                    <div className="md:col-span-2 pt-12 flex flex-col md:flex-row justify-end items-center gap-6">
+                      <button 
+                        type="button" 
+                        onClick={() => setActiveTab("overview")} 
+                        className="text-white/40 hover:text-white font-black uppercase text-xs tracking-widest transition-all"
+                      >
+                        Abort Changes
+                      </button>
+                      <button 
+                        type="submit" 
+                        disabled={saving} 
+                        className="w-full md:w-auto px-12 py-5 rounded-3xl bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/30 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                      >
+                        {saving ? <FaSpinner className="animate-spin" /> : <FaSave />}
+                        {saving ? "Transmitting..." : "Apply Identity Shift"}
                       </button>
                     </div>
-                  </form>
-                </motion.div>
+                  </div>
+                </form>
               )}
 
               {/* SECURITY TAB */}
               {activeTab === "security" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 border-t border-transparent">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-4">Security Settings</h2>
+                <div className="max-w-xl mx-auto py-12">
+                   <div className="text-center mb-16">
+                     <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-[2rem] flex items-center justify-center text-4xl mx-auto mb-6">
+                       <FaLock className="text-blue-500" />
+                     </div>
+                     <h2 className="text-3xl font-black text-white mb-4">Encryption Logic</h2>
+                     <p className="text-white/40 font-medium">Update your cryptographic access tokens regularly.</p>
+                   </div>
 
-                  <form onSubmit={handlePasswordChange} className="space-y-6 max-w-xl">
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Change Password</h3>
-                      <p className="text-sm text-gray-500 mb-6">Ensure your account is using a long, random password to stay secure.</p>
-                      <div className="space-y-4">
-                        <div>
-                          <label className={labelClasses}>Current Password</label>
-                          <input type="password" required className={inputClasses} value={pwForm.currentPassword} onChange={(e) => setPwForm({ ...pwForm, currentPassword: e.target.value })} />
-                        </div>
-                        <div>
-                          <label className={labelClasses}>New Password</label>
-                          <input type="password" required className={inputClasses} value={pwForm.newPassword} onChange={(e) => setPwForm({ ...pwForm, newPassword: e.target.value })} />
-                        </div>
+                   <form onSubmit={handlePasswordChange} className="space-y-8">
+                      <div>
+                        <label className={labelClasses}>Current Access Key</label>
+                        <input type="password" required className={inputClasses} value={pwForm.currentPassword} onChange={(e) => setPwForm({ ...pwForm, currentPassword: e.target.value })} placeholder="••••••••" />
                       </div>
-                    </div>
+                      <div>
+                        <label className={labelClasses}>New Access Key</label>
+                        <input type="password" required className={inputClasses} value={pwForm.newPassword} onChange={(e) => setPwForm({ ...pwForm, newPassword: e.target.value })} placeholder="••••••••" />
+                      </div>
 
-                    <div className="pt-4 flex justify-end gap-3">
-                      <button type="submit" disabled={saving} className="px-5 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 shadow-sm transition disabled:opacity-70 flex items-center gap-2 cursor-pointer">
-                        {saving ? "Updating..." : "Update Password"}
-                      </button>
-                    </div>
-                  </form>
-                </motion.div>
+                      <div className="pt-8">
+                        <button 
+                          type="submit" 
+                          disabled={saving} 
+                          className="w-full py-5 rounded-3xl bg-white text-[#0D0D0D] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:shadow-2xl transition-all active:scale-95 disabled:opacity-50"
+                        >
+                          {saving ? "Re-Encrypting..." : "Finalize Key Update"}
+                        </button>
+                      </div>
+                   </form>
+
+                   <div className="mt-20 p-8 border border-white/5 bg-white/[0.02] rounded-[2rem]">
+                      <h4 className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <FaShieldAlt /> Protocol Security
+                      </h4>
+                      <p className="text-xs text-white/30 leading-relaxed font-medium">
+                        Stinchar utilizes end-to-end encryption for all session tokens. 
+                        Changing your password will terminate all active background sessions for your security.
+                      </p>
+                   </div>
+                </div>
               )}
-
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
+
+      {/* Futuristic Social Links Footer Section (Only in Overview) */}
+      {activeTab === "overview" && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="max-w-7xl mx-auto w-full px-4 md:px-8 mb-20"
+        >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+             <a href={user?.socialLinks?.facebook} target="_blank" className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-center text-2xl hover:bg-blue-600/10 hover:text-blue-500 hover:border-blue-500/30 transition-all grayscale opacity-50 hover:grayscale-0 hover:opacity-100"><FaFacebook /></a>
+             <a href={user?.socialLinks?.instagram} target="_blank" className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-center text-2xl hover:bg-pink-600/10 hover:text-pink-500 hover:border-pink-500/30 transition-all grayscale opacity-50 hover:grayscale-0 hover:opacity-100"><FaInstagram /></a>
+             <a href={user?.socialLinks?.twitter} target="_blank" className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-center text-2xl hover:bg-sky-600/10 hover:text-sky-500 hover:border-sky-500/30 transition-all grayscale opacity-50 hover:grayscale-0 hover:opacity-100"><FaTwitter /></a>
+             <a href={user?.socialLinks?.linkedin} target="_blank" className="bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-center text-2xl hover:bg-blue-700/10 hover:text-blue-700 hover:border-blue-700/30 transition-all grayscale opacity-50 hover:grayscale-0 hover:opacity-100"><FaLinkedin /></a>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Floating Action Hint */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <Link 
+          to="/dashboard" 
+          className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center shadow-2xl shadow-blue-500/50 hover:scale-110 active:scale-95 transition-all text-white group"
+        >
+          <FaChevronRight className="group-hover:translate-x-1 transition-transform" />
+        </Link>
+      </div>
+
     </div>
   );
 };
