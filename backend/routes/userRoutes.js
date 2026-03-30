@@ -21,6 +21,7 @@ const {
    sendOTP,
    verifyOTP,
    resetPassword,
+   logoutUser,
    verifyEmailConfig,
 } = require("../controllers/userController");
 
@@ -31,6 +32,7 @@ const { protect, adminOnly } = require("../middlewares/authMiddleware");
 ============================================================ */
 router.post("/signup", uploadProfile, createUser);
 router.post("/login", loginUser);
+router.post("/logout", logoutUser);
 router.post("/send-otp", sendOTP);
 router.post("/verify-otp", verifyOTP);
 router.post("/reset-password", resetPassword);

@@ -139,7 +139,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
                 key={it.id || i}
                 data-idx={i}
                 onClick={() => nav(`/product/${it.id || i}`)}
-                className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[28%] cursor-pointer transition-all duration-500 ease-out ${active ? "scale-105" : "scale-[0.92] opacity-60 grayscale-[0.3]"
+                className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[28%] cursor-pointer transition-all duration-500 ease-out ${active ? "scale-105" : "scale-[0.92] opacity-90 grayscale-[0.3]"
                   }`}
               >
                 <div className="group rounded-[2.5rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.09)] border border-gray-50 flex flex-col h-full transform hover:-translate-y-2 transition-all">
@@ -152,7 +152,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
                       src={getOptimizedImage(it.image, 600)}
                       alt={it.name}
                       {...lazyImageProps}
-                      className="w-full h-full object-contain  transform transition-transform duration-700 group-hover:scale-110 filter brightness-[1.02] contrast-[1.02]"
+                      className="w-full h-full object-contain  transform transition-transform duration-700 group-hover:scale-170 filter brightness-[1.02] contrast-[1.02]"
                     />
                     {it.tag && (
                       <span className="absolute left-5 top-5 bg-white text-gray-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-xl">

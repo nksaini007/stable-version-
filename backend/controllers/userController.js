@@ -117,9 +117,18 @@ const createUser = async (req, res) => {
     const newUser = new User(userData);
     await newUser.save();
 
+    const token = jwt.sign({ id: newUser._id, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     const userResponse = newUser.toObject();
     delete userResponse.password;
-    res.status(201).json({ message: "Signup successful", user: userResponse });
+    res.status(201).json({ message: "Signup successful", token, user: userResponse });
   } catch (err) {
     console.error("Signup Error:", err);
     res.status(500).json({ error: err.message, stack: err.stack });
@@ -148,6 +157,13 @@ const loginUser = async (req, res) => {
     if (!isMatch) return res.status(401).json({ message: "Invalid password" });
 
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     const userResponse = user.toObject();
     delete userResponse.password;
@@ -185,6 +201,14 @@ const adminSecretLogin = async (req, res) => {
     if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     const userResponse = user.toObject();
     delete userResponse.password;
 
@@ -682,6 +706,20 @@ const resetPassword = async (req, res) => {
 };
 
 /**
+ * POST /api/users/logout
+ * Clears the session cookie
+ */
+const logoutUser = async (req, res) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0),
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  res.status(200).json({ message: "Logged out successfully" });
+};
+
+/**
  * GET /api/users/test-email-config
  */
 const verifyEmailConfig = async (req, res) => {
@@ -709,6 +747,8 @@ module.exports = {
   getArchitectPublicProfile,
   sendOTP,
   verifyOTP,
+  verifyOTP,
   resetPassword,
+  logoutUser,
   verifyEmailConfig,
 };

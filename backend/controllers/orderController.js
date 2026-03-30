@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const User = require("../models/userModel");
+const Product = require("../models/product"); // ✅ NEW: Correctly import Product model
 const mongoose = require("mongoose");
 
 // ------------------ CUSTOMER FUNCTIONS ------------------
@@ -8,13 +9,10 @@ const mongoose = require("mongoose");
 const createOrder = async (req, res) => {
   try {
     const {
-      orderItems,
+      orderItems: clientItems,
       shippingAddress,
       paymentMethod,
-      itemsPrice,
-      taxPrice,
-      shippingPrice,
-      totalPrice,
+      shippingPrice: clientShippingPrice, // We still take shipping as it's calculated based on zone/distance
       deliveryZone,
       deliveryVehicleType,
       multiVehicle,
@@ -22,38 +20,64 @@ const createOrder = async (req, res) => {
       deliveryChargeBreakdown,
     } = req.body;
 
-    if (!orderItems || orderItems.length === 0) {
+    if (!clientItems || clientItems.length === 0) {
       return res.status(400).json({ message: "No order items" });
     }
 
-    // ✅ NEW: Validate that all sellers are active
-    const sellerIds = [...new Set(orderItems.map((item) => {
-        // Handle both cases: item.seller as object or item.seller as ID
-        if (item.seller && typeof item.seller === 'object') {
-            return item.seller._id;
-        }
-        return item.seller;
-    }))].filter(id => id); // Remove any null/undefined
+    // 1️⃣ Fetch actual products from DB to prevent price fabrication
+    const productIds = clientItems.map(item => item.product);
+    const dbProducts = await Product.find({ _id: { $in: productIds } });
 
-    if (sellerIds.length > 0) {
-        const inactiveSellers = await User.find({
-            _id: { $in: sellerIds },
-            isActive: false,
-        });
-
-        if (inactiveSellers.length > 0) {
-            const names = inactiveSellers
-                .map((s) => s.businessName || s.name)
-                .join(", ");
-            return res.status(403).json({
-                message: `Order cannot be placed. The following shops are currently inactive: ${names}`,
-            });
-        }
+    if (dbProducts.length !== clientItems.length) {
+      return res.status(404).json({ message: "One or more products not found" });
     }
+
+    // 2️⃣ Verify all sellers are active (existing logic)
+    const sellerIds = [...new Set(dbProducts.map(p => p.seller.toString()))];
+    const inactiveSellers = await User.find({
+      _id: { $in: sellerIds },
+      isActive: false,
+    });
+
+    if (inactiveSellers.length > 0) {
+      const names = inactiveSellers.map(s => s.businessName || s.name).join(", ");
+      return res.status(403).json({
+        message: `Order cannot be placed. The following shops are currently inactive: ${names}`,
+      });
+    }
+
+    // 3️⃣ SECURE CALCULATION: Build verified order items and calculate prices server-side
+    let itemsPrice = 0;
+    const verifiedOrderItems = clientItems.map(item => {
+      const dbProduct = dbProducts.find(p => p._id.toString() === item.product.toString());
+      
+      const itemSubtotal = dbProduct.price * item.qty;
+      itemsPrice += itemSubtotal;
+
+      return {
+        product: dbProduct._id,
+        name: dbProduct.name,
+        image: dbProduct.images?.[0] || dbProduct.image,
+        qty: item.qty,
+        price: dbProduct.price, // Use DB price, NOT client price
+        seller: {
+          _id: dbProduct.seller,
+          name: dbProduct.sellerName || "Partner",
+          // The orderItems schema expects seller details. We'll populate these from the dbProduct or user.
+          // For now, keeping it consistent with the existing schema.
+        },
+        itemStatus: "Pending"
+      };
+    });
+
+    // 4️⃣ Final Security check: Calculate total price
+    const taxPrice = 0; // Or calculate based on category/rate if needed
+    const shippingPrice = Number(clientShippingPrice || 0);
+    const totalPrice = itemsPrice + taxPrice + shippingPrice;
 
     const order = new Order({
       user: req.user._id,
-      orderItems,
+      orderItems: verifiedOrderItems,
       shippingAddress,
       paymentMethod,
       itemsPrice,
@@ -70,7 +94,8 @@ const createOrder = async (req, res) => {
     const createdOrder = await order.save();
     res.status(201).json(createdOrder);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Order Creation Error:", error);
+    res.status(500).json({ message: "Server error during order creation" });
   }
 };
 

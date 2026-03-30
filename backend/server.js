@@ -4,6 +4,8 @@ const dotenv = require("dotenv");
 const path = require("path");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("express-mongo-sanitize");
+const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
@@ -49,14 +51,31 @@ app.use(cors({
   optionsSuccessStatus: 200 // Some legacy browsers crash on 204
 }));
 app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser());
+app.use(mongoSanitize());
 
 // ✅ Rate Limiting
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Limit each IP to 1000 requests per windowMs
+  max: 500, // General limit: 500 requests per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { message: "Too many requests from this IP, please try again later." }
 });
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Strict limit: 5 attempts per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many login/signup attempts. Please try again after 15 minutes." }
+});
+
 app.set("trust proxy", 1);
+app.use("/api/users/login", authLimiter);
+app.use("/api/users/signup", authLimiter);
+app.use("/api/users/reset-password", authLimiter);
+app.use("/api/users/x-admin-auth", authLimiter); // ✅ Protected hidden admin login
 app.use("/api/", apiLimiter);
 
 // ✅ Serve uploaded images
