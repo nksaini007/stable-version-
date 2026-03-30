@@ -4,7 +4,6 @@ const dotenv = require("dotenv");
 const path = require("path");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const mongoSanitize = require("express-mongo-sanitize");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const dns = require("dns");
@@ -52,7 +51,6 @@ app.use(cors({
 }));
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
-app.use(mongoSanitize());
 
 // ✅ Rate Limiting
 const apiLimiter = rateLimit({

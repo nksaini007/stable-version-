@@ -747,7 +747,6 @@ module.exports = {
   getArchitectPublicProfile,
   sendOTP,
   verifyOTP,
-  verifyOTP,
   resetPassword,
   logoutUser,
   verifyEmailConfig,
