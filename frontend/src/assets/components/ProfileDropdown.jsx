@@ -83,7 +83,7 @@ const ProfileDropdown = ({ user, logout, mobile }) => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute right-0 mt-3 w-64 bg-white border border-gray-100 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 overflow-hidden hidden md:block"
+              className="absolute right-0 mt-3 w-64 bg-gray-200 border border-gray-100 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 overflow-hidden hidden md:block"
             >
               <div className="px-5 py-4 border-b border-gray-50 bg-gray-50/50">
                 <p className="text-sm font-bold text-gray-900 truncate">{user?.name || "Guest User"}</p>

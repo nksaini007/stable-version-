@@ -50,7 +50,7 @@ const Nev = () => {
       <nav className="hidden md:block sticky top-0 w-full z-50">
         <div className="absolute inset-0 bg-neutral-900/90 backdrop-blur-2xl border-b border-neutral-800"></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-[60px] md:h-[64px]">
 
             {/* LOGO */}

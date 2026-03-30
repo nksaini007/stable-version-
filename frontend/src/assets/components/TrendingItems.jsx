@@ -97,7 +97,7 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
   if (items.length === 0) return null;
 
   return (
-    <section className="pt-0 pb-16 bg-gray-100 overflow-hidden">
+    <section className="pt-0 pb-16 bg-gray-200 overflow-hidden">
       <div className="mx-auto max-w-8xl px-6">
         {/* Header */}
         <div className="flex items-end justify-between mb-10">
