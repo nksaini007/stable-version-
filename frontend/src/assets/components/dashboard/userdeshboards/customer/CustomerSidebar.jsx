@@ -23,8 +23,8 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     { name: "My Orders", icon: <FaShoppingBag />, path: "/dashboard/customer/orders" },
     { name: "My Quotations", icon: <FaFileInvoice />, path: "/dashboard/customer/quotations" },
     { name: "Wishlist", icon: <FaHeart />, path: "/dashboard/customer/wishlist" },
-    { name: "My Construction", icon: <FaHammer />, path: "/my-construction" }, 
-    { name: "Profile", icon: <FaUser />, path: "/dashboard/customer/profile" },
+    { name: "My Construction", icon: <FaHammer />, path: "/my-construction" },
+    { name: "Profile", icon: <FaUser />, path: "/profile" },
     { name: "Support", icon: <FaHeadset />, path: "/dashboard/customer/support" },
   ];
 

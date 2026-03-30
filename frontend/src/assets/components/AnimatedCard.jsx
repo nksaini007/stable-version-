@@ -207,7 +207,7 @@ const AnimatedCard = () => {
     <div className="flex flex-col font-sans">
 
       {/* 🌟 PREMIUM DARK HERO SECTION 🌟 */}
-      <div className="relative w-full pt-16 pb-24 px-4 sm:px-8 lg:px-12 bg-neutral-900 border-b border-neutral-800 overflow-hidden text-white">
+      <div className="relative w-full pt-16 pb-24 px-4 sm:px-8 lg:px-12 bg-white-300 border-b border-neutral-100 overflow-hidden text-white">
 
         {/* Soft Background Blurs */}
         <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gray-500/10 rounded-full blur-[120px] opacity-40 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
@@ -226,8 +226,8 @@ const AnimatedCard = () => {
             <div className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] rounded-[2.5rem] overflow-hidden shadow-2xl bg-neutral-800 relative group border border-neutral-800">
               {/* Replace url with specific user upload if desired */}
               <img
-                // src="https://image2url.com/r2/default/images/1774156367779-ef5ba5aa-29aa-4d80-a3f1-627d52dbd842.jpeg"
-                src="https://image2url.com/r2/default/images/1774492546335-556040b6-2941-454d-86e9-17ecd3f365bd.jpeg"
+                src="https://image2url.com/r2/default/images/1774156367779-ef5ba5aa-29aa-4d80-a3f1-627d52dbd842.jpeg"
+                //src="https://image2url.com/r2/default/images/1774492546335-556040b6-2941-454d-86e9-17ecd3f365bd.jpeg"
                 alt="Main Visual"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-in-out"
               />
