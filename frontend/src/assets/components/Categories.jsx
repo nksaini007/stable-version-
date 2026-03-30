@@ -157,7 +157,7 @@ const Categories = () => {
                             <img
                               src={imageUrl}
                               alt={category.name}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full p-1 rounded-xl object-cover"
                               {...lazyImageProps}
                             />
                           ) : (
@@ -165,7 +165,7 @@ const Categories = () => {
                               <FaBoxes className="text-4xl text-gray-300" />
                             </div>
                           )}
-                          <span className="absolute top-2 left-2 text-[11px] font-semibold bg-white/90 px-2 py-0.5 rounded-full">
+                          <span className="absolute top-2 left-2 text-[11px] font-semibold bg-white/90 px-2 py-0.5 rounded-lg">
                             {category.name}
                           </span>
                         </div>

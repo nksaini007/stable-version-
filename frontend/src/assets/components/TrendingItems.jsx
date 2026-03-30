@@ -15,12 +15,13 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
   // Fetch trending items from config API, fallback to JSON
   useEffect(() => {
     const fetchTrending = async () => {
+      const cardColors = ["#FFB38E", "#E5E7EB", "#DCD6F7", "#F8B195", "#A8E6CF", "#DCEDC1"];
       try {
         const res = await API.get(`/config`);
         const trending = res.data?.trendingItems || [];
         if (trending.length > 0) {
           // Map backend product data to our card format
-          const mapped = trending.map((p) => ({
+          const mapped = trending.map((p, idx) => ({
             id: p._id,
             name: p.name,
             price: p.price,
@@ -32,14 +33,26 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
             tag: "Trending",
             category: p.category,
             description: p.description,
+            stock: p.countInStock || 200,
+            bgColor: cardColors[idx % cardColors.length],
           }));
           setItems(mapped);
         } else {
-          setItems(fallbackItems);
+          const fallbackWithColors = fallbackItems.map((item, idx) => ({
+            ...item,
+            bgColor: cardColors[idx % cardColors.length],
+            stock: 200,
+          }));
+          setItems(fallbackWithColors);
         }
       } catch (err) {
         console.error("Trending fetch failed, using local fallback", err);
-        setItems(fallbackItems);
+        const fallbackWithColors = fallbackItems.map((item, idx) => ({
+          ...item,
+          bgColor: cardColors[idx % cardColors.length],
+          stock: 200,
+        }));
+        setItems(fallbackWithColors);
       } finally {
         setLoading(false);
       }
@@ -52,7 +65,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
     if (!autoplay || items.length === 0) return;
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % items.length);
-    }, 3500);
+    }, 4500);
     return () => clearInterval(id);
   }, [autoplay, items.length]);
 
@@ -70,9 +83,12 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
 
   if (loading) {
     return (
-      <section className="py-10 bg-gray-50">
-        <div className="mx-auto max-w-6xl px-4 text-center text-gray-400">
-          Loading trending items...
+      <section className="py-16 bg-white">
+        <div className="mx-auto max-w-7xl px-6 text-center text-gray-400">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-100 rounded w-1/4 mx-auto"></div>
+            <div className="h-64 bg-gray-50 rounded-3xl w-full"></div>
+          </div>
         </div>
       </section>
     );
@@ -81,33 +97,32 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
   if (items.length === 0) return null;
 
   return (
-    <section className="py-10 bg-gray-50">
-      <div className="mx-auto max-w-6xl px-4">
+    <section className="py-16 bg-white overflow-hidden">
+      <div className="mx-auto max-w-7xl px-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            {/* <div className="p-2 bg-gray-100 rounded-xl">
-              <FaFire className="text-gray-500 text-lg" />
-            </div> */}
-            <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-            <span className="ml-2 text-xs bg-gray-100 text-gray-600 font-semibold px-3 py-1 rounded-full">
-              {items.length} items
-            </span>
+        <div className="flex items-end justify-between mb-10">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight capitalize leading-none">
+              {title.split('\t')[0]}
+            </h2>
+            <p className="text-gray-400 font-medium text-sm tracking-wide uppercase">
+              {title.split('\t')[1] || "Curated for you"}
+            </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
               onClick={() => setIndex((i) => Math.max(i - 1, 0))}
-              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="p-3 rounded-full border border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-900 transition-all"
             >
-              <FaChevronLeft size={14} />
+              <FaChevronLeft size={16} />
             </button>
             <button
               onClick={() =>
                 setIndex((i) => Math.min(i + 1, items.length - 1))
               }
-              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="p-3 rounded-full border border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-900 transition-all"
             >
-              <FaChevronRight size={14} />
+              <FaChevronRight size={16} />
             </button>
           </div>
         </div>
@@ -115,7 +130,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
         {/* Carousel */}
         <div
           ref={listRef}
-          className="flex gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory py-3"
+          className="flex gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory py-4 px-2"
         >
           {items.map((it, i) => {
             const active = i === index;
@@ -123,44 +138,52 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
               <article
                 key={it.id || i}
                 data-idx={i}
-                className={`snap-center flex-shrink-0 w-[70%] sm:w-[42%] md:w-[30%] lg:w-[24%] transition-all duration-300 ${active ? "scale-[1.03]" : "scale-[0.97] opacity-70"
+                onClick={() => nav(`/product/${it.id || i}`)}
+                className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[28%] cursor-pointer transition-all duration-500 ease-out ${active ? "scale-105" : "scale-[0.92] opacity-60 grayscale-[0.3]"
                   }`}
               >
-                <div className="rounded-2xl overflow-hidden shadow-sm bg-white border border-gray-200 hover:shadow-md transition-shadow">
-                  <div className="relative h-44 bg-gray-100">
+                <div className="group rounded-[2.5rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-50 flex flex-col h-full transform hover:-translate-y-2 transition-all">
+                  {/* Image Background Section */}
+                  <div
+                    className="m-3 rounded-[1.8rem] h-64 flex items-center justify-center p-8 relative overflow-hidden transition-colors duration-500"
+                    style={{ backgroundColor: it.bgColor || '#F3F4F6' }}
+                  >
                     <img
-                      src={getOptimizedImage(it.image, 500)}
+                      src={getOptimizedImage(it.image, 600)}
                       alt={it.name}
                       {...lazyImageProps}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain  transform transition-transform duration-700 group-hover:scale-110 filter brightness-[1.02] contrast-[1.02]"
                     />
                     {it.tag && (
-                      <span className="absolute left-3 top-3 bg-white/90 backdrop-blur-md border border-gray-200 text-gray-800 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
+                      <span className="absolute left-5 top-5 bg-white text-gray-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-xl">
                         {it.tag}
                       </span>
                     )}
-                    <div className="absolute right-3 bottom-3 bg-white/95 backdrop-blur-sm text-sm font-bold text-gray-900 px-3 py-1 rounded-lg shadow">
-                      ₹{it.price}
-                    </div>
                   </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-gray-900 line-clamp-1 mb-3">
+
+                  {/* Content Section */}
+                  <div className="p-6 pt-2 flex flex-col flex-grow">
+                    <h3 className="text-lg font-bold text-gray-800 line-clamp-1 mb-1 tracking-tight">
                       {it.name}
                     </h3>
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => nav(`/product/${it.id || i}`)}
-                        className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-gray-800 text-white hover:bg-black transition-all shadow-sm hover:shadow"
-                      >
-                        View Details
-                      </button>
-                      <div className="flex gap-2">
-                        <button className="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-50 hover:text-gray-500 transition-colors">
-                          <FaShoppingCart size={13} />
-                        </button>
-                        <button className="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-50 hover:text-gray-500 transition-colors">
-                          <FaHeart size={13} />
-                        </button>
+                    <div className="flex flex-col gap-0.5 mb-6">
+                      <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
+                        {it.description?.toString().slice(-7).toUpperCase() || '1254654'}
+                      </p>
+
+                    </div>
+
+                    <div className="mt-auto flex items-center justify-between">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-gray-400 text-sm font-bold">₹</span>
+                        <span className="text-2xl font-black text-gray-900 leading-none">
+                          {it.price}
+                        </span>
+                      </div>
+                      <div className="p-2.5 bg-gray-50 text-gray-300 rounded-xl group-hover:bg-gray-900 group-hover:text-white transition-all duration-300">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+                        </svg>
                       </div>
                     </div>
                   </div>
@@ -171,12 +194,12 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
         </div>
 
         {/* Indicators */}
-        <div className="mt-5 flex justify-center gap-1.5">
+        <div className="mt-12 flex justify-center items-center gap-3">
           {items.map((_, i) => (
             <button
               key={i}
               onClick={() => setIndex(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-gray-500" : "w-2 bg-gray-300"
+              className={`h-1.5 transition-all duration-500 rounded-full ${i === index ? "w-10 bg-gray-900" : "w-1.5 bg-gray-200"
                 }`}
             />
           ))}

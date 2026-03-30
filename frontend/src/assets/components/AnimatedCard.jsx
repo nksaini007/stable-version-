@@ -223,11 +223,11 @@ const AnimatedCard = () => {
             className="w-full max-w-5xl relative mb-12"
           >
             {/* Stunning Image Container */}
-            <div className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] rounded-[2.5rem] overflow-hidden shadow-2xl bg-neutral-800 relative group border border-neutral-800">
+            <div className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] rounded-[1.5rem] overflow-hidden shadow-2xl bg-neutral-800 relative group border border-neutral-800">
               {/* Replace url with specific user upload if desired */}
               <img
-                src="https://image2url.com/r2/default/images/1774156367779-ef5ba5aa-29aa-4d80-a3f1-627d52dbd842.jpeg"
-                //src="https://image2url.com/r2/default/images/1774492546335-556040b6-2941-454d-86e9-17ecd3f365bd.jpeg"
+                // src="https://image2url.com/r2/default/images/1774156367779-ef5ba5aa-29aa-4d80-a3f1-627d52dbd842.jpeg"
+                src="https://image2url.com/r2/default/images/1774837789134-e77475b8-ce1c-4c29-8b62-2dc6aa1734b7.jpg"
                 alt="Main Visual"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-in-out"
               />
