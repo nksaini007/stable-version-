@@ -97,7 +97,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
   if (items.length === 0) return null;
 
   return (
-    <section className="py-16 bg-white overflow-hidden">
+    <section className="pt-0 pb-16 bg-gray-100 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6">
         {/* Header */}
         <div className="flex items-end justify-between mb-10">
@@ -142,11 +142,11 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
                 className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[28%] cursor-pointer transition-all duration-500 ease-out ${active ? "scale-105" : "scale-[0.92] opacity-60 grayscale-[0.3]"
                   }`}
               >
-                <div className="group rounded-[2.5rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-50 flex flex-col h-full transform hover:-translate-y-2 transition-all">
+                <div className="group rounded-[2.5rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.09)] border border-gray-50 flex flex-col h-full transform hover:-translate-y-2 transition-all">
                   {/* Image Background Section */}
                   <div
                     className="m-3 rounded-[1.8rem] h-64 flex items-center justify-center p-8 relative overflow-hidden transition-colors duration-500"
-                    style={{ backgroundColor: it.bgColor || '#F3F4F6' }}
+                    style={{ backgroundColor: it.bgColor || '#304877ff' }}
                   >
                     <img
                       src={getOptimizedImage(it.image, 600)}
@@ -191,18 +191,6 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
               </article>
             );
           })}
-        </div>
-
-        {/* Indicators */}
-        <div className="mt-12 flex justify-center items-center gap-3">
-          {items.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setIndex(i)}
-              className={`h-1.5 transition-all duration-500 rounded-full ${i === index ? "w-10 bg-gray-900" : "w-1.5 bg-gray-200"
-                }`}
-            />
-          ))}
         </div>
       </div>
     </section>

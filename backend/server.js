@@ -53,9 +53,10 @@ app.use(express.json({ limit: "10kb" }));
 // ✅ Rate Limiting
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per windowMs
+  max: 1000, // Limit each IP to 1000 requests per windowMs
   message: { message: "Too many requests from this IP, please try again later." }
 });
+app.set("trust proxy", 1);
 app.use("/api/", apiLimiter);
 
 // ✅ Serve uploaded images

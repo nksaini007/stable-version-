@@ -555,7 +555,7 @@ const ArchitectMaterials = () => {
                                                         <select value={item.materialId} onChange={e => handleRequestItemChange(idx, "materialId", e.target.value)} required 
                                                             className="w-full bg-transparent border-b border-white/[0.05] py-3 text-[13px] text-white focus:outline-none focus:border-white/20 transition-all cursor-pointer">
                                                             <option value="">Asset Node</option>
-                                                            <option value="custom">-> Custom Declaration</option>
+                                                            <option value="custom">{"-> Custom Declaration"}</option>
                                                             {materials.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
                                                         </select>
                                                         {item.materialId === "custom" && (
