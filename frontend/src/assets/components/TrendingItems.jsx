@@ -5,7 +5,7 @@ import fallbackItems from "../json/Itom.json";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 import API from "../api/api";
 
-const TrendingItems = ({ title = "what are you looking for?\t deals are here", autoplay = true }) => {
+const TrendingItems = ({ title = "", autoplay = true }) => {
   const nav = useNavigate();
   const listRef = useRef(null);
   const [index, setIndex] = useState(0);
@@ -98,7 +98,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
 
   return (
     <section className="pt-0 pb-16 bg-gray-100 overflow-hidden">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-8xl px-6">
         {/* Header */}
         <div className="flex items-end justify-between mb-10">
           <div className="space-y-1">
@@ -106,7 +106,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
               {title.split('\t')[0]}
             </h2>
             <p className="text-gray-400 font-medium text-sm tracking-wide uppercase">
-              {title.split('\t')[1] || "Curated for you"}
+              {title.split('\t')[1] || ""}
             </p>
           </div>
           <div className="flex gap-3">
@@ -130,7 +130,7 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
         {/* Carousel */}
         <div
           ref={listRef}
-          className="flex gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory py-4 px-2"
+          className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory py-22"
         >
           {items.map((it, i) => {
             const active = i === index;
@@ -139,10 +139,10 @@ const TrendingItems = ({ title = "what are you looking for?\t deals are here", a
                 key={it.id || i}
                 data-idx={i}
                 onClick={() => nav(`/product/${it.id || i}`)}
-                className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[28%] cursor-pointer transition-all duration-500 ease-out ${active ? "scale-105" : "scale-[0.92] opacity-90 grayscale-[0.3]"
+                className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[18%] cursor-pointer transition-all duration-500 ease-out ${active ? "scale-105" : "scale-[0.92] opacity-90 grayscale-[0.3]"
                   }`}
               >
-                <div className="group rounded-[2.5rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.09)] border border-gray-50 flex flex-col h-full transform hover:-translate-y-2 transition-all">
+                <div className="group rounded-[2.5rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-50 flex flex-col h-full transform hover:-translate-y-2 transition-all">
                   {/* Image Background Section */}
                   <div
                     className="m-3 rounded-[1.8rem] h-64 flex items-center justify-center p-8 relative overflow-hidden transition-colors duration-500"

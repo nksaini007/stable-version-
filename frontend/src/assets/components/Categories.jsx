@@ -68,19 +68,19 @@ const Categories = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ---------------- Header ---------------- */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-red-900 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold font-century-gothic text-gray-100">
             Browse Categories
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-100">
             Compact view to explore more items at once
           </p>
         </div>
       </div>
 
       {/* ---------------- Content ---------------- */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-8xl mx-auto px-4 py-6 bg-gray-100">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* ---------------- Sidebar ---------------- */}
           <aside className="lg:col-span-3 space-y-4">
@@ -136,7 +136,7 @@ const Categories = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7 gap-4">
                 {filtered.map((category, idx) => {
                   const subs = category.subcategories || [];
                   const imageUrl = getOptimizedImage(category.image, 400);
