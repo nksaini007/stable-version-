@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ["customer", "seller", "delivery", "admin", "provider", "architect"],
+    enum: ["customer", "seller", "delivery", "admin", "provider", "architect", "architectPartner"],
     default: "customer",
   },
   phone: String,
@@ -81,6 +81,13 @@ const userSchema = new mongoose.Schema({
   contactInfo: String,
   coaRegistration: String,
   assignedProjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ConstructionProject' }],
+
+  // ARCHITECT PARTNER fields
+  employerArchitect: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // The architect managing this partner
+  architectPartnerDetails: {
+    baseWageType: { type: String, enum: ["Daily", "Per Task", "Fixed", ""], default: "" },
+    baseWageAmount: { type: Number, default: 0 },
+  },
 
   // SOCIAL — Follow System
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

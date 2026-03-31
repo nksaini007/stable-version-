@@ -34,7 +34,7 @@ app.use(cors({
 
     // Support main domain and hyphenated preview subdomains (e.g. stable-version-git-main-nksaini007.vercel.app)
     const isVercel = sanitizedOrigin.endsWith(".vercel.app") && sanitizedOrigin.includes("stable-version");
-    const isLocal = /^http:\/\/192\.168\.\d+\.\d+:5173$/.test(sanitizedOrigin);
+    const isLocal = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+):517[0-9]$/.test(sanitizedOrigin);
 
     if (allowedOrigins.includes(sanitizedOrigin) || isVercel || isLocal) {
       console.log(`[CORS Success] Origin: ${origin}`);
@@ -102,6 +102,7 @@ const adRoutes = require("./routes/adRoutes"); // ✅ seller ad campaigns
 const deliveryPricingRoutes = require("./routes/deliveryPricingRoutes"); // ✅ delivery pricing
 const serviceCategoryRoutes = require("./routes/serviceCategoryRoutes"); // ✅ service categories
 const followRoutes = require("./routes/followRoutes"); // ✅ follow system
+const architectWorkforceRoutes = require("./routes/architectWorkforceRoutes"); // ✅ architect workforce
 
 // ✅ Use routes
 app.use("/api/quotations", quotationRoutes); // ✅ quotation routes
@@ -128,6 +129,7 @@ app.use("/api/delivery-pricing", deliveryPricingRoutes); // ✅ delivery pricing
 app.use("/api/service-categories", serviceCategoryRoutes); // ✅ service categories
 app.use("/api/follow", followRoutes); // ✅ follow system
 app.use("/api/query", require("./routes/queryRoutes")); // ✅ custom queries and charts
+app.use("/api/architect-workforce", architectWorkforceRoutes); // ✅ architect workforce
 
 // ✅ Test & Health Routes
 app.get("/", (req, res) => {

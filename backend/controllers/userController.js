@@ -4,6 +4,7 @@ const multer = require("multer");
 const User = require("../models/userModel");
 const Otp = require("../models/otpModel");
 const ArchitectWork = require("../models/ArchitectWork");
+const { ArchitectTask, ArchitectPayment, ArchitectAttendance, ArchitectReview } = require("../models/ArchitectWorkforceModels");
 const path = require("path");
 const fs = require("fs");
 const { deleteImage } = require("../config/cloudinary");
@@ -457,7 +458,25 @@ const deleteUser = async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) return res.status(404).json({ message: "User not found" });
-    res.json({ message: "User deleted successfully" });
+
+    // Cascading Delete: if user was an ArchitectPartner or had tasks, remove them
+    if (deletedUser.role === 'architectPartner') {
+        const pId = deletedUser._id;
+        await ArchitectTask.deleteMany({ partnerId: pId });
+        await ArchitectPayment.deleteMany({ partnerId: pId });
+        await ArchitectAttendance.deleteMany({ partnerId: pId });
+        await ArchitectReview.deleteMany({ partnerId: pId });
+    } else if (deletedUser.role === 'architect') {
+        const aId = deletedUser._id;
+        await ArchitectTask.deleteMany({ architectId: aId });
+        await ArchitectPayment.deleteMany({ architectId: aId });
+        await ArchitectAttendance.deleteMany({ architectId: aId });
+        await ArchitectReview.deleteMany({ architectId: aId });
+        // Also remove partners who explicitly work only for this architect
+        await User.deleteMany({ employerArchitect: aId, role: 'architectPartner' });
+    }
+
+    res.json({ message: "User and related workflow records deleted successfully" });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

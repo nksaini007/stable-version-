@@ -1,7 +1,9 @@
 // ../../api/api.js
 import axios from "axios";
 
-const fallbackURL = "https://stable-version-backend.onrender.com";
+const fallbackURL = import.meta.env.MODE === 'development' 
+  ? "http://localhost:5000" 
+  : "https://stable-version-backend.onrender.com";
 const baseURL = import.meta.env.VITE_API_URL || fallbackURL;
 
 const API = axios.create({

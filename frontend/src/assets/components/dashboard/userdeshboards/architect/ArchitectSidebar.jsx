@@ -9,6 +9,7 @@ const menuItems = [
     { name: "Dashboard", path: "/architect", icon: <FaHome /> },
     { name: "My Catalog", path: "/architect/work", icon: <FaPalette /> },
     { name: "Labor", path: "/architect/labor", icon: <FaUsers /> },
+    { name: "Workforce", path: "/architect/workforce", icon: <FaHardHat /> },
     { name: "Materials", path: "/architect/materials", icon: <FaCubes /> },
     { name: "My Office", path: "/architect/office", icon: <FaBuilding /> },
     // { name: "Support", path: "/architect/support", icon: <FaHeadset /> },

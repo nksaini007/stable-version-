@@ -72,7 +72,10 @@ import ArchitectLabor from "./assets/components/dashboard/userdeshboards/archite
 import ArchitectMaterials from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectMaterials";
 import ArchitectSupport from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectSupport";
 import ArchitectActiveProjectDetails from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectActiveProjectDetails";
+import ArchitectWorkforce from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectWorkforce"; // ✅ Add Architect Workforce
 import ArchitectOffice from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectOffice";
+import ArchitectPartnerLayout from "./assets/components/dashboard/userdeshboards/architectPartner/ArchitectPartnerLayout";
+import PartnerDashboard from "./assets/components/dashboard/userdeshboards/architectPartner/PartnerDashboard";
 import CustomerLayout from "./assets/components/dashboard/userdeshboards/customer/CustomerLayout";
 import CustomerOverview from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerOverview";
 import CustomerOrders from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerOrders";
@@ -190,9 +193,17 @@ function App() {
             <Route path="project/:projectId" element={<ArchitectActiveProjectDetails />} />
             <Route path="work" element={<ArchitectWork />} />
             <Route path="labor" element={<ArchitectLabor />} />
+            <Route path="workforce" element={<ArchitectWorkforce />} />
             <Route path="materials" element={<ArchitectMaterials />} />
             <Route path="support" element={<ArchitectSupport />} />
             <Route path="office" element={<ArchitectOffice />} />
+          </Route>
+
+          {/* =======================
+              ARCHITECT PARTNER DASHBOARD 
+          ======================== */}
+          <Route path="/architect-partner" element={<ArchitectPartnerLayout />}>
+            <Route index element={<PartnerDashboard />} />
           </Route>
 
           {/* Admin Routes Protected */}
