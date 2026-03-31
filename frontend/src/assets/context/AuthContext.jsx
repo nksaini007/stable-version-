@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
     if (userData.role === "admin") return "/admin";
     else if (userData.role === "seller") return "/dashboard";
     else if (userData.role === "provider") return "/provider";
+    else if (userData.role === "architectPartner") return "/architect-partner";
     else return "/";
   };
 

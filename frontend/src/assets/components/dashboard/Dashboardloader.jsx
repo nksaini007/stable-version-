@@ -25,6 +25,8 @@ const Dashboardloader = () => {
       return <Navigate to="/delivery" replace />;
     case "provider":
       return <Navigate to="/provider" replace />;
+    case "architectPartner":
+      return <Navigate to="/architect-partner" replace />;
     default:
       return <Navigate to="/dashboard/customer" replace />;
   }

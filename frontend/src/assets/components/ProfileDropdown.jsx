@@ -26,6 +26,7 @@ const ProfileDropdown = ({ user, logout, mobile }) => {
   if (user?.role === "delivery") dashboardLink = "/delivery";
   if (user?.role === "architect") dashboardLink = "/architect";
   if (user?.role === "admin") dashboardLink = "/admin";
+  if (user?.role === "architectPartner") dashboardLink = "/architect-partner";
 
   const menuItems = [
     { label: "Dashboard", icon: <FaTachometerAlt className="text-gray-400" />, to: dashboardLink },

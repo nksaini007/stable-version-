@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../../../context/AuthContext';
-import { FaClock, FaCheckCircle, FaSpinner, FaMapMarkerAlt, FaUpload, FaKey } from 'react-icons/fa';
+import { FaClock, FaCheckCircle, FaSpinner, FaMapMarkerAlt, FaUpload, FaKey, FaSignOutAlt, FaCalendarCheck, FaHardHat, FaTasks } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PartnerDashboard = () => {
-    const { token } = useContext(AuthContext);
+    const { user, token } = useContext(AuthContext);
     const [tasks, setTasks] = useState([]);
     const [attendance, setAttendance] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -178,110 +178,186 @@ const PartnerDashboard = () => {
     };
 
     return (
-        <div className="p-4 md:p-8 space-y-6 relative min-h-screen">
+        <div className="p-4 md:p-8 space-y-8 relative min-h-screen bg-[#090909] text-white">
             
-            {/* Top Actions */}
-            <div className="flex justify-between items-center bg-[#1A1A1C] p-4 rounded-xl border border-white/5">
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Partner Portal</h1>
-                <button onClick={() => setIsPwdModalOpen(true)} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
-                    <FaKey /> Update Password
-                </button>
-            </div>
-            
-            {/* Attendance Module */}
-            <div className="bg-[#111] p-6 rounded-2xl border border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div>
-                    <div className="flex items-center gap-3 mb-1">
-                        <h2 className="text-xl font-bold">Today's Attendance</h2>
-                        {!isOnline && <span className="text-xs bg-red-600 px-2 py-1 rounded text-white font-bold animate-pulse">OFFLINE MODE</span>}
+            {/* Premium Header Banner */}
+            <motion.div 
+                initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
+                className="relative overflow-hidden bg-gradient-to-br from-[#1A1A1C] to-[#111] p-6 md:p-10 rounded-3xl border border-white/5 shadow-2xl"
+            >
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 blur-[100px] rounded-full pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <FaHardHat className="text-3xl text-yellow-500" />
+                            <h1 className="text-3xl md:text-4xl font-black tracking-tight">
+                                Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 18 ? 'Afternoon' : 'Evening'}, <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">{user?.name?.split(' ')[0] || 'Partner'}</span>
+                            </h1>
+                        </div>
+                        <p className="text-gray-400 font-medium tracking-wide">Ready to log your site attendance and crush today's tasks?</p>
                     </div>
-                    <p className="text-gray-400 text-sm">Make sure you are at the site before checking in/out.</p>
+                    
+                    <button onClick={() => setIsPwdModalOpen(true)} className="group flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-3 rounded-xl text-sm font-bold transition-all shadow-lg backdrop-blur-sm self-start md:self-auto">
+                        <FaKey className="text-gray-400 group-hover:text-blue-400 transition-colors" /> Set Personal Password
+                    </button>
                 </div>
-
-                <div className="flex gap-4 w-full md:w-auto">
-                    {!attendance?.checkInTime ? (
-                        <button 
-                            disabled={loading}
-                            onClick={() => handleAttendanceAction('checkin')}
-                            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-semibold w-full md:w-auto transition-colors flex items-center justify-center gap-2"
-                        >
-                           {loading ? <FaSpinner className="animate-spin" /> : <FaMapMarkerAlt />} Check In
-                        </button>
-                    ) : (
-                        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
-                            <span className="text-green-400 bg-green-400/10 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
-                                <FaCheckCircle /> Checked In at {new Date(attendance.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                            </span>
-                            
-                            {!attendance?.checkOutTime && (
-                                <button 
-                                    disabled={loading}
-                                    onClick={() => handleAttendanceAction('checkout')}
-                                    className="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-xl font-semibold w-full md:w-auto transition-colors flex items-center justify-center gap-2"
-                                >
-                                   {loading ? <FaSpinner className="animate-spin" /> : <FaSignOutAlt />} Check Out
-                                </button>
-                            )}
-                            
-                            {attendance?.checkOutTime && (
-                                <span className="text-gray-400 bg-gray-400/10 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
-                                    <FaClock /> Checked Out at {new Date(attendance.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+            </motion.div>
+            
+            {/* Bento Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+                
+                {/* Left Column: Digital Punch Clock & Offline Warnings */}
+                <div className="col-span-1 lg:col-span-4 space-y-6">
+                    <motion.div 
+                        initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
+                        className="bg-[#111] p-6 md:p-8 rounded-3xl border border-white/5 shadow-xl relative overflow-hidden h-full flex flex-col"
+                    >
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-blue-500/20 rounded-xl">
+                                    <FaCalendarCheck className="text-xl text-blue-400" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold">Punch Card</h2>
+                                    <p className="text-xs text-gray-400">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
+                                </div>
+                            </div>
+                            {!isOnline && (
+                                <span className="text-[10px] bg-red-500/20 text-red-500 px-3 py-1 rounded-full font-black animate-pulse border border-red-500/50">
+                                    🔴 OFFLINE
                                 </span>
                             )}
                         </div>
-                    )}
-                </div>
-            </div>
 
-            {/* Task Board */}
-            <div className="bg-[#1A1A1C] p-6 rounded-2xl border border-white/5">
-                <h2 className="text-xl font-bold mb-4">Assigned Tasks</h2>
-                
-                {tasks.length === 0 ? (
-                    <p className="text-gray-500 text-center py-10">No tasks currently assigned to you.</p>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {tasks.map(task => (
-                            <div key={task._id} className="bg-[#090909] p-5 rounded-xl border border-white/5">
-                                <div className="flex justify-between items-start mb-2">
-                                    <h3 className="font-semibold text-lg">{task.title}</h3>
-                                    <span className={`text-xs font-bold px-2 py-1 rounded ${
-                                        task.priority === 'High' ? 'bg-red-500/20 text-red-500' : 
-                                        task.priority === 'Medium' ? 'bg-yellow-500/20 text-yellow-500' : 
-                                        'bg-blue-500/20 text-blue-500'
-                                    }`}>
-                                        {task.priority}
-                                    </span>
-                                </div>
-                                <p className="text-sm text-gray-400 mb-4">{task.description}</p>
-                                
-                                <div className="text-xs text-gray-500 mb-4 flex items-center gap-2">
-                                    <FaClock /> Deadline: {new Date(task.deadline).toLocaleDateString()}
-                                </div>
-
-                                {/* Status Toggle */}
-                                <div className="flex items-center justify-between mt-auto border-t border-white/10 pt-4">
-                                    <select 
-                                        className="bg-[#1A1A1C] border border-white/10 text-sm rounded-lg px-3 py-2 text-white outline-none"
-                                        value={task.status}
-                                        onChange={(e) => updateTaskStatus(task._id, e.target.value)}
-                                        disabled={task.status === 'Completed'}
+                        {!attendance?.checkInTime ? (
+                            <div className="text-center mt-auto mb-auto">
+                                <div className="inline-block relative w-full max-w-xs mx-auto">
+                                    <div className="absolute inset-0 bg-green-500 rounded-3xl blur-xl opacity-20 animate-pulse" />
+                                    <button 
+                                        disabled={loading}
+                                        onClick={() => handleAttendanceAction('checkin')}
+                                        className="relative bg-gradient-to-b from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white w-full px-8 py-5 rounded-3xl font-black text-xl shadow-[0_10px_40px_rgba(34,197,94,0.3)] hover:shadow-[0_10px_50px_rgba(34,197,94,0.5)] hover:-translate-y-1 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                                     >
-                                        <option value="Pending">Pending</option>
-                                        <option value="In Progress">In Progress</option>
-                                        <option value="Completed">Completed</option>
-                                    </select>
-                                    
-                                    {task.status !== 'Completed' && (
-                                        <button className="text-xs flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition-colors">
-                                            <FaUpload /> Upload Proof
+                                       {loading ? <FaSpinner className="animate-spin text-2xl" /> : <><FaMapMarkerAlt className="text-2xl" /> PUNCH IN (GPS)</>}
+                                    </button>
+                                </div>
+                                <p className="text-[11px] text-gray-500 mt-6 font-semibold uppercase tracking-widest">Verify your location before punching in.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4 mt-auto">
+                                {/* Success Status */}
+                                <div className="bg-green-500/10 border border-green-500/20 p-5 rounded-2xl flex items-center justify-between shadow-inner">
+                                    <div className="flex items-center gap-4">
+                                        <FaCheckCircle className="text-green-500 text-2xl" />
+                                        <div>
+                                            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Checked In</p>
+                                            <p className="font-black text-green-400 text-lg">{new Date(attendance.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {!attendance?.checkOutTime ? (
+                                    <div className="pt-4 mt-4 border-t border-white/5">
+                                        <button 
+                                            disabled={loading}
+                                            onClick={() => handleAttendanceAction('checkout')}
+                                            className="bg-red-500/10 hover:bg-red-500 border border-red-500/30 hover:border-red-500 text-red-500 hover:text-white w-full px-6 py-4 rounded-xl font-bold transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-3 group"
+                                        >
+                                           {loading ? <FaSpinner className="animate-spin text-xl" /> : <><FaSignOutAlt className="text-xl group-hover:scale-110 transition-transform" /> PUNCH OUT</>}
                                         </button>
-                                    )}
+                                        <p className="text-[10px] text-gray-500 mt-4 text-center font-bold uppercase tracking-wider">Don't forget to punch out before leaving the site!</p>
+                                    </div>
+                                ) : (
+                                    <div className="bg-gray-500/10 border border-gray-500/20 p-5 rounded-2xl flex items-center gap-4 shadow-inner">
+                                        <FaClock className="text-gray-400 text-2xl" />
+                                        <div>
+                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Checked Out</p>
+                                            <p className="font-black text-gray-300 text-lg">{new Date(attendance.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </motion.div>
+                </div>
+
+                {/* Right Column: Dynamic Task Board */}
+                <div className="col-span-1 lg:col-span-8">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                        className="bg-[#111] p-6 md:p-8 rounded-3xl border border-white/5 shadow-xl h-full flex flex-col"
+                    >
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                            <h2 className="text-2xl font-bold flex items-center gap-3">
+                                <span className="bg-white/5 p-2.5 rounded-xl border border-white/10"><FaTasks className="text-purple-400" /></span> Task Board
+                            </h2>
+                            <span className="bg-[#1A1A1C] px-4 py-1.5 rounded-full text-sm font-bold border border-white/10 text-gray-300">
+                                {tasks.filter(t => t.status !== 'Completed').length} Active
+                            </span>
+                        </div>
+                        
+                        {tasks.length === 0 ? (
+                            <div className="flex-1 flex flex-col items-center justify-center text-center py-20 opacity-50">
+                                <FaCheckCircle className="text-5xl mb-4 text-gray-500 opacity-30" />
+                                <h3 className="text-xl font-bold text-gray-300">No Tasks Assigned</h3>
+                                <p className="text-sm mt-2">You're all caught up for now.</p>
+                            </div>
+                        ) : (
+                            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar max-h-[600px]">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {tasks.map((task, index) => (
+                                        <motion.div 
+                                            key={task._id}
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: 0.1 * index }}
+                                            whileHover={{ y: -4 }}
+                                            className={`bg-[#1A1A1C] p-6 rounded-2xl border transition-all ${task.status === 'Completed' ? 'border-green-500/20 opacity-60' : 'border-white/5 hover:border-white/20 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:bg-[#1f1f22]'}`}
+                                        >
+                                            <div className="flex justify-between items-start mb-3">
+                                                <h3 className="font-bold text-lg leading-tight line-clamp-2 pr-2">{task.title}</h3>
+                                                <span className={`text-[10px] uppercase font-black px-2.5 py-1 rounded-md shrink-0 border tracking-wider ${
+                                                    task.priority === 'High' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
+                                                    task.priority === 'Medium' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' : 
+                                                    'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                                }`}>
+                                                    {task.priority}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-gray-400 mb-6 bg-black/30 p-4 rounded-xl border border-white/5">{task.description}</p>
+                                            
+                                            <div className="flex items-center justify-between text-[11px] uppercase tracking-widest text-gray-500 mb-6 font-bold">
+                                                <span className="flex items-center gap-1.5 bg-black/50 px-3 py-1.5 rounded-lg border border-white/5"><FaClock className="text-blue-400" /> Due: {new Date(task.deadline).toLocaleDateString('en-GB')}</span>
+                                            </div>
+
+                                            {/* Status Controller */}
+                                            <div className="flex items-center justify-between pt-4 border-t border-white/5 gap-3">
+                                                <select 
+                                                    className="flex-1 bg-black/50 border border-white/10 text-xs font-bold uppercase tracking-wider rounded-xl px-4 py-3 text-white outline-none appearance-none focus:border-blue-500 hover:border-white/20 transition-colors shadow-inner cursor-pointer"
+                                                    value={task.status}
+                                                    onChange={(e) => updateTaskStatus(task._id, e.target.value)}
+                                                    disabled={task.status === 'Completed'}
+                                                >
+                                                    <option value="Pending">🕒 Pending</option>
+                                                    <option value="In Progress">🚀 In Progress</option>
+                                                    <option value="Completed">✅ Completed</option>
+                                                </select>
+                                                
+                                                {task.status !== 'Completed' && (
+                                                    <button className="text-xs flex items-center justify-center gap-2 bg-blue-600 text-white hover:bg-blue-500 px-5 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20">
+                                                        <FaUpload /> Proof
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    ))}
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                )}
+                        )}
+                    </motion.div>
+                </div>
             </div>
 
             {/* Change Password Modal */}
@@ -318,6 +394,12 @@ const PartnerDashboard = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #555; }
+            `}</style>
         </div>
     );
 };
