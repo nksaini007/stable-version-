@@ -57,31 +57,41 @@ const PartnerDashboard = () => {
         // Run sync on initial load if online
         if (navigator.onLine) syncOfflineData();
 
-        // --- BACKGROUND GPS PUSH (every 60 seconds) ---
-        // Silently sends the partner's live coordinates so the architect can track them
-        let locationInterval = null;
-        const pushLocation = () => {
-            if (!navigator.geolocation || !navigator.onLine || !token) return;
-            navigator.geolocation.getCurrentPosition(
+        // --- CONTINUOUS GPS TRACKING via watchPosition ---
+        // Uses the device's native continuous GPS stream for maximum accuracy.
+        // Pushes to server at most once every 30 seconds to avoid flooding.
+        let watchId = null;
+        let lastPushTime = 0;
+
+        if (navigator.geolocation && token) {
+            watchId = navigator.geolocation.watchPosition(
                 (pos) => {
-                    API.post('/architect-workforce/location', {
-                        lat: pos.coords.latitude,
-                        lng: pos.coords.longitude,
-                        accuracy: pos.coords.accuracy
-                    }).catch(() => {}); // Silent — never interrupt the user
+                    const now = Date.now();
+                    // Throttle: only push to server every 30 seconds
+                    if (now - lastPushTime < 30000) return;
+                    lastPushTime = now;
+
+                    if (navigator.onLine) {
+                        API.post('/architect-workforce/location', {
+                            lat: pos.coords.latitude,
+                            lng: pos.coords.longitude,
+                            accuracy: pos.coords.accuracy
+                        }).catch(() => {}); // Silent — never interrupt the user
+                    }
                 },
                 () => {}, // Silently ignore errors
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
+                {
+                    enableHighAccuracy: true,  // Force GPS hardware, not cell towers
+                    timeout: 20000,
+                    maximumAge: 0              // Never use cached position — always fresh
+                }
             );
-        };
-        // Send immediately on load, then every 60 seconds
-        pushLocation();
-        locationInterval = setInterval(pushLocation, 60000);
+        }
 
         return () => {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
-            if (locationInterval) clearInterval(locationInterval);
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
         };
     }, [token]);
 

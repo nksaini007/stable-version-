@@ -3,7 +3,7 @@ import API from '../../../../../api/api';
 import { AuthContext } from '../../../../../context/AuthContext';
 import { FaUserPlus, FaTasks, FaMoneyBillWave, FaMapMarkerAlt, FaChartBar, FaCheckCircle, FaExclamationCircle, FaTrash, FaClock, FaCalendarCheck, FaPlus, FaSearch, FaFilter, FaEye, FaTimes, FaSyncAlt, FaSatellite } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -32,6 +32,17 @@ const DynamicChart = lazy(() =>
   })
 );
 
+// Inner component to auto-fit map bounds when locations change
+const MapUpdater = ({ locations }) => {
+    const map = useMap();
+    useEffect(() => {
+        if (locations.length === 0) return;
+        const bounds = L.latLngBounds(locations.map(loc => [loc.lat, loc.lng]));
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+    }, [locations, map]);
+    return null;
+};
+
 const ArchitectWorkforce = () => {
     const { token } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('Overview');
@@ -41,6 +52,9 @@ const ArchitectWorkforce = () => {
     const [payments, setPayments] = useState([]);
     const [attendance, setAttendance] = useState([]);
     const [partnerLocations, setPartnerLocations] = useState([]);
+    const [mapKey, setMapKey] = useState(0);
+    const [lastRefresh, setLastRefresh] = useState(null);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     
     // Invite Partner State
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
@@ -106,10 +120,16 @@ const ArchitectWorkforce = () => {
     };
 
     const fetchLocations = async () => {
+        setIsRefreshing(true);
         try {
             const res = await API.get('/architect-workforce/locations');
-            if(res.data.success) setPartnerLocations(res.data.locations);
+            if(res.data.success) {
+                setPartnerLocations(res.data.locations);
+                setMapKey(prev => prev + 1);
+                setLastRefresh(new Date());
+            }
         } catch (err) { console.error("Locations error:", err); }
+        finally { setIsRefreshing(false); }
     };
 
     // Fetch on tab change
@@ -123,10 +143,10 @@ const ArchitectWorkforce = () => {
         if (activeTab === 'Live Map') fetchLocations();
     }, [activeTab, token]);
 
-    // Auto-refresh location every 30 seconds when on Live Map tab
+    // Auto-refresh location every 15 seconds when on Live Map tab
     useEffect(() => {
         if (activeTab !== 'Live Map' || !token) return;
-        const interval = setInterval(fetchLocations, 30000);
+        const interval = setInterval(fetchLocations, 15000);
         return () => clearInterval(interval);
     }, [activeTab, token]);
 
@@ -612,20 +632,25 @@ const ArchitectWorkforce = () => {
                                         <h2 className="text-2xl font-bold flex items-center gap-3">
                                             <FaSatellite className="text-cyan-400" /> Live Partner Tracking
                                         </h2>
-                                        <p className="text-sm text-gray-500 mt-1">{partnerLocations.length} partners reporting location • Auto-refreshes every 30s</p>
+                                        <p className="text-sm text-gray-500 mt-1">
+                                            {partnerLocations.length} partner{partnerLocations.length !== 1 ? 's' : ''} reporting
+                                            {lastRefresh && <> • Last refreshed: <span className="text-cyan-400 font-bold">{lastRefresh.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'})}</span></>}
+                                            {' • Auto-refreshes every 15s'}
+                                        </p>
                                     </div>
-                                    <button onClick={fetchLocations} className="bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-3 flex items-center gap-2 rounded-xl text-sm font-bold transition-colors">
-                                        <FaSyncAlt /> Refresh Now
+                                    <button onClick={fetchLocations} disabled={isRefreshing} className="bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-3 flex items-center gap-2 rounded-xl text-sm font-bold transition-colors disabled:opacity-50">
+                                        <FaSyncAlt className={isRefreshing ? 'animate-spin' : ''} /> {isRefreshing ? 'Refreshing...' : 'Refresh Now'}
                                     </button>
                                 </div>
 
                                 {partnerLocations.length === 0 ? (
-                                    <EmptyState icon={<FaSatellite />} title="No Live Locations" desc="Partners will appear here once they log in to their dashboard. Their GPS is pushed every 60 seconds automatically." />
+                                    <EmptyState icon={<FaSatellite />} title="No Live Locations" desc="Partners will appear here once they log in to their dashboard. Their GPS is pushed every 30 seconds automatically." />
                                 ) : (
                                     <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl" style={{ height: '500px' }}>
                                         <MapContainer
+                                            key={mapKey}
                                             center={[partnerLocations[0]?.lat || 20.5937, partnerLocations[0]?.lng || 78.9629]}
-                                            zoom={13}
+                                            zoom={14}
                                             style={{ height: '100%', width: '100%' }}
                                             scrollWheelZoom={true}
                                         >
@@ -633,24 +658,26 @@ const ArchitectWorkforce = () => {
                                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                             />
+                                            <MapUpdater locations={partnerLocations} />
                                             {partnerLocations.map(loc => {
                                                 const minutesAgo = Math.round((Date.now() - new Date(loc.lastUpdated).getTime()) / 60000);
                                                 const isStale = minutesAgo > 10;
                                                 const icon = L.divIcon({
                                                     className: '',
-                                                    html: `<div style="background:${isStale ? '#ef4444' : '#22c55e'};width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:14px;box-shadow:0 0 15px ${isStale ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)'};border:3px solid white;">${loc.partnerId?.name?.charAt(0)?.toUpperCase() || '?'}</div>`,
-                                                    iconSize: [36, 36],
-                                                    iconAnchor: [18, 18]
+                                                    html: `<div style="background:${isStale ? '#ef4444' : '#22c55e'};width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:16px;box-shadow:0 0 20px ${isStale ? 'rgba(239,68,68,0.6)' : 'rgba(34,197,94,0.6)'};border:3px solid white;">${loc.partnerId?.name?.charAt(0)?.toUpperCase() || '?'}</div>`,
+                                                    iconSize: [40, 40],
+                                                    iconAnchor: [20, 20]
                                                 });
                                                 return (
                                                     <Marker key={loc._id} position={[loc.lat, loc.lng]} icon={icon}>
                                                         <Popup>
-                                                            <div style={{minWidth:'180px',fontFamily:'system-ui'}}>
-                                                                <p style={{fontWeight:800,fontSize:'15px',margin:'0 0 4px'}}>{loc.partnerId?.name || 'Unknown'}</p>
+                                                            <div style={{minWidth:'200px',fontFamily:'system-ui'}}>
+                                                                <p style={{fontWeight:800,fontSize:'16px',margin:'0 0 4px'}}>{loc.partnerId?.name || 'Unknown'}</p>
                                                                 <p style={{color:'#666',fontSize:'12px',margin:'0 0 2px'}}>{loc.partnerId?.phone || loc.partnerId?.email || ''}</p>
                                                                 <hr style={{margin:'8px 0',border:'none',borderTop:'1px solid #eee'}}/>
-                                                                <p style={{fontSize:'12px',margin:'0 0 2px'}}><b>Accuracy:</b> ±{Math.round(loc.accuracy || 0)}m</p>
-                                                                <p style={{fontSize:'12px',margin:'0',color: isStale ? '#ef4444' : '#22c55e'}}><b>Updated:</b> {minutesAgo < 1 ? 'Just now' : `${minutesAgo} min ago`}</p>
+                                                                <p style={{fontSize:'12px',margin:'0 0 4px'}}><b>GPS Accuracy:</b> ±{Math.round(loc.accuracy || 0)}m</p>
+                                                                <p style={{fontSize:'12px',margin:'0 0 4px'}}><b>Coordinates:</b> {loc.lat.toFixed(6)}, {loc.lng.toFixed(6)}</p>
+                                                                <p style={{fontSize:'12px',margin:'0',color: isStale ? '#ef4444' : '#22c55e',fontWeight:700}}>{minutesAgo < 1 ? '🟢 Just now (Live)' : isStale ? `🔴 ${minutesAgo} min ago (Stale)` : `🟢 ${minutesAgo} min ago`}</p>
                                                             </div>
                                                         </Popup>
                                                     </Marker>
@@ -685,7 +712,7 @@ const ArchitectWorkforce = () => {
                                                     </div>
                                                     <div className="space-y-2 text-xs text-gray-400">
                                                         <p><b className="text-gray-300">Coordinates:</b> {loc.lat.toFixed(6)}, {loc.lng.toFixed(6)}</p>
-                                                        <p><b className="text-gray-300">Accuracy:</b> ±{Math.round(loc.accuracy || 0)}m</p>
+                                                        <p><b className="text-gray-300">GPS Accuracy:</b> ±{Math.round(loc.accuracy || 0)}m</p>
                                                         <p><b className="text-gray-300">Last Updated:</b> <span className={isStale ? 'text-red-400' : 'text-green-400'}>{minutesAgo < 1 ? 'Just now' : `${minutesAgo} min ago`}</span></p>
                                                     </div>
                                                     <a href={`https://www.google.com/maps?q=${loc.lat},${loc.lng}`} target="_blank" rel="noreferrer" className="mt-4 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors">
