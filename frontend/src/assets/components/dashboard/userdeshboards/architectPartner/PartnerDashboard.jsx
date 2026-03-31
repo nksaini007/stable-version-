@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../../../context/AuthContext';
-import { FaClock, FaCheckCircle, FaSpinner, FaMapMarkerAlt, FaUpload } from 'react-icons/fa';
+import { FaClock, FaCheckCircle, FaSpinner, FaMapMarkerAlt, FaUpload, FaKey } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const PartnerDashboard = () => {
     const { token } = useContext(AuthContext);
@@ -9,6 +10,11 @@ const PartnerDashboard = () => {
     const [attendance, setAttendance] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+    // Password Update State
+    const [isPwdModalOpen, setIsPwdModalOpen] = useState(false);
+    const [isChangingPwd, setIsChangingPwd] = useState(false);
+    const [pwdData, setPwdData] = useState({ currentPassword: '', newPassword: '' });
     
     // Quick fetch functions
     const fetchTasks = async () => {
@@ -154,8 +160,33 @@ const PartnerDashboard = () => {
         }
     };
 
+    const handlePasswordChange = async (e) => {
+        e.preventDefault();
+        setIsChangingPwd(true);
+        try {
+            await axios.put('http://localhost:5000/api/users/me/password', pwdData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert('Password updated successfully!');
+            setIsPwdModalOpen(false);
+            setPwdData({ currentPassword: '', newPassword: '' });
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to change password');
+        } finally {
+            setIsChangingPwd(false);
+        }
+    };
+
     return (
-        <div className="p-4 md:p-8 space-y-6">
+        <div className="p-4 md:p-8 space-y-6 relative min-h-screen">
+            
+            {/* Top Actions */}
+            <div className="flex justify-between items-center bg-[#1A1A1C] p-4 rounded-xl border border-white/5">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Partner Portal</h1>
+                <button onClick={() => setIsPwdModalOpen(true)} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                    <FaKey /> Update Password
+                </button>
+            </div>
             
             {/* Attendance Module */}
             <div className="bg-[#111] p-6 rounded-2xl border border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -253,6 +284,40 @@ const PartnerDashboard = () => {
                 )}
             </div>
 
+            {/* Change Password Modal */}
+            <AnimatePresence>
+                {isPwdModalOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+                            className="bg-[#111] border border-white/10 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
+                        >
+                            <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                                <h2 className="text-xl font-bold">Update Password</h2>
+                                <button onClick={() => setIsPwdModalOpen(false)} className="text-gray-400 hover:text-white transition-colors text-2xl leading-none">
+                                    &times;
+                                </button>
+                            </div>
+                            <form onSubmit={handlePasswordChange} className="p-6 space-y-4">
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">Temporary Current Password</label>
+                                    <input required type="text" value={pwdData.currentPassword} onChange={(e) => setPwdData({...pwdData, currentPassword: e.target.value})} className="w-full bg-[#1A1A1C] border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors" placeholder="Enter current password" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">New Personal Password</label>
+                                    <input required minLength={6} type="text" value={pwdData.newPassword} onChange={(e) => setPwdData({...pwdData, newPassword: e.target.value})} className="w-full bg-[#1A1A1C] border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors" placeholder="Enter new password" />
+                                </div>
+                                <button disabled={isChangingPwd} type="submit" className="w-full mt-4 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-500 transition-colors flex items-center justify-center gap-2">
+                                    {isChangingPwd ? 'Updating...' : <><FaKey /> Save Password</>}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

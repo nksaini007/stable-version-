@@ -29,6 +29,13 @@ const ArchitectWorkforce = () => {
     const [stats, setStats] = useState(null);
     const [partners, setPartners] = useState([]);
     
+    // Invite Partner State
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const [isInviting, setIsInviting] = useState(false);
+    const [inviteData, setInviteData] = useState({ 
+        name: '', email: '', phone: '', password: '', baseWageType: 'Daily', baseWageAmount: '' 
+    });
+    
     // Fetch data based on tab
     useEffect(() => {
         if (!token) return;
@@ -72,8 +79,35 @@ const ArchitectWorkforce = () => {
         { name: 'Location', icon: <FaMapMarkerAlt /> },
     ];
 
+    const handleInviteSubmit = async (e) => {
+        e.preventDefault();
+        setIsInviting(true);
+        try {
+            const payload = { ...inviteData };
+            // If email is empty, backend fails if it expects unique. 
+            // Better to delete if empty, or just pass it as is.
+            if (!payload.email) delete payload.email;
+
+            const res = await axios.post('http://localhost:5000/api/architect-workforce/register', payload, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.data.success) {
+                alert('Partner invited successfully!');
+                setIsInviteModalOpen(false);
+                setPartners(prev => [res.data.partner, ...prev]);
+                if (stats) setStats(prev => ({...prev, totalPartners: prev.totalPartners + 1}));
+                setInviteData({ name: '', email: '', phone: '', password: '', baseWageType: 'Daily', baseWageAmount: '' });
+            }
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.message || 'Failed to invite partner.');
+        } finally {
+            setIsInviting(false);
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-[#090909] text-white p-4 md:p-8">
+        <div className="min-h-screen bg-[#090909] text-white p-4 md:p-8 relative">
             <header className="mb-8">
                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
                     Workforce Management
@@ -133,7 +167,7 @@ const ArchitectWorkforce = () => {
                         <div className="bg-[#111] border border-white/5 p-6 rounded-2xl shadow-xl">
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-xl font-semibold">Partner Directory</h2>
-                                <button className="bg-white text-black px-4 py-2 flex items-center gap-2 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
+                                <button onClick={() => setIsInviteModalOpen(true)} className="bg-white text-black px-4 py-2 flex items-center gap-2 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
                                     <FaUserPlus /> Invite Partner
                                 </button>
                             </div>
@@ -188,6 +222,65 @@ const ArchitectWorkforce = () => {
                     )}
 
                 </motion.div>
+            </AnimatePresence>
+
+            {/* Invite Partner Modal */}
+            <AnimatePresence>
+                {isInviteModalOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+                            className="bg-[#111] border border-white/10 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative"
+                        >
+                            <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                                <h2 className="text-xl font-bold">Invite New Partner</h2>
+                                <button onClick={() => setIsInviteModalOpen(false)} className="text-gray-400 hover:text-white transition-colors text-2xl leading-none">
+                                    &times;
+                                </button>
+                            </div>
+                            <form onSubmit={handleInviteSubmit} className="p-6 space-y-4">
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">Full Name *</label>
+                                    <input required type="text" value={inviteData.name} onChange={(e) => setInviteData({...inviteData, name: e.target.value})} className="w-full bg-[#1A1A1C] border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors" placeholder="e.g. Raju Mistry" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-1">Phone Number *</label>
+                                        <input required type="tel" value={inviteData.phone} onChange={(e) => setInviteData({...inviteData, phone: e.target.value})} className="w-full bg-[#1A1A1C] border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors" placeholder="e.g. 9876543210" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-1">Email</label>
+                                        <input type="email" value={inviteData.email} onChange={(e) => setInviteData({...inviteData, email: e.target.value})} className="w-full bg-[#1A1A1C] border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors" placeholder="e.g. optional@work.com" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">Set Temporary Password *</label>
+                                    <input required minLength={6} type="text" value={inviteData.password} onChange={(e) => setInviteData({...inviteData, password: e.target.value})} className="w-full bg-[#1A1A1C] border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors" placeholder="e.g. Secure@123" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-1">Wage Type</label>
+                                        <select value={inviteData.baseWageType} onChange={(e) => setInviteData({...inviteData, baseWageType: e.target.value})} className="w-full bg-[#1A1A1C] border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors appearance-none">
+                                            <option value="Daily">Daily</option>
+                                            <option value="Per Task">Per Task</option>
+                                            <option value="Fixed">Fixed Monthly</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-1">Base Wage (₹) *</label>
+                                        <input required type="number" min="0" value={inviteData.baseWageAmount} onChange={(e) => setInviteData({...inviteData, baseWageAmount: e.target.value})} className="w-full bg-[#1A1A1C] border border-white/10 rounded-xl px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors" placeholder="e.g. 500" />
+                                    </div>
+                                </div>
+                                <button disabled={isInviting} type="submit" className="w-full mt-6 bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                                    {isInviting ? 'Sending Invite...' : <><FaUserPlus /> Confirm & Create Invite</>}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
             </AnimatePresence>
         </div>
     );
