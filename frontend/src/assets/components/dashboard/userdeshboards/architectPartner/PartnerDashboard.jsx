@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import API from '../../../../api/api';
 import { AuthContext } from '../../../../context/AuthContext';
 import { FaClock, FaCheckCircle, FaSpinner, FaMapMarkerAlt, FaUpload, FaKey, FaSignOutAlt, FaCalendarCheck, FaHardHat, FaTasks } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,9 +19,7 @@ const PartnerDashboard = () => {
     // Quick fetch functions
     const fetchTasks = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/architect-workforce/tasks', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await API.get('/architect-workforce/tasks');
             if (res.data.success) setTasks(res.data.tasks);
         } catch (err) {
             console.error(err);
@@ -31,9 +29,7 @@ const PartnerDashboard = () => {
     const fetchAttendance = async () => {
         try {
             const today = new Date().toISOString().split('T')[0];
-            const res = await axios.get(`http://localhost:5000/api/architect-workforce/attendance?date=${today}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await API.get(`/architect-workforce/attendance?date=${today}`);
             // We only care if they checked in today
             if (res.data.success && res.data.logs.length > 0) {
                 setAttendance(res.data.logs[0]);
@@ -74,11 +70,11 @@ const PartnerDashboard = () => {
             for (let record of offlineData) {
                 try {
                     const endpoint = record.action === 'checkin' ? '/attendance/checkin' : '/attendance/checkout';
-                    await axios.post(`http://localhost:5000/api/architect-workforce${endpoint}`, {
+                    await API.post(`/architect-workforce${endpoint}`, {
                         lat: record.lat, 
                         lng: record.lng, 
                         timestamp: record.timestamp
-                    }, { headers: { Authorization: `Bearer ${token}` }});
+                    });
                     syncedCount++;
                 } catch (e) {
                     console.error('Sync error', e);
@@ -121,9 +117,9 @@ const PartnerDashboard = () => {
 
             try {
                 const endpoint = action === 'checkin' ? '/attendance/checkin' : '/attendance/checkout';
-                const res = await axios.post(`http://localhost:5000/api/architect-workforce${endpoint}`, {
+                const res = await API.post(`/architect-workforce${endpoint}`, {
                     lat: latitude, lng: longitude, timestamp
-                }, { headers: { Authorization: `Bearer ${token}` }});
+                });
                 
                 if (res.data.success) {
                     alert(`${action === 'checkin' ? 'Checked In' : 'Checked Out'} Successfully!`);
@@ -147,9 +143,8 @@ const PartnerDashboard = () => {
 
     const updateTaskStatus = async (taskId, status) => {
         try {
-            const res = await axios.put(`http://localhost:5000/api/architect-workforce/task/${taskId}`, 
-            { status },
-            { headers: { Authorization: `Bearer ${token}` }});
+            const res = await API.put(`/architect-workforce/task/${taskId}`, 
+            { status });
             
             if (res.data.success) {
                 fetchTasks(); // Refresh tasks
@@ -164,9 +159,7 @@ const PartnerDashboard = () => {
         e.preventDefault();
         setIsChangingPwd(true);
         try {
-            await axios.put('http://localhost:5000/api/users/me/password', pwdData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await API.put('/users/me/password', pwdData);
             alert('Password updated successfully!');
             setIsPwdModalOpen(false);
             setPwdData({ currentPassword: '', newPassword: '' });
