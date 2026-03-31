@@ -24,6 +24,10 @@ router.get('/attendance', controller.getAttendance); // Shared endpoint returnin
 router.post('/payment', controller.recordPayment);
 router.get('/payments', controller.getPayments);
 
+// --- LIVE LOCATION ---
+router.post('/location', controller.updateLocation);
+router.get('/locations', controller.getPartnerLocations);
+
 // --- DASHBOARD ---
 router.get('/stats', controller.getDashboardStats);
 

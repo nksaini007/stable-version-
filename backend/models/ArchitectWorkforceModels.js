@@ -56,14 +56,29 @@ const architectReviewSchema = new mongoose.Schema({
   feedback: { type: String, required: true }
 }, { timestamps: true });
 
+// --- LIVE LOCATION MODEL ---
+const partnerLocationSchema = new mongoose.Schema({
+  architectId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  partnerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+  lat: { type: Number, required: true },
+  lng: { type: Number, required: true },
+  accuracy: { type: Number, default: 0 },
+  lastUpdated: { type: Date, default: Date.now }
+}, { timestamps: true });
+
+// Auto-expire location docs after 24 hours of no update
+partnerLocationSchema.index({ lastUpdated: 1 }, { expireAfterSeconds: 86400 });
+
 const ArchitectTask = mongoose.models.ArchitectTask || mongoose.model("ArchitectTask", architectTaskSchema);
 const ArchitectPayment = mongoose.models.ArchitectPayment || mongoose.model("ArchitectPayment", architectPaymentSchema);
 const ArchitectAttendance = mongoose.models.ArchitectAttendance || mongoose.model("ArchitectAttendance", architectAttendanceSchema);
 const ArchitectReview = mongoose.models.ArchitectReview || mongoose.model("ArchitectReview", architectReviewSchema);
+const PartnerLocation = mongoose.models.PartnerLocation || mongoose.model("PartnerLocation", partnerLocationSchema);
 
 module.exports = {
   ArchitectTask,
   ArchitectPayment,
   ArchitectAttendance,
-  ArchitectReview
+  ArchitectReview,
+  PartnerLocation
 };

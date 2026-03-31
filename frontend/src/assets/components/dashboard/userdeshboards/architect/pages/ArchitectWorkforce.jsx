@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useContext, Suspense, lazy } from 'react';
 import API from '../../../../../api/api';
 import { AuthContext } from '../../../../../context/AuthContext';
-import { FaUserPlus, FaTasks, FaMoneyBillWave, FaMapMarkerAlt, FaChartBar, FaCheckCircle, FaExclamationCircle, FaTrash, FaClock, FaCalendarCheck, FaPlus, FaSearch, FaFilter, FaEye, FaTimes } from 'react-icons/fa';
+import { FaUserPlus, FaTasks, FaMoneyBillWave, FaMapMarkerAlt, FaChartBar, FaCheckCircle, FaExclamationCircle, FaTrash, FaClock, FaCalendarCheck, FaPlus, FaSearch, FaFilter, FaEye, FaTimes, FaSyncAlt, FaSatellite } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // Dynamically load heavy charting libraries ONLY when needed to save mobile bandwidth
 const DynamicChart = lazy(() => 
@@ -37,6 +40,7 @@ const ArchitectWorkforce = () => {
     const [tasks, setTasks] = useState([]);
     const [payments, setPayments] = useState([]);
     const [attendance, setAttendance] = useState([]);
+    const [partnerLocations, setPartnerLocations] = useState([]);
     
     // Invite Partner State
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
@@ -101,6 +105,13 @@ const ArchitectWorkforce = () => {
         } catch (err) { console.error("Attendance error:", err); }
     };
 
+    const fetchLocations = async () => {
+        try {
+            const res = await API.get('/architect-workforce/locations');
+            if(res.data.success) setPartnerLocations(res.data.locations);
+        } catch (err) { console.error("Locations error:", err); }
+    };
+
     // Fetch on tab change
     useEffect(() => {
         if (!token) return;
@@ -109,6 +120,14 @@ const ArchitectWorkforce = () => {
         if (activeTab === 'Task Board') { fetchTasks(); fetchPartners(); }
         if (activeTab === 'Payments') { fetchPayments(); fetchPartners(); }
         if (activeTab === 'Attendance') fetchAttendance(attendanceDate);
+        if (activeTab === 'Live Map') fetchLocations();
+    }, [activeTab, token]);
+
+    // Auto-refresh location every 30 seconds when on Live Map tab
+    useEffect(() => {
+        if (activeTab !== 'Live Map' || !token) return;
+        const interval = setInterval(fetchLocations, 30000);
+        return () => clearInterval(interval);
     }, [activeTab, token]);
 
     // --- HANDLERS ---
@@ -186,6 +205,7 @@ const ArchitectWorkforce = () => {
         { name: 'Task Board', icon: <FaTasks /> },
         { name: 'Attendance', icon: <FaCalendarCheck /> },
         { name: 'Payments', icon: <FaMoneyBillWave /> },
+        { name: 'Live Map', icon: <FaSatellite /> },
     ];
 
     const totalPaidAmount = payments.filter(p => p.status === 'Paid').reduce((s, p) => s + p.amount, 0);
@@ -580,6 +600,103 @@ const ArchitectWorkforce = () => {
                                     </div>
                                 )}
                             </div>
+                        </div>
+                    )}
+
+                    {/* ============ LIVE MAP TAB ============ */}
+                    {activeTab === 'Live Map' && (
+                        <div className="space-y-6">
+                            <div className="bg-[#111] border border-white/5 p-6 rounded-3xl shadow-xl">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                                    <div>
+                                        <h2 className="text-2xl font-bold flex items-center gap-3">
+                                            <FaSatellite className="text-cyan-400" /> Live Partner Tracking
+                                        </h2>
+                                        <p className="text-sm text-gray-500 mt-1">{partnerLocations.length} partners reporting location • Auto-refreshes every 30s</p>
+                                    </div>
+                                    <button onClick={fetchLocations} className="bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-3 flex items-center gap-2 rounded-xl text-sm font-bold transition-colors">
+                                        <FaSyncAlt /> Refresh Now
+                                    </button>
+                                </div>
+
+                                {partnerLocations.length === 0 ? (
+                                    <EmptyState icon={<FaSatellite />} title="No Live Locations" desc="Partners will appear here once they log in to their dashboard. Their GPS is pushed every 60 seconds automatically." />
+                                ) : (
+                                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl" style={{ height: '500px' }}>
+                                        <MapContainer
+                                            center={[partnerLocations[0]?.lat || 20.5937, partnerLocations[0]?.lng || 78.9629]}
+                                            zoom={13}
+                                            style={{ height: '100%', width: '100%' }}
+                                            scrollWheelZoom={true}
+                                        >
+                                            <TileLayer
+                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            />
+                                            {partnerLocations.map(loc => {
+                                                const minutesAgo = Math.round((Date.now() - new Date(loc.lastUpdated).getTime()) / 60000);
+                                                const isStale = minutesAgo > 10;
+                                                const icon = L.divIcon({
+                                                    className: '',
+                                                    html: `<div style="background:${isStale ? '#ef4444' : '#22c55e'};width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:14px;box-shadow:0 0 15px ${isStale ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)'};border:3px solid white;">${loc.partnerId?.name?.charAt(0)?.toUpperCase() || '?'}</div>`,
+                                                    iconSize: [36, 36],
+                                                    iconAnchor: [18, 18]
+                                                });
+                                                return (
+                                                    <Marker key={loc._id} position={[loc.lat, loc.lng]} icon={icon}>
+                                                        <Popup>
+                                                            <div style={{minWidth:'180px',fontFamily:'system-ui'}}>
+                                                                <p style={{fontWeight:800,fontSize:'15px',margin:'0 0 4px'}}>{loc.partnerId?.name || 'Unknown'}</p>
+                                                                <p style={{color:'#666',fontSize:'12px',margin:'0 0 2px'}}>{loc.partnerId?.phone || loc.partnerId?.email || ''}</p>
+                                                                <hr style={{margin:'8px 0',border:'none',borderTop:'1px solid #eee'}}/>
+                                                                <p style={{fontSize:'12px',margin:'0 0 2px'}}><b>Accuracy:</b> ±{Math.round(loc.accuracy || 0)}m</p>
+                                                                <p style={{fontSize:'12px',margin:'0',color: isStale ? '#ef4444' : '#22c55e'}}><b>Updated:</b> {minutesAgo < 1 ? 'Just now' : `${minutesAgo} min ago`}</p>
+                                                            </div>
+                                                        </Popup>
+                                                    </Marker>
+                                                );
+                                            })}
+                                        </MapContainer>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Location List Below Map */}
+                            {partnerLocations.length > 0 && (
+                                <div className="bg-[#111] border border-white/5 p-6 rounded-3xl shadow-xl">
+                                    <h3 className="text-lg font-bold mb-4">Location Details</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {partnerLocations.map(loc => {
+                                            const minutesAgo = Math.round((Date.now() - new Date(loc.lastUpdated).getTime()) / 60000);
+                                            const isStale = minutesAgo > 10;
+                                            return (
+                                                <div key={loc._id} className="bg-[#1A1A1C] p-5 rounded-2xl border border-white/5 hover:border-white/15 transition-colors">
+                                                    <div className="flex items-center gap-4 mb-4">
+                                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-black text-white ${isStale ? 'bg-red-600' : 'bg-green-600'}`}>
+                                                            {loc.partnerId?.name?.charAt(0)?.toUpperCase() || '?'}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <h4 className="font-bold text-sm truncate">{loc.partnerId?.name}</h4>
+                                                            <p className="text-[11px] text-gray-500">{loc.partnerId?.phone || loc.partnerId?.email}</p>
+                                                        </div>
+                                                        <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase border ${isStale ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'}`}>
+                                                            {isStale ? '⚠️ Stale' : '🟢 Live'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="space-y-2 text-xs text-gray-400">
+                                                        <p><b className="text-gray-300">Coordinates:</b> {loc.lat.toFixed(6)}, {loc.lng.toFixed(6)}</p>
+                                                        <p><b className="text-gray-300">Accuracy:</b> ±{Math.round(loc.accuracy || 0)}m</p>
+                                                        <p><b className="text-gray-300">Last Updated:</b> <span className={isStale ? 'text-red-400' : 'text-green-400'}>{minutesAgo < 1 ? 'Just now' : `${minutesAgo} min ago`}</span></p>
+                                                    </div>
+                                                    <a href={`https://www.google.com/maps?q=${loc.lat},${loc.lng}`} target="_blank" rel="noreferrer" className="mt-4 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors">
+                                                        <FaMapMarkerAlt /> Open in Google Maps
+                                                    </a>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </motion.div>

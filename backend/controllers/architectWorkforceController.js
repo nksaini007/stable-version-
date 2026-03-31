@@ -1,6 +1,6 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcrypt'); // Make sure to use bcryptjs or bcrypt according to the project
-const { ArchitectTask, ArchitectPayment, ArchitectAttendance, ArchitectReview } = require('../models/ArchitectWorkforceModels');
+const { ArchitectTask, ArchitectPayment, ArchitectAttendance, ArchitectReview, PartnerLocation } = require('../models/ArchitectWorkforceModels');
 
 // --- PARTNER MANAGEMENT ---
 
@@ -335,3 +335,53 @@ exports.getDashboardStats = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });      
     }
 }
+
+// --- LIVE LOCATION ---
+
+exports.updateLocation = async (req, res) => {
+    try {
+        if (req.user.role !== 'architectPartner') {
+            return res.status(403).json({ success: false, message: 'Only partners can update location' });
+        }
+
+        const { lat, lng, accuracy } = req.body;
+        if (lat == null || lng == null) {
+            return res.status(400).json({ success: false, message: 'lat and lng are required' });
+        }
+
+        const location = await PartnerLocation.findOneAndUpdate(
+            { partnerId: req.user._id },
+            {
+                architectId: req.user.employerArchitect,
+                partnerId: req.user._id,
+                lat,
+                lng,
+                accuracy: accuracy || 0,
+                lastUpdated: new Date()
+            },
+            { upsert: true, new: true }
+        );
+
+        res.status(200).json({ success: true, location });
+    } catch (error) {
+        console.error("updateLocation Error:", error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+exports.getPartnerLocations = async (req, res) => {
+    try {
+        if (req.user.role !== 'architect') {
+            return res.status(403).json({ success: false, message: 'Only architects can view partner locations' });
+        }
+
+        const locations = await PartnerLocation.find({ architectId: req.user._id })
+            .populate('partnerId', 'name email phone')
+            .sort({ lastUpdated: -1 });
+
+        res.status(200).json({ success: true, locations });
+    } catch (error) {
+        console.error("getPartnerLocations Error:", error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};

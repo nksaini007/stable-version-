@@ -57,9 +57,31 @@ const PartnerDashboard = () => {
         // Run sync on initial load if online
         if (navigator.onLine) syncOfflineData();
 
+        // --- BACKGROUND GPS PUSH (every 60 seconds) ---
+        // Silently sends the partner's live coordinates so the architect can track them
+        let locationInterval = null;
+        const pushLocation = () => {
+            if (!navigator.geolocation || !navigator.onLine || !token) return;
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    API.post('/architect-workforce/location', {
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude,
+                        accuracy: pos.coords.accuracy
+                    }).catch(() => {}); // Silent — never interrupt the user
+                },
+                () => {}, // Silently ignore errors
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
+            );
+        };
+        // Send immediately on load, then every 60 seconds
+        pushLocation();
+        locationInterval = setInterval(pushLocation, 60000);
+
         return () => {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
+            if (locationInterval) clearInterval(locationInterval);
         };
     }, [token]);
 
