@@ -56,26 +56,6 @@ const AnimatedCard = () => {
           accent: "bg-amber-600 hover:bg-amber-700",
           dashRoute: "/delivery"
         };
-      case 'architect':
-        return {
-          theme: "indigo",
-          title: "Architect Portal",
-          subtitle: "Review blueprints, manage construction timelines, and update sites.",
-          icon: (
-            <div className="relative group/mini-house flex items-center justify-center -mb-4">
-              <img 
-                src={houseImg} 
-                alt="Mini House" 
-                className="w-48 h-auto drop-shadow-[0_15px_15px_rgba(0,0,0,0.3)] transition-transform duration-700 group-hover/mini-house:scale-110"
-              />
-              <div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-3xl opacity-0 group-hover/mini-house:opacity-100 transition-opacity duration-700"></div>
-            </div>
-          ),
-          bgGradient: "from-slate-900 to-black",
-          accent: "bg-white hover:bg-gray-100 text-black",
-          dashRoute: "/architect",
-          isDark: true
-        };
       case 'provider':
         return {
           theme: "purple",
