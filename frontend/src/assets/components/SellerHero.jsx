@@ -20,7 +20,7 @@ const fadeUp = {
 };
 
 const SellerHero = () => {
-  const brand = "COMMERCE";
+  const brand = "stinchar";
   const navigate = useNavigate();
 
   return (
@@ -67,15 +67,15 @@ const SellerHero = () => {
         transition={{ duration: 1.5, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="relative w-full h-full flex flex-col items-center justify-center">
-            <motion.img
-                src={cubeImg}
-                alt="Stinchar Merchant Hub"
-                className="w-auto h-[65vh] md:h-[80vh] object-contain drop-shadow-[0_40px_40px_rgba(0,0,0,0.8)] filter brightness-110 contrast-125"
-                animate={{ y: [0, -12, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            />
-            {/* Base Drop Shadow */}
-            <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[300px] md:w-[500px] h-8 bg-black/60 blur-3xl rounded-[100%] z-10 pointer-events-none" />
+          <motion.img
+            src={cubeImg}
+            alt="Stinchar Merchant Hub"
+            className="w-auto h-[65vh] md:h-[80vh] object-contain drop-shadow-[0_40px_40px_rgba(0,0,0,0.8)] filter brightness-110 contrast-125"
+            animate={{ y: [0, -12, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          {/* Base Drop Shadow */}
+          <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-[300px] md:w-[500px] h-8 bg-black/60 blur-3xl rounded-[100%] z-10 pointer-events-none" />
         </div>
       </motion.div>
 
@@ -130,7 +130,7 @@ const SellerHero = () => {
         <p className="text-xs md:text-sm text-gray-400 font-medium tracking-wide leading-relaxed max-w-[280px] mb-8">
           Advanced inventory control, global distribution streams, and predictive sales analytics.
         </p>
-        
+
         {/* Main Dashboard Access Button */}
         <button
           onClick={() => navigate('/seller')}
