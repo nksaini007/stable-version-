@@ -5,6 +5,7 @@ import { FaSearch, FaArrowRight, FaShieldAlt, FaStore, FaTruck, FaHardHat, FaWre
 import { AuthContext } from "../context/AuthContext";
 import API from "../api/api";
 import ArchitectHero from "./ArchitectHero";
+import SellerHero from "./SellerHero";
 
 const AnimatedCard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,16 +36,6 @@ const AnimatedCard = () => {
           bgGradient: "from-blue-50/50 to-white",
           accent: "bg-blue-600 hover:bg-blue-700",
           dashRoute: "/admin"
-        };
-      case 'seller':
-        return {
-          theme: "emerald",
-          title: "Merchant Center",
-          subtitle: "Track inventory, manage orders, and analyze your sales.",
-          icon: <FaStore className="text-emerald-500 text-5xl mb-4" />,
-          bgGradient: "from-emerald-50/50 to-white",
-          accent: "bg-emerald-600 hover:bg-emerald-700",
-          dashRoute: "/seller"
         };
       case 'delivery':
         return {
@@ -152,7 +143,11 @@ const AnimatedCard = () => {
     return <ArchitectHero />;
   }
 
-  if (isDashboardUser && config && role !== 'architect') {
+  if (role === 'seller') {
+    return <SellerHero />;
+  }
+
+  if (isDashboardUser && config && role !== 'architect' && role !== 'seller') {
     const isDark = config.isDark;
     return (
       <div className={`min-h-[85vh] flex flex-col items-center justify-center p-6 sm:p-12 transition-colors duration-700 ${isDark ? 'bg-black' : `bg-gradient-to-br ${config.bgGradient}`}`}>
