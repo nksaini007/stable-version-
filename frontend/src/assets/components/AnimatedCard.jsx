@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaSearch, FaArrowRight, FaShieldAlt, FaStore, FaTruck, FaHardHat, FaWrench, FaTags, FaRulerCombined, FaPalette, FaBuilding } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import API from "../api/api";
+import ArchitectHero from "./ArchitectHero";
 import houseImg from "../images/architect_house_hero.png";
 
 const AnimatedCard = () => {
@@ -168,7 +169,11 @@ const AnimatedCard = () => {
   // ----------------------------------------------------------------------
   // RENDER FOR DASHBOARD USERS (Admins, Sellers, Architects, etc.)
   // ----------------------------------------------------------------------
-  if (isDashboardUser && config) {
+  if (role === 'architect') {
+    return <ArchitectHero />;
+  }
+
+  if (isDashboardUser && config && role !== 'architect') {
     const isDark = config.isDark;
     return (
       <div className={`min-h-[85vh] flex flex-col items-center justify-center p-6 sm:p-12 transition-colors duration-700 ${isDark ? 'bg-black' : `bg-gradient-to-br ${config.bgGradient}`}`}>

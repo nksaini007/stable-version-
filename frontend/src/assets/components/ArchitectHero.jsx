@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import houseImg from "../images/architect_house_hero.png";
+import { FaArrowRight } from "react-icons/fa";
 
 const containerVariants = {
   hidden: {},
@@ -19,6 +21,7 @@ const fadeUp = {
 
 const ArchitectHero = () => {
   const brand = "STINCHAR";
+  const navigate = useNavigate();
 
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#f5f4f0] font-['Inter',sans-serif] mb-0 select-none">
@@ -114,9 +117,19 @@ const ArchitectHero = () => {
         <h1 className="text-4xl md:text-6xl font-black leading-[1.05] tracking-tighter text-stone-800 mb-4">
           Crafting<br />Atmosphere.
         </h1>
-        <p className="text-xs md:text-sm text-stone-400 font-medium tracking-wide leading-relaxed max-w-[260px]">
+        <p className="text-xs md:text-sm text-stone-400 font-medium tracking-wide leading-relaxed max-w-[260px] mb-8">
           Precision-engineered spaces. From blueprint to breathable reality.
         </p>
+
+        {/* Dashboard Access Button */}
+        <button
+          onClick={() => navigate('/architect')}
+          className="group inline-flex items-center justify-between w-full max-w-[220px] px-6 py-4 bg-stone-900 text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-none border border-stone-800 hover:bg-white hover:text-stone-900 transition-all duration-500 overflow-hidden relative"
+        >
+            <span className="relative z-10">Enter Studio CRM</span>
+            <FaArrowRight className="relative z-10 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+            <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-[0.16,1,0.3,1] z-0"></div>
+        </button>
       </motion.div>
 
       {/* ── Bottom-Right: Accent Stats ────────────────────────────────── */}
