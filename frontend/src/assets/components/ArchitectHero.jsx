@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import houseImg from "../images/architect_house_hero.png";
+import houseImg from "../images/architect_house_hero1.png";
 import { FaArrowRight } from "react-icons/fa";
 
 const containerVariants = {
@@ -126,9 +126,9 @@ const ArchitectHero = () => {
           onClick={() => navigate('/architect')}
           className="group inline-flex items-center justify-between w-full max-w-[220px] px-6 py-4 bg-stone-900 text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-none border border-stone-800 hover:bg-white hover:text-stone-900 transition-all duration-500 overflow-hidden relative"
         >
-            <span className="relative z-10">Enter Studio CRM</span>
-            <FaArrowRight className="relative z-10 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
-            <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-[0.16,1,0.3,1] z-0"></div>
+          <span className="relative z-10">Enter Studio CRM</span>
+          <FaArrowRight className="relative z-10 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+          <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-[0.16,1,0.3,1] z-0"></div>
         </button>
       </motion.div>
 
