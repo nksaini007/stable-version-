@@ -89,7 +89,7 @@ const ArchitectHero = () => {
           <br />
           Est. Innovations Platform
           <br />
-          India — En Route
+          India
         </p>
       </motion.div>
 
@@ -102,7 +102,7 @@ const ArchitectHero = () => {
         animate="visible"
       >
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1">Current Projects</p>
-        <p className="text-4xl md:text-6xl font-black text-stone-800 leading-none">42</p>
+        <p className="text-4xl md:text-6xl font-black text-stone-800 leading-none">live 🟢</p>
         <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-stone-400 mt-1">Active Sites</p>
       </motion.div>
 
