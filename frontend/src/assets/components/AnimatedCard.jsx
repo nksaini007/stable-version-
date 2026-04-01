@@ -5,7 +5,6 @@ import { FaSearch, FaArrowRight, FaShieldAlt, FaStore, FaTruck, FaHardHat, FaWre
 import { AuthContext } from "../context/AuthContext";
 import API from "../api/api";
 import ArchitectHero from "./ArchitectHero";
-import houseImg from "../images/architect_house_hero.png";
 
 const AnimatedCard = () => {
   const [searchQuery, setSearchQuery] = useState("");
