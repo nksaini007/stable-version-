@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import mdHouse from "../images/mdhouse.png";
+import cubeImg from "../images/cube1.png";
 import { FaArrowRight } from "react-icons/fa";
 
 const containerVariants = {
@@ -68,7 +68,7 @@ const SellerHero = () => {
       >
         <div className="relative w-full h-full flex flex-col items-center justify-center">
             <motion.img
-                src={mdHouse}
+                src={cubeImg}
                 alt="Stinchar Merchant Hub"
                 className="w-auto h-[65vh] md:h-[80vh] object-contain drop-shadow-[0_40px_40px_rgba(0,0,0,0.8)] filter brightness-110 contrast-125"
                 animate={{ y: [0, -12, 0] }}
