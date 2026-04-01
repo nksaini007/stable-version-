@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import houseImg from "../images/architect_minimalist_house.png";
+import houseImg from "../images/architect_house_hero.png";
 
 const containerVariants = {
   hidden: {},
