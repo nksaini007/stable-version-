@@ -5,6 +5,7 @@ import { AuthContext } from "../../../../../context/AuthContext";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCheckCircle, FaSpinner, FaCloudUploadAlt, FaBuilding, FaTasks, FaHardHat, FaMapMarkerAlt, FaTimes, FaSearch, FaFilter, FaArrowRight, FaImage, FaCalendarAlt, FaRegCalendarAlt, FaBullhorn, FaPaperPlane, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import ArchitectHero from "../../../../ArchitectHero";
 
 const ArchitectDashboard = () => {
     const { token, user } = useContext(AuthContext);
@@ -246,6 +247,9 @@ const ArchitectDashboard = () => {
                         transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
                         className="space-y-12"
                     >
+                        {/* 🌟 NEW ARCHITECT HERO SECTION 🌟 */}
+                        <ArchitectHero />
+
                         {/* Metrics Grid - Minimalist Premium Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[

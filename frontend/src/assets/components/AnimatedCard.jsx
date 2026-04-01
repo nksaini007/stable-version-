@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaSearch, FaArrowRight, FaShieldAlt, FaStore, FaTruck, FaHardHat, FaWrench, FaTags, FaRulerCombined, FaPalette, FaBuilding } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import API from "../api/api";
+import houseImg from "../images/architect_house_hero.png";
 
 const AnimatedCard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,10 +61,20 @@ const AnimatedCard = () => {
           theme: "indigo",
           title: "Architect Portal",
           subtitle: "Review blueprints, manage construction timelines, and update sites.",
-          icon: <FaHardHat className="text-indigo-500 text-5xl mb-4" />,
-          bgGradient: "from-indigo-50/50 to-white",
-          accent: "bg-indigo-600 hover:bg-indigo-700",
-          dashRoute: "/architect"
+          icon: (
+            <div className="relative group/mini-house flex items-center justify-center -mb-4">
+              <img 
+                src={houseImg} 
+                alt="Mini House" 
+                className="w-48 h-auto drop-shadow-[0_15px_15px_rgba(0,0,0,0.3)] transition-transform duration-700 group-hover/mini-house:scale-110"
+              />
+              <div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-3xl opacity-0 group-hover/mini-house:opacity-100 transition-opacity duration-700"></div>
+            </div>
+          ),
+          bgGradient: "from-slate-900 to-black",
+          accent: "bg-white hover:bg-gray-100 text-black",
+          dashRoute: "/architect",
+          isDark: true
         };
       case 'provider':
         return {
@@ -158,37 +169,43 @@ const AnimatedCard = () => {
   // RENDER FOR DASHBOARD USERS (Admins, Sellers, Architects, etc.)
   // ----------------------------------------------------------------------
   if (isDashboardUser && config) {
+    const isDark = config.isDark;
     return (
-      <div className={`min-h-[85vh] flex flex-col items-center justify-center p-6 sm:p-12 transition-colors duration-700 bg-gradient-to-br ${config.bgGradient}`}>
+      <div className={`min-h-[85vh] flex flex-col items-center justify-center p-6 sm:p-12 transition-colors duration-700 ${isDark ? 'bg-black' : `bg-gradient-to-br ${config.bgGradient}`}`}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full max-w-4xl bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border border-gray-100 flex flex-col md:flex-row"
+          className={`w-full max-w-4xl ${isDark ? 'bg-[#121214] border-white/5' : 'bg-white border-gray-100'} rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden border flex flex-col md:flex-row`}
         >
-          <div className={`md:w-1/3 p-10 flex flex-col items-center justify-center text-center bg-gray-50/50 border-b md:border-b-0 md:border-r border-gray-100`}>
+          <div className={`md:w-1/3 p-10 flex flex-col items-center justify-center text-center ${isDark ? 'bg-[#161618] border-white/5 md:border-r' : 'bg-gray-50/50 border-gray-100 md:border-r'} border-b md:border-b-0 flex flex-col items-center justify-center`}>
             <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
               {config.icon}
             </motion.div>
-            <h2 className="text-2xl font-bold text-gray-800 tracking-tight mt-2">
+            <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} tracking-tight mt-6`}>
               Hi, {userName.split(' ')[0]}
             </h2>
-            <p className="text-sm font-medium text-gray-500 mt-2 uppercase tracking-wide">
+            <p className={`text-sm font-medium ${isDark ? 'text-gray-500' : 'text-gray-500'} mt-2 uppercase tracking-wide`}>
               {role.charAt(0).toUpperCase() + role.slice(1)} Account
             </p>
           </div>
 
-          <div className="md:w-2/3 p-10 flex flex-col justify-center">
-            <h3 className="text-3xl font-extrabold text-gray-900 mb-4 tracking-tight">
+          <div className="md:w-2/3 p-10 flex flex-col justify-center relative overflow-hidden">
+            {/* Background dynamic glow for dark mode */}
+            {isDark && (
+              <div className="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+            )}
+            
+            <h3 className={`text-3xl font-extrabold ${isDark ? 'text-white' : 'text-gray-900'} mb-4 tracking-tight relative z-10`}>
               {config.title}
             </h3>
-            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+            <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-8 leading-relaxed relative z-10`}>
               {config.subtitle}
             </p>
-            <div className="mt-auto">
+            <div className="mt-auto relative z-10">
               <button
                 onClick={() => navigate(config.dashRoute)}
-                className={`group inline-flex items-center justify-center gap-3 px-8 py-4 ${config.accent} text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto`}
+                className={`group inline-flex items-center justify-center gap-3 px-8 py-4 ${config.accent} font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto`}
               >
                 Access Dashboard
                 <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -201,7 +218,7 @@ const AnimatedCard = () => {
   }
 
   // ----------------------------------------------------------------------
-  // RENDER FOR CUSTOMERS & GUESTS (Modern Light Theme with Picture)
+  // RENDER FOR CUSTOMERS & GUESTS (Restored to original state)
   // ----------------------------------------------------------------------
   return (
     <div className="flex flex-col font-sans">
@@ -277,7 +294,7 @@ const AnimatedCard = () => {
             </form>
 
             {/* Elegant Category Pills */}
-            {/* <div className="flex flex-wrap justify-center gap-3 mt-8">
+            <div className="flex flex-wrap justify-center gap-3 mt-8">
               {["Web Design", "Architects", "3D Models", "Concrete", "Tools"].map((cat, idx) => (
                 <button
                   key={idx}
@@ -288,7 +305,7 @@ const AnimatedCard = () => {
                   {cat}
                 </button>
               ))}
-            </div> */}
+            </div>
           </motion.div >
 
         </div >
