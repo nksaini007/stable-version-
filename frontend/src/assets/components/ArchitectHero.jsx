@@ -1,146 +1,184 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FaDraftingCompass } from "react-icons/fa";
-import houseImg from "../images/architect_house_hero.png";
+import houseImg from "../images/architect_minimalist_house.png";
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } },
+};
+
+const letterVariants = {
+  hidden: { y: "100%", opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (d = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.9, delay: d, ease: [0.16, 1, 0.3, 1] } }),
+};
 
 const ArchitectHero = () => {
-  const brandName = "STINCHAR";
+  const brand = "STINCHAR";
 
   return (
-    <div className="relative w-full h-[85vh] md:h-screen flex flex-col items-center justify-center overflow-hidden bg-[#050505] rounded-[3rem] p-4 md:p-12 mb-12 group selection:bg-indigo-500/30">
-      
-      {/* 🌟 Layer 1: Professional Deep Background 🌟 */}
-      <div className="absolute inset-0 z-0 bg-[#050505]">
-        {/* Subtle Ambient Vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(40,40,40,0.2)_0%,transparent_100%)]"></div>
-        {/* Animated Particles or Grid could go here */}
-        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-      </div>
+    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#f5f4f0] font-['Inter',sans-serif] mb-0 select-none">
 
-      {/* 🌟 Layer 2: BEHIND Animated Branding (STINCHAR) 🌟 */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-10">
-        <div className="flex w-full justify-center px-4 overflow-hidden">
-          {brandName.split("").map((letter, index) => (
+      {/* ── Animated STINCHAR Watermark ─────────────────────────────── */}
+      {/* z-10: sits BEHIND the house (z-20) */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none overflow-hidden">
+        <motion.div
+          className="flex"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {brand.split("").map((ch, i) => (
             <motion.span
-              key={index}
-              initial={{ y: "150%", opacity: 0, rotateX: 90 }}
-              animate={{ y: 0, opacity: 0.1, rotateX: 0 }}
-              transition={{ 
-                duration: 1.5, 
-                delay: 0.3 + index * 0.1, 
-                ease: [0.16, 1, 0.3, 1] 
-              }}
-              className="text-[22vw] md:text-[25vw] font-black tracking-tighter text-white uppercase leading-none transform perspective-1000"
-              style={{ 
+              key={i}
+              variants={letterVariants}
+              className="text-[22vw] md:text-[21vw] font-black tracking-tighter leading-none uppercase block"
+              style={{
+                color: "transparent",
+                WebkitTextStroke: "1.5px rgba(0,0,0,0.07)",
                 fontFamily: "'Inter', sans-serif",
-                WebkitTextStroke: "1px rgba(255,255,255,0.2)",
-                color: "transparent"
+                letterSpacing: "-0.03em",
               }}
             >
-              {letter}
+              {ch}
             </motion.span>
           ))}
-        </div>
+        </motion.div>
       </div>
 
-      {/* 🌟 Layer 3: FOREGROUND Centerpiece (The Luxury House) 🌟 */}
-      <motion.div 
-        initial={{ scale: 0.8, opacity: 0, y: 50 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        transition={{ duration: 1.5, ease: "easeOut", delay: 1 }}
-        className="absolute inset-0 z-20 flex items-center justify-center"
+      {/* ── Centerpiece: The House (z-20 = in front of text) ────────── */}
+      <motion.div
+        className="absolute inset-0 z-20 flex items-end justify-center pointer-events-none"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.5, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="relative w-full max-w-7xl h-full flex items-center justify-center">
-            <motion.img 
-                src={houseImg} 
-                alt="Luxury House Foreground" 
-                className="w-auto h-[60%] md:h-[80%] object-contain drop-shadow-[0_50px_50px_rgba(0,0,0,0.8)] filter contrast-[1.1] saturate-[1.2]"
-                animate={{ 
-                    y: [0, -15, 0],
-                }}
-                transition={{ 
-                    duration: 10, 
-                    repeat: Infinity, 
-                    ease: "easeInOut" 
-                }}
-            />
-            
-            {/* Soft Shadow below house */}
-            <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-64 md:w-[400px] h-10 bg-black/40 blur-2xl rounded-full"></div>
+        <motion.img
+          src={houseImg}
+          alt="Stinchar Architecture — Minimalist Concept"
+          className="h-[75vh] md:h-[88vh] w-auto object-contain object-bottom"
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </motion.div>
+
+      {/* ── Subtle ground shadow under house ─────────────────────────── */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 md:w-96 h-8 bg-black/8 blur-2xl rounded-full z-20 pointer-events-none" />
+
+      {/* ── Top-Left Studio Metadata (like 'P. HOUSE' reference) ─────── */}
+      <motion.div
+        className="absolute top-10 left-8 md:top-14 md:left-14 z-30 pointer-events-auto"
+        custom={1.6}
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.p className="text-[10px] md:text-xs font-extrabold uppercase tracking-[0.25em] text-stone-800 mb-3">
+          Stinchar Studio
+        </motion.p>
+        <div className="h-px w-8 bg-stone-400 mb-3" />
+        <p className="text-[9px] md:text-[10px] font-medium uppercase tracking-[0.18em] text-stone-400 leading-loose">
+          Architecture & Design
+          <br />
+          Est. Innovations Platform
+          <br />
+          India — En Route
+        </p>
+      </motion.div>
+
+      {/* ── Top-Right Counter Badge ───────────────────────────────────── */}
+      <motion.div
+        className="absolute top-10 right-8 md:top-14 md:right-14 z-30 text-right pointer-events-auto"
+        custom={1.9}
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-1">Current Projects</p>
+        <p className="text-4xl md:text-6xl font-black text-stone-800 leading-none">42</p>
+        <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-stone-400 mt-1">Active Sites</p>
+      </motion.div>
+
+      {/* ── Bottom-Left: Title Block ──────────────────────────────────── */}
+      <motion.div
+        className="absolute bottom-12 left-8 md:bottom-16 md:left-14 z-30 max-w-sm pointer-events-auto"
+        custom={2.1}
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
+        <h1 className="text-4xl md:text-6xl font-black leading-[1.05] tracking-tighter text-stone-800 mb-4">
+          Crafting<br />Atmosphere.
+        </h1>
+        <p className="text-xs md:text-sm text-stone-400 font-medium tracking-wide leading-relaxed max-w-[260px]">
+          Precision-engineered spaces. From blueprint to breathable reality.
+        </p>
+      </motion.div>
+
+      {/* ── Bottom-Right: Accent Stats ────────────────────────────────── */}
+      <motion.div
+        className="absolute bottom-12 right-8 md:bottom-16 md:right-14 z-30 text-right pointer-events-auto flex flex-col gap-5"
+        custom={2.3}
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
+        <div>
+          <p className="text-2xl md:text-4xl font-black text-stone-800 leading-none">₹1.2Cr</p>
+          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-stone-400 mt-1">Portfolio Value</p>
+        </div>
+        <div>
+          <p className="text-2xl md:text-4xl font-black text-stone-800 leading-none">98%</p>
+          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-stone-400 mt-1">Satisfaction Index</p>
         </div>
       </motion.div>
 
-      {/* 🌟 Layer 4: Content & Interactive Controls 🌟 */}
-      <div className="relative z-30 w-full h-full max-w-7xl mx-auto flex flex-col justify-between p-8 pointer-events-none">
-        
-        {/* Header Content */}
+      {/* ── Scroll Hint ──────────────────────────────────────────────── */}
+      <motion.div
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 3, duration: 1 }}
+      >
+        <p className="text-[8px] font-bold uppercase tracking-[0.3em] text-stone-400">Scroll</p>
         <motion.div
-           initial={{ opacity: 0, x: -30 }}
-           animate={{ opacity: 1, x: 0 }}
-           transition={{ duration: 1, delay: 2.2 }}
-           className="max-w-xl pointer-events-auto mt-12"
-        >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-indigo-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
-              <FaDraftingCompass className="animate-spin-slow" /> Professional_Studio_v2.0
-            </span>
-            <h2 className="text-4xl md:text-7xl font-extrabold text-white leading-tight tracking-tight">
-              Crafting <span className="text-gray-400">Atmosphere.</span>
-            </h2>
-        </motion.div>
+          className="w-px h-10 bg-stone-300"
+          animate={{ scaleY: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </motion.div>
 
-        {/* Footer Statistics */}
-        <motion.div
-           initial={{ opacity: 0, y: 30 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 1, delay: 2.5 }}
-           className="flex flex-wrap gap-8 pointer-events-auto mb-12"
-        >
-            <div className="flex flex-col gap-1">
-                <span className="text-3xl font-black text-white leading-none">42+</span>
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Active High-Value Projects</span>
-            </div>
-            <div className="flex flex-col gap-1">
-                <span className="text-3xl font-black text-white leading-none">₹1.2Cr</span>
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Asset Portfolio</span>
-            </div>
-            <div className="hidden md:flex flex-col gap-1">
-                <span className="text-3xl font-black text-white leading-none tracking-tight">98%</span>
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Client Satisfaction Index</span>
-            </div>
-        </motion.div>
+      {/* ── Hotspots (minimal + mark) ─────────────────────────────────── */}
+      <div className="hidden md:block">
+        <Hotspot style={{ left: "52%", top: "38%" }} label="Vertical Garden" />
+        <Hotspot style={{ left: "56%", top: "62%" }} label="Steel Terrace" />
       </div>
 
-      {/* Hotspots Layer */}
-      <div className="absolute inset-0 z-40 pointer-events-none hidden md:block">
-        <Hotspot x="35%" y="45%" label="Panoramic Suite" detail="Living quarters integrated" />
-        <Hotspot x="65%" y="55%" label="Eco Terrace" detail="Solar efficiency certified" />
-      </div>
-
-      {/* Background Ambience / Glows */}
-      <div className="absolute top-1/4 -right-10 w-96 h-96 bg-indigo-500/5 rounded-full blur-[120px] z-5"></div>
-      <div className="absolute -bottom-1/4 -left-10 w-96 h-96 bg-purple-500/5 rounded-full blur-[120px] z-5"></div>
-      
-    </div>
+    </section>
   );
 };
 
-// Internal Component for Hotspots
-const Hotspot = ({ x, y, label, detail }) => (
-  <motion.div 
-    className="absolute pointer-events-auto"
-    style={{ left: x, top: y }}
-    initial={{ scale: 0 }}
-    animate={{ scale: 1 }}
-    transition={{ delay: 2.8, type: "spring" }}
+const Hotspot = ({ style, label }) => (
+  <motion.div
+    className="absolute z-30 group pointer-events-auto"
+    style={style}
+    initial={{ scale: 0, opacity: 0 }}
+    animate={{ scale: 1, opacity: 1 }}
+    transition={{ delay: 2.5, type: "spring", stiffness: 200 }}
   >
-    <div className="relative group/spot">
-      <div className="w-4 h-4 rounded-full bg-white/60 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.4)] animate-pulse cursor-crosshair"></div>
-      
-      {/* Tooltip */}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 p-4 bg-white/5 backdrop-blur-2xl border border-white/20 rounded-2xl opacity-0 group-hover/spot:opacity-100 translate-y-3 group-hover/spot:translate-y-0 transition-all duration-500 pointer-events-none">
-        <p className="text-[10px] font-black text-white uppercase tracking-widest">{label}</p>
-        <p className="text-[9px] text-gray-400 mt-2 leading-relaxed uppercase tracking-wide italic">{detail}</p>
+    <div className="relative flex items-center gap-3">
+      {/* + Marker */}
+      <div className="w-5 h-5 flex items-center justify-center text-stone-500 text-xs font-black border border-stone-300 rounded-full bg-white/80 backdrop-blur-sm cursor-crosshair hover:bg-stone-800 hover:text-white hover:border-stone-800 transition-all duration-300">
+        +
       </div>
+      {/* Tooltip */}
+      <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-stone-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+        {label}
+      </p>
     </div>
   </motion.div>
 );
