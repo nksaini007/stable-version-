@@ -7,41 +7,33 @@ const ArchitectHero = () => {
   const brandName = "STINCHAR";
 
   return (
-    <div className="relative w-full h-[70vh] md:h-[85vh] flex flex-col items-center justify-center overflow-hidden bg-[#050505] rounded-[3rem] mb-12 group">
+    <div className="relative w-full h-[85vh] md:h-screen flex flex-col items-center justify-center overflow-hidden bg-[#050505] rounded-[3rem] p-4 md:p-12 mb-12 group selection:bg-indigo-500/30">
       
-      {/* 🏙️ Full Background Image with Parallax & Scale Effect 🏙️ */}
-      <motion.div 
-        initial={{ scale: 1.1, opacity: 0 }}
-        animate={{ scale: 1, opacity: 0.4 }}
-        transition={{ duration: 2, ease: "easeOut" }}
-        className="absolute inset-0 z-0 flex items-center justify-center"
-      >
-        <img 
-          src={houseImg} 
-          alt="Luxury House Background" 
-          className="w-full h-full object-cover lg:object-contain scale-125 lg:scale-110 opacity-60"
-        />
-        {/* Soft radial vignette to focus center */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_80%)]"></div>
-      </motion.div>
+      {/* 🌟 Layer 1: Professional Deep Background 🌟 */}
+      <div className="absolute inset-0 z-0 bg-[#050505]">
+        {/* Subtle Ambient Vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(40,40,40,0.2)_0%,transparent_100%)]"></div>
+        {/* Animated Particles or Grid could go here */}
+        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+      </div>
 
-      {/* 🌟 Animated Brand Text: STINCHAR 🌟 */}
+      {/* 🌟 Layer 2: BEHIND Animated Branding (STINCHAR) 🌟 */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-10">
-        <div className="flex overflow-hidden">
+        <div className="flex w-full justify-center px-4 overflow-hidden">
           {brandName.split("").map((letter, index) => (
             <motion.span
               key={index}
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 0.15 }}
+              initial={{ y: "150%", opacity: 0, rotateX: 90 }}
+              animate={{ y: 0, opacity: 0.1, rotateX: 0 }}
               transition={{ 
-                duration: 1, 
-                delay: 0.5 + index * 0.1, 
-                ease: [0.33, 1, 0.68, 1] 
+                duration: 1.5, 
+                delay: 0.3 + index * 0.1, 
+                ease: [0.16, 1, 0.3, 1] 
               }}
-              className="text-[18vw] md:text-[22vw] font-black tracking-tighter text-white uppercase leading-none"
+              className="text-[22vw] md:text-[25vw] font-black tracking-tighter text-white uppercase leading-none transform perspective-1000"
               style={{ 
                 fontFamily: "'Inter', sans-serif",
-                WebkitTextStroke: "1px rgba(255,255,255,0.3)",
+                WebkitTextStroke: "1px rgba(255,255,255,0.2)",
                 color: "transparent"
               }}
             >
@@ -51,70 +43,104 @@ const ArchitectHero = () => {
         </div>
       </div>
 
-      {/* Floating Ambient Glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+      {/* 🌟 Layer 3: FOREGROUND Centerpiece (The Luxury House) 🌟 */}
+      <motion.div 
+        initial={{ scale: 0.8, opacity: 0, y: 50 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ duration: 1.5, ease: "easeOut", delay: 1 }}
+        className="absolute inset-0 z-20 flex items-center justify-center"
+      >
+        <div className="relative w-full max-w-7xl h-full flex items-center justify-center">
+            <motion.img 
+                src={houseImg} 
+                alt="Luxury House Foreground" 
+                className="w-auto h-[60%] md:h-[80%] object-contain drop-shadow-[0_50px_50px_rgba(0,0,0,0.8)] filter contrast-[1.1] saturate-[1.2]"
+                animate={{ 
+                    y: [0, -15, 0],
+                }}
+                transition={{ 
+                    duration: 10, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
+                }}
+            />
+            
+            {/* Soft Shadow below house */}
+            <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-64 md:w-[400px] h-10 bg-black/40 blur-2xl rounded-full"></div>
+        </div>
+      </motion.div>
 
-      {/* ✨ Main Content Layer ✨ */}
-      <div className="relative z-20 w-full max-w-5xl mx-auto px-6 text-center">
+      {/* 🌟 Layer 4: Content & Interactive Controls 🌟 */}
+      <div className="relative z-30 w-full h-full max-w-7xl mx-auto flex flex-col justify-between p-8 pointer-events-none">
+        
+        {/* Header Content */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.2 }}
-          className="flex flex-col items-center"
+           initial={{ opacity: 0, x: -30 }}
+           animate={{ opacity: 1, x: 0 }}
+           transition={{ duration: 1, delay: 2.2 }}
+           className="max-w-xl pointer-events-auto mt-12"
         >
-          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-indigo-300 text-xs font-bold uppercase tracking-[0.2em] mb-8">
-            <FaDraftingCompass className="animate-spin-slow" /> Professional Studio
-          </span>
-          
-          <h2 className="text-5xl md:text-8xl font-black text-white mb-8 leading-[0.9] tracking-tight">
-            Design the <span className="text-gray-600">Future.</span>
-          </h2>
-          
-          <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl leading-relaxed font-medium">
-            Immersive architectural visualization meets precision engineering. 
-            Transform your sketches into breathable spaces.
-          </p>
-          
-          {/* Quick Actions / Stats - Glassmorphic */}
-          <div className="flex flex-wrap justify-center gap-6">
-            <div className="px-8 py-5 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 transition-colors duration-500 text-left min-w-[180px]">
-              <p className="text-3xl font-black text-white">42+</p>
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mt-1">Active Projects</p>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-indigo-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
+              <FaDraftingCompass className="animate-spin-slow" /> Professional_Studio_v2.0
+            </span>
+            <h2 className="text-4xl md:text-7xl font-extrabold text-white leading-tight tracking-tight">
+              Crafting <span className="text-gray-400">Atmosphere.</span>
+            </h2>
+        </motion.div>
+
+        {/* Footer Statistics */}
+        <motion.div
+           initial={{ opacity: 0, y: 30 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ duration: 1, delay: 2.5 }}
+           className="flex flex-wrap gap-8 pointer-events-auto mb-12"
+        >
+            <div className="flex flex-col gap-1">
+                <span className="text-3xl font-black text-white leading-none">42+</span>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Active High-Value Projects</span>
             </div>
-            <div className="px-8 py-5 rounded-[2rem] bg-white/10 border border-white/20 backdrop-blur-xl hover:bg-white/20 transition-colors duration-500 text-left min-w-[180px]">
-              <p className="text-3xl font-black text-white">₹1.2Cr</p>
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mt-1">Portfolio Cap</p>
+            <div className="flex flex-col gap-1">
+                <span className="text-3xl font-black text-white leading-none">₹1.2Cr</span>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Asset Portfolio</span>
             </div>
-          </div>
+            <div className="hidden md:flex flex-col gap-1">
+                <span className="text-3xl font-black text-white leading-none tracking-tight">98%</span>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Client Satisfaction Index</span>
+            </div>
         </motion.div>
       </div>
 
-      {/* Interactive Hotspots (Relocated to bottom or as floating particles) */}
-      <div className="absolute bottom-10 left-10 z-30 hidden md:block">
-        <Hotspot label="Main Suite" detail="Dynamic lighting ready" />
-      </div>
-      <div className="absolute top-20 right-10 z-30 hidden md:block">
-        <Hotspot label="Solar Array" detail="Efficiency: 98.4%" />
+      {/* Hotspots Layer */}
+      <div className="absolute inset-0 z-40 pointer-events-none hidden md:block">
+        <Hotspot x="35%" y="45%" label="Panoramic Suite" detail="Living quarters integrated" />
+        <Hotspot x="65%" y="55%" label="Eco Terrace" detail="Solar efficiency certified" />
       </div>
 
-      {/* Decorative Bottom Fade */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#050505] to-transparent z-10 pointer-events-none"></div>
+      {/* Background Ambience / Glows */}
+      <div className="absolute top-1/4 -right-10 w-96 h-96 bg-indigo-500/5 rounded-full blur-[120px] z-5"></div>
+      <div className="absolute -bottom-1/4 -left-10 w-96 h-96 bg-purple-500/5 rounded-full blur-[120px] z-5"></div>
+      
     </div>
   );
 };
 
 // Internal Component for Hotspots
-const Hotspot = ({ label, detail }) => (
+const Hotspot = ({ x, y, label, detail }) => (
   <motion.div 
-    className="group/spot flex items-center gap-4"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay: 2 }}
+    className="absolute pointer-events-auto"
+    style={{ left: x, top: y }}
+    initial={{ scale: 0 }}
+    animate={{ scale: 1 }}
+    transition={{ delay: 2.8, type: "spring" }}
   >
-    <div className="w-3 h-3 rounded-full bg-white/60 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.5)] animate-pulse"></div>
-    <div className="px-4 py-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl opacity-0 group-hover/spot:opacity-100 transition-opacity duration-300">
-      <p className="text-[10px] font-bold text-white uppercase tracking-widest leading-none">{label}</p>
-      <p className="text-[8px] text-gray-500 mt-1 uppercase">{detail}</p>
+    <div className="relative group/spot">
+      <div className="w-4 h-4 rounded-full bg-white/60 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.4)] animate-pulse cursor-crosshair"></div>
+      
+      {/* Tooltip */}
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 p-4 bg-white/5 backdrop-blur-2xl border border-white/20 rounded-2xl opacity-0 group-hover/spot:opacity-100 translate-y-3 group-hover/spot:translate-y-0 transition-all duration-500 pointer-events-none">
+        <p className="text-[10px] font-black text-white uppercase tracking-widest">{label}</p>
+        <p className="text-[9px] text-gray-400 mt-2 leading-relaxed uppercase tracking-wide italic">{detail}</p>
+      </div>
     </div>
   </motion.div>
 );
