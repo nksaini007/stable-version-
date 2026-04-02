@@ -4,7 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import Nev from "./Nev";
 import Footer from "./Footer";
 import { CartContext } from "../context/CartContext";
-import { Star, CheckCircle, XCircle, ShieldCheck, Truck, Sparkles } from "lucide-react";
+import { Star, CheckCircle, XCircle, ShieldCheck, Truck, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { FaCube } from "react-icons/fa";
 import ReviewSection from "./ReviewSection";
 import API from "../api/api";
@@ -183,10 +183,10 @@ const ProductPage = () => {
 
       <div className="flex flex-col lg:flex-row min-h-[calc(100vh-70px)]">
         {/* Left Half: Soft Blue Gallery Pane */}
-        <div className="relative lg:w-1/2 bg-[#E1EDF6] flex flex-col justify-center items-center p-8 lg:p-16 h-full min-h-[500px]">
+        <div className="relative lg:w-1/2 bg-[#E1EDF6] flex flex-col justify-center items-center overflow-hidden min-h-[500px]">
 
           {/* Top Badges / AR Toggle */}
-          <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-10">
+          <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20">
             <div>
               {productInfo.badge && (
                 <span className="bg-white/80 backdrop-blur-sm text-gray-800 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-2 inline-block shadow-sm">
@@ -205,16 +205,16 @@ const ProductPage = () => {
           </div>
 
           {/* Main Visual */}
-          <div className="relative w-full max-w-lg aspect-square flex items-center justify-center z-0">
+          <div className="absolute inset-0 w-full h-full flex items-center justify-center z-0">
             {showAR && productInfo?.arModelUrl ? (
-              <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl mix-blend-multiply">
+              <div className="w-full h-full mix-blend-multiply">
                 <ARViewer src={productInfo.arModelUrl} scale={productInfo.arModelScale} rotation={productInfo.arModelRotation} bgColor="bg-transparent" />
               </div>
             ) : selectedImage ? (
               <img
                 src={selectedImage}
                 alt={productInfo.name}
-                className="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl transition-all duration-500 hover:scale-105"
+                className="w-full h-full object-contain mix-blend-multiply transition-all duration-500 hover:scale-105 p-12 lg:p-24"
                 {...lazyImageProps}
               />
             ) : (
@@ -358,8 +358,42 @@ const ProductPage = () => {
             </div>
           </div>
 
-          <div className="mt-12 flex items-center justify-between border-t border-gray-100 pt-8">
+          <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-8">
             <ReviewSection itemId={productId} type="product" minimal={true} />
+          </div>
+
+          {/* Restored Complete Specifications */}
+          <div className="mt-10 border-t border-gray-100 pt-8">
+            <h3 className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-4">Specifications</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-[14px]">
+              {productInfo.category && <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-400">Category</span><span className="font-semibold text-gray-800">{productInfo.category}</span></div>}
+              {productInfo.subcategory && <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-400">Subcategory</span><span className="font-semibold text-gray-800">{productInfo.subcategory}</span></div>}
+              {productInfo.type && <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-400">Type</span><span className="font-semibold text-gray-800">{productInfo.type}</span></div>}
+              {productInfo.material && <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-400">Material</span><span className="font-semibold text-gray-800">{productInfo.material}</span></div>}
+              {productInfo.color && <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-400">Color</span><span className="font-semibold text-gray-800">{productInfo.color}</span></div>}
+              {productInfo.dimensions && <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-400">Dimensions</span><span className="font-semibold text-gray-800">{productInfo.dimensions}</span></div>}
+              {productInfo.weight && <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-400">Weight</span><span className="font-semibold text-gray-800">{productInfo.weight}</span></div>}
+              {productInfo.warranty && <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-400">Warranty</span><span className="font-semibold text-gray-800">{productInfo.warranty}</span></div>}
+              {productInfo.origin && <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-400">Origin</span><span className="font-semibold text-gray-800">{productInfo.origin}</span></div>}
+            </div>
+
+            {productInfo.care_instructions && (
+              <div className="mt-8">
+                <h3 className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-3">Care Instructions</h3>
+                <p className="text-[#556987] leading-relaxed text-[15px]">{productInfo.care_instructions}</p>
+              </div>
+            )}
+
+            {productInfo.features?.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-3">Features</h3>
+                <ul className="list-disc pl-5 text-[#556987] text-[15px] space-y-1">
+                  {productInfo.features.map((feature, idx) => (
+                    <li key={idx}>{feature}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
         </div>
