@@ -181,9 +181,9 @@ const ProductPage = () => {
     <div className="bg-white min-h-screen font-sans">
       <Nev />
 
-      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-70px)]">
-        {/* Left Half: Soft Blue Gallery Pane */}
-        <div className="relative lg:w-1/2 bg-[#E1EDF6] flex flex-col justify-center items-center overflow-hidden min-h-[500px]">
+      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-70px)] bg-white">
+        {/* Left Half: Soft Blue Gallery Pane - Sticky on Desktop */}
+        <div className="lg:w-1/2 bg-[#E1EDF6] lg:sticky lg:top-[70px] lg:h-[calc(100vh-70px)] flex flex-col justify-center items-center overflow-hidden min-h-[500px]">
 
           {/* Top Badges / AR Toggle */}
           <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20">
@@ -268,8 +268,10 @@ const ProductPage = () => {
 
           <div className="flex items-center gap-4 mb-8 border-b border-gray-100 pb-8">
             <div className="flex items-center gap-2">
-              <RatingStars rating={productInfo.rating} />
-              <span className="text-sm font-bold text-[#2A3342]">{productInfo.rating || "5.0"}</span>
+              <span className="text-sm font-bold text-[#2A3342] bg-yellow-400/20 px-2 py-0.5 rounded flex items-center gap-1">
+                <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                {productInfo.rating || "5.0"}
+              </span>
               <span className="text-sm text-gray-400">({productInfo.numOfReviews || 89} reviews)</span>
             </div>
             <span className="text-gray-300">|</span>
@@ -321,45 +323,47 @@ const ProductPage = () => {
             </div>
           )}
 
-          {/* Add to Cart Actions */}
-          <div className="flex flex-wrap gap-4 mt-2">
-            <div className="flex flex-col flex-1 max-w-[120px]">
-              <h3 className="text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-3">Quantity</h3>
-              <div className="relative">
-                <select
-                  className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-3.5 px-4 pr-8 rounded-lg font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-[#71CDBA] transition-shadow duration-300 drop-shadow-sm hover:border-gray-300"
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
-                >
-                  {[...Array(10)].map((_, i) => (
-                    <option key={i + 1} value={i + 1}>0{i + 1}</option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+          {/* Add to Cart & Buy Now Actions */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-2 mb-12">
+            <button
+              onClick={handleAddToCart}
+              disabled={!inStock}
+              className={`flex-1 py-4 px-6 font-bold text-sm tracking-widest uppercase rounded-lg shadow-lg border-2 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${added
+                  ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                  : "bg-white text-[#2A3342] border-[#2A3342] hover:bg-gray-50"
+                } flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none`}
+            >
+              {added ? (
+                <><CheckCircle className="w-5 h-5" /> Added</>
+              ) : (
+                "Add To Cart"
+              )}
+            </button>
+
+            <button
+              onClick={() => {
+                handleAddToCart();
+                setTimeout(() => window.location.href = "/cart", 500);
+              }}
+              disabled={!inStock}
+              className="flex-[1.5] py-4 px-6 font-bold text-sm text-white tracking-widest uppercase rounded-lg bg-[#71CDBA] hover:bg-[#60C3AE] shadow-xl shadow-[#71CDBA]/30 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+            >
+              Buy Now
+            </button>
+          </div>
+
+          <div className="border-t border-gray-100 pt-10">
+            <h3 className="text-lg font-bold text-[#2A3342] mb-6">Customer Reviews</h3>
+            <div className="mb-8">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="text-4xl font-black text-[#2A3342]">{productInfo.rating || "5.0"}</div>
+                <div>
+                  <RatingStars rating={productInfo.rating} />
+                  <div className="text-xs text-gray-400 mt-1">Based on {productInfo.numOfReviews || 89} verified reviews</div>
                 </div>
               </div>
             </div>
-
-            <div className="flex flex-col flex-[2] min-w-[200px]">
-              <div className="h-[22px] mb-3"></div> {/* Spacer to align with Quantity label */}
-              <button
-                onClick={handleAddToCart}
-                disabled={!inStock}
-                className={`w-full py-4 px-6 font-bold text-sm text-white tracking-widest uppercase rounded-lg shadow-xl shadow-[#71CDBA]/30 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] ${added ? "bg-[#52B4A1] ring-2 ring-offset-2 ring-[#71CDBA]" : "bg-[#71CDBA] hover:bg-[#60C3AE]"
-                  } flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none`}
-              >
-                {added ? (
-                  <><CheckCircle className="w-5 h-5" /> Added To Cart</>
-                ) : (
-                  "Add To Cart"
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-8">
-            <ReviewSection itemId={productId} type="product" minimal={true} />
+            <ReviewSection itemId={productId} type="product" minimal={false} />
           </div>
 
           {/* Restored Complete Specifications */}
