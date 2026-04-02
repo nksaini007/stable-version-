@@ -18,7 +18,7 @@ const getProducts = async (req, res) => {
     const activeSellerIds = activeSellers.map(s => s._id);
 
     // Build filter object
-    const filter = { 
+    const filter = {
       seller: { $in: activeSellerIds },
       isActive: true // Also ensure the product itself is active
     };
@@ -129,23 +129,30 @@ const createProduct = async (req, res) => {
       imageLink, // New field for external URL
       pricingTiers, // JSON string or object
       recommendations, // array of IDs
+      variants,
       arModelUrl,
       arModelScale,
       arModelRotation,
     } = req.body;
 
-    let image = req.files && req.files.image ? req.files.image[0].path : null;
-    let public_id = req.files && req.files.image ? req.files.image[0].filename : (imageLink ? 'external' : null);
-    
-    // If no file, but a link is provided, use the link
-    if (!image && imageLink) {
-        image = imageLink;
-        public_id = 'external';
+    const uploadedImages = [];
+    if (req.files && req.files.images && req.files.images.length > 0) {
+      req.files.images.forEach(file => {
+        uploadedImages.push({
+          public_id: file.filename,
+          url: file.path
+        });
+      });
+    } else if (imageLink) {
+      uploadedImages.push({
+        public_id: 'external',
+        url: imageLink
+      });
     }
 
     let finalArModelUrl = arModelUrl;
     if (req.files && req.files.arModelFile) {
-        finalArModelUrl = req.files.arModelFile[0].path;
+      finalArModelUrl = req.files.arModelFile[0].path;
     }
 
     // Convert features from text → array if needed
@@ -171,7 +178,8 @@ const createProduct = async (req, res) => {
       features: featuresArray,
       care_instructions,
       stock,
-      images: image ? [{ public_id: public_id, url: image }] : [],
+      images: uploadedImages,
+      variants: typeof variants === 'string' ? JSON.parse(variants) : variants,
       seller: req.user._id,
       pricingTiers: typeof pricingTiers === 'string' ? JSON.parse(pricingTiers) : pricingTiers,
       recommendations: typeof recommendations === 'string' ? JSON.parse(recommendations) : recommendations,
@@ -196,17 +204,9 @@ const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    let image = req.files && req.files.image ? req.files.image[0].path : undefined;
-    let public_id = req.files && req.files.image ? req.files.image[0].filename : (updates.imageLink ? 'external' : undefined);
-
-    // If no file but imageLink provided in updates
-    if (!image && updates.imageLink) {
-        image = updates.imageLink;
-        public_id = 'external';
-    }
 
     if (req.files && req.files.arModelFile) {
-        updates.arModelUrl = req.files.arModelFile[0].path;
+      updates.arModelUrl = req.files.arModelFile[0].path;
     }
 
     // Admin override: Admin can update any product, seller can only update their own
@@ -218,22 +218,32 @@ const updateProduct = async (req, res) => {
     Object.keys(updates).forEach((key) => {
       if (key === 'features' && typeof updates[key] === 'string') {
         product[key] = updates[key].split(',').map((f) => f.trim());
-      } else if (key === 'pricingTiers' || key === 'recommendations') {
+      } else if (key === 'pricingTiers' || key === 'recommendations' || key === 'variants') {
         product[key] = typeof updates[key] === 'string' ? JSON.parse(updates[key]) : updates[key];
       } else if (key !== 'imageLink') { // Don't directly map imageLink to product
         product[key] = updates[key] !== undefined ? updates[key] : product[key];
       }
     });
 
-    if (image) {
-        // Delete old image from Cloudinary if it exists
-        if (product.images && product.images.length > 0) {
-            await Promise.all(product.images.map(img => deleteImage(img.public_id)));
-        }
-        product.images = [{ 
-            public_id: public_id, 
-            url: image 
+    let hasNewImages = req.files && req.files.images && req.files.images.length > 0;
+
+    if (hasNewImages || updates.imageLink) {
+      // Delete old image from Cloudinary if it exists
+      if (product.images && product.images.length > 0) {
+        await Promise.all(product.images.map(img => deleteImage(img.public_id)));
+      }
+
+      if (hasNewImages) {
+        product.images = req.files.images.map(img => ({
+          public_id: img.filename,
+          url: img.path
+        }));
+      } else if (updates.imageLink) {
+        product.images = [{
+          public_id: 'external',
+          url: updates.imageLink
         }];
+      }
     }
 
     await product.save();
@@ -307,12 +317,12 @@ const getPublicSellerProducts = async (req, res) => {
     const { sellerId } = req.params;
 
     const seller = await User.findById(sellerId);
-    
+
     // Allow admin to bypass
     const isAdmin = req.user && req.user.role === 'admin';
 
     if (!isAdmin && (!seller || !seller.isActive)) {
-        return res.status(403).json({ message: "This shop is currently inactive." });
+      return res.status(403).json({ message: "This shop is currently inactive." });
     }
 
     const products = await Product.find({ seller: sellerId, isActive: true });

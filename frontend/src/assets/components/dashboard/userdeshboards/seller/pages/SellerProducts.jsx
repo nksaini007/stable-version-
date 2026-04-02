@@ -10,12 +10,13 @@ const SellerProducts = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editing, setEditing] = useState(null);
-    const [preview, setPreview] = useState(null);
+    const [previews, setPreviews] = useState([]);
     const [search, setSearch] = useState("");
     const [form, setForm] = useState({
         name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "",
-        material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "", 
-        image: null, imageLink: "",
+        material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "",
+        images: [], imageLink: "",
+        variants: [],
         arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg", arModelFile: null,
         pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] }
     });
@@ -39,32 +40,32 @@ const SellerProducts = () => {
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        setForm({ ...form, image: file });
-        if (file) setPreview(URL.createObjectURL(file));
+        const files = Array.from(e.target.files);
+        setForm({ ...form, images: files, imageLink: "" });
+        setPreviews(files.map(f => URL.createObjectURL(f)));
     };
 
     const resetForm = () => {
-        setForm({ 
-            name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", 
-            brand: "", material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", 
-            features: "", care_instructions: "", image: null, imageLink: "",
+        setForm({
+            name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "",
+            brand: "", material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "",
+            features: "", care_instructions: "", images: [], imageLink: "", variants: [],
             arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg", arModelFile: null,
             pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] }
         });
-        setEditing(null); setPreview(null); setShowForm(false);
+        setEditing(null); setPreviews([]); setShowForm(false);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Removed strict HTTP validation. We now allow UUIDs or basic string embed codes.
 
         try {
             const formData = new FormData();
-            Object.entries(form).forEach(([k, v]) => { 
+            Object.entries(form).forEach(([k, v]) => {
                 if (v !== null && v !== undefined) {
-                    if (k === 'pricingTiers') {
+                    if (k === 'pricingTiers' || k === 'variants') {
                         formData.append(k, JSON.stringify(v));
                     } else if (k === 'features' && typeof v === 'string') {
                         formData.append(k, v);
@@ -72,10 +73,12 @@ const SellerProducts = () => {
                         formData.append(k, v);
                     } else if (k === 'arModelFile' && v instanceof File) {
                         formData.append('arModelFile', v);
+                    } else if (k === 'images' && Array.isArray(v)) {
+                        v.forEach(img => formData.append('images', img));
                     } else if ((k === 'arModelScale' || k === 'arModelRotation') && !form.arModelUrl && !form.arModelFile) {
                         // Skip AR metadata if no AR model is provided to prevent DB pollution
                         return;
-                    } else if (k !== 'arModelUrl' && k !== 'arModelFile') {
+                    } else if (k !== 'arModelUrl' && k !== 'arModelFile' && k !== 'images') {
                         formData.append(k, v);
                     }
                 }
@@ -93,18 +96,19 @@ const SellerProducts = () => {
     };
 
     const handleEdit = (p) => {
-        setForm({ 
-            name: p.name || "", description: p.description || "", price: p.price || "", stock: p.stock || "", 
-            category: p.category || "", subcategory: p.subcategory || "", type: p.type || "", 
-            brand: p.brand || "", material: p.material || "", color: p.color || "", dimensions: p.dimensions || "", 
-            weight: p.weight || "", warranty: p.warranty || "", origin: p.origin || "", 
-            features: (p.features || []).join(", "), care_instructions: p.care_instructions || "", 
-            image: null, imageLink: p.images?.[0]?.public_id === 'external' ? p.images[0].url : "",
+        setForm({
+            name: p.name || "", description: p.description || "", price: p.price || "", stock: p.stock || "",
+            category: p.category || "", subcategory: p.subcategory || "", type: p.type || "",
+            brand: p.brand || "", material: p.material || "", color: p.color || "", dimensions: p.dimensions || "",
+            weight: p.weight || "", warranty: p.warranty || "", origin: p.origin || "",
+            features: (p.features || []).join(", "), care_instructions: p.care_instructions || "",
+            images: [], imageLink: p.images?.[0]?.public_id === 'external' ? p.images[0].url : "",
+            variants: p.variants || [],
             arModelUrl: p.arModelUrl || "", arModelScale: p.arModelScale || "1 1 1", arModelRotation: p.arModelRotation || "0deg 0deg 0deg", arModelFile: null,
             pricingTiers: p.pricingTiers || { architect: "", stinchar: "", normal: "", bulk: [] }
         });
         setEditing(p);
-        setPreview(p.images?.[0]?.url ? `${p.images[0].url}` : null);
+        setPreviews(p.images ? p.images.map(img => img.url) : []);
         setShowForm(true);
     };
 
@@ -158,38 +162,38 @@ const SellerProducts = () => {
                             ))}
                         </div>
                         <input name="features" placeholder="Features (comma separated)" value={form.features} onChange={handleChange} className={inputCls} />
-                        
+
                         {/* Pricing Tiers Section */}
                         <div className="p-4 bg-orange-50/50 rounded-2xl border border-orange-100 space-y-4">
                             <h4 className="text-xs font-bold text-orange-700 uppercase tracking-wider">Pricing_Tiers (₹)</h4>
                             <div className="grid sm:grid-cols-3 gap-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-orange-600 block mb-1">ARCHITECT_PRICE</label>
-                                    <input 
-                                        type="number" 
-                                        value={form.pricingTiers.architect} 
-                                        onChange={(e) => setForm({...form, pricingTiers: {...form.pricingTiers, architect: e.target.value}})}
-                                        className={inputCls} 
+                                    <input
+                                        type="number"
+                                        value={form.pricingTiers.architect}
+                                        onChange={(e) => setForm({ ...form, pricingTiers: { ...form.pricingTiers, architect: e.target.value } })}
+                                        className={inputCls}
                                         placeholder="Architect Price"
                                     />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-orange-600 block mb-1">STINCHAR_PURCHASE</label>
-                                    <input 
-                                        type="number" 
-                                        value={form.pricingTiers.stinchar} 
-                                        onChange={(e) => setForm({...form, pricingTiers: {...form.pricingTiers, stinchar: e.target.value}})}
-                                        className={inputCls} 
+                                    <input
+                                        type="number"
+                                        value={form.pricingTiers.stinchar}
+                                        onChange={(e) => setForm({ ...form, pricingTiers: { ...form.pricingTiers, stinchar: e.target.value } })}
+                                        className={inputCls}
                                         placeholder="Stinchar Price"
                                     />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-orange-600 block mb-1">NORMAL_CUSTOMER</label>
-                                    <input 
-                                        type="number" 
-                                        value={form.pricingTiers.normal} 
-                                        onChange={(e) => setForm({...form, pricingTiers: {...form.pricingTiers, normal: e.target.value}})}
-                                        className={inputCls} 
+                                    <input
+                                        type="number"
+                                        value={form.pricingTiers.normal}
+                                        onChange={(e) => setForm({ ...form, pricingTiers: { ...form.pricingTiers, normal: e.target.value } })}
+                                        className={inputCls}
                                         placeholder="Standard Price"
                                     />
                                 </div>
@@ -199,12 +203,12 @@ const SellerProducts = () => {
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center">
                                     <label className="text-[10px] font-bold text-orange-600 uppercase">Bulk_Pricing_Tiers (Qty vs Price)</label>
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={() => setForm({
-                                            ...form, 
+                                            ...form,
                                             pricingTiers: {
-                                                ...form.pricingTiers, 
+                                                ...form.pricingTiers,
                                                 bulk: [...form.pricingTiers.bulk, { minQty: "", price: "" }]
                                             }
                                         })}
@@ -215,33 +219,33 @@ const SellerProducts = () => {
                                 </div>
                                 {form.pricingTiers.bulk.map((tier, bIdx) => (
                                     <div key={bIdx} className="grid grid-cols-3 gap-3 items-center bg-gray-50/50 p-2 rounded-xl border border-gray-100">
-                                        <input 
-                                            type="number" 
-                                            placeholder="Min Qty" 
-                                            value={tier.minQty} 
+                                        <input
+                                            type="number"
+                                            placeholder="Min Qty"
+                                            value={tier.minQty}
                                             onChange={(e) => {
                                                 const newBulk = [...form.pricingTiers.bulk];
                                                 newBulk[bIdx].minQty = e.target.value;
-                                                setForm({...form, pricingTiers: {...form.pricingTiers, bulk: newBulk}});
+                                                setForm({ ...form, pricingTiers: { ...form.pricingTiers, bulk: newBulk } });
                                             }}
-                                            className={inputCls} 
+                                            className={inputCls}
                                         />
-                                        <input 
-                                            type="number" 
-                                            placeholder="Price (₹)" 
-                                            value={tier.price} 
+                                        <input
+                                            type="number"
+                                            placeholder="Price (₹)"
+                                            value={tier.price}
                                             onChange={(e) => {
                                                 const newBulk = [...form.pricingTiers.bulk];
                                                 newBulk[bIdx].price = e.target.value;
-                                                setForm({...form, pricingTiers: {...form.pricingTiers, bulk: newBulk}});
+                                                setForm({ ...form, pricingTiers: { ...form.pricingTiers, bulk: newBulk } });
                                             }}
-                                            className={inputCls} 
+                                            className={inputCls}
                                         />
-                                        <button 
-                                            type="button" 
+                                        <button
+                                            type="button"
                                             onClick={() => {
                                                 const newBulk = form.pricingTiers.bulk.filter((_, i) => i !== bIdx);
-                                                setForm({...form, pricingTiers: {...form.pricingTiers, bulk: newBulk}});
+                                                setForm({ ...form, pricingTiers: { ...form.pricingTiers, bulk: newBulk } });
                                             }}
                                             className="text-red-500 text-xs font-bold hover:underline"
                                         >
@@ -267,19 +271,19 @@ const SellerProducts = () => {
                                         <FaCube className="text-purple-500" /> Upload .glb File
                                         <input type="file" accept=".glb,.gltf,.usdz" className="hidden" onChange={(e) => {
                                             const file = e.target.files[0];
-                                            if(file) {
+                                            if (file) {
                                                 setForm({ ...form, arModelFile: file, arModelUrl: "" });
                                             }
                                         }} />
                                     </label>
-                                    <input 
-                                        name="arModelUrl" 
-                                        placeholder="Or paste direct .glb File URL..." 
-                                        value={form.arModelUrl} 
+                                    <input
+                                        name="arModelUrl"
+                                        placeholder="Or paste direct .glb File URL..."
+                                        value={form.arModelUrl}
                                         onChange={(e) => {
                                             setForm({ ...form, arModelUrl: e.target.value, arModelFile: null });
-                                        }} 
-                                        className={inputCls} 
+                                        }}
+                                        className={inputCls}
                                     />
                                 </div>
                                 {(form.arModelFile) && <p className="text-xs text-emerald-600 font-medium">✓ File selected: {form.arModelFile.name}</p>}
@@ -298,10 +302,10 @@ const SellerProducts = () => {
                                 <div className="mt-4 pt-4 border-t border-purple-100">
                                     <h5 className="text-[10px] font-bold text-purple-700 uppercase mb-2">3D Model Preview</h5>
                                     <div className="h-64 rounded-xl overflow-hidden border border-purple-200 bg-white shadow-inner">
-                                        <ARViewer 
-                                            src={form.arModelFile ? URL.createObjectURL(form.arModelFile) : form.arModelUrl} 
-                                            scale={form.arModelScale} 
-                                            rotation={form.arModelRotation} 
+                                        <ARViewer
+                                            src={form.arModelFile ? URL.createObjectURL(form.arModelFile) : form.arModelUrl}
+                                            scale={form.arModelScale}
+                                            rotation={form.arModelRotation}
                                         />
                                     </div>
                                 </div>
@@ -309,37 +313,75 @@ const SellerProducts = () => {
                         </div>
 
                         <textarea name="care_instructions" placeholder="Care Instructions" value={form.care_instructions} onChange={handleChange} rows={2} className={inputCls} />
+
+                        {/* Variants Section */}
+                        <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 space-y-4">
+                            <div className="flex justify-between items-center bg-blue-100/50 p-2 rounded-xl border border-blue-100">
+                                <h4 className="flex items-center gap-2 text-xs font-bold text-blue-700 uppercase tracking-wider">
+                                    <FaCube /> Product Types / Variants
+                                </h4>
+                                <button
+                                    type="button"
+                                    onClick={() => setForm({
+                                        ...form,
+                                        variants: [...form.variants, { name: "", price: "", stock: "" }]
+                                    })}
+                                    className="text-[10px] font-bold text-blue-600 hover:underline px-2 py-1 bg-white rounded-lg shadow-sm"
+                                >
+                                    + ADD VARIANT
+                                </button>
+                            </div>
+                            {form.variants.map((v, vIdx) => (
+                                <div key={vIdx} className="grid sm:grid-cols-4 gap-3 bg-white p-3 rounded-xl border border-blue-100">
+                                    <input type="text" placeholder="Name (e.g. Red, XL)" value={v.name} onChange={e => {
+                                        const nv = [...form.variants]; nv[vIdx].name = e.target.value; setForm({ ...form, variants: nv });
+                                    }} className={inputCls} />
+                                    <input type="number" placeholder="Price (₹)" value={v.price} onChange={e => {
+                                        const nv = [...form.variants]; nv[vIdx].price = e.target.value; setForm({ ...form, variants: nv });
+                                    }} className={inputCls} />
+                                    <input type="number" placeholder="Stock" value={v.stock} onChange={e => {
+                                        const nv = [...form.variants]; nv[vIdx].stock = e.target.value; setForm({ ...form, variants: nv });
+                                    }} className={inputCls} />
+                                    <button type="button" onClick={() => {
+                                        const nv = form.variants.filter((_, i) => i !== vIdx); setForm({ ...form, variants: nv });
+                                    }} className="text-red-500 font-bold text-xs hover:underline flex items-center justify-center">REMOVE</button>
+                                </div>
+                            ))}
+                        </div>
+
                         <div className="grid sm:grid-cols-2 gap-4 items-end">
                             <div className="space-y-2">
-                                <label className="text-xs text-gray-500 font-medium ml-1">Product Image (File or URL)</label>
-                                <div className="flex items-center gap-3">
+                                <label className="text-xs text-gray-500 font-medium ml-1">Product Images (File or single URL)</label>
+                                <div className="flex flex-col gap-3">
                                     <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 text-sm text-gray-600">
-                                        <FaImage className="text-orange-500" /> Upload
-                                        <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                                        <FaImage className="text-orange-500" /> Upload Multiple
+                                        <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageChange} />
                                     </label>
-                                    <input 
-                                        name="imageLink" 
-                                        placeholder="Or paste Image URL..." 
-                                        value={form.imageLink} 
+                                    <input
+                                        name="imageLink"
+                                        placeholder="Or paste Image URL..."
+                                        value={form.imageLink}
                                         onChange={(e) => {
                                             const url = e.target.value;
-                                            setForm({ ...form, imageLink: url, image: null });
-                                            if (url) setPreview(url);
-                                        }} 
-                                        className={inputCls} 
+                                            setForm({ ...form, imageLink: url, images: [] });
+                                            if (url) setPreviews([url]); else setPreviews([]);
+                                        }}
+                                        className={inputCls}
                                     />
                                 </div>
                             </div>
-                            {preview && (
-                                <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
-                                    <img 
-                                        src={getOptimizedImage(preview, 200)} 
-                                        alt="" 
-                                        className="w-full h-full object-cover" 
-                                        {...lazyImageProps}
-                                    />
-                                </div>
-                            )}
+                            <div className="flex flex-wrap gap-2">
+                                {previews && previews.map((prev, idx) => (
+                                    <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                                        <img
+                                            src={getOptimizedImage(prev, 200)}
+                                            alt=""
+                                            className="w-full h-full object-cover"
+                                            {...lazyImageProps}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                         <div className="flex gap-3">
                             <button type="submit" className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold text-sm transition">{editing ? "Update" : "Add Product"}</button>
@@ -365,10 +407,10 @@ const SellerProducts = () => {
                     {filtered.map((p) => (
                         <div key={p._id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all group">
                             <div className="h-40 bg-gray-100 overflow-hidden">
-                                <img 
-                                    src={getOptimizedImage(p.images?.[0]?.url, 500)} 
-                                    alt={p.name} 
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                                <img
+                                    src={getOptimizedImage(p.images?.[0]?.url, 500)}
+                                    alt={p.name}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                     {...lazyImageProps}
                                 />
                             </div>

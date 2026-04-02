@@ -21,7 +21,7 @@ const SellerLayout = () => {
     };
 
     return (
-        <div 
+        <div
             className="h-screen flex bg-[#f8fafc] overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -29,18 +29,18 @@ const SellerLayout = () => {
         >
             {/* Mobile overlay */}
             {mobileOpen && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity"
                     onClick={() => setMobileOpen(false)}
                 />
             )}
 
             <SellerSidebar collapsed={collapsed} setCollapsed={setCollapsed} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
-            
+
             <main className="flex-1 overflow-y-auto">
                 <div className="sticky top-0 z-10 h-14 bg-white/80 backdrop-blur-lg border-b border-gray-200/60 flex items-center justify-between px-4 md:px-6">
                     <div className="flex items-center gap-3">
-                        <button 
+                        <button
                             className="md:hidden text-gray-600 hover:text-orange-500 transition-colors"
                             onClick={() => setMobileOpen(true)}
                         >

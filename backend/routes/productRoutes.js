@@ -3,15 +3,15 @@ const router = express.Router();
 const multer = require("multer");
 const { storage } = require("../config/cloudinary");
 const {
-  createProduct,
-  getProducts,
-  getProductById,
-  updateProduct,
-  deleteProduct,
-  getSellerProducts,
-  getPublicSellerProducts,
-  getAdminProducts,
-  toggleProductLike,
+   createProduct,
+   getProducts,
+   getProductById,
+   updateProduct,
+   deleteProduct,
+   getSellerProducts,
+   getPublicSellerProducts,
+   getAdminProducts,
+   toggleProductLike,
 } = require("../controllers/productController");
 
 const { protect, sellerOnly, adminOnly } = require("../middlewares/authMiddleware");
@@ -46,8 +46,8 @@ router.get("/", protect, getSellerProducts);
 router.get("/:id", getProductById);
 
 const cpUpload = upload.fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'arModelFile', maxCount: 1 }
+   { name: 'images', maxCount: 10 },
+   { name: 'arModelFile', maxCount: 1 }
 ]);
 
 // ✅ Create new product (Seller)
@@ -98,7 +98,7 @@ module.exports = router;
 // // ------------------------
 // // Seller routes (Protected)
 // // ------------------------
-// router.get('/', protect, sellerOnly, getSellerProducts);             
+// router.get('/', protect, sellerOnly, getSellerProducts);
 // router.post('/', protect, sellerOnly, upload.single('image'), createProduct);
 // router.put('/:id', protect, sellerOnly, upload.single('image'), updateProduct);
 // router.delete('/:id', protect, sellerOnly, deleteProduct);

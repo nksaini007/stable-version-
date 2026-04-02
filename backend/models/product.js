@@ -32,11 +32,19 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, 'Please select category'],
-      
+
     },
     subcategory: {
       type: String,
     },
+    // Product variants for different types/options
+    variants: [
+      {
+        name: { type: String, required: true }, // e.g. "Color-Red" or "Wood Type"
+        price: { type: Number, required: true },
+        stock: { type: Number, default: 0 },
+      }
+    ],
     type: { type: String }, // e.g., Cotton, Electric
 
     // Product Details
@@ -89,8 +97,8 @@ const productSchema = new mongoose.Schema(
     },
 
     // AR Feature
-    arModelUrl: { 
-      type: String, 
+    arModelUrl: {
+      type: String,
       trim: true
     },
     arModelScale: { type: String, trim: true },

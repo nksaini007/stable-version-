@@ -74,6 +74,7 @@ const ProductPage = () => {
   const [added, setAdded] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showAR, setShowAR] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -86,9 +87,11 @@ const ProductPage = () => {
         );
 
         setSelectedImage(getOptimizedImage(normalizedImages[0]));
-        setProductInfo({ 
-            ...data, 
-            images: normalizedImages.map(url => getOptimizedImage(url)) 
+        if (data.arModelUrl) setShowAR(true);
+        if (data.variants && data.variants.length > 0) setSelectedVariant(data.variants[0]);
+        setProductInfo({
+          ...data,
+          images: normalizedImages.map(url => getOptimizedImage(url))
         });
       } catch (err) {
         console.error(err);
@@ -108,7 +111,15 @@ const ProductPage = () => {
       return;
     }
     if (!productInfo) return;
-    addToCart(productInfo);
+
+    // Inject variant details if selected
+    const productToAdd = selectedVariant ? {
+      ...productInfo,
+      price: selectedVariant.price,
+      selectedVariant: selectedVariant.name
+    } : productInfo;
+
+    addToCart(productToAdd);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -174,7 +185,7 @@ const ProductPage = () => {
                     <Sparkles className="h-4 w-4" /> {productInfo.badge}
                   </span>
                 )}
-                
+
                 {productInfo?.arModelUrl && (
                   <button
                     onClick={() => setShowAR(!showAR)}
@@ -278,13 +289,35 @@ const ProductPage = () => {
                 <span className="text-sm text-gray-500">({productInfo.numOfReviews} reviews)</span>
               </div>
 
+              {productInfo.variants && productInfo.variants.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Options</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {productInfo.variants.map((variant, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedVariant(variant)}
+                        className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${selectedVariant?._id === variant._id || selectedVariant?.name === variant.name
+                            ? "border-indigo-600 bg-indigo-50 text-indigo-700 ring-1 ring-indigo-600"
+                            : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                          }`}
+                      >
+                        {variant.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="mt-6">
-                <p className="text-3xl font-extrabold text-gray-900">₹{Number(productInfo.price).toFixed(2)}</p>
-                {productInfo.mrp && productInfo.mrp > productInfo.price && (
+                <p className="text-3xl font-extrabold text-gray-900">
+                  {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(selectedVariant ? selectedVariant.price : productInfo.price)}
+                </p>
+                {productInfo.mrp && productInfo.mrp > (selectedVariant ? selectedVariant.price : productInfo.price) && (
                   <p className="text-sm text-gray-500 mt-1">
-                    MRP: <span className="line-through">₹{Number(productInfo.mrp).toFixed(2)}</span>{" "}
+                    MRP: <span className="line-through">{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(productInfo.mrp)}</span>{" "}
                     <span className="text-green-600 font-semibold">
-                      Save ₹{(productInfo.mrp - productInfo.price).toFixed(2)}
+                      Save {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(productInfo.mrp - (selectedVariant ? selectedVariant.price : productInfo.price))}
                     </span>
                   </p>
                 )}
