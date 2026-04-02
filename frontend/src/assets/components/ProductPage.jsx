@@ -181,9 +181,9 @@ const ProductPage = () => {
     <div className="bg-white min-h-screen font-sans">
       <Nev />
 
-      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-70px)] bg-white">
-        {/* Left Half: Soft Blue Gallery Pane - Sticky on Desktop */}
-        <div className="lg:w-1/2 bg-[#E1EDF6] lg:sticky lg:top-[70px] lg:h-[calc(100vh-70px)] flex flex-col justify-center items-center overflow-hidden min-h-[500px]">
+      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-70px)] bg-white overflow-x-hidden">
+        {/* Left Half: Gray Gallery Pane - Sticky on Desktop */}
+        <div className="w-full lg:w-1/2 bg-gray-200 lg:sticky lg:top-[70px] lg:h-[calc(100vh-70px)] flex flex-col justify-center items-center overflow-hidden min-h-[400px] sm:min-h-[500px] lg:min-h-0">
 
           {/* Top Badges / AR Toggle */}
           <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20">
@@ -205,16 +205,18 @@ const ProductPage = () => {
           </div>
 
           {/* Main Visual */}
-          <div className="absolute inset-0 w-full h-full flex items-center justify-center z-0">
+          <div className="relative w-full h-full flex items-center justify-center z-0 p-8 sm:p-12 lg:p-0">
             {showAR && productInfo?.arModelUrl ? (
-              <div className="w-full h-full mix-blend-multiply">
-                <ARViewer src={productInfo.arModelUrl} scale={productInfo.arModelScale} rotation={productInfo.arModelRotation} bgColor="bg-transparent" />
+              <div className="w-full h-full lg:absolute lg:inset-0 mix-blend-multiply flex items-center justify-center">
+                <div className="w-full h-full max-h-[70vh] lg:max-h-full">
+                  <ARViewer src={productInfo.arModelUrl} scale={productInfo.arModelScale} rotation={productInfo.arModelRotation} bgColor="bg-transparent" />
+                </div>
               </div>
             ) : selectedImage ? (
               <img
                 src={selectedImage}
                 alt={productInfo.name}
-                className="w-full h-full object-contain mix-blend-multiply transition-all duration-500 hover:scale-105 p-12 lg:p-24"
+                className="w-full h-full max-h-[60vh] lg:max-h-none object-contain mix-blend-multiply transition-all duration-500 hover:scale-105 p-4 sm:p-12 lg:p-24"
                 {...lazyImageProps}
               />
             ) : (
@@ -329,8 +331,8 @@ const ProductPage = () => {
               onClick={handleAddToCart}
               disabled={!inStock}
               className={`flex-1 py-4 px-6 font-bold text-sm tracking-widest uppercase rounded-lg shadow-lg border-2 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${added
-                  ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-                  : "bg-white text-[#2A3342] border-[#2A3342] hover:bg-gray-50"
+                ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                : "bg-white text-[#2A3342] border-[#2A3342] hover:bg-gray-50"
                 } flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none`}
             >
               {added ? (
