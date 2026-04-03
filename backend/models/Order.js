@@ -21,6 +21,8 @@ const orderSchema = new mongoose.Schema(
         image: { type: String },
         qty: { type: Number, required: true },
         price: { type: Number, required: true },
+        variantName: { type: String }, // ✅ Track variant name
+        variantId: { type: String },   // ✅ Track variant ID
 
         // 🏬 SELLER DETAILS
         seller: {

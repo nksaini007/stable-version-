@@ -19,8 +19,9 @@ const SellerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) =
         { name: t.dashboard, path: "/seller", icon: <FaHome />, id: "dashboard" },
         { name: t.products, path: "/seller/products", icon: <FaBox />, id: "products" },
         { name: t.orders, path: "/seller/orders", icon: <FaClipboardList />, id: "orders" },
-        { name: t.ads, path: "/seller/ads", icon: <FaBullhorn />, id: "ads" },
+        { name: t.ads || "Ad Campaigns", path: "/seller/ads", icon: <FaBullhorn />, id: "ads" },
         { name: t.payments, path: "/seller/payments", icon: <FaMoneyBillWave />, id: "payments" },
+        { name: "Shop Settings", path: "/seller/settings", icon: <FaStore />, id: "settings" },
     ];
 
     const handleLogout = () => { 

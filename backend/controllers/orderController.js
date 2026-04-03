@@ -60,6 +60,8 @@ const createOrder = async (req, res) => {
         image: dbProduct.images?.[0] || dbProduct.image,
         qty: item.qty,
         price: dbProduct.price, // Use DB price, NOT client price
+        variantName: item.variantName, // ✅ Capture variant details
+        variantId: item.variantId,     // ✅ Capture variant details
         seller: {
           _id: dbProduct.seller,
           name: dbProduct.sellerName || "Partner",
@@ -92,6 +94,30 @@ const createOrder = async (req, res) => {
     });
 
     const createdOrder = await order.save();
+
+    // 5️⃣ ✅ NEW: DYNAMIC STOCK ADJUSTMENT
+    try {
+      for (const item of verifiedOrderItems) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          // Decrement global stock
+          product.stock = Math.max(0, product.stock - item.qty);
+
+          // Decrement variant stock if applicable
+          if (item.variantId && product.variants && product.variants.length > 0) {
+            const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
+            if (variant) {
+              variant.stock = Math.max(0, variant.stock - item.qty);
+            }
+          }
+          await product.save();
+        }
+      }
+    } catch (stockErr) {
+      console.error("Stock Adjustment Error (Post-Order):", stockErr);
+      // We don't fail the order if stock update fails, but we log it.
+    }
+
     res.status(201).json(createdOrder);
   } catch (error) {
     console.error("Order Creation Error:", error);
@@ -442,7 +468,28 @@ const cancelOrder = async (req, res) => {
       note: "Cancelled by customer",
     });
     await order.save();
-    res.json({ message: "Order cancelled", order });
+
+    // ✅ NEW: RESTOCK ON CANCELLATION
+    try {
+      for (const item of order.orderItems) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          product.stock += item.qty;
+          
+          if (item.variantId && product.variants) {
+            const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
+            if (variant) {
+              variant.stock += item.qty;
+            }
+          }
+          await product.save();
+        }
+      }
+    } catch (restockErr) {
+      console.error("Restock Error:", restockErr);
+    }
+
+    res.json({ message: "Order cancelled and stock restored", order });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
