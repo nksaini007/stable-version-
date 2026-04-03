@@ -209,6 +209,57 @@ const SellerProducts = () => {
     // Updated Input Class for Knockturnals Style
     const inputCls = "premium-input w-full";
 
+    const [showBulkModal, setShowBulkModal] = useState(false);
+    const [bulkResults, setBulkResults] = useState(null);
+    const [isUploadingCSV, setIsUploadingCSV] = useState(false);
+
+    const handleDownloadTemplate = () => {
+        const headers = [
+            "name", "price", "stock", "description", "imageUrls", "category", "subcategory", "type", "brand",
+            "material", "color", "dimensions", "weight", "origin", "warranty", "arModelUrl", "arModelScale", "arModelRotation",
+            "architectPrice", "partnerPrice", "memberPrice", "isFragile", "handlingInstructions", "packageWeight", "packageDimensions",
+            "keyFeatures", "careInstructions"
+        ];
+        const sampleData = [
+            "Sample Premium Chair", "4999", "25", "Ergonomic office chair with lumbar support", "https://placehold.co/600x400/000000/FFFFFF.png", "Furniture", "Office", "Chair", "Stinchar Professional",
+            "Mesh & Steel", "Shadow Black", "60x60x110 cm", "12kg", "India", "2 Year Limited", "https://example.com/model.glb", "1 1 1", "0 0 0",
+            "4500", "4700", "4850", "false", "Avoid direct sunlight", "14kg", "65x65x120 cm",
+            "Breathable Mesh, 4D Armrests, Gas Lift", "Clean with vacuum cleaner"
+        ];
+        const csvContent = [headers.join(','), sampleData.join(',')].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'stinchar_bulk_template.csv';
+        link.click();
+    };
+
+    const handleBulkUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        setIsUploadingCSV(true);
+        try {
+            const { data } = await API.post("/products/bulk-upload", formData);
+            setBulkResults(data);
+            setShowBulkModal(true);
+            fetchProducts();
+        } catch (err) {
+            alert(err.response?.data?.message || "Upload failed");
+            if (err.response?.data?.errors) {
+                setBulkResults(err.response.data);
+                setShowBulkModal(true);
+            }
+        } finally {
+            setIsUploadingCSV(false);
+            e.target.value = null; // Clear input
+        }
+    };
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -216,10 +267,22 @@ const SellerProducts = () => {
                     <h1 className="text-3xl font-bold text-white tracking-tight">{t.products}</h1>
                     <p className="text-[14px] text-gray-500 mt-1">Manage and monitor your product catalog</p>
                 </div>
-                <button onClick={() => { resetForm(); setShowForm(!showForm); }}
-                    className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-[14px] font-bold shadow-lg shadow-orange-900/20 transition-all">
-                    {showForm ? <FaTimes /> : <FaPlus />} {showForm ? "Close Form" : "Add New Product"}
-                </button>
+                <div className="flex flex-wrap items-center gap-3">
+                    <button 
+                        onClick={handleDownloadTemplate}
+                        className="px-4 py-2.5 rounded-xl bg-[#1a1a1a] border border-[#262626] hover:bg-[#222] text-gray-400 text-[13px] font-bold transition-all uppercase tracking-widest flex items-center gap-2"
+                    >
+                        <FaImage size={14} /> Template
+                    </button>
+                    <label className="px-4 py-2.5 rounded-xl bg-[#1a1a1a] border border-[#262626] hover:bg-[#222] text-orange-500 text-[13px] font-bold transition-all uppercase tracking-widest flex items-center gap-2 cursor-pointer">
+                        <input type="file" accept=".csv" className="hidden" onChange={handleBulkUpload} disabled={isUploadingCSV} />
+                        {isUploadingCSV ? "Processing..." : <><FaPlus size={14} /> Bulk Import</>}
+                    </label>
+                    <button onClick={() => { resetForm(); setShowForm(!showForm); }}
+                        className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-[14px] font-bold shadow-lg shadow-orange-900/20 transition-all">
+                        {showForm ? <FaTimes /> : <FaPlus />} {showForm ? "Close" : "Add Product"}
+                    </button>
+                </div>
             </div>
 
             {/* Add/Edit Form */}
@@ -682,6 +745,67 @@ const SellerProducts = () => {
                                 className="p-2.5 bg-[#1a1a1a] border border-[#262626] hover:bg-[#222] text-gray-500 rounded-xl transition-all"
                             >
                                 <FaTimes size={14} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Bulk Results Modal */}
+            {showBulkModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="premium-card w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden shadow-2xl border-white/5">
+                        <div className="p-6 border-b border-[#262626] flex items-center justify-between bg-[#1a1a1a]">
+                            <div>
+                                <h2 className="text-xl font-black text-white uppercase tracking-tight">Bulk Upload Report</h2>
+                                <p className="text-[11px] text-gray-500 font-bold uppercase mt-1">Processing Summary</p>
+                            </div>
+                            <button onClick={() => setShowBulkModal(false)} className="p-2 hover:bg-white/5 rounded-full text-gray-500 hover:text-white transition-colors">
+                                <FaTimes size={20} />
+                            </button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 text-center">
+                                    <p className="text-[24px] font-black text-emerald-500">{bulkResults?.successCount || 0}</p>
+                                    <p className="text-[10px] font-black text-emerald-500/60 uppercase tracking-widest">Successfully Added</p>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-red-500/5 border border-red-500/20 text-center">
+                                    <p className="text-[24px] font-black text-red-500">{bulkResults?.errorCount || 0}</p>
+                                    <p className="text-[10px] font-black text-red-500/60 uppercase tracking-widest">Failed Rows</p>
+                                </div>
+                            </div>
+
+                            {bulkResults?.errors?.length > 0 && (
+                                <div className="space-y-3">
+                                    <h3 className="text-[12px] font-black text-white uppercase tracking-widest ml-1">Error Logistics</h3>
+                                    <div className="space-y-2">
+                                        {bulkResults.errors.map((err, i) => (
+                                            <div key={i} className="p-4 bg-red-500/5 border border-red-500/10 rounded-xl flex items-start gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 text-[12px] font-black flex-shrink-0">
+                                                    {err.row}
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="text-[13px] font-bold text-white truncate">{err.productName}</p>
+                                                    <div className="mt-1 space-y-1">
+                                                        {err.messages.map((msg, j) => (
+                                                            <p key={j} className="text-[11px] text-red-400/80">• {msg}</p>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-6 border-t border-[#262626] bg-[#1a1a1a]">
+                            <button 
+                                onClick={() => setShowBulkModal(false)}
+                                className="w-full py-3.5 bg-white text-black rounded-xl font-black text-[13px] hover:bg-gray-200 transition-all active:scale-[0.98]"
+                            >
+                                Close & Review Catalog
                             </button>
                         </div>
                     </div>

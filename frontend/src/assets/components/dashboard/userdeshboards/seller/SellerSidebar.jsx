@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
     FaHome, FaBox, FaClipboardList, FaMoneyBillWave,
-    FaSignOutAlt, FaChevronLeft, FaStore, FaBullhorn, FaTimes, FaUserCircle
+    FaSignOutAlt, FaChevronLeft, FaStore, FaBullhorn, FaTimes, FaUserCircle, FaUndo
 } from "react-icons/fa";
 import { AuthContext } from "../../../../context/AuthContext";
 import { LanguageContext } from "../../../../context/LanguageContext";
@@ -20,6 +20,7 @@ const SellerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) =
         { name: t.products, path: "/seller/products", icon: <FaBox />, id: "products" },
         { name: t.orders, path: "/seller/orders", icon: <FaClipboardList />, id: "orders" },
         { name: t.ads || "Ad Campaigns", path: "/seller/ads", icon: <FaBullhorn />, id: "ads" },
+        { name: "Returns & Refunds", path: "/seller/returns", icon: <FaUndo />, id: "returns" },
         { name: t.payments, path: "/seller/payments", icon: <FaMoneyBillWave />, id: "payments" },
         { name: "Shop Settings", path: "/seller/settings", icon: <FaStore />, id: "settings" },
     ];

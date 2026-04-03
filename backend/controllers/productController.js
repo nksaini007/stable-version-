@@ -400,6 +400,134 @@ const bulkUpdateProducts = async (req, res) => {
  * POST /api/products/shop/:sellerId/visit
  * Increment shop visitor count
  */
+const fs = require('fs');
+const csv = require('csv-parser');
+const Category = require('../models/Category');
+
+/**
+ * POST /api/products/bulk-upload
+ * Bulk products upload via CSV
+ */
+const bulkUploadProducts = async (req, res) => {
+  if (!req.file) return res.status(400).json({ message: "No CSV file uploaded" });
+
+  try {
+    // 1. Load categories for strict validation
+    const categoriesDB = await Category.find({});
+    const catMap = {};
+    categoriesDB.forEach(c => {
+      catMap[c.name.trim().toLowerCase()] = (c.subcategories || []).map(s => s.name.trim().toLowerCase());
+    });
+
+    const results = [];
+    const errors = [];
+    let rowCount = 0;
+
+    // Use a promise to handle stream end
+    const processStream = new Promise((resolve, reject) => {
+      fs.createReadStream(req.file.path)
+        .pipe(csv())
+        .on('data', (row) => {
+          rowCount++;
+          const rowErrors = [];
+          
+          // Basic fields validation
+          if (!row.name?.trim()) rowErrors.push("Product Name is missing");
+          if (!row.price || isNaN(row.price)) rowErrors.push("Valid Price is missing");
+          
+          // Category strict validation
+          const catNameInput = row.category?.trim();
+          const subNameInput = row.subcategory?.trim();
+          const catKey = catNameInput?.toLowerCase();
+          const subKey = subNameInput?.toLowerCase();
+
+          if (!catKey || !catMap[catKey]) {
+            rowErrors.push(`Category '${catNameInput || 'Empty'}' does not exist in database`);
+          } else if (subKey && !catMap[catKey].includes(subKey)) {
+            rowErrors.push(`Subcategory '${subNameInput}' not found under category '${catNameInput}'`);
+          }
+
+          if (rowErrors.length > 0) {
+            errors.push({ row: rowCount, productName: row.name || `Row ${rowCount}`, messages: rowErrors });
+          } else {
+            // Success: Map all 27+ detailed fields
+            const imageUrls = row.imageUrls 
+              ? row.imageUrls.split(',').filter(u => u.trim()).map(url => ({ public_id: 'external', url: url.trim() })).slice(0, 10) 
+              : [];
+            
+            results.push({
+              name: row.name.trim(),
+              description: row.description || "",
+              price: Number(row.price),
+              stock: Number(row.stock || 0),
+              category: catNameInput,
+              subcategory: subNameInput || "",
+              type: row.type || "",
+              brand: row.brand || "",
+              material: row.material || "",
+              color: row.color || "",
+              dimensions: row.dimensions || "",
+              weight: row.weight || "",
+              origin: row.origin || "",
+              warranty: row.warranty || "",
+              arModelUrl: row.arModelUrl || "",
+              arModelScale: row.arModelScale || "1 1 1",
+              arModelRotation: row.arModelRotation || "0deg 0deg 0deg",
+              pricingTiers: {
+                architect: row.architectPrice || "",
+                stinchar: row.partnerPrice || "",
+                normal: row.memberPrice || ""
+              },
+              deliverySettings: {
+                isFragile: ['true', '1', 'yes'].includes(row.isFragile?.toLowerCase()),
+                handlingInstructions: row.handlingInstructions || "",
+                packageWeight: row.packageWeight || "",
+                packageDimensions: row.packageDimensions || ""
+              },
+              features: row.keyFeatures ? row.keyFeatures.split(',').map(f => f.trim()) : [],
+              care_instructions: row.careInstructions || "",
+              images: imageUrls,
+              seller: req.user._id,
+              isActive: true
+            });
+          }
+        })
+        .on('end', async () => {
+          try {
+            // Delete the temp file
+            if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+
+            if (results.length > 0) {
+              await Product.insertMany(results);
+            }
+            resolve({ 
+              successCount: results.length, 
+              errorCount: errors.length, 
+              errors 
+            });
+          } catch (err) {
+            reject(err);
+          }
+        })
+        .on('error', (err) => reject(err));
+    });
+
+    const summary = await processStream;
+    
+    res.json({
+      message: summary.successCount > 0 
+        ? `Bulk upload successful for ${summary.successCount} products.` 
+        : "Bulk upload failed for all rows.",
+      ...summary
+    });
+
+  } catch (error) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    console.error("Bulk Upload Logic Error:", error);
+    res.status(500).json({ message: "Server error during bulk processing", error: error.message });
+  }
+};
+
 const incrementShopVisitors = async (req, res) => {
   try {
     const { sellerId } = req.params;

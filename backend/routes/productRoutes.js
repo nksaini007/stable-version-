@@ -14,6 +14,7 @@ const {
    toggleProductLike,
    bulkUpdateProducts,
    incrementShopVisitors,
+   bulkUploadProducts,
 } = require("../controllers/productController");
 
 const { protect, sellerOnly, adminOnly } = require("../middlewares/authMiddleware");
@@ -22,6 +23,7 @@ const { protect, sellerOnly, adminOnly } = require("../middlewares/authMiddlewar
    📦 Multer Setup for Image Upload
 ============================================================ */
 const upload = multer({ storage });
+const uploadCSV = multer({ dest: "uploads/" });
 
 /* ============================================================
    🔓 Public Routes (Anyone can access)
@@ -46,6 +48,9 @@ router.get("/admin-all", protect, adminOnly, getAdminProducts);
 
 // ✅ Bulk update products (Seller)
 router.put("/bulk-update", protect, bulkUpdateProducts);
+
+// ✅ Bulk upload products from CSV (Seller)
+router.post("/bulk-upload", protect, uploadCSV.single("file"), bulkUploadProducts);
 
 // ✅ Get all products of logged-in seller
 router.get("/", protect, getSellerProducts);
