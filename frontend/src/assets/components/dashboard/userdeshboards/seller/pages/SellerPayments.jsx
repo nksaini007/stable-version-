@@ -5,7 +5,8 @@ import { translations } from "../../../../../translations";
 import {
     FaPrint, FaDownload, FaFilter, FaMoneyBillWave,
     FaChartLine, FaShoppingCart, FaBullhorn, FaCalendarAlt,
-    FaCheckCircle, FaTimesCircle, FaFileInvoice, FaArrowUp, FaArrowDown
+    FaCheckCircle, FaTimesCircle, FaFileInvoice, FaArrowUp, FaArrowDown,
+    FaClock, FaBoxOpen
 } from "react-icons/fa";
 import API from "../../../../../api/api";
 
