@@ -2,8 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 import API from "../../../../../api/api";
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox, FaCube, FaCheck } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../../../../../utils/imageUtils";
-import { LanguageContext } from "../../../context/LanguageContext";
-import { translations } from "../../../translations";
+import { LanguageContext } from "../../../../../context/LanguageContext";
+import { translations } from "../../../../../translations";
 import ARViewer from "../../../../ARViewer";
 
 const SellerProducts = () => {

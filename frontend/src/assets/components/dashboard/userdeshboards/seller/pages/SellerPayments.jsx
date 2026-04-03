@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { AuthContext } from "../../../../../context/AuthContext";
-import { LanguageContext } from "../../../context/LanguageContext";
-import { translations } from "../../../translations";
+import { LanguageContext } from "../../../../../context/LanguageContext";
+import { translations } from "../../../../../translations";
 import {
     FaPrint, FaDownload, FaFilter, FaMoneyBillWave,
     FaChartLine, FaShoppingCart, FaBullhorn, FaCalendarAlt,

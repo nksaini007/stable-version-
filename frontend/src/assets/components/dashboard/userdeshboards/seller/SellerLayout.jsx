@@ -2,8 +2,8 @@ import React, { useState, useContext } from "react";
 import { Outlet, useLocation, Link } from "react-router-dom";
 import SellerSidebar from "./SellerSidebar";
 import { FaBars, FaChevronRight, FaGlobe, FaBell, FaSearch } from "react-icons/fa";
-import { LanguageProvider, LanguageContext } from "../../../context/LanguageContext";
-import { translations } from "../../../translations";
+import { LanguageProvider, LanguageContext } from "../../../../context/LanguageContext";
+import { translations } from "../../../../translations";
 import "./seller_premium.css";
 
 const SellerLayoutContent = () => {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import API from "../../../../../api/api";
-import { LanguageContext } from "../../../context/LanguageContext";
-import { translations } from "../../../translations";
+import { LanguageContext } from "../../../../../context/LanguageContext";
+import { translations } from "../../../../../translations";
 import { FaSearch, FaBoxOpen, FaClipboardList, FaClock, FaCheckCircle, FaTruck, FaTimesCircle, FaChevronRight } from "react-icons/fa";
 
 const parseJwt = (token) => { try { return JSON.parse(atob(token.split(".")[1])); } catch { return null; } };

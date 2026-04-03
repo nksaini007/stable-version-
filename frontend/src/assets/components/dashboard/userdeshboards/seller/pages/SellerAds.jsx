@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import { AuthContext } from "../../../../../context/AuthContext";
-import { LanguageContext } from "../../../context/LanguageContext";
-import { translations } from "../../../translations";
+import { LanguageContext } from "../../../../../context/LanguageContext";
+import { translations } from "../../../../../translations";
 import {
     FaBullhorn, FaPlus, FaCheck, FaTimes, FaClock,
     FaChartLine, FaImage, FaUpload, FaMoneyBillWave, FaRocket,

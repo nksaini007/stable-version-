@@ -5,8 +5,8 @@ import {
     FaSignOutAlt, FaChevronLeft, FaStore, FaBullhorn, FaTimes, FaUserCircle
 } from "react-icons/fa";
 import { AuthContext } from "../../../../assets/context/AuthContext";
-import { LanguageContext } from "../../../context/LanguageContext";
-import { translations } from "../../../translations";
+import { LanguageContext } from "../../../../context/LanguageContext";
+import { translations } from "../../../../translations";
 import logo from "../../../../logo.png";
 
 const SellerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {

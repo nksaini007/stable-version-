@@ -2,8 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import API from "../../../../../api/api";
 import { AuthContext } from "../../../../../assets/context/AuthContext";
-import { LanguageContext } from "../../../context/LanguageContext";
-import { translations } from "../../../translations";
+import { LanguageContext } from "../../../../../context/LanguageContext";
+import { translations } from "../../../../../translations";
 import {
     FaWallet, FaCheckCircle, FaClock, FaShoppingCart, FaBoxOpen,
     FaCopy, FaDownload, FaStore
