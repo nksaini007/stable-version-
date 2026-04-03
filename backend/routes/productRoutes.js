@@ -12,6 +12,8 @@ const {
    getPublicSellerProducts,
    getAdminProducts,
    toggleProductLike,
+   bulkUpdateProducts,
+   incrementShopVisitors,
 } = require("../controllers/productController");
 
 const { protect, sellerOnly, adminOnly } = require("../middlewares/authMiddleware");
@@ -32,12 +34,18 @@ router.get("/public", getProducts);
 // ✅ Get public seller products by seller ID
 router.get("/shop/:sellerId", getPublicSellerProducts);
 
+// ✅ Increment shop visitor count
+router.post("/shop/:sellerId/visit", incrementShopVisitors);
+
 /* ============================================================
    🔐 Protected Routes (Require Token)
 ============================================================ */
 
 // ✅ Get ALL products (Admin Only - Master Data)
 router.get("/admin-all", protect, adminOnly, getAdminProducts);
+
+// ✅ Bulk update products (Seller)
+router.put("/bulk-update", protect, bulkUpdateProducts);
 
 // ✅ Get all products of logged-in seller
 router.get("/", protect, getSellerProducts);

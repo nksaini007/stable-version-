@@ -165,13 +165,27 @@ const getRecentOrders = async (req, res) => {
 const getSellerRevenue = async (req, res) => {
     try {
         const sellerId = req.user._id.toString();
-        const orders = await Order.find({ "orderItems.seller._id": sellerId });
+        
+        // Fetch seller for analytics
+        const seller = await User.findById(sellerId).select("shopVisitors shopLikes");
+
+        const orders = await Order.find({ "orderItems.seller._id": sellerId, orderStatus: { $ne: "Cancelled" } });
 
         let totalSales = 0;
         let paidSales = 0;
         let pendingSales = 0;
         let totalItemsSold = 0;
+        
         const monthlyData = {};
+        const weeklyData = {};
+        const dailyData = {};
+        const productStats = {}; // { productId: { name, qty, image } }
+
+        const now = new Date();
+        const sevenDaysAgo = new Date(now);
+        sevenDaysAgo.setDate(now.getDate() - 7);
+        const fourWeeksAgo = new Date(now);
+        fourWeeksAgo.setDate(now.getDate() - 28);
 
         orders.forEach((order) => {
             const sellerItems = order.orderItems.filter(
@@ -182,21 +196,58 @@ const getSellerRevenue = async (req, res) => {
             totalSales += sellerTotal;
             totalItemsSold += sellerItems.reduce((sum, item) => sum + item.qty, 0);
 
-            if (order.isPaid) {
-                paidSales += sellerTotal;
-            } else {
-                pendingSales += sellerTotal;
+            if (order.isPaid) paidSales += sellerTotal;
+            else pendingSales += sellerTotal;
+
+            const orderDate = new Date(order.createdAt);
+
+            // 1. Monthly (Last 6 months)
+            const monthKey = orderDate.toLocaleString("en-IN", { month: "short", year: "2-digit" });
+            monthlyData[monthKey] = (monthlyData[monthKey] || 0) + sellerTotal;
+
+            // 2. Weekly (Last 4 weeks)
+            if (orderDate >= fourWeeksAgo) {
+                const weekNum = Math.ceil((now - orderDate) / (7 * 24 * 60 * 60 * 1000));
+                const weekKey = `Week ${5 - weekNum}`; // W1 to W4
+                weeklyData[weekKey] = (weeklyData[weekKey] || 0) + sellerTotal;
             }
 
-            // Monthly breakdown
-            const month = new Date(order.createdAt).toLocaleString("en-IN", { month: "short", year: "2-digit" });
-            monthlyData[month] = (monthlyData[month] || 0) + sellerTotal;
+            // 3. Daily (Last 7 days)
+            if (orderDate >= sevenDaysAgo) {
+                const dayKey = orderDate.toLocaleString("en-IN", { weekday: "short" });
+                dailyData[dayKey] = (dailyData[dayKey] || 0) + sellerTotal;
+            }
+
+            // 4. Top Selling Products Aggregation
+            sellerItems.forEach(item => {
+                const pId = item._id || item.product;
+                if (!productStats[pId]) {
+                    productStats[pId] = { 
+                        name: item.name, 
+                        qty: 0, 
+                        image: item.image,
+                        price: item.price
+                    };
+                }
+                productStats[pId].qty += item.qty;
+            });
         });
 
-        const monthlyChart = Object.entries(monthlyData).map(([month, amount]) => ({
-            month,
-            amount,
+        // Format charts
+        const monthlyChart = Object.entries(monthlyData).map(([name, amount]) => ({ name, amount }));
+        const weeklyChart = Object.entries(weeklyData).map(([name, amount]) => ({ name, amount }));
+        
+        // Ensure daily chart follows weekday order
+        const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const dailyChart = weekdays.map(day => ({
+            name: day,
+            amount: dailyData[day] || 0
         }));
+
+        // Sort Top Products
+        const topProducts = Object.values(productStats)
+            .sort((a, b) => b.qty - a.qty)
+            .slice(0, 5);
 
         res.json({
             totalSales,
@@ -204,7 +255,12 @@ const getSellerRevenue = async (req, res) => {
             pendingSales,
             totalItemsSold,
             totalOrders: orders.length,
+            shopVisitors: seller?.shopVisitors || 0,
+            shopLikes: seller?.shopLikes || 0,
             monthlyChart,
+            weeklyChart,
+            dailyChart,
+            topProducts
         });
     } catch (error) {
         res.status(500).json({ message: error.message });

@@ -19,6 +19,43 @@ const SellerProducts = () => {
     const [previews, setPreviews] = useState([]);
     const [search, setSearch] = useState("");
     const [stockFilter, setStockFilter] = useState("");
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [bulkForm, setBulkForm] = useState({ stock: "", price: "" });
+    const [isBulkUpdating, setIsBulkUpdating] = useState(false);
+
+    const toggleSelectAll = () => {
+        if (selectedProducts.length === filtered.length && filtered.length > 0) setSelectedProducts([]);
+        else setSelectedProducts(filtered.map(p => p._id));
+    };
+
+    const toggleSelect = (id) => {
+        setSelectedProducts(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    };
+
+    const handleBulkUpdate = async () => {
+        if (selectedProducts.length === 0) return;
+        if (!bulkForm.stock && !bulkForm.price) {
+            alert("Please provide at least one field to update (Stock or Price)");
+            return;
+        }
+        setIsBulkUpdating(true);
+        try {
+            await API.put("/products/bulk-update", {
+                productIds: selectedProducts,
+                update: {
+                    ...(bulkForm.stock && { stock: Number(bulkForm.stock) }),
+                    ...(bulkForm.price && { price: Number(bulkForm.price) })
+                }
+            });
+            setSelectedProducts([]);
+            setBulkForm({ stock: "", price: "" });
+            fetchProducts();
+        } catch (err) {
+            alert(err.response?.data?.message || "Bulk update failed");
+        } finally {
+            setIsBulkUpdating(false);
+        }
+    };
     const [form, setForm] = useState({
         name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "",
         material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "",
@@ -517,12 +554,20 @@ const SellerProducts = () => {
 
             {/* Table-like List for Professional Dashboard Feel */}
             <div className="premium-card overflow-hidden">
-                <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 bg-[#1a1a1a] border-b border-[#262626] text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-                    <div className="col-span-5">Product</div>
+                <div className="hidden md:grid grid-cols-12 gap-1 px-6 py-4 bg-[#1a1a1a] border-b border-[#262626] text-[11px] font-bold text-gray-500 uppercase tracking-widest">
+                    <div className="col-span-1 flex justify-center">
+                        <input 
+                            type="checkbox" 
+                            checked={selectedProducts.length === filtered.length && filtered.length > 0} 
+                            onChange={toggleSelectAll}
+                            className="w-4 h-4 rounded border-[#262626] bg-[#0a0a0a] text-orange-600 focus:ring-orange-500"
+                        />
+                    </div>
+                    <div className="col-span-4">Product</div>
                     <div className="col-span-2 text-center">Category</div>
                     <div className="col-span-2 text-center">Price</div>
                     <div className="col-span-1 text-center">Stock</div>
-                    <div className="col-span-2 text-right">Actions</div>
+                    <div className="col-span-2 text-right pr-4">Actions</div>
                 </div>
 
                 {loading ? (
@@ -535,11 +580,20 @@ const SellerProducts = () => {
                 ) : (
                     <div className="divide-y divide-[#262626]">
                         {filtered.map((p) => (
-                            <div key={p._id} className={`grid grid-cols-1 md:grid-cols-12 gap-4 items-center px-6 py-5 hover:bg-[#1a1a1a] transition-colors group ${
-                                (!p.stock || p.stock === 0) ? "bg-red-500/5 border-l-4 border-red-500" : 
-                                (p.stock <= 10 ? "bg-amber-500/5 border-l-4 border-amber-500" : "")
+                            <div key={p._id} className={`grid grid-cols-1 md:grid-cols-12 gap-1 items-center px-6 py-5 hover:bg-[#1a1a1a] transition-colors group ${
+                                selectedProducts.includes(p._id) ? "bg-orange-500/[0.03] border-l-4 border-orange-600" :
+                                ((!p.stock || p.stock === 0) ? "bg-red-500/5 border-l-4 border-red-500" : 
+                                (p.stock <= 10 ? "bg-amber-500/5 border-l-4 border-amber-500" : ""))
                             }`}>
-                                <div className="col-span-5 flex items-center gap-4">
+                                <div className="col-span-1 flex justify-center">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedProducts.includes(p._id)} 
+                                        onChange={() => toggleSelect(p._id)}
+                                        className="w-4 h-4 rounded border-[#262626] bg-[#0a0a0a] text-orange-600 focus:ring-orange-500"
+                                    />
+                                </div>
+                                <div className="col-span-4 flex items-center gap-4">
                                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/40 border border-[#262626] flex-shrink-0">
                                         <img
                                             src={getOptimizedImage(p.images?.[0]?.url, 200)}
@@ -577,6 +631,62 @@ const SellerProducts = () => {
                     </div>
                 )}
             </div>
+
+            {/* Bulk Action Toolbar - Floating */}
+            {selectedProducts.length > 0 && (
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-10 duration-300">
+                    <div className="bg-[#141414] border border-white/10 rounded-2xl p-4 shadow-2xl flex flex-wrap items-center gap-6 backdrop-blur-xl">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-orange-600 text-white flex items-center justify-center font-black">
+                                {selectedProducts.length}
+                            </div>
+                            <div className="pr-4 border-r border-white/5">
+                                <p className="text-[11px] font-black text-white uppercase tracking-widest">Selected</p>
+                                <p className="text-[10px] text-gray-500 uppercase">Management Mode</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex flex-wrap items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-gray-500 uppercase">New Stock</span>
+                                <input 
+                                    type="number" 
+                                    placeholder="Qty" 
+                                    value={bulkForm.stock}
+                                    onChange={(e) => setBulkForm({ ...bulkForm, stock: e.target.value })}
+                                    className="w-20 px-3 py-2 bg-[#0a0a0a] border border-[#262626] rounded-xl text-[12px] text-white focus:border-orange-500 outline-none"
+                                />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-gray-500 uppercase">New Price</span>
+                                <input 
+                                    type="number" 
+                                    placeholder="₹" 
+                                    value={bulkForm.price}
+                                    onChange={(e) => setBulkForm({ ...bulkForm, price: e.target.value })}
+                                    className="w-24 px-3 py-2 bg-[#0a0a0a] border border-[#262626] rounded-xl text-[12px] text-white focus:border-orange-500 outline-none"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <button 
+                                onClick={handleBulkUpdate} 
+                                disabled={isBulkUpdating}
+                                className="px-6 py-2 bg-white text-black text-[12px] font-black rounded-xl hover:bg-gray-200 transition-all active:scale-95 disabled:opacity-50"
+                            >
+                                {isBulkUpdating ? "Updating..." : "Commit"}
+                            </button>
+                            <button 
+                                onClick={() => setSelectedProducts([])}
+                                className="p-2.5 bg-[#1a1a1a] border border-[#262626] hover:bg-[#222] text-gray-500 rounded-xl transition-all"
+                            >
+                                <FaTimes size={14} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

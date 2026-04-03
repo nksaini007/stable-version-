@@ -77,16 +77,20 @@ const SellerHome = () => {
         { name: t.paid_revenue, value: `₹${(revenue?.paidSales || 0).toLocaleString()}`, icon: <FaCheckCircle />, color: "text-emerald-500" },
         { name: t.pending, value: `₹${(revenue?.pendingSales || 0).toLocaleString()}`, icon: <FaClock />, color: "text-amber-500" },
         { name: t.items_sold, value: revenue?.totalItemsSold || 0, icon: <FaShoppingCart />, color: "text-blue-500" },
-        { name: t.total_orders, value: revenue?.totalOrders || 0, icon: <FaBoxOpen />, color: "text-violet-500" },
-        { name: t.products_listed, value: products.length, icon: <FaBoxOpen />, color: "text-cyan-500" },
+        { name: "Shop Visitors", value: revenue?.shopVisitors || 0, icon: <FaStore />, color: "text-violet-500" },
+        { name: "Shortlist / Likes", value: revenue?.shopLikes || 0, icon: <FaCheckCircle />, color: "text-cyan-500" },
     ];
 
     // Filter for alerts
     const outOfStock = products.filter(p => !p.stock || p.stock === 0);
     const lowStock = products.filter(p => p.stock > 0 && p.stock <= 10);
 
+    // Chart Interval State
+    const [chartInterval, setChartInterval] = useState("monthly"); // daily, weekly, monthly
+    const chartData = revenue?.[`${chartInterval}Chart`] || [];
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 pb-12">
             <div className="flex flex-col gap-1">
                 <h1 className="text-3xl font-bold text-white tracking-tight">
                     {t.welcome}, {user?.name || "Seller"}
@@ -160,17 +164,27 @@ const SellerHome = () => {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* Revenue Chart */}
                 <div className="xl:col-span-2 premium-card p-6">
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                         <h2 className="text-lg font-semibold text-white">{t.monthly_revenue}</h2>
-                        <div className="flex items-center gap-2 px-3 py-1 bg-[#1a1a1a] border border-[#262626] rounded-lg text-[11px] text-gray-400">
-                            Last 6 Months
+                        <div className="flex items-center bg-[#1a1a1a] border border-[#262626] rounded-xl p-1 gap-1">
+                            {["daily", "weekly", "monthly"].map(mode => (
+                                <button
+                                    key={mode}
+                                    onClick={() => setChartInterval(mode)}
+                                    className={`px-4 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all ${
+                                        chartInterval === mode ? "bg-orange-600 text-white shadow-lg shadow-orange-900/20" : "text-gray-500 hover:text-white"
+                                    }`}
+                                >
+                                    {mode}
+                                </button>
+                            ))}
                         </div>
                     </div>
-                    {revenue?.monthlyChart?.length > 0 ? (
+                    {chartData?.length > 0 ? (
                         <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={revenue.monthlyChart}>
+                            <BarChart data={chartData}>
                                 <XAxis 
-                                    dataKey="month" 
+                                    dataKey="name" 
                                     stroke="#444" 
                                     fontSize={11} 
                                     axisLine={false} 
@@ -194,57 +208,94 @@ const SellerHome = () => {
                             </BarChart>
                         </ResponsiveContainer>
                     ) : (
-                        <div className="h-[300px] flex items-center justify-center text-gray-600 text-sm">
-                            Insufficient data for chart
+                        <div className="h-[300px] flex items-center justify-center text-gray-600 text-sm italic">
+                            No data available for this period
                         </div>
                     )}
                 </div>
 
-                {/* My Shop QR Code Widget */}
-                <div className="premium-card p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600/5 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl"></div>
-
-                    <div className="relative z-10 w-full flex flex-col items-center">
-                        <div className="w-14 h-14 bg-[#1a1a1a] border border-[#262626] rounded-2xl flex items-center justify-center mb-4 text-orange-500 shadow-xl">
-                            <FaStore size={24} />
+                {/* Top Selling Products Card */}
+                <div className="premium-card p-6 flex flex-col">
+                    <h2 className="text-lg font-semibold text-white mb-6 uppercase tracking-wider text-[13px]">Top Selling Items</h2>
+                    {revenue?.topProducts?.length > 0 ? (
+                        <div className="space-y-4 flex-1">
+                            {revenue.topProducts.map((p, idx) => (
+                                <div key={idx} className="flex items-center gap-4 group p-2 rounded-xl hover:bg-white/[0.02] transition-all">
+                                    <div className="relative">
+                                        <div className="w-12 h-12 rounded-xl bg-black/40 border border-[#262626] overflow-hidden">
+                                            <img src={getOptimizedImage(p.image, 100)} alt="" className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="absolute -top-2 -left-2 w-5 h-5 bg-orange-600 rounded-full flex items-center justify-center text-[10px] font-black italic shadow-lg">
+                                            {idx + 1}
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[14px] font-bold text-white truncate">{p.name}</p>
+                                        <p className="text-[11px] text-gray-500 font-medium uppercase tracking-tight">{p.qty} Units Sold</p>
+                                    </div>
+                                    <p className="text-[13px] font-bold text-orange-500">₹{(p.price || 0).toLocaleString()}</p>
+                                </div>
+                            ))}
                         </div>
-                        <h2 className="text-xl font-bold text-white mb-1">{t.my_shop}</h2>
-                        <p className="text-gray-500 text-[13px] mb-8">{t.share_qr}</p>
-
-                        <div className="bg-white p-4 rounded-3xl shadow-inner mb-8 overflow-hidden flex items-center justify-center border-8 border-[#1a1a1a]" style={{ width: 180, height: 180 }}>
-                            <QRCodeCanvas
-                                id="shop-qr-code"
-                                value={shopUrl}
-                                size={148}
-                                fgColor="#0a0a0a"
-                                level={"H"}
-                            />
+                    ) : (
+                        <div className="flex-1 flex flex-col items-center justify-center text-center p-8 opacity-20">
+                            <FaBoxOpen size={40} className="mb-4" />
+                            <p className="text-sm font-bold uppercase tracking-widest">No Sales Data</p>
                         </div>
+                    )}
+                    
+                    <button onClick={() => navigate("/seller/products")} className="w-full mt-6 py-3 bg-[#1a1a1a] border border-[#262626] hover:bg-[#222] rounded-xl text-[12px] font-bold text-gray-400 transition-all uppercase tracking-widest">
+                        Manage Catalog
+                    </button>
+                </div>
+            </div>
 
-                        <div className="flex items-center gap-3 w-full">
-                            <button
-                                onClick={handleCopyLink}
-                                className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#1a1a1a] border border-[#262626] hover:bg-[#222] rounded-xl text-[13px] font-medium text-white transition-colors"
-                            >
-                                <FaCopy size={14} /> {t.link}
-                            </button>
-                            <button
-                                onClick={handleDownloadQR}
-                                className="flex-1 flex items-center justify-center gap-2 py-3 bg-white hover:bg-gray-100 rounded-xl text-[13px] font-bold text-black shadow-lg transition-colors"
-                            >
-                                <FaDownload size={14} /> {t.save_qr}
-                            </button>
-                        </div>
+            {/* My Shop QR Code Widget (Moved down for better flow) */}
+            <div className="premium-card p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/5 rounded-full blur-[120px]"></div>
+                
+                <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+                    <div className="w-14 h-14 bg-[#1a1a1a] border border-[#262626] rounded-2xl flex items-center justify-center mb-4 text-orange-500 shadow-xl">
+                        <FaStore size={24} />
                     </div>
+                    <h2 className="text-2xl font-black text-white mb-2">{t.my_shop}</h2>
+                    <p className="text-gray-500 text-[14px] max-w-md mb-8">{t.share_qr}</p>
+                    
+                    <div className="flex items-center gap-3 w-full max-w-sm">
+                        <button
+                            onClick={handleCopyLink}
+                            className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-[#1a1a1a] border border-[#262626] hover:bg-[#222] rounded-xl text-[13px] font-bold text-white transition-colors"
+                        >
+                            <FaCopy size={14} /> {t.link}
+                        </button>
+                        <button
+                            onClick={handleDownloadQR}
+                            className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-white hover:bg-gray-100 rounded-xl text-[13px] font-black text-black shadow-lg transition-colors"
+                        >
+                            <FaDownload size={14} /> {t.save_qr}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-[40px] shadow-2xl relative border-[12px] border-[#1a1a1a]">
+                    <div className="absolute inset-0 border border-white/10 rounded-[30px] pointer-events-none"></div>
+                    <QRCodeCanvas
+                        id="shop-qr-code"
+                        value={shopUrl}
+                        size={160}
+                        fgColor="#0a0a0a"
+                        level={"H"}
+                    />
                 </div>
             </div>
 
             {/* Recent Products Card */}
             <div className="premium-card overflow-hidden">
-                <div className="p-6 border-b border-[#262626] flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-white">{t.your_products} ({products.length})</h2>
-                    <button className="text-[12px] font-medium text-orange-500 hover:text-orange-400 transition-colors">View All</button>
+                <div className="p-6 border-b border-[#262626] flex items-center justify-between bg-white/[0.01]">
+                    <h2 className="text-lg font-semibold text-white uppercase tracking-widest text-[13px]">{t.your_products} ({products.length})</h2>
+                    <button onClick={() => navigate("/seller/products")} className="text-[12px] font-bold text-orange-500 hover:text-orange-400 transition-colors uppercase tracking-widest">
+                        View Full Catalog
+                    </button>
                 </div>
                 <div className="p-2">
                     {products.length === 0 ? (

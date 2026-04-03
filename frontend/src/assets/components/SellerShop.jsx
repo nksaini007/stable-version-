@@ -55,6 +55,18 @@ const SellerShop = () => {
         if (id) fetchShopData();
     }, [id, user]);
 
+    // Track Shop Visitors
+    useEffect(() => {
+        const trackVisit = async () => {
+            try {
+                await API.post(`/products/shop/${id}/visit`);
+            } catch (err) {
+                console.error("Visit tracking failed", err);
+            }
+        };
+        if (id) trackVisit();
+    }, [id]);
+
     const handleFollow = async () => {
         if (!user) return navigate('/login');
         setFollowLoading(true);

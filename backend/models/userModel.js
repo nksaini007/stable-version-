@@ -101,6 +101,10 @@ const userSchema = new mongoose.Schema({
   workingHours: { type: String, default: "" },
   established: { type: Date, default: null },
 
+  // SHOP ANALYTICS
+  shopVisitors: { type: Number, default: 0 },
+  shopLikes: { type: Number, default: 0 },
+
   // OTP Verification fields
   otp: String,
   otpExpires: Date,

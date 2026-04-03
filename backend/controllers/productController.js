@@ -366,6 +366,50 @@ const toggleProductLike = async (req, res) => {
   }
 };
 
+/**
+ * PUT /api/products/bulk-update
+ * Bulk update stock or price for multiple products
+ */
+const bulkUpdateProducts = async (req, res) => {
+  try {
+    const { productIds, update } = req.body;
+    if (!productIds || !Array.isArray(productIds)) {
+      return res.status(400).json({ message: "Invalid product IDs" });
+    }
+
+    const allowedUpdates = {};
+    if (update.stock !== undefined) allowedUpdates.stock = update.stock;
+    if (update.price !== undefined) allowedUpdates.price = update.price;
+
+    if (Object.keys(allowedUpdates).length === 0) {
+      return res.status(400).json({ message: "No valid update fields provided" });
+    }
+
+    const result = await Product.updateMany(
+      { _id: { $in: productIds }, seller: req.user._id },
+      { $set: allowedUpdates }
+    );
+
+    res.json({ message: "Bulk update successful", result });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * POST /api/products/shop/:sellerId/visit
+ * Increment shop visitor count
+ */
+const incrementShopVisitors = async (req, res) => {
+  try {
+    const { sellerId } = req.params;
+    await User.findByIdAndUpdate(sellerId, { $inc: { shopVisitors: 1 } });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createProduct,
   getProducts,
@@ -376,6 +420,8 @@ module.exports = {
   getPublicSellerProducts,
   getAdminProducts,
   toggleProductLike,
+  bulkUpdateProducts,
+  incrementShopVisitors,
 };
 
 // // };
