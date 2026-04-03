@@ -51,6 +51,7 @@ import SellerProducts from "./assets/components/dashboard/userdeshboards/seller/
 import SellerOrdersPage from "./assets/components/dashboard/userdeshboards/seller/pages/SellerOrdersPage";
 import SellerPayments from "./assets/components/dashboard/userdeshboards/seller/pages/SellerPayments";
 import SellerAds from "./assets/components/dashboard/userdeshboards/seller/pages/SellerAds";
+import SellerSettings from "./assets/components/dashboard/userdeshboards/seller/pages/SellerSettings";
 import AdminGate from "./assets/components/AdminGate";
 import ProtectedRoute from "./assets/components/dashboard/userdeshboards/ProtectedRoute";
 
@@ -168,6 +169,7 @@ function App() {
             <Route path="orders" element={<SellerOrdersPage />} />
             <Route path="ads" element={<SellerAds />} />
             <Route path="payments" element={<SellerPayments />} />
+            <Route path="settings" element={<SellerSettings />} />
           </Route>
 
           {/* Delivery Dashboard Routes */}
