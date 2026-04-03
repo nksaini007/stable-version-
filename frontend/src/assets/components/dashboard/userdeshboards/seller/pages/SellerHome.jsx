@@ -24,6 +24,7 @@ const SellerHome = () => {
     const [revenue, setRevenue] = useState(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [chartInterval, setChartInterval] = useState("monthly"); // daily, weekly, monthly
 
     useEffect(() => {
         const load = async () => {
@@ -86,7 +87,6 @@ const SellerHome = () => {
     const lowStock = products.filter(p => p.stock > 0 && p.stock <= 10);
 
     // Chart Interval State
-    const [chartInterval, setChartInterval] = useState("monthly"); // daily, weekly, monthly
     const chartData = revenue?.[`${chartInterval}Chart`] || [];
 
     return (

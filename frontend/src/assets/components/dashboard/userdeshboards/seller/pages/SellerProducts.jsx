@@ -22,6 +22,15 @@ const SellerProducts = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [bulkForm, setBulkForm] = useState({ stock: "", price: "" });
     const [isBulkUpdating, setIsBulkUpdating] = useState(false);
+    const [form, setForm] = useState({
+        name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "",
+        material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "",
+        images: [], imageLink: "",
+        variants: [],
+        arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg", arModelFile: null,
+        pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] },
+        deliverySettings: { isFragile: false, handlingInstructions: "", packageWeight: "", packageDimensions: "" }
+    });
 
     const toggleSelectAll = () => {
         if (selectedProducts.length === filtered.length && filtered.length > 0) setSelectedProducts([]);
@@ -56,15 +65,6 @@ const SellerProducts = () => {
             setIsBulkUpdating(false);
         }
     };
-    const [form, setForm] = useState({
-        name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "",
-        material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "",
-        images: [], imageLink: "",
-        variants: [],
-        arModelUrl: "", arModelScale: "1 1 1", arModelRotation: "0deg 0deg 0deg", arModelFile: null,
-        pricingTiers: { architect: "", stinchar: "", normal: "", bulk: [] },
-        deliverySettings: { isFragile: false, handlingInstructions: "", packageWeight: "", packageDimensions: "" }
-    });
 
     const fetchProducts = async () => {
         try {
