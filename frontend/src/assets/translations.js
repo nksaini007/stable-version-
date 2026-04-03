@@ -78,7 +78,12 @@ export const translations = {
         marketing_allocation: "Complete your marketing allocation",
         audit_ref_id: "Audit Reference ID",
         proof_of_transfer: "Proof of Transfer",
-        commit_settlement: "Commit Settlement for Auditing"
+        commit_settlement: "Commit Settlement for Auditing",
+        low_stock: "Low Stock",
+        out_of_stock: "Out of Stock",
+        inventory_alerts: "Inventory Alerts",
+        restock_now: "Restock Now",
+        stock_intelligence: "Stock Intelligence"
     },
     hi: {
         dashboard: "डैशबोर्ड",
@@ -159,7 +164,12 @@ export const translations = {
         marketing_allocation: "अपना मार्केटिंग आवंटन पूरा करें",
         audit_ref_id: "ऑडिट संदर्भ आईडी",
         proof_of_transfer: "तबादले का प्रमाण",
-        commit_settlement: "ऑडिटिंग के लिए समझौता जमा करें"
+        commit_settlement: "ऑडिटिंग के लिए समझौता जमा करें",
+        low_stock: "कम स्टॉक",
+        out_of_stock: "आउट ऑफ स्टॉक",
+        inventory_alerts: "इन्वेंटरी अलर्ट",
+        restock_now: "स्टॉक अपडेट करें",
+        stock_intelligence: "स्टॉक इंटेलिजेंस"
     }
 };
 

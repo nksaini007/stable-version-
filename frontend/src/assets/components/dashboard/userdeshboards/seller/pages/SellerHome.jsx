@@ -14,9 +14,12 @@ import {
 } from "recharts";
 import { QRCodeCanvas } from "qrcode.react";
 
+import { useNavigate } from "react-router-dom";
+
 const SellerHome = () => {
     const { user } = useContext(AuthContext);
     const { language } = useContext(LanguageContext);
+    const navigate = useNavigate();
     const t = translations[language] || translations.en;
     const [revenue, setRevenue] = useState(null);
     const [products, setProducts] = useState([]);
@@ -78,6 +81,10 @@ const SellerHome = () => {
         { name: t.products_listed, value: products.length, icon: <FaBoxOpen />, color: "text-cyan-500" },
     ];
 
+    // Filter for alerts
+    const outOfStock = products.filter(p => !p.stock || p.stock === 0);
+    const lowStock = products.filter(p => p.stock > 0 && p.stock <= 10);
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-1">
@@ -103,6 +110,52 @@ const SellerHome = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Stock Intelligence Section */}
+            {(outOfStock.length > 0 || lowStock.length > 0) && (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-1">
+                        <div className="w-2 h-6 bg-orange-600 rounded-full"></div>
+                        <h2 className="text-lg font-bold text-white uppercase tracking-widest">{t.stock_intelligence}</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {outOfStock.map(p => (
+                            <div key={p._id} className="premium-card border-red-900/20 bg-red-900/5 p-4 flex items-center gap-4 group">
+                                <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 flex-shrink-0">
+                                    <FaBoxOpen size={20} />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-[14px] font-bold text-white truncate">{p.name}</p>
+                                    <p className="text-[11px] text-red-400 font-bold uppercase tracking-wider">{t.out_of_stock}</p>
+                                </div>
+                                <button
+                                    onClick={() => navigate("/seller/products", { state: { filter: "out_of_stock", search: p.name } })}
+                                    className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-[11px] font-bold shadow-lg shadow-red-900/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    {t.restock_now}
+                                </button>
+                            </div>
+                        ))}
+                        {lowStock.map(p => (
+                            <div key={p._id} className="premium-card border-amber-900/20 bg-amber-900/5 p-4 flex items-center gap-4 group">
+                                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 flex-shrink-0">
+                                    <FaClock size={20} />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-[14px] font-bold text-white truncate">{p.name}</p>
+                                    <p className="text-[11px] text-amber-400 font-bold uppercase tracking-wider">{t.low_stock} ({p.stock})</p>
+                                </div>
+                                <button
+                                    onClick={() => navigate("/seller/products", { state: { filter: "low_stock", search: p.name } })}
+                                    className="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-[11px] font-bold shadow-lg shadow-amber-900/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    {t.restock_now}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* Revenue Chart */}

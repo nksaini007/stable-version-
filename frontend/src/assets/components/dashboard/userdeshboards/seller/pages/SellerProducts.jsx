@@ -4,10 +4,12 @@ import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox, FaCube, FaCheck, FaT
 import { getOptimizedImage, lazyImageProps } from "../../../../../utils/imageUtils";
 import { LanguageContext } from "../../../../../context/LanguageContext";
 import { translations } from "../../../../../translations";
+import { useLocation } from "react-router-dom";
 import ARViewer from "../../../../ARViewer";
 
 const SellerProducts = () => {
     const { language } = useContext(LanguageContext);
+    const location = useLocation();
     const t = translations[language] || translations.en;
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -16,6 +18,7 @@ const SellerProducts = () => {
     const [editing, setEditing] = useState(null);
     const [previews, setPreviews] = useState([]);
     const [search, setSearch] = useState("");
+    const [stockFilter, setStockFilter] = useState("");
     const [form, setForm] = useState({
         name: "", description: "", price: "", stock: "", category: "", subcategory: "", type: "", brand: "",
         material: "", color: "", dimensions: "", weight: "", warranty: "", origin: "", features: "", care_instructions: "",
@@ -42,6 +45,15 @@ const SellerProducts = () => {
     };
 
     useEffect(() => { fetchProducts(); fetchCategories(); }, []);
+
+    useEffect(() => {
+        if (location.state?.filter) {
+            setStockFilter(location.state.filter);
+        }
+        if (location.state?.search) {
+            setSearch(location.state.search);
+        }
+    }, [location.state]);
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
     const handleImageChange = (e) => {
@@ -113,6 +125,8 @@ const SellerProducts = () => {
         setEditing(p);
         setPreviews(p.images ? p.images.map(img => img.url) : []);
         setShowForm(true);
+        // Scroll to form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleDelete = async (id) => {
@@ -120,7 +134,13 @@ const SellerProducts = () => {
         try { await API.delete(`/products/${id}`); fetchProducts(); } catch (err) { alert("Delete failed"); }
     };
 
-    const filtered = products.filter((p) => !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.category?.toLowerCase().includes(search.toLowerCase()));
+    const filtered = products.filter((p) => {
+        const matchesSearch = !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.category?.toLowerCase().includes(search.toLowerCase());
+        const matchesStock = !stockFilter || 
+            (stockFilter === "out_of_stock" && (!p.stock || p.stock === 0)) ||
+            (stockFilter === "low_stock" && p.stock > 0 && p.stock <= 10);
+        return matchesSearch && matchesStock;
+    });
     
     const addVariant = () => {
         setForm({
@@ -462,8 +482,8 @@ const SellerProducts = () => {
                 </div>
             )}
 
-            {/* List Header / Search */}
-            <div className="flex items-center justify-between gap-4">
+            {/* List Header / Search & Filters */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="relative flex-1 max-w-md group">
                     <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                     <input 
@@ -473,6 +493,25 @@ const SellerProducts = () => {
                         onChange={(e) => setSearch(e.target.value)} 
                         className="w-full pl-12 pr-4 py-3 bg-[#141414] border border-[#262626] rounded-xl text-white text-[14px] focus:outline-none focus:border-orange-500 transition-all"
                     />
+                </div>
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+                    {[
+                        { id: "", label: "All" },
+                        { id: "low_stock", label: t.low_stock },
+                        { id: "out_of_stock", label: t.out_of_stock }
+                    ].map(f => (
+                        <button
+                            key={f.id}
+                            onClick={() => setStockFilter(f.id)}
+                            className={`px-4 py-2 rounded-xl text-[12px] font-bold border transition-all whitespace-nowrap ${
+                                stockFilter === f.id 
+                                ? "bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-900/20" 
+                                : "bg-[#141414] border-[#262626] text-gray-500 hover:border-gray-700"
+                            }`}
+                        >
+                            {f.label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
@@ -496,7 +535,10 @@ const SellerProducts = () => {
                 ) : (
                     <div className="divide-y divide-[#262626]">
                         {filtered.map((p) => (
-                            <div key={p._id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center px-6 py-5 hover:bg-[#1a1a1a] transition-colors group">
+                            <div key={p._id} className={`grid grid-cols-1 md:grid-cols-12 gap-4 items-center px-6 py-5 hover:bg-[#1a1a1a] transition-colors group ${
+                                (!p.stock || p.stock === 0) ? "bg-red-500/5 border-l-4 border-red-500" : 
+                                (p.stock <= 10 ? "bg-amber-500/5 border-l-4 border-amber-500" : "")
+                            }`}>
                                 <div className="col-span-5 flex items-center gap-4">
                                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/40 border border-[#262626] flex-shrink-0">
                                         <img
