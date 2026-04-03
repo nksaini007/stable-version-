@@ -12,7 +12,7 @@ import SellerReturns from "./pages/SellerReturns";
 const SellerRoutes = () => {
     return (
         <Routes>
-            <Route path="/seller" element={<SellerLayout />}>
+            <Route element={<SellerLayout />}>
                 <Route index element={<SellerHome />} />
                 <Route path="products" element={<SellerProducts />} />
                 <Route path="orders" element={<SellerOrdersPage />} />

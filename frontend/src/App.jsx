@@ -45,13 +45,7 @@ import AdminProtectedRoute from "./assets/components/dashboard/userdeshboards/ad
 import AdminRoutes from "./assets/components/dashboard/userdeshboards/admin/routes/AdminRoutes";
 
 // Seller
-import SellerLayout from "./assets/components/dashboard/userdeshboards/seller/SellerLayout";
-import SellerHome from "./assets/components/dashboard/userdeshboards/seller/pages/SellerHome";
-import SellerProducts from "./assets/components/dashboard/userdeshboards/seller/pages/SellerProducts";
-import SellerOrdersPage from "./assets/components/dashboard/userdeshboards/seller/pages/SellerOrdersPage";
-import SellerPayments from "./assets/components/dashboard/userdeshboards/seller/pages/SellerPayments";
-import SellerAds from "./assets/components/dashboard/userdeshboards/seller/pages/SellerAds";
-import SellerSettings from "./assets/components/dashboard/userdeshboards/seller/pages/SellerSettings";
+import SellerRoutes from "./assets/components/dashboard/userdeshboards/seller/SellerRoutes";
 import AdminGate from "./assets/components/AdminGate";
 import ProtectedRoute from "./assets/components/dashboard/userdeshboards/ProtectedRoute";
 
@@ -163,14 +157,7 @@ function App() {
           </Route>
 
           {/* Seller Dashboard Routes */}
-          <Route path="/seller" element={<SellerLayout />}>
-            <Route index element={<SellerHome />} />
-            <Route path="products" element={<SellerProducts />} />
-            <Route path="orders" element={<SellerOrdersPage />} />
-            <Route path="ads" element={<SellerAds />} />
-            <Route path="payments" element={<SellerPayments />} />
-            <Route path="settings" element={<SellerSettings />} />
-          </Route>
+          <Route path="/seller/*" element={<SellerRoutes />} />
 
           {/* Delivery Dashboard Routes */}
           <Route path="/delivery" element={<DeliveryLayout />}>
