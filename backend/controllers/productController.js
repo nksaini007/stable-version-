@@ -133,6 +133,7 @@ const createProduct = async (req, res) => {
       arModelUrl,
       arModelScale,
       arModelRotation,
+      deliverySettings,
     } = req.body;
 
     const uploadedImages = [];
@@ -186,6 +187,7 @@ const createProduct = async (req, res) => {
       arModelUrl: finalArModelUrl,
       arModelScale,
       arModelRotation,
+      deliverySettings: typeof deliverySettings === 'string' ? JSON.parse(deliverySettings) : deliverySettings,
     });
 
     res.status(201).json(product);
@@ -218,7 +220,7 @@ const updateProduct = async (req, res) => {
     Object.keys(updates).forEach((key) => {
       if (key === 'features' && typeof updates[key] === 'string') {
         product[key] = updates[key].split(',').map((f) => f.trim());
-      } else if (key === 'pricingTiers' || key === 'recommendations' || key === 'variants') {
+      } else if (key === 'pricingTiers' || key === 'recommendations' || key === 'variants' || key === 'deliverySettings') {
         product[key] = typeof updates[key] === 'string' ? JSON.parse(updates[key]) : updates[key];
       } else if (key !== 'imageLink') { // Don't directly map imageLink to product
         product[key] = updates[key] !== undefined ? updates[key] : product[key];

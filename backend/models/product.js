@@ -43,6 +43,19 @@ const productSchema = new mongoose.Schema(
         name: { type: String, required: true }, // e.g. "Color-Red" or "Wood Type"
         price: { type: Number, required: true },
         stock: { type: Number, default: 0 },
+        description: { type: String },
+        features: [{ type: String }],
+        images: [
+          {
+            public_id: { type: String },
+            url: { type: String },
+          }
+        ],
+        pricingTiers: {
+          architect: { type: Number, default: 0 },
+          stinchar: { type: Number, default: 0 },
+          normal: { type: Number, default: 0 }
+        }
       }
     ],
     type: { type: String }, // e.g., Cotton, Electric
@@ -58,6 +71,14 @@ const productSchema = new mongoose.Schema(
 
     features: [{ type: String }], // Array of features
     care_instructions: { type: String },
+
+    // Delivery & Logistics
+    deliverySettings: {
+      isFragile: { type: Boolean, default: false },
+      handlingInstructions: { type: String },
+      packageWeight: { type: String },
+      packageDimensions: { type: String }, // L x W x H
+    },
 
     // Images
     images: [
