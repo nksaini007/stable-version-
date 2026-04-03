@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import API from "../../../../../api/api";
-import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox, FaCube, FaCheck } from "react-icons/fa";
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox, FaCube, FaCheck, FaTimes } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../../../../../utils/imageUtils";
 import { LanguageContext } from "../../../../../context/LanguageContext";
 import { translations } from "../../../../../translations";
