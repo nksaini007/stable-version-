@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import API from "../../../../../api/api";
-import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox, FaCube } from "react-icons/fa";
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaImage, FaBox, FaCube, FaCheck } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../../../../../utils/imageUtils";
+import { LanguageContext } from "../../../context/LanguageContext";
+import { translations } from "../../../translations";
 import ARViewer from "../../../../ARViewer";
 
 const SellerProducts = () => {
+    const { language } = useContext(LanguageContext);
+    const t = translations[language] || translations.en;
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -58,9 +62,6 @@ const SellerProducts = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Removed strict HTTP validation. We now allow UUIDs or basic string embed codes.
-
         try {
             const formData = new FormData();
             Object.entries(form).forEach(([k, v]) => {
@@ -75,9 +76,6 @@ const SellerProducts = () => {
                         formData.append('arModelFile', v);
                     } else if (k === 'images' && Array.isArray(v)) {
                         v.forEach(img => formData.append('images', img));
-                    } else if ((k === 'arModelScale' || k === 'arModelRotation') && !form.arModelUrl && !form.arModelFile) {
-                        // Skip AR metadata if no AR model is provided to prevent DB pollution
-                        return;
                     } else if (k !== 'arModelUrl' && k !== 'arModelFile' && k !== 'images') {
                         formData.append(k, v);
                     }
@@ -118,320 +116,186 @@ const SellerProducts = () => {
     };
 
     const filtered = products.filter((p) => !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.category?.toLowerCase().includes(search.toLowerCase()));
-    const inputCls = "w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-orange-300 outline-none bg-white";
+    
+    // Updated Input Class for Knockturnals Style
+    const inputCls = "premium-input w-full";
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Products</h1>
-                    <p className="text-sm text-gray-500 mt-1">Manage your product catalog</p>
+                    <h1 className="text-3xl font-bold text-white tracking-tight">{t.products}</h1>
+                    <p className="text-[14px] text-gray-500 mt-1">Manage and monitor your product catalog</p>
                 </div>
                 <button onClick={() => { resetForm(); setShowForm(!showForm); }}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-                    <FaPlus /> {showForm ? "Close" : "Add Product"}
+                    className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-[14px] font-bold shadow-lg shadow-orange-900/20 transition-all">
+                    {showForm ? <FaTimes /> : <FaPlus />} {showForm ? "Close Form" : "Add New Product"}
                 </button>
             </div>
 
             {/* Add/Edit Form */}
             {showForm && (
-                <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                    <h3 className="text-base font-semibold text-gray-800 mb-4">{editing ? "Edit Product" : "Add New Product"}</h3>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            <input name="name" required placeholder="Product Name" value={form.name} onChange={handleChange} className={inputCls} />
-                            <div className="grid grid-cols-2 gap-3">
-                                <input name="price" type="number" required placeholder="Price (₹)" value={form.price} onChange={handleChange} className={inputCls} />
-                                <input name="stock" type="number" required placeholder="Stock" value={form.stock} onChange={handleChange} className={inputCls} />
-                            </div>
+                <div className="premium-card p-6 md:p-8 animate-in slide-in-from-top duration-300">
+                    <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500">
+                            {editing ? <FaEdit size={14} /> : <FaPlus size={14} />}
                         </div>
-                        <textarea name="description" required placeholder="Description" value={form.description} onChange={handleChange} rows={2} className={inputCls} />
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            <select name="category" value={form.category} required onChange={(e) => setForm({ ...form, category: e.target.value, subcategory: "" })} className={inputCls}>
-                                <option value="">Select Category</option>
-                                {categories.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
-                            </select>
-                            <select name="subcategory" value={form.subcategory} required onChange={handleChange} disabled={!form.category} className={inputCls}>
-                                <option value="">Select Subcategory</option>
-                                {form.category && categories.find((c) => c.name === form.category)?.subcategories?.map((s) => <option key={s.name} value={s.name}>{s.name}</option>)}
-                            </select>
-                        </div>
-                        <div className="grid sm:grid-cols-3 gap-3">
-                            {[["type", "Type"], ["brand", "Brand"], ["material", "Material"], ["color", "Color"], ["dimensions", "Dimensions"], ["weight", "Weight"], ["warranty", "Warranty"], ["origin", "Origin"]].map(([k, l]) => (
-                                <input key={k} name={k} placeholder={l} value={form[k]} onChange={handleChange} className={inputCls} />
-                            ))}
-                        </div>
-                        <input name="features" placeholder="Features (comma separated)" value={form.features} onChange={handleChange} className={inputCls} />
-
-                        {/* Pricing Tiers Section */}
-                        <div className="p-4 bg-orange-50/50 rounded-2xl border border-orange-100 space-y-4">
-                            <h4 className="text-xs font-bold text-orange-700 uppercase tracking-wider">Pricing_Tiers (₹)</h4>
-                            <div className="grid sm:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="text-[10px] font-bold text-orange-600 block mb-1">ARCHITECT_PRICE</label>
-                                    <input
-                                        type="number"
-                                        value={form.pricingTiers.architect}
-                                        onChange={(e) => setForm({ ...form, pricingTiers: { ...form.pricingTiers, architect: e.target.value } })}
-                                        className={inputCls}
-                                        placeholder="Architect Price"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-bold text-orange-600 block mb-1">STINCHAR_PURCHASE</label>
-                                    <input
-                                        type="number"
-                                        value={form.pricingTiers.stinchar}
-                                        onChange={(e) => setForm({ ...form, pricingTiers: { ...form.pricingTiers, stinchar: e.target.value } })}
-                                        className={inputCls}
-                                        placeholder="Stinchar Price"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-bold text-orange-600 block mb-1">NORMAL_CUSTOMER</label>
-                                    <input
-                                        type="number"
-                                        value={form.pricingTiers.normal}
-                                        onChange={(e) => setForm({ ...form, pricingTiers: { ...form.pricingTiers, normal: e.target.value } })}
-                                        className={inputCls}
-                                        placeholder="Standard Price"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Bulk Pricing */}
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <label className="text-[10px] font-bold text-orange-600 uppercase">Bulk_Pricing_Tiers (Qty vs Price)</label>
-                                    <button
-                                        type="button"
-                                        onClick={() => setForm({
-                                            ...form,
-                                            pricingTiers: {
-                                                ...form.pricingTiers,
-                                                bulk: [...form.pricingTiers.bulk, { minQty: "", price: "" }]
-                                            }
-                                        })}
-                                        className="text-[10px] font-bold text-orange-600 hover:underline"
-                                    >
-                                        + ADD_TIER
-                                    </button>
-                                </div>
-                                {form.pricingTiers.bulk.map((tier, bIdx) => (
-                                    <div key={bIdx} className="grid grid-cols-3 gap-3 items-center bg-gray-50/50 p-2 rounded-xl border border-gray-100">
-                                        <input
-                                            type="number"
-                                            placeholder="Min Qty"
-                                            value={tier.minQty}
-                                            onChange={(e) => {
-                                                const newBulk = [...form.pricingTiers.bulk];
-                                                newBulk[bIdx].minQty = e.target.value;
-                                                setForm({ ...form, pricingTiers: { ...form.pricingTiers, bulk: newBulk } });
-                                            }}
-                                            className={inputCls}
-                                        />
-                                        <input
-                                            type="number"
-                                            placeholder="Price (₹)"
-                                            value={tier.price}
-                                            onChange={(e) => {
-                                                const newBulk = [...form.pricingTiers.bulk];
-                                                newBulk[bIdx].price = e.target.value;
-                                                setForm({ ...form, pricingTiers: { ...form.pricingTiers, bulk: newBulk } });
-                                            }}
-                                            className={inputCls}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                const newBulk = form.pricingTiers.bulk.filter((_, i) => i !== bIdx);
-                                                setForm({ ...form, pricingTiers: { ...form.pricingTiers, bulk: newBulk } });
-                                            }}
-                                            className="text-red-500 text-xs font-bold hover:underline"
-                                        >
-                                            REMOVE
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Native AR Features */}
-                        <div className="p-4 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-4">
-                            <div>
-                                <h4 className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider">
-                                    <FaCube /> 3D Model Upload (AR Camera Support)
-                                </h4>
-                                <p className="text-[10px] text-purple-600 mt-1 font-medium">To enable "View in Room" from user phone cameras, upload a direct .glb / .usdz file or link.</p>
-                            </div>
-                            <div className="flex flex-col gap-3">
-                                <label className="text-[10px] font-bold text-purple-600 block mb-1">3D MODEL SOURCE (FILE OR URL)</label>
-                                <div className="flex items-center gap-3">
-                                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-purple-200 cursor-pointer hover:bg-purple-100/50 text-sm text-purple-700 font-semibold bg-white transition-all shadow-sm">
-                                        <FaCube className="text-purple-500" /> Upload .glb File
-                                        <input type="file" accept=".glb,.gltf,.usdz" className="hidden" onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file) {
-                                                setForm({ ...form, arModelFile: file, arModelUrl: "" });
-                                            }
-                                        }} />
-                                    </label>
-                                    <input
-                                        name="arModelUrl"
-                                        placeholder="Or paste direct .glb File URL..."
-                                        value={form.arModelUrl}
-                                        onChange={(e) => {
-                                            setForm({ ...form, arModelUrl: e.target.value, arModelFile: null });
-                                        }}
-                                        className={inputCls}
-                                    />
-                                </div>
-                                {(form.arModelFile) && <p className="text-xs text-emerald-600 font-medium">✓ File selected: {form.arModelFile.name}</p>}
-                            </div>
-                            <div className="grid sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">SCALE (Optional, if applicable)</label>
-                                    <input name="arModelScale" placeholder="e.g. 1 1 1" value={form.arModelScale} onChange={handleChange} className={inputCls} />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-bold text-purple-600 block mb-1">ROTATION (Optional, if applicable)</label>
-                                    <input name="arModelRotation" placeholder="e.g. 0deg 90deg 0deg" value={form.arModelRotation} onChange={handleChange} className={inputCls} />
-                                </div>
-                            </div>
-                            {(form.arModelUrl || form.arModelFile) && (
-                                <div className="mt-4 pt-4 border-t border-purple-100">
-                                    <h5 className="text-[10px] font-bold text-purple-700 uppercase mb-2">3D Model Preview</h5>
-                                    <div className="h-64 rounded-xl overflow-hidden border border-purple-200 bg-white shadow-inner">
-                                        <ARViewer
-                                            src={form.arModelFile ? URL.createObjectURL(form.arModelFile) : form.arModelUrl}
-                                            scale={form.arModelScale}
-                                            rotation={form.arModelRotation}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <textarea name="care_instructions" placeholder="Care Instructions" value={form.care_instructions} onChange={handleChange} rows={2} className={inputCls} />
-
-                        {/* Variants Section */}
-                        <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 space-y-4">
-                            <div className="flex justify-between items-center bg-blue-100/50 p-2 rounded-xl border border-blue-100">
-                                <h4 className="flex items-center gap-2 text-xs font-bold text-blue-700 uppercase tracking-wider">
-                                    <FaCube /> Product Types / Variants
-                                </h4>
-                                <button
-                                    type="button"
-                                    onClick={() => setForm({
-                                        ...form,
-                                        variants: [...form.variants, { name: "", price: "", stock: "" }]
-                                    })}
-                                    className="text-[10px] font-bold text-blue-600 hover:underline px-2 py-1 bg-white rounded-lg shadow-sm"
-                                >
-                                    + ADD VARIANT
-                                </button>
-                            </div>
-                            {form.variants.map((v, vIdx) => (
-                                <div key={vIdx} className="grid sm:grid-cols-4 gap-3 bg-white p-3 rounded-xl border border-blue-100">
-                                    <input type="text" placeholder="Name (e.g. Red, XL)" value={v.name} onChange={e => {
-                                        const nv = [...form.variants]; nv[vIdx].name = e.target.value; setForm({ ...form, variants: nv });
-                                    }} className={inputCls} />
-                                    <input type="number" placeholder="Price (₹)" value={v.price} onChange={e => {
-                                        const nv = [...form.variants]; nv[vIdx].price = e.target.value; setForm({ ...form, variants: nv });
-                                    }} className={inputCls} />
-                                    <input type="number" placeholder="Stock" value={v.stock} onChange={e => {
-                                        const nv = [...form.variants]; nv[vIdx].stock = e.target.value; setForm({ ...form, variants: nv });
-                                    }} className={inputCls} />
-                                    <button type="button" onClick={() => {
-                                        const nv = form.variants.filter((_, i) => i !== vIdx); setForm({ ...form, variants: nv });
-                                    }} className="text-red-500 font-bold text-xs hover:underline flex items-center justify-center">REMOVE</button>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="grid sm:grid-cols-2 gap-4 items-end">
+                        {editing ? "Edit Product" : "New Catalog Entry"}
+                    </h3>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-xs text-gray-500 font-medium ml-1">Product Images (File or single URL)</label>
-                                <div className="flex flex-col gap-3">
-                                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 text-sm text-gray-600">
-                                        <FaImage className="text-orange-500" /> Upload Multiple
-                                        <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageChange} />
-                                    </label>
-                                    <input
-                                        name="imageLink"
-                                        placeholder="Or paste Image URL..."
-                                        value={form.imageLink}
-                                        onChange={(e) => {
-                                            const url = e.target.value;
-                                            setForm({ ...form, imageLink: url, images: [] });
-                                            if (url) setPreviews([url]); else setPreviews([]);
-                                        }}
-                                        className={inputCls}
-                                    />
+                                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Product Identity</label>
+                                <input name="name" required placeholder="Display Name" value={form.name} onChange={handleChange} className={inputCls} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Price (₹)</label>
+                                    <input name="price" type="number" required placeholder="1,999" value={form.price} onChange={handleChange} className={inputCls} />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Stock Level</label>
+                                    <input name="stock" type="number" required placeholder="50" value={form.stock} onChange={handleChange} className={inputCls} />
                                 </div>
                             </div>
-                            <div className="flex flex-wrap gap-2">
-                                {previews && previews.map((prev, idx) => (
-                                    <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
-                                        <img
-                                            src={getOptimizedImage(prev, 200)}
-                                            alt=""
-                                            className="w-full h-full object-cover"
-                                            {...lazyImageProps}
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Description</label>
+                            <textarea name="description" required placeholder="Tell your customers about this product..." value={form.description} onChange={handleChange} rows={3} className={inputCls} />
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Main Category</label>
+                                <select name="category" value={form.category} required onChange={(e) => setForm({ ...form, category: e.target.value, subcategory: "" })} className={inputCls}>
+                                    <option value="" className="bg-[#1a1a1a]">Choose Category</option>
+                                    {categories.map((c) => <option key={c.name} value={c.name} className="bg-[#1a1a1a]">{c.name}</option>)}
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Subcategory</label>
+                                <select name="subcategory" value={form.subcategory} required onChange={handleChange} disabled={!form.category} className={inputCls}>
+                                    <option value="" className="bg-[#1a1a1a]">Choose Subcategory</option>
+                                    {form.category && categories.find((c) => c.name === form.category)?.subcategories?.map((s) => <option key={s.name} value={s.name} className="bg-[#1a1a1a]">{s.name}</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            {[["brand", "Brand"], ["material", "Material"], ["color", "Color"], ["dimensions", "Size"]].map(([k, l]) => (
+                                <div key={k} className="space-y-2">
+                                    <label className="text-[10px] font-bold text-gray-600 uppercase tracking-widest ml-1">{l}</label>
+                                    <input name={k} placeholder={l} value={form[k]} onChange={handleChange} className={inputCls} />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Pricing Tiers - Styled like Knockturnals sections */}
+                        <div className="bg-[#141414] border border-[#262626] rounded-2xl p-6 space-y-6">
+                            <h4 className="text-[12px] font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-orange-500"></div> B2B & Specialized Pricing (₹)
+                            </h4>
+                            <div className="grid sm:grid-cols-3 gap-6">
+                                {[["architect", "Architect"], ["stinchar", "Partner"], ["normal", "Standard"]].map(([k, l]) => (
+                                    <div key={k} className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase">{l} Price</label>
+                                        <input
+                                            type="number"
+                                            value={form.pricingTiers[k]}
+                                            onChange={(e) => setForm({ ...form, pricingTiers: { ...form.pricingTiers, [k]: e.target.value } })}
+                                            className={inputCls}
                                         />
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="flex gap-3">
-                            <button type="submit" className="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold text-sm transition">{editing ? "Update" : "Add Product"}</button>
-                            <button type="button" onClick={resetForm} className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl font-semibold text-sm transition">Cancel</button>
+
+                        <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-[#262626]">
+                            <button type="submit" className="flex-1 py-3 bg-white hover:bg-gray-100 text-black rounded-xl font-bold text-[14px] shadow-lg transition-colors">
+                                {editing ? "Save Changes" : "Create Product"}
+                            </button>
+                            <button type="button" onClick={resetForm} className="flex-1 py-3 bg-[#1a1a1a] border border-[#262626] hover:bg-[#222] text-gray-400 rounded-xl font-bold text-[14px] transition-colors">
+                                Cancel
+                            </button>
                         </div>
                     </form>
                 </div>
             )}
 
-            {/* Search */}
-            <div className="relative max-w-sm">
-                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
-                <input type="text" placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-orange-400 outline-none bg-white" />
+            {/* List Header / Search */}
+            <div className="flex items-center justify-between gap-4">
+                <div className="relative flex-1 max-w-md group">
+                    <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                    <input 
+                        type="text" 
+                        placeholder="Search by name, category, or ID..." 
+                        value={search} 
+                        onChange={(e) => setSearch(e.target.value)} 
+                        className="w-full pl-12 pr-4 py-3 bg-[#141414] border border-[#262626] rounded-xl text-white text-[14px] focus:outline-none focus:border-orange-500 transition-all"
+                    />
+                </div>
             </div>
 
-            {/* Product List */}
-            {loading ? (
-                <div className="flex justify-center py-16"><div className="w-10 h-10 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin" /></div>
-            ) : filtered.length === 0 ? (
-                <div className="text-center py-16 text-gray-400"><FaBox className="text-4xl mx-auto mb-3 opacity-50" /><p>No products found</p></div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filtered.map((p) => (
-                        <div key={p._id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all group">
-                            <div className="h-40 bg-gray-100 overflow-hidden">
-                                <img
-                                    src={getOptimizedImage(p.images?.[0]?.url, 500)}
-                                    alt={p.name}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                    {...lazyImageProps}
-                                />
-                            </div>
-                            <div className="p-4">
-                                <h3 className="text-sm font-semibold text-gray-800 truncate">{p.name}</h3>
-                                <p className="text-[11px] text-gray-400 mt-0.5">{p.category} / {p.subcategory}</p>
-                                <div className="flex items-center justify-between mt-3">
-                                    <span className="text-lg font-bold text-orange-600">₹{p.price?.toLocaleString()}</span>
-                                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${p.stock > 0 ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}>
-                                        {p.stock > 0 ? `Stock: ${p.stock}` : "Out of Stock"}
-                                    </span>
-                                </div>
-                                <div className="flex gap-2 mt-3">
-                                    <button onClick={() => handleEdit(p)} className="flex-1 py-2 rounded-xl bg-orange-50 text-orange-600 text-xs font-semibold hover:bg-orange-100 transition"><FaEdit className="inline mr-1" />Edit</button>
-                                    <button onClick={() => handleDelete(p._id)} className="flex-1 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition"><FaTrash className="inline mr-1" />Delete</button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+            {/* Table-like List for Professional Dashboard Feel */}
+            <div className="premium-card overflow-hidden">
+                <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 bg-[#1a1a1a] border-b border-[#262626] text-[11px] font-bold text-gray-500 uppercase tracking-widest">
+                    <div className="col-span-5">Product</div>
+                    <div className="col-span-2 text-center">Category</div>
+                    <div className="col-span-2 text-center">Price</div>
+                    <div className="col-span-1 text-center">Stock</div>
+                    <div className="col-span-2 text-right">Actions</div>
                 </div>
-            )}
+
+                {loading ? (
+                    <div className="flex justify-center py-24"><div className="w-12 h-12 border-4 border-orange-500/10 border-t-orange-500 rounded-full animate-spin" /></div>
+                ) : filtered.length === 0 ? (
+                    <div className="text-center py-24 text-gray-500">
+                        <FaBox className="text-6xl mx-auto mb-4 opacity-10" />
+                        <p className="text-lg font-medium">No results found</p>
+                    </div>
+                ) : (
+                    <div className="divide-y divide-[#262626]">
+                        {filtered.map((p) => (
+                            <div key={p._id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center px-6 py-5 hover:bg-[#1a1a1a] transition-colors group">
+                                <div className="col-span-5 flex items-center gap-4">
+                                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-black/40 border border-[#262626] flex-shrink-0">
+                                        <img
+                                            src={getOptimizedImage(p.images?.[0]?.url, 200)}
+                                            alt={p.name}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                            {...lazyImageProps}
+                                        />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h4 className="text-[15px] font-bold text-white truncate">{p.name}</h4>
+                                        <p className="text-[11px] text-gray-500 mt-0.5 truncate uppercase tracking-tighter">{p._id}</p>
+                                    </div>
+                                </div>
+                                <div className="md:col-span-2 text-center">
+                                    <span className="px-3 py-1 bg-[#262626] rounded-full text-[11px] font-bold text-gray-400 uppercase tracking-wider">{p.category}</span>
+                                </div>
+                                <div className="md:col-span-2 text-center text-[15px] font-bold text-white">
+                                    ₹{p.price?.toLocaleString()}
+                                </div>
+                                <div className="md:col-span-1 text-center">
+                                    <div className={`text-[12px] font-bold ${p.stock > 10 ? "text-emerald-500" : p.stock > 0 ? "text-amber-500" : "text-red-500"}`}>
+                                        {p.stock}
+                                    </div>
+                                </div>
+                                <div className="md:col-span-2 flex items-center justify-end gap-2 text-[18px]">
+                                    <button onClick={() => handleEdit(p)} className="p-2 text-gray-500 hover:text-white hover:bg-[#262626] rounded-lg transition-all" title="Edit">
+                                        <FaEdit size={16} />
+                                    </button>
+                                    <button onClick={() => handleDelete(p._id)} className="p-2 text-red-900/50 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all" title="Delete">
+                                        <FaTrash size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

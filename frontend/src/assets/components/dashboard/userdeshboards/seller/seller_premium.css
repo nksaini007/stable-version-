@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --knock-black: #0a0a0a;
+    --knock-card: #141414;
+    --knock-border: #262626;
+    --knock-input: #1a1a1a;
+    --knock-sidebar: #0f0f0f;
+    --knock-accent: #f97316; /* Keeping some orange for identity */
+    --knock-text-main: #ffffff;
+    --knock-text-muted: #888888;
+}
+
+.premium-dashboard {
+    background-color: var(--knock-black);
+    color: var(--knock-text-main);
+    font-family: 'Inter', sans-serif;
+}
+
+.premium-sidebar {
+    background-color: var(--knock-sidebar);
+    border-right: 1px solid var(--knock-border);
+}
+
+.premium-card {
+    background-color: var(--knock-card);
+    border: 1px solid var(--knock-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.premium-header {
+    background-color: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--knock-border);
+}
+
+.premium-input {
+    background-color: var(--knock-input);
+    border: 1px solid var(--knock-border);
+    color: var(--knock-text-main);
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: all 0.2s;
+}
+
+.premium-input:focus {
+    border-color: var(--knock-accent);
+    outline: none;
+    background-color: #1f1f1f;
+}
+
+.sidebar-item {
+    color: var(--knock-text-muted);
+    transition: all 0.2s;
+    border-radius: 8px;
+    margin: 4px 12px;
+    padding: 10px 14px;
+}
+
+.sidebar-item:hover, .sidebar-item.active {
+    background-color: var(--knock-card);
+    color: var(--knock-text-main);
+}
+
+.sidebar-item.active {
+    border: 1px solid var(--knock-border);
+}
+
+/* Custom Scrollbar */
+.premium-dashboard ::-webkit-scrollbar {
+    width: 6px;
+}
+
+.premium-dashboard ::-webkit-scrollbar-track {
+    background: var(--knock-black);
+}
+
+.premium-dashboard ::-webkit-scrollbar-thumb {
+    background: var(--knock-border);
+    border-radius: 10px;
+}
+
+.premium-dashboard ::-webkit-scrollbar-thumb:hover {
+    background: #333;
+}
+
+/* Stat Cards Group from Ref Image */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+/* Language Switcher Dropdown Styling */
+.lang-select {
+    background: var(--knock-input);
+    border: 1px solid var(--knock-border);
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
