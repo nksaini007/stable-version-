@@ -4,7 +4,7 @@ import {
     FaHome, FaBox, FaClipboardList, FaMoneyBillWave,
     FaSignOutAlt, FaChevronLeft, FaStore, FaBullhorn, FaTimes, FaUserCircle
 } from "react-icons/fa";
-import { AuthContext } from "../../../../assets/context/AuthContext";
+import { AuthContext } from "../../../../context/AuthContext";
 import { LanguageContext } from "../../../../context/LanguageContext";
 import { translations } from "../../../../translations";
 import logo from "../../../../logo.png";
