@@ -53,7 +53,7 @@ router.put("/me/password", protect, changePassword);
 /* ============================================================
    🛡️ Admin Routes
 ============================================================ */
-router.get("/", protect, adminOnly, getUsers);
+router.get("/all", protect, adminOnly, getUsers);
 router.get("/providers", protect, adminOnly, getProviders);
 router.get("/:id", protect, getUserById);
 router.put("/:id", protect, adminOnly, updateUser);

@@ -391,14 +391,20 @@ const changePassword = async (req, res) => {
  */
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password").sort({ createdAt: -1 });
+    const { role } = req.query;
+    const query = role ? { role } : {};
+    const users = await User.find(query).select("-password").sort({ createdAt: -1 });
+    
+    // Always get total counts across all roles for admin dashboard context
+    const allUsersCountList = await User.find().select("role");
     const counts = {
-      total: users.length,
-      customer: users.filter(u => u.role === "customer").length,
-      seller: users.filter(u => u.role === "seller").length,
-      delivery: users.filter(u => u.role === "delivery").length,
-      provider: users.filter(u => u.role === "provider").length,
-      admin: users.filter(u => u.role === "admin").length,
+      total: allUsersCountList.length,
+      customer: allUsersCountList.filter(u => u.role === "customer").length,
+      seller: allUsersCountList.filter(u => u.role === "seller").length,
+      delivery: allUsersCountList.filter(u => u.role === "delivery").length,
+      provider: allUsersCountList.filter(u => u.role === "provider").length,
+      admin: allUsersCountList.filter(u => u.role === "admin").length,
+      architect: allUsersCountList.filter(u => u.role === "architect").length,
     };
     res.json({ users, counts });
   } catch (err) {
