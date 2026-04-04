@@ -6,22 +6,15 @@ const ConstructionPlan = require("../models/ConstructionPlan");
 const createPlan = async (req, res) => {
     try {
         const { 
-            title, category, subCategory, planType, 
+            title, category, planType, 
             description, estimatedCost, area, 
             features, facilities, subConstructions, 
             linkedProducts, architectId 
         } = req.body;
-
-        // Process uploaded images
-        let imageUrls = [];
-        if (req.files && req.files.length > 0) {
-            imageUrls = req.files.map((file) => file.path);
-        }
-
+// ...
         const newPlan = new ConstructionPlan({
             title,
             category,
-            subCategory,
             planType,
             description,
             estimatedCost: Number(estimatedCost),

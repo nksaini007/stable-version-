@@ -21,7 +21,7 @@ const ProjectPlansCatalog = () => {
                 const { data } = await API.get("/construction-plans", {
                     params: {
                         category: categoryName,
-                        subCategory: planTypeName
+                        planType: planTypeName
                     }
                 });
 

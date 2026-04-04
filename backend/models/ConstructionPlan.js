@@ -7,11 +7,8 @@ const constructionPlanSchema = new mongoose.Schema(
             type: String, // Main Category (e.g., Residential)
             required: true,
         },
-        subCategory: {
-            type: String, // Subcategory (e.g., Modern Villa)
-        },
         planType: {
-            type: String, // Detailed Plan Type (e.g., 3-Story Luxury)
+            type: String, // Subcategory (e.g., Modern Villa)
             required: true,
         },
         description: { type: String, required: true },
