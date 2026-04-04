@@ -550,6 +550,7 @@ module.exports = {
   toggleProductLike,
   bulkUpdateProducts,
   incrementShopVisitors,
+  bulkUploadProducts,
 };
 
 // // };
