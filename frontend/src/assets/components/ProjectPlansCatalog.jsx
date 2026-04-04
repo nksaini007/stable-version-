@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import API from "../api/api";
 import { motion } from "framer-motion";
-import { FaMap, FaSearch, FaRulerCombined, FaTag } from "react-icons/fa";
+import { FaMap, FaSearch, FaRulerCombined, FaTag, FaChevronLeft } from "react-icons/fa";
 import Nev from "./Nev";
+import Footer from "./Footer";
 
 const ProjectPlansCatalog = () => {
     const { categoryName, planTypeName } = useParams();
@@ -15,16 +16,18 @@ const ProjectPlansCatalog = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [plansRes] = await Promise.all([
-                    API.get("/construction-plans")
-                ]);
+                setLoading(true);
+                // Use the updated API filtering for better performance
+                const { data } = await API.get("/construction-plans", {
+                    params: {
+                        category: categoryName,
+                        subCategory: planTypeName
+                    }
+                });
 
-                // Filter plans strictly by category and planType from URL
-                const filteredByParams = plansRes.data.plans.filter(p =>
-                    p.category === categoryName && p.planType === planTypeName
-                );
-
-                setPlans(filteredByParams);
+                // Fallback filtering if the backend doesn't support query params yet (local dev vs prod sync)
+                const finalPlans = data.plans || [];
+                setPlans(finalPlans);
             } catch (error) {
                 console.error("Failed to fetch data", error);
             } finally {
@@ -48,70 +51,78 @@ const ProjectPlansCatalog = () => {
     };
 
     return (
-        <div className="bg-slate-50 min-h-screen">
+        <div className="bg-[#FAF9F6] min-h-screen selection:bg-slate-200">
             <Nev />
 
-            {/* Header Hero */}
-            <div className="bg-slate-900 text-white pt-24 pb-12 px-4 md:px-8">
-                <div className="max-w-5xl mx-auto text-center">
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800 border border-slate-700 mb-6">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">{categoryName} &middot; {planTypeName}</span>
-                    </motion.div>
-
-                    <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-4xl md:text-5xl font-bold mb-5 text-white tracking-tight">
-                        Curated Blueprints
-                    </motion.h1>
-
-                    <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-slate-400 max-w-2xl mx-auto text-lg md:text-xl font-light leading-relaxed">
-                        Browse our exclusive catalog of professional architectural plans and exceptional designs to find the perfect foundation for your next project.
-                    </motion.p>
-                </div>
-            </div>
-
-            {/* Filter Section */}
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10">
-                <div className="bg-white rounded-xl shadow-sm p-3 md:p-4 flex flex-col md:flex-row gap-3 items-center justify-between border border-gray-200">
-                    <div className="flex items-center gap-4 w-full md:w-auto">
-                        <button
-                            onClick={() => navigate(`/project-categories/${encodeURIComponent(categoryName)}`)}
-                            className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2.5 rounded-lg transition-colors flex items-center justify-center shrink-0"
-                            title="Back to plan types"
+            {/* Header Hero - Minimalist Industrial Style */}
+            <div className="bg-white border-b border-slate-200 pt-32 pb-16 px-4 md:px-8">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-8">
+                    <div className="max-w-3xl">
+                        <motion.div 
+                            initial={{ opacity: 0, x: -10 }} 
+                            animate={{ opacity: 1, x: 0 }} 
+                            className="flex items-center gap-3 mb-6"
                         >
-                            <FaMap className="rotate-180" />
-                        </button>
-                        <div>
-                            <h2 className="text-sm font-bold text-gray-800">{planTypeName}</h2>
-                            <p className="text-xs text-gray-500">Under {categoryName}</p>
-                        </div>
+                            <Link to={`/project-categories/${encodeURIComponent(categoryName)}`} className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
+                                <FaChevronLeft className="text-[10px]" />
+                            </Link>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">{categoryName} / {planTypeName}</span>
+                        </motion.div>
+
+                        <motion.h1 
+                            initial={{ opacity: 0, y: 10 }} 
+                            animate={{ opacity: 1, y: 0 }} 
+                            transition={{ delay: 0.1 }} 
+                            className="text-4xl md:text-6xl font-light text-slate-900 tracking-tight mb-4"
+                        >
+                            DESIGN <span className="font-bold">SPECIFICATIONS</span>
+                        </motion.h1>
+
+                        <motion.p 
+                            initial={{ opacity: 0 }} 
+                            animate={{ opacity: 1 }} 
+                            transition={{ delay: 0.2 }} 
+                            className="text-slate-500 max-w-xl text-sm md:text-base font-normal leading-relaxed"
+                        >
+                            Explore our technical blueprints for {planTypeName}. 
+                            Each plan is engineered for performance and architectural excellence.
+                        </motion.p>
                     </div>
 
                     <div className="relative w-full md:w-80">
-                        <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" />
+                        <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs" />
                         <input
                             type="text"
-                            placeholder="Search projects..."
+                            placeholder="Find specific blueprint..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-xs rounded-lg focus:ring-1 focus:ring-slate-800 focus:border-slate-800 block pl-9 p-2.5 transition-colors outline-none"
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-2xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 block pl-12 h-14 transition-all outline-none"
                         />
                     </div>
                 </div>
             </div>
 
             {/* Catalog Grid */}
-            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {loading ? (
-                    <div className="flex justify-center items-center h-40">
-                        <div className="w-8 h-8 border-2 border-gray-200 border-t-slate-800 rounded-full animate-spin"></div>
+                    <div className="flex flex-col items-center justify-center py-32 gap-6">
+                        <div className="w-12 h-[1px] bg-slate-100 overflow-hidden relative">
+                            <motion.div 
+                                className="absolute inset-0 bg-slate-900"
+                                animate={{ left: ['-100%', '100%'] }}
+                                transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                            />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Loading Registry</span>
                     </div>
                 ) : filteredPlans.length === 0 ? (
-                    <div className="text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm">
-                        <FaMap className="text-4xl text-gray-300 mx-auto mb-3" />
-                        <h3 className="text-lg font-semibold text-gray-800">No plans found</h3>
-                        <p className="text-sm text-gray-500 mt-1">Try adjusting your filters.</p>
+                    <div className="text-center py-32 bg-white rounded-3xl border border-dashed border-slate-200">
+                        <FaMap className="text-3xl text-slate-200 mx-auto mb-4" />
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">No active blueprints found</h3>
+                        <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-2">Adjust your parameters and try again</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {filteredPlans.map((plan, index) => (
                             <motion.div
                                 key={plan._id}
@@ -119,28 +130,39 @@ const ProjectPlansCatalog = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.05 }}
                             >
-                                <Link to={`/project-plans/${plan._id}`} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg border border-gray-200 hover:border-blue-500 transition-all duration-300 group flex flex-col h-full cursor-pointer relative block">
-                                    <div className="relative aspect-[4/3] sm:aspect-video overflow-hidden bg-gray-50 border-b border-gray-100 flex items-center justify-center p-2">
-                                        {plan.images && plan.images.length > 0 ? (
-                                            <img src={getImageUrl(plan.images[0])} alt={plan.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-2xl" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-300"><FaMap className="text-2xl md:text-4xl" /></div>
-                                        )}
-                                        <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-2.5 py-1 md:px-3 md:py-1 rounded text-[9px] md:text-[10px] font-bold text-slate-700 border border-gray-200 shadow-sm uppercase tracking-wider line-clamp-1 max-w-[85%]">
-                                            {plan.planType}
-                                        </div>
-                                    </div>
-
-                                    <div className="p-3.5 sm:p-5 flex-1 flex flex-col bg-white">
-                                        <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 mb-1.5 line-clamp-1 group-hover:text-blue-600 transition-colors">{plan.title}</h3>
-                                        <p className="text-slate-500 text-[10px] sm:text-[11px] md:text-sm line-clamp-2 leading-relaxed flex-1 mb-3">{plan.description}</p>
-
-                                        <div className="pt-3 md:pt-4 border-t border-gray-100 flex flex-col xl:flex-row justify-between xl:items-center mt-auto gap-2">
-                                            <div className="flex items-center gap-1.5 md:gap-2 text-[10px] sm:text-[11px] md:text-xs text-slate-600 font-medium whitespace-nowrap overflow-hidden">
-                                                <FaRulerCombined className="text-gray-400 shrink-0" /> <span className="truncate">{plan.area}</span>
+                                <Link to={`/project-plans/${plan._id}`} className="group block h-full">
+                                    <div className="bg-white rounded-[2rem] overflow-hidden border border-slate-200 hover:border-slate-900 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full">
+                                        <div className="relative aspect-[4/3] overflow-hidden bg-slate-50 flex items-center justify-center p-1">
+                                            {plan.images && plan.images.length > 0 ? (
+                                                <img 
+                                                    src={getImageUrl(plan.images[0])} 
+                                                    alt={plan.title} 
+                                                    className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" 
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-slate-200"><FaMap className="text-4xl" /></div>
+                                            )}
+                                            
+                                            <div className="absolute top-6 left-6">
+                                                <span className="bg-slate-900 text-white px-3 py-1.5 text-[8px] font-bold uppercase tracking-widest shadow-lg">
+                                                    Ref: {plan._id.substring(0,4).toUpperCase()}
+                                                </span>
                                             </div>
-                                            <div className="flex items-center gap-1.5 md:gap-2 text-[10px] sm:text-[11px] md:text-xs text-slate-800 font-bold whitespace-nowrap overflow-hidden">
-                                                <FaTag className="text-gray-400 shrink-0" /> <span className="truncate">{plan.estimatedCost}</span>
+                                        </div>
+
+                                        <div className="p-8 flex-1 flex flex-col">
+                                            <h3 className="text-lg font-bold text-slate-900 mb-2 leading-tight group-hover:text-slate-600 transition-colors uppercase tracking-tight">{plan.title}</h3>
+                                            <p className="text-slate-400 text-xs line-clamp-2 leading-relaxed mb-6 font-normal">{plan.description}</p>
+
+                                            <div className="pt-6 border-t border-slate-50 flex justify-between items-center mt-auto">
+                                                <div className="flex items-center gap-3">
+                                                    <FaRulerCombined className="text-slate-300 text-[10px]" /> 
+                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{plan.area}</span>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Est. Project</p>
+                                                    <span className="text-xs font-black text-slate-900">₹{plan.estimatedCost?.toLocaleString()}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -150,6 +172,8 @@ const ProjectPlansCatalog = () => {
                     </div>
                 )}
             </div>
+            
+            <Footer />
         </div>
     );
 };

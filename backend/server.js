@@ -103,6 +103,7 @@ const deliveryPricingRoutes = require("./routes/deliveryPricingRoutes"); // ✅ 
 const serviceCategoryRoutes = require("./routes/serviceCategoryRoutes"); // ✅ service categories
 const followRoutes = require("./routes/followRoutes"); // ✅ follow system
 const architectWorkforceRoutes = require("./routes/architectWorkforceRoutes"); // ✅ architect workforce
+const customPlanRoutes = require("./routes/customPlanRoutes"); // ✅ project customization workflow
 
 // ✅ Use routes
 app.use("/api/quotations", quotationRoutes); // ✅ quotation routes
@@ -130,6 +131,7 @@ app.use("/api/service-categories", serviceCategoryRoutes); // ✅ service catego
 app.use("/api/follow", followRoutes); // ✅ follow system
 app.use("/api/query", require("./routes/queryRoutes")); // ✅ custom queries and charts
 app.use("/api/architect-workforce", architectWorkforceRoutes); // ✅ architect workforce
+app.use("/api/custom-plans", customPlanRoutes); // ✅ project customization lifecycle
 
 // ✅ Test & Health Routes
 app.get("/", (req, res) => {

@@ -5,7 +5,12 @@ const ConstructionPlan = require("../models/ConstructionPlan");
 // @access  Private/Admin
 const createPlan = async (req, res) => {
     try {
-        const { title, category, planType, description, estimatedCost, area, features } = req.body;
+        const { 
+            title, category, subCategory, planType, 
+            description, estimatedCost, area, 
+            features, facilities, subConstructions, 
+            linkedProducts, architectId 
+        } = req.body;
 
         // Process uploaded images
         let imageUrls = [];
@@ -16,13 +21,18 @@ const createPlan = async (req, res) => {
         const newPlan = new ConstructionPlan({
             title,
             category,
+            subCategory,
             planType,
             description,
-            estimatedCost,
+            estimatedCost: Number(estimatedCost),
             area,
-            features: JSON.parse(features), // Features should be sent as JSON string
+            features: typeof features === 'string' ? JSON.parse(features) : features,
+            facilities: typeof facilities === 'string' ? JSON.parse(facilities) : facilities,
+            subConstructions: typeof subConstructions === 'string' ? JSON.parse(subConstructions) : subConstructions,
+            linkedProducts: typeof linkedProducts === 'string' ? JSON.parse(linkedProducts) : linkedProducts,
+            architectId,
             images: imageUrls,
-            adminId: req.user._id // Assuming admin is logged in
+            adminId: req.user._id
         });
 
         const savedPlan = await newPlan.save();
@@ -37,7 +47,16 @@ const createPlan = async (req, res) => {
 // @access  Public
 const getAllPlans = async (req, res) => {
     try {
-        const plans = await ConstructionPlan.find().sort({ createdAt: -1 });
+        const { category, subCategory } = req.query;
+        let query = { isActive: true };
+        
+        if (category) query.category = category;
+        if (subCategory) query.subCategory = subCategory;
+
+        const plans = await ConstructionPlan.find(query)
+            .populate("architectId", "name profileImage bio")
+            .sort({ createdAt: -1 });
+            
         res.status(200).json({ success: true, count: plans.length, plans });
     } catch (error) {
         res.status(500).json({ success: false, message: "Error fetching plans", error: error.message });
@@ -49,7 +68,14 @@ const getAllPlans = async (req, res) => {
 // @access  Public
 const getPlanById = async (req, res) => {
     try {
-        const plan = await ConstructionPlan.findById(req.params.id);
+        const plan = await ConstructionPlan.findById(req.params.id)
+            .populate("architectId", "name profileImage bio skills")
+            .populate({
+                path: "linkedProducts",
+                select: "name price images description",
+                populate: { path: "seller", select: "businessName" }
+            });
+
         if (!plan) {
             return res.status(404).json({ success: false, message: "Plan not found" });
         }
@@ -65,12 +91,19 @@ const getPlanById = async (req, res) => {
 const updatePlan = async (req, res) => {
     try {
         const updateData = { ...req.body };
-        if (updateData.features) {
-            updateData.features = JSON.parse(updateData.features);
-        }
+        
+        // Parse JSON strings if they come from form-data
+        const jsonFields = ['features', 'facilities', 'subConstructions', 'linkedProducts'];
+        jsonFields.forEach(field => {
+            if (updateData[field] && typeof updateData[field] === 'string') {
+                updateData[field] = JSON.parse(updateData[field]);
+            }
+        });
 
         if (req.files && req.files.length > 0) {
-            updateData.images = req.files.map((file) => file.path);
+            const newImages = req.files.map((file) => file.path);
+            // Append or replace? Let's replace for simplicity or handle specifically if needed
+            updateData.images = newImages; 
         }
 
         const updatedPlan = await ConstructionPlan.findByIdAndUpdate(
