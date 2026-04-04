@@ -29,7 +29,7 @@ const createPlan = async (req, res) => {
             facilities: typeof facilities === 'string' ? JSON.parse(facilities) : facilities,
             subConstructions: typeof subConstructions === 'string' ? JSON.parse(subConstructions) : subConstructions,
             linkedProducts: typeof linkedProducts === 'string' ? JSON.parse(linkedProducts) : linkedProducts,
-            architectId,
+            architectId: architectId && architectId !== "" ? architectId : undefined,
             images: imageUrls,
             adminId: req.user._id
         });
@@ -37,6 +37,7 @@ const createPlan = async (req, res) => {
         const savedPlan = await newPlan.save();
         res.status(201).json({ success: true, plan: savedPlan });
     } catch (error) {
+        console.error("CREATE plan failure:", error);
         res.status(500).json({ success: false, message: "Error creating plan", error: error.message });
     }
 };
@@ -49,16 +50,30 @@ const getAllPlans = async (req, res) => {
         const { category, planType } = req.query;
         let query = { isActive: true };
         
-        if (category && category.trim() !== "") query.category = category;
-        if (planType && planType.trim() !== "") query.planType = planType;
+        // Safety check for query parameters
+        if (typeof category === 'string' && category.trim() !== "") {
+            query.category = category.trim();
+        }
+        if (typeof planType === 'string' && planType.trim() !== "") {
+            query.planType = planType.trim();
+        }
 
-        const plans = await ConstructionPlan.find(query)
-            .populate("architectId", "name profileImage bio")
-            .sort({ createdAt: -1 });
+        console.log("Fetching plans with query:", JSON.stringify(query));
+
+        // Execute find first to isolate populate issues
+        const plans = await ConstructionPlan.find(query).sort({ createdAt: -1 });
+        
+        // Attempt population separately or wrapped to pinpoint error
+        try {
+            await ConstructionPlan.populate(plans, { path: "architectId", select: "name profileImage bio" });
+        } catch (popError) {
+            console.error("Population failed for architects:", popError.message);
+            // We can still return plans without architect info if population fails
+        }
             
         res.status(200).json({ success: true, count: plans.length, plans });
     } catch (error) {
-        console.error("GET construction-plans failure:", error);
+        console.error("GET construction-plans CRITICAL failure:", error);
         res.status(500).json({ success: false, message: "Error fetching plans", error: error.message });
     }
 };
@@ -81,6 +96,7 @@ const getPlanById = async (req, res) => {
         }
         res.status(200).json({ success: true, plan });
     } catch (error) {
+        console.error("GET single plan failure:", error);
         res.status(500).json({ success: false, message: "Error fetching plan details", error: error.message });
     }
 };
@@ -95,14 +111,23 @@ const updatePlan = async (req, res) => {
         // Parse JSON strings if they come from form-data
         const jsonFields = ['features', 'facilities', 'subConstructions', 'linkedProducts'];
         jsonFields.forEach(field => {
-            if (updateData[field] && typeof updateData[field] === 'string') {
-                updateData[field] = JSON.parse(updateData[field]);
+            if (updateData[field] && typeof updateData[field] === 'string' && updateData[field] !== "") {
+                try {
+                    updateData[field] = JSON.parse(updateData[field]);
+                } catch (e) {
+                    console.warn(`Failed to parse ${field}:`, e.message);
+                }
             }
         });
 
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map((file) => file.path);
             updateData.images = newImages; 
+        }
+
+        // Ensure architectId is a valid ID or removed if empty
+        if (updateData.architectId === "" || updateData.architectId === "null") {
+            updateData.architectId = null;
         }
 
         const updatedPlan = await ConstructionPlan.findByIdAndUpdate(
@@ -116,6 +141,7 @@ const updatePlan = async (req, res) => {
         }
         res.status(200).json({ success: true, plan: updatedPlan });
     } catch (error) {
+        console.error("UPDATE plan failure:", error);
         res.status(500).json({ success: false, message: "Error updating plan", error: error.message });
     }
 };
@@ -131,6 +157,7 @@ const deletePlan = async (req, res) => {
         }
         res.status(200).json({ success: true, message: "Plan deleted successfully" });
     } catch (error) {
+        console.error("DELETE plan failure:", error);
         res.status(500).json({ success: false, message: "Error deleting plan", error: error.message });
     }
 };
