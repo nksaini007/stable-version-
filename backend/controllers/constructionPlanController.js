@@ -49,8 +49,8 @@ const getAllPlans = async (req, res) => {
         const { category, planType } = req.query;
         let query = { isActive: true };
         
-        if (category) query.category = category;
-        if (planType) query.planType = planType;
+        if (category && category.trim() !== "") query.category = category;
+        if (planType && planType.trim() !== "") query.planType = planType;
 
         const plans = await ConstructionPlan.find(query)
             .populate("architectId", "name profileImage bio")
@@ -58,6 +58,7 @@ const getAllPlans = async (req, res) => {
             
         res.status(200).json({ success: true, count: plans.length, plans });
     } catch (error) {
+        console.error("GET construction-plans failure:", error);
         res.status(500).json({ success: false, message: "Error fetching plans", error: error.message });
     }
 };
