@@ -115,7 +115,8 @@ app.use("/api/payments", paymentRoutes); // ✅ payment routes
 app.use("/api/posts", postRoutes); // ✅ community posts
 app.use("/api/services", serviceRoutes);
 app.use("/api/bookings", bookingRoutes);
-app.use("/api/construction-projects", constructionRoutes);
+app.use("/api/construction-projects", constructionRoutes); // New Ecosystem
+app.use("/api/construction", constructionRoutes);          // Legacy Support
 app.use("/api/construction-plans", constructionPlanRoutes);
 app.use("/api/plan-categories", planCategoryRoutes);
 app.use("/api/messages", messageRoutes);
