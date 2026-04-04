@@ -11,7 +11,13 @@ const createPlan = async (req, res) => {
             features, facilities, subConstructions, 
             linkedProducts, architectId 
         } = req.body;
-// ...
+
+        // Process uploaded images
+        let imageUrls = [];
+        if (req.files && req.files.length > 0) {
+            imageUrls = req.files.map((file) => file.path);
+        }
+
         const newPlan = new ConstructionPlan({
             title,
             category,
@@ -40,11 +46,11 @@ const createPlan = async (req, res) => {
 // @access  Public
 const getAllPlans = async (req, res) => {
     try {
-        const { category, subCategory } = req.query;
+        const { category, planType } = req.query;
         let query = { isActive: true };
         
         if (category) query.category = category;
-        if (subCategory) query.subCategory = subCategory;
+        if (planType) query.planType = planType;
 
         const plans = await ConstructionPlan.find(query)
             .populate("architectId", "name profileImage bio")
@@ -95,7 +101,6 @@ const updatePlan = async (req, res) => {
 
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map((file) => file.path);
-            // Append or replace? Let's replace for simplicity or handle specifically if needed
             updateData.images = newImages; 
         }
 
