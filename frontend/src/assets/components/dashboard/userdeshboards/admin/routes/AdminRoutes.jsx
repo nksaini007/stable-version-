@@ -12,8 +12,9 @@ import DeliveryManagement from "../pages/DeliveryManagement";
 import CommunityPosts from "../pages/CommunityPosts";
 import ServiceManagement from "../pages/ServiceManagement";
 import BookingManagement from "../pages/BookingManagement";
-import ConstructionProjects from "../pages/ConstructionProjects";
-import ManageProject from "../pages/ManageProject";
+import ManageProjects from "../pages/ManageProjects";
+import ProjectInspector from "../pages/ProjectInspector";
+import NewProject from "../pages/NewProject";
 import ManagePlans from "../pages/ManagePlans";
 import AdminPlanCategoryDashboard from "../pages/AdminPlanCategoryDashboard";
 import AdminMessages from "../pages/AdminMessages";
@@ -50,8 +51,9 @@ const AdminRoutes = () => {
         <Route path="delivery-pricing" element={<AdminDeliveryPricing />} />
         <Route path="posts" element={<CommunityPosts />} />
         <Route path="payments" element={<PaymentManagement />} />
-        <Route path="construction" element={<ConstructionProjects />} />
-        <Route path="construction/:projectId" element={<ManageProject />} />
+        <Route path="projects" element={<ManageProjects />} />
+        <Route path="projects/:projectId/details" element={<ProjectInspector />} />
+        <Route path="projects/new" element={<NewProject />} />
         <Route path="plan-categories" element={<AdminPlanCategoryDashboard />} />
         <Route path="plans" element={<ManagePlans />} />
         <Route path="messages" element={<AdminMessages />} />

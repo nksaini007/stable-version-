@@ -9,21 +9,41 @@ const User = require("../models/userModel");
 // Create a new construction project (Admin only)
 exports.createProject = async (req, res) => {
     try {
-        const { name, type, description, location, images, estimatedCost, startDate, endDate } = req.body;
+        const { 
+            name, type, description, location, 
+            images, estimatedCost, startDate, endDate,
+            priority, phases, planId, customerId, architectId
+        } = req.body;
 
         const newProject = new ConstructionProject({
             name,
             type,
             description,
             location,
-            images,
+            images: images || [],
             estimatedCost,
             startDate,
             endDate,
-            adminId: req.user.id, // Assuming auth middleware sets req.user
+            priority: priority || "Medium",
+            phases: phases || [
+                { name: "Initial Planning", status: "In Progress", startDate: new Date() }
+            ],
+            currentPhase: phases && phases.length > 0 ? phases[0].name : "Initial Planning",
+            adminId: req.user.id,
+            planId: planId || undefined,
+            customerId: customerId || undefined,
+            architectId: architectId || undefined
         });
 
         await newProject.save();
+
+        // If architect assigned, ensure it's in their profile
+        if (architectId) {
+            await User.findByIdAndUpdate(architectId, {
+                $addToSet: { assignedProjects: newProject._id },
+            });
+        }
+
         res.status(201).json({ success: true, project: newProject });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -33,8 +53,69 @@ exports.createProject = async (req, res) => {
 // Get all construction projects (Admin/Customer)
 exports.getAllProjects = async (req, res) => {
     try {
-        const projects = await ConstructionProject.find().populate("architectId", "name email").populate("customerId", "name email");
-        res.status(200).json({ success: true, projects });
+        const projects = await ConstructionProject.find()
+            .populate("architectId", "name email profileImage")
+            .populate("customerId", "name email phone")
+            .sort({ createdAt: -1 });
+        res.status(200).json({ success: true, count: projects.length, projects });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Get single project with ALL associated data (Inspector View)
+exports.getProjectDetails = async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        
+        const project = await ConstructionProject.findById(projectId)
+            .populate("architectId", "name email phone profileImage skills")
+            .populate("customerId", "name email phone address")
+            .populate("planId", "title category planType images");
+            
+        if (!project) return res.status(404).json({ success: false, message: "Registry not found" });
+
+        // Aggregate Tasks
+        const tasks = await ProjectTask.find({ projectId }).populate("assignedTo", "name profileImage");
+        
+        // Aggregate Feed Updates
+        const updates = await ProjectUpdate.find({ projectId })
+            .populate("authorId", "name profileImage")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ 
+            success: true, 
+            project,
+            tasks,
+            updates
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Update Project Phases/Milestones (Admin/Architect)
+exports.updateProjectPhases = async (req, res) => {
+    try {
+        const { projectId } = req.params;
+        const { phases, status, priority, currentPhase, progressPercentage } = req.body;
+
+        const updateData = {};
+        if (phases) updateData.phases = phases;
+        if (status) updateData.status = status;
+        if (priority) updateData.priority = priority;
+        if (currentPhase) updateData.currentPhase = currentPhase;
+        if (progressPercentage !== undefined) updateData.progressPercentage = progressPercentage;
+
+        const project = await ConstructionProject.findByIdAndUpdate(
+            projectId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
+
+        if (!project) return res.status(404).json({ success: false, message: "Project not found" });
+
+        res.status(200).json({ success: true, project });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
