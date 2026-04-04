@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import API from "../api/api";
-import { motion } from "framer-motion";
-import { FaMap, FaSearch, FaRulerCombined, FaTag, FaChevronLeft } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaMap, FaSearch, FaRulerCombined, FaTag, FaChevronLeft, FaCompass, FaCubes } from "react-icons/fa";
 import Nev from "./Nev";
 import Footer from "./Footer";
+import blueprintBg from "../images/blueprint_bg.png"; 
 
 const ProjectPlansCatalog = () => {
     const { categoryName, planTypeName } = useParams();
@@ -17,17 +18,13 @@ const ProjectPlansCatalog = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // Use the updated API filtering for better performance
                 const { data } = await API.get("/construction-plans", {
                     params: {
                         category: categoryName,
                         planType: planTypeName
                     }
                 });
-
-                // Fallback filtering if the backend doesn't support query params yet (local dev vs prod sync)
-                const finalPlans = data.plans || [];
-                setPlans(finalPlans);
+                setPlans(data.plans || []);
             } catch (error) {
                 console.error("Failed to fetch data", error);
             } finally {
@@ -51,127 +48,164 @@ const ProjectPlansCatalog = () => {
     };
 
     return (
-        <div className="bg-[#FAF9F6] min-h-screen selection:bg-slate-200">
+        <div className="bg-[#0B0C10] min-h-screen flex flex-col font-sans selection:bg-[#66FCF1]/20 selection:text-[#66FCF1] overflow-hidden relative">
             <Nev />
 
-            {/* Header Hero - Minimalist Industrial Style */}
-            <div className="bg-white border-b border-slate-200 pt-32 pb-16 px-4 md:px-8">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-8">
-                    <div className="max-w-3xl">
+            {/* Fixed Depth Technical Overlay */}
+            <div 
+                className="fixed inset-0 pointer-events-none opacity-[0.12] mix-blend-screen z-0 grayscale"
+                style={{ 
+                    backgroundImage: `url(${blueprintBg})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundAttachment: 'fixed'
+                }}
+            ></div>
+            
+            {/* Structural Grid Overlay */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" 
+                 style={{ backgroundImage: 'radial-gradient(#66FCF1 1px, transparent 1px)', backgroundSize: '30px 30px' }}>
+            </div>
+
+            <main className="flex-grow pt-32 pb-10 relative z-10 w-full px-4 md:px-10">
+                <div className="h-full flex flex-col">
+                    {/* Minimalist Floating Status Bar */}
+                    <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#1A1B1E]/60 backdrop-blur-xl border border-[#1F2833] p-5 rounded-2xl">
+                        <div className="flex items-center gap-5">
+                            <button 
+                                onClick={() => navigate(-1)}
+                                className="w-12 h-12 rounded-xl bg-[#0B0C10] border border-[#1F2833] flex items-center justify-center text-[#66FCF1] hover:bg-[#66FCF1] hover:text-[#0B0C10] transition-all shadow-xl"
+                            >
+                                <FaChevronLeft className="text-xs" />
+                            </button>
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-[8px] font-bold text-[#45A29E] uppercase tracking-[0.4em]">{categoryName}</span>
+                                    <span className="text-[8px] text-gray-700">/</span>
+                                    <span className="text-[8px] font-bold text-[#66FCF1] uppercase tracking-[0.4em]">{planTypeName}</span>
+                                </div>
+                                <h1 className="text-2xl font-black text-white tracking-tighter uppercase leading-none">Blueprint <span className="text-[#45A29E]">Catalog</span></h1>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 flex-1 md:max-w-2xl">
+                            <div className="relative w-full">
+                                <FaSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-[#45A29E] text-sm" />
+                                <input 
+                                    type="text" 
+                                    placeholder="PARSING BLUEPRINTS BY TITLE OR SPEC..." 
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full bg-[#0B0C10]/40 border border-[#1F2833] rounded-2xl px-14 py-3.5 text-[11px] font-bold text-white tracking-[0.2em] placeholder:text-gray-700 focus:border-[#66FCF1] outline-none transition-all uppercase" 
+                                />
+                            </div>
+                        </div>
+
+                        <div className="hidden lg:flex items-center gap-8 text-[10px] font-bold text-gray-500 tracking-[0.3em] uppercase">
+                            <div className="flex flex-col items-end">
+                                <span className="text-[#66FCF1]">CATALOG STATUS</span>
+                                <span>{filteredPlans.length} SPECIFICATIONS FOUND</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Full-Screen Project Grid */}
+                    {loading ? (
+                        <div className="flex-grow flex flex-col items-center justify-center gap-8">
+                            <div className="relative w-24 h-24">
+                                <div className="absolute inset-0 border-2 border-[#1F2833] border-t-[#66FCF1] rounded-full animate-spin"></div>
+                                <div className="absolute inset-4 border border-[#1F2833] border-b-[#45A29E] rounded-full animate-spin-slow"></div>
+                            </div>
+                            <span className="text-[#66FCF1] tracking-[0.6em] uppercase text-[10px] font-bold animate-pulse">Scanning Structural Ledger</span>
+                        </div>
+                    ) : filteredPlans.length === 0 ? (
+                        <div className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-[#1F2833] rounded-3xl bg-[#1A1B1E]/10">
+                            <FaCubes className="text-6xl text-[#1F2833] mb-6" />
+                            <h3 className="text-[#45A29E] tracking-[0.4em] uppercase text-[10px] font-bold">No active blueprints matching query.</h3>
+                        </div>
+                    ) : (
                         <motion.div 
-                            initial={{ opacity: 0, x: -10 }} 
-                            animate={{ opacity: 1, x: 0 }} 
-                            className="flex items-center gap-3 mb-6"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 overflow-y-auto pr-3 no-scrollbar pb-10"
+                            style={{ maxHeight: 'calc(100vh - 280px)' }}
                         >
-                            <Link to={`/project-categories/${encodeURIComponent(categoryName)}`} className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
-                                <FaChevronLeft className="text-[10px]" />
-                            </Link>
-                            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">{categoryName} / {planTypeName}</span>
+                            {filteredPlans.map((plan, idx) => (
+                                <motion.div
+                                    key={plan._id}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.04 }}
+                                >
+                                    <Link to={`/project-plans/${plan._id}`} className="group block">
+                                        <div className="bg-[#1A1B1E] rounded-3xl border border-[#1F2833] group-hover:border-[#66FCF1] shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full relative">
+                                            {/* Media Container */}
+                                            <div className="relative aspect-[4/3] overflow-hidden p-2 bg-[#0B0C10]">
+                                                {plan.images && plan.images.length > 0 ? (
+                                                    <img 
+                                                        src={getImageUrl(plan.images[0])} 
+                                                        alt={plan.title} 
+                                                        className="w-full h-full object-cover rounded-2xl grayscale brightness-[0.7] group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-110 transition-all duration-700" 
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-[#1F2833]">
+                                                        <FaMap className="text-6xl opacity-30" />
+                                                    </div>
+                                                )}
+                                                
+                                                <div className="absolute top-6 left-6 flex gap-2">
+                                                    <span className="bg-[#0B0C10]/80 backdrop-blur-md text-[#66FCF1] border border-[#66FCF1]/20 px-3 py-1 text-[8px] font-bold uppercase tracking-widest shadow-2xl">
+                                                        SPEC: {plan._id.substring(0,4).toUpperCase()}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Details Container */}
+                                            <div className="p-8 flex flex-col h-full bg-gradient-to-b from-[#1A1B1E] to-[#0B0C10]">
+                                                <h3 className="text-xl font-black text-white mb-3 tracking-tighter uppercase line-clamp-1 group-hover:text-[#66FCF1] transition-colors">{plan.title}</h3>
+                                                <p className="text-gray-500 text-[10px] line-clamp-2 leading-relaxed mb-8 uppercase tracking-widest font-bold">{plan.description}</p>
+
+                                                <div className="mt-auto flex justify-between items-end border-t border-[#1F2833] pt-6">
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex items-center gap-3">
+                                                            <FaRulerCombined className="text-[#66FCF1] text-xs" /> 
+                                                            <span className="text-[10px] font-bold text-white uppercase tracking-widest">{plan.area}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <FaCompass className="text-[#45A29E] text-xs" /> 
+                                                            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Global Ref</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-[8px] font-bold text-gray-600 uppercase tracking-[0.2em] mb-1">Project Value</p>
+                                                        <span className="text-2xl font-black text-[#66FCF1] tracking-tighter">₹{plan.estimatedCost?.toLocaleString()}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Technical Design Overlay */}
+                                            <div className="absolute inset-0 border-[0.5px] border-[#66FCF1]/0 group-hover:border-[#66FCF1]/10 pointer-events-none transition-all"></div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            ))}
                         </motion.div>
+                    )}
 
-                        <motion.h1 
-                            initial={{ opacity: 0, y: 10 }} 
-                            animate={{ opacity: 1, y: 0 }} 
-                            transition={{ delay: 0.1 }} 
-                            className="text-4xl md:text-6xl font-light text-slate-900 tracking-tight mb-4"
-                        >
-                            DESIGN <span className="font-bold">SPECIFICATIONS</span>
-                        </motion.h1>
-
-                        <motion.p 
-                            initial={{ opacity: 0 }} 
-                            animate={{ opacity: 1 }} 
-                            transition={{ delay: 0.2 }} 
-                            className="text-slate-500 max-w-xl text-sm md:text-base font-normal leading-relaxed"
-                        >
-                            Explore our technical blueprints for {planTypeName}. 
-                            Each plan is engineered for performance and architectural excellence.
-                        </motion.p>
-                    </div>
-
-                    <div className="relative w-full md:w-80">
-                        <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs" />
-                        <input
-                            type="text"
-                            placeholder="Find specific blueprint..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-2xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 block pl-12 h-14 transition-all outline-none"
-                        />
+                    {/* High-End Technical Indicator */}
+                    <div className="mt-auto pt-6 flex flex-col md:flex-row justify-between items-center border-t border-[#1F2833]/50">
+                        <div className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.4em] text-gray-700">
+                            <span className="text-[#66FCF1] animate-pulse">●</span> CATALOG STREAMING
+                            <span className="w-10 h-px bg-[#1F2833]"></span>
+                            OFFSET: {filteredPlans.length} MODS
+                        </div>
+                        <div className="hidden md:block text-[9px] font-black text-[#45A29E] tracking-[0.4em] uppercase mt-4 md:mt-0">
+                            STINCHAR / ARCHITECTURAL LEDGER / GEN-3
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Catalog Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                {loading ? (
-                    <div className="flex flex-col items-center justify-center py-32 gap-6">
-                        <div className="w-12 h-[1px] bg-slate-100 overflow-hidden relative">
-                            <motion.div 
-                                className="absolute inset-0 bg-slate-900"
-                                animate={{ left: ['-100%', '100%'] }}
-                                transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                            />
-                        </div>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Loading Registry</span>
-                    </div>
-                ) : filteredPlans.length === 0 ? (
-                    <div className="text-center py-32 bg-white rounded-3xl border border-dashed border-slate-200">
-                        <FaMap className="text-3xl text-slate-200 mx-auto mb-4" />
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">No active blueprints found</h3>
-                        <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-2">Adjust your parameters and try again</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                        {filteredPlans.map((plan, index) => (
-                            <motion.div
-                                key={plan._id}
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                            >
-                                <Link to={`/project-plans/${plan._id}`} className="group block h-full">
-                                    <div className="bg-white rounded-[2rem] overflow-hidden border border-slate-200 hover:border-slate-900 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col h-full">
-                                        <div className="relative aspect-[4/3] overflow-hidden bg-slate-50 flex items-center justify-center p-1">
-                                            {plan.images && plan.images.length > 0 ? (
-                                                <img 
-                                                    src={getImageUrl(plan.images[0])} 
-                                                    alt={plan.title} 
-                                                    className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" 
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-200"><FaMap className="text-4xl" /></div>
-                                            )}
-                                            
-                                            <div className="absolute top-6 left-6">
-                                                <span className="bg-slate-900 text-white px-3 py-1.5 text-[8px] font-bold uppercase tracking-widest shadow-lg">
-                                                    Ref: {plan._id.substring(0,4).toUpperCase()}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="p-8 flex-1 flex flex-col">
-                                            <h3 className="text-lg font-bold text-slate-900 mb-2 leading-tight group-hover:text-slate-600 transition-colors uppercase tracking-tight">{plan.title}</h3>
-                                            <p className="text-slate-400 text-xs line-clamp-2 leading-relaxed mb-6 font-normal">{plan.description}</p>
-
-                                            <div className="pt-6 border-t border-slate-50 flex justify-between items-center mt-auto">
-                                                <div className="flex items-center gap-3">
-                                                    <FaRulerCombined className="text-slate-300 text-[10px]" /> 
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{plan.area}</span>
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Est. Project</p>
-                                                    <span className="text-xs font-black text-slate-900">₹{plan.estimatedCost?.toLocaleString()}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </motion.div>
-                        ))}
-                    </div>
-                )}
-            </div>
+            </main>
             
             <Footer />
         </div>

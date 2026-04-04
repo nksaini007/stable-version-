@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaBuilding, FaArrowRight, FaDraftingCompass } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { FaBuilding, FaArrowRight, FaDraftingCompass, FaLayerGroup, FaSearch } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/api";
 import Nev from "./Nev";
 import Footer from "./Footer";
-import blueprintBg from "../images/blueprint_bg.png"; // Importing the new background
+import blueprintBg from "../images/blueprint_bg.png"; 
 
 const PlanCategoriesList = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -32,166 +33,146 @@ const PlanCategoriesList = () => {
         return normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`;
     };
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.05, delayChildren: 0.1 }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, scale: 0.98, y: 10 },
-        visible: { 
-            opacity: 1, 
-            scale: 1, 
-            y: 0, 
-            transition: { duration: 0.5, ease: "easeOut" } 
-        }
-    };
+    const filteredCategories = categories.filter(c => 
+        c.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
-        <div className="bg-[#FAF9F6] min-h-screen flex flex-col font-sans text-zinc-900 selection:bg-zinc-200 selection:text-zinc-900 overflow-x-hidden relative">
+        <div className="bg-[#0B0C10] min-h-screen flex flex-col font-sans selection:bg-[#66FCF1]/20 selection:text-[#66FCF1] overflow-hidden relative">
             <Nev />
 
-            {/* Technical Blueprint Background */}
+            {/* Premium Technical Overlay */}
             <div 
-                className="fixed inset-0 pointer-events-none opacity-[0.08] mix-blend-multiply z-0"
+                className="fixed inset-0 pointer-events-none opacity-[0.1] mix-blend-screen z-0"
                 style={{ 
                     backgroundImage: `url(${blueprintBg})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundAttachment: 'fixed'
                 }}
             ></div>
             
-            {/* Subtle Grid Pattern Overlay */}
-            <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" 
-                 style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
+            {/* Dynamic Grid Background Overlay */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.05] z-0" 
+                 style={{ backgroundImage: 'linear-gradient(#1F2833 1px, transparent 1px), linear-gradient(90deg, #1F2833 1px, transparent 1px)', backgroundSize: '50px 50px' }}>
             </div>
 
-            <main className="flex-grow pt-44 pb-20 relative z-10 w-full px-4 sm:px-6 lg:px-12">
-                <div className="max-w-[1800px] mx-auto">
-                    {/* Minimalist Tech Header */}
-                    <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between border-b border-zinc-200 pb-10">
-                        <div className="max-w-2xl">
-                            <motion.div
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="flex items-center gap-2 mb-4"
-                            >
-                                <span className="w-8 h-px bg-zinc-400"></span>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500">Bureau Index / V2.0</span>
-                            </motion.div>
-                            <motion.h1
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className="text-4xl md:text-6xl font-light tracking-tight mb-4 text-zinc-900"
-                            >
-                                PROJECT <span className="font-bold">ARCHIVE</span>
-                            </motion.h1>
-                            <motion.p
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.2 }}
-                                className="text-zinc-500 text-sm md:text-base max-w-lg leading-relaxed font-normal"
-                            >
-                                Technical blueprints for modern architecture. 
-                                High-precision engineering and aesthetic integrity in every design.
-                            </motion.p>
+            <main className="flex-grow pt-32 pb-10 relative z-10 w-full px-4 md:px-10">
+                <div className="h-full flex flex-col">
+                    {/* Minimalist Floating Status Bar */}
+                    <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#1A1B1E]/40 backdrop-blur-md border border-[#1F2833] p-4 rounded-2xl">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#66FCF1] to-[#45A29E] flex items-center justify-center shadow-[0_0_20px_rgba(102,252,241,0.2)]">
+                                <FaLayerGroup className="text-[#0B0C10] text-lg" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-white tracking-tight uppercase">Archive <span className="text-[#45A29E]">Registry</span></h1>
+                                <p className="text-[9px] font-bold text-[#45A29E] uppercase tracking-[0.4em]">Stinchar / Systems / V2.0</p>
+                            </div>
                         </div>
-                        
-                        <div className="hidden md:flex flex-col items-end gap-1 font-mono text-[10px] text-zinc-400 uppercase tracking-widest mt-6 md:mt-0">
-                            <span>Lat: 28.6139° N</span>
-                            <span>Lon: 77.2090° E</span>
-                            <span>Ref: STIN-001</span>
+
+                        <div className="flex items-center gap-4 flex-1 md:max-w-md">
+                            <div className="relative w-full">
+                                <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#45A29E] text-xs" />
+                                <input 
+                                    type="text" 
+                                    placeholder="SCANNING CATEGORIES..." 
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full bg-[#0B0C10]/60 border border-[#1F2833] rounded-xl px-12 py-2.5 text-[10px] font-bold text-white tracking-widest placeholder:text-gray-600 focus:border-[#66FCF1] outline-none transition-all uppercase" 
+                                />
+                            </div>
+                        </div>
+
+                        <div className="hidden lg:flex items-center gap-8 text-[10px] font-bold text-gray-500 tracking-[0.3em] uppercase">
+                            <div className="flex flex-col items-end">
+                                <span className="text-[#66FCF1]">ACTIVE NODES</span>
+                                <span>{filteredCategories.length} OF {categories.length}</span>
+                            </div>
                         </div>
                     </header>
 
-                    {/* Full-Width Grid (4 columns) */}
+                    {/* High-Impact Full-Screen Grid */}
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-48 gap-8">
-                            <div className="w-16 h-[1px] bg-zinc-200 overflow-hidden relative">
-                                <motion.div 
-                                    className="absolute inset-0 bg-zinc-800"
-                                    animate={{ left: ['-100%', '100%'] }}
-                                    transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                                />
-                            </div>
-                            <span className="text-zinc-400 tracking-[0.3em] uppercase text-[9px] font-bold">Synchronizing Data</span>
+                        <div className="flex-grow flex flex-col items-center justify-center gap-8">
+                            <div className="w-20 h-20 border-2 border-[#1F2833] border-t-[#66FCF1] rounded-full animate-spin"></div>
+                            <span className="text-[#66FCF1] tracking-[0.5em] uppercase text-[10px] font-bold">Initializing Catalog Interface</span>
                         </div>
                     ) : (
                         <motion.div 
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 overflow-y-auto pr-2 no-scrollbar"
+                            style={{ maxHeight: 'calc(100vh - 250px)' }}
                         >
-                            {categories.map((category) => (
+                            {filteredCategories.map((category, idx) => (
                                 <motion.div
                                     key={category._id}
-                                    variants={itemVariants}
-                                    className="group"
+                                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    className="group relative"
                                 >
                                     <Link
                                         to={`/project-categories/${encodeURIComponent(category.name)}`}
-                                        className="relative block aspect-[3/4] bg-white border border-zinc-200 hover:border-zinc-800 transition-all duration-300 overflow-hidden shadow-sm hover:shadow-xl group/card"
+                                        className="relative block aspect-[4/5] bg-[#1A1B1E] border border-[#1F2833] rounded-2xl overflow-hidden group/card shadow-2xl hover:border-[#66FCF1] transition-all duration-500"
                                     >
-                                        {/* Main Project Image - Maximum Visibility */}
-                                        <div className="absolute inset-0 w-full h-full p-1">
-                                            <div className="relative w-full h-full overflow-hidden">
+                                        {/* Dynamic Image Layer */}
+                                        <div className="absolute inset-0 w-full h-full p-2">
+                                            <div className="relative w-full h-full overflow-hidden rounded-xl bg-[#0B0C10]">
                                                 {category.image ? (
                                                     <img
                                                         src={getImageUrl(category.image)}
                                                         alt={category.name}
-                                                        className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 brightness-[1.02] group-hover:scale-110"
+                                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 brightness-[0.8] group-hover:brightness-100 group-hover:scale-110"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center bg-zinc-50 text-zinc-200">
-                                                        <FaBuilding className="text-6xl" />
+                                                    <div className="w-full h-full flex items-center justify-center text-[#1F2833]">
+                                                        <FaBuilding className="text-8xl opacity-20" />
                                                     </div>
                                                 )}
                                                 
-                                                {/* Technical Grid Overlay on Image */}
-                                                <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-overlay border-[5px] border-zinc-900 group-hover:border-zinc-400 transition-all"></div>
-                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
+                                                {/* Technical Grid on Card */}
+                                                <div className="absolute inset-0 opacity-10 pointer-events-none border border-[#66FCF1] group-hover:border-[4px] transition-all"></div>
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-transparent to-transparent opacity-80"></div>
                                             </div>
                                         </div>
 
-                                        {/* Minimalist Info Label */}
-                                        <div className="absolute bottom-0 inset-x-0 bg-white border-t border-zinc-100 p-6 z-20 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                            <div className="relative">
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div>
-                                                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">
-                                                            Project / {category.name.substring(0, 3).toUpperCase()}
-                                                        </span>
-                                                        <h3 className="text-xl font-medium text-zinc-900 tracking-tight leading-none">
-                                                            {category.name}
-                                                        </h3>
-                                                    </div>
-                                                    <div className="w-8 h-8 flex items-center justify-center text-zinc-300 group-hover:text-zinc-900 transition-colors">
-                                                        <FaDraftingCompass className="text-xs" />
-                                                    </div>
+                                        {/* Bottom Data Overlay */}
+                                        <div className="absolute bottom-6 inset-x-6 z-20">
+                                            <div className="flex justify-between items-end">
+                                                <div>
+                                                    <span className="text-[8px] font-bold text-[#66FCF1] uppercase tracking-[0.4em] block mb-2 transition-all group-hover:tracking-[0.6em]">
+                                                        CAT / {category.name.substring(0, 3).toUpperCase()}
+                                                    </span>
+                                                    <h3 className="text-2xl font-black text-white tracking-tighter uppercase leading-none group-hover:text-[#66FCF1] transition-colors">
+                                                        {category.name}
+                                                    </h3>
                                                 </div>
+                                                <div className="w-12 h-12 rounded-full border border-[#1F2833] flex items-center justify-center text-[#66FCF1] group-hover:bg-[#66FCF1] group-hover:text-[#0B0C10] transition-all shadow-xl">
+                                                    <FaArrowRight className="text-sm" />
+                                                </div>
+                                            </div>
 
-                                                <div className="flex items-center justify-between border-t border-zinc-50 pt-4 mt-2">
-                                                    <p className="text-[10px] font-bold text-zinc-500 tracking-widest uppercase">
-                                                        {category.planTypes ? `${category.planTypes.length} Variants` : "0 Variants"}
-                                                    </p>
-                                                    <div className="flex items-center gap-2 text-zinc-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                        <span className="text-[9px] font-bold tracking-tighter">VIEW SPEC</span>
-                                                        <FaArrowRight className="text-[10px]" />
-                                                    </div>
+                                            <div className="flex items-center gap-4 mt-6 pt-4 border-t border-[#1F2833]">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[7px] text-gray-500 font-bold uppercase tracking-widest">Specifications</span>
+                                                    <span className="text-[10px] text-white font-bold tracking-widest uppercase">
+                                                        {category.planTypes ? `${category.planTypes.length} Types` : "0 Types"}
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-col text-right ml-auto">
+                                                    <span className="text-[7px] text-gray-500 font-bold uppercase tracking-widest">Index Status</span>
+                                                    <span className="text-[10px] text-[#66FCF1] font-bold tracking-widest uppercase">Verified</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Design Index Tag */}
-                                        <div className="absolute top-6 left-6 z-20 origin-left">
-                                            <div className="bg-zinc-900 text-white text-[8px] font-bold px-3 py-1.5 uppercase tracking-[0.2em] shadow-lg">
-                                                Active
+                                        {/* Floating ID Tag */}
+                                        <div className="absolute top-6 right-6 z-20">
+                                            <div className="bg-[#0B0C10]/80 backdrop-blur-md border border-[#1F2833] text-gray-500 text-[7px] font-bold px-3 py-1.5 uppercase tracking-widest group-hover:text-[#66FCF1] group-hover:border-[#66FCF1] transition-all">
+                                                ID: {category._id.substring(0,6)}
                                             </div>
                                         </div>
                                     </Link>
@@ -200,24 +181,17 @@ const PlanCategoriesList = () => {
                         </motion.div>
                     )}
 
-                    {/* Technical Footer Message */}
-                    {!loading && categories.length > 0 && (
-                        <div className="mt-20 border-t border-zinc-100 pt-8 flex items-center justify-center text-zinc-300 gap-4">
-                            <span className="w-4 h-[1px] bg-zinc-200"></span>
-                            <span className="text-[9px] font-bold uppercase tracking-[0.5em]">End of Archive Registry</span>
-                            <span className="w-4 h-[1px] bg-zinc-200"></span>
+                    {/* High-End Technical Indicator */}
+                    <div className="mt-auto pt-6 flex flex-col md:flex-row justify-between items-center bg-[#1A1B1E]/20 p-4 rounded-xl border border-[#1F2833]/50">
+                        <div className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.4em] text-gray-600">
+                            <span className="text-[#66FCF1] animate-pulse">●</span> SYSTEM READY
+                            <span className="w-10 h-px bg-[#1F2833]"></span>
+                            CATALOG CACHED / 100%
                         </div>
-                    )}
-
-                    {/* Empty State */}
-                    {!loading && categories.length === 0 && (
-                        <div className="text-center py-48 border border-dashed border-zinc-200">
-                            <h3 className="text-sm font-bold text-zinc-400 tracking-[0.2em] uppercase">No active projects matching parameters.</h3>
-                            <button className="mt-6 px-8 py-3 bg-zinc-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors">
-                                Reset Filters
-                            </button>
+                        <div className="hidden md:block text-[8px] font-mono text-[#45A29E] tracking-widest uppercase mt-4 md:mt-0">
+                            COORD: 28.6139N / 77.2090E | REF: ARCH-INDEX-GLOBAL
                         </div>
-                    )}
+                    </div>
                 </div>
             </main>
 
@@ -229,5 +203,3 @@ const PlanCategoriesList = () => {
 };
 
 export default PlanCategoriesList;
-
-
