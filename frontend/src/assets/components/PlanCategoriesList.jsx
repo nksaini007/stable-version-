@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import API from "../api/api";
 import Nev from "./Nev";
 import Footer from "./Footer";
-import blueprintBg from "../assets/images/blueprint_bg.png"; // Importing the new background
+import blueprintBg from "../images/blueprint_bg.png"; // Importing the new background
 
 const PlanCategoriesList = () => {
     const [categories, setCategories] = useState([]);
