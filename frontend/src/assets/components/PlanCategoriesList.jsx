@@ -44,8 +44,8 @@ const PlanCategoriesList = () => {
 
     const itemVariants = {
         hidden: { y: 30, opacity: 0 },
-        visible: { 
-            y: 0, 
+        visible: {
+            y: 0,
             opacity: 1,
             transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
         }
@@ -74,7 +74,7 @@ const PlanCategoriesList = () => {
                             <span className="h-px w-12 bg-amber-500/60"></span>
                             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500/80">Premium Architecture</span>
                         </motion.div>
-                        
+
                         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
                             <motion.div
                                 initial={{ y: 30, opacity: 0 }}
@@ -89,7 +89,7 @@ const PlanCategoriesList = () => {
                                     Browse our curated collection of elite architectural categories. Each blueprint is crafted for precision, elegance, and sustainable living.
                                 </p>
                             </motion.div>
-                            
+
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -99,7 +99,7 @@ const PlanCategoriesList = () => {
                                 <div className="flex items-center gap-4 text-slate-500 group cursor-default">
                                     <span className="text-sm tracking-widest uppercase">Scroll to explore</span>
                                     <div className="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center group-hover:border-amber-500/50 transition-colors">
-                                        <motion.div 
+                                        <motion.div
                                             animate={{ y: [0, 5, 0] }}
                                             transition={{ repeat: Infinity, duration: 2 }}
                                         >
@@ -121,11 +121,11 @@ const PlanCategoriesList = () => {
                             <span className="text-amber-500/60 tracking-widest uppercase text-xs font-bold animate-pulse">Loading Collection</span>
                         </div>
                     ) : (
-                        <motion.div 
+                        <motion.div
                             variants={containerVariants}
                             initial="hidden"
                             animate="visible"
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12"
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-8 xl:gap-12"
                         >
                             {categories.map((category, index) => (
                                 <motion.div
@@ -152,7 +152,7 @@ const PlanCategoriesList = () => {
                                                     <FaBuilding className="text-[120px]" />
                                                 </div>
                                             )}
-                                            
+
                                             {/* Gradient Overlays */}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -163,7 +163,7 @@ const PlanCategoriesList = () => {
                                             <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden group/glass">
                                                 {/* Flare Effect */}
                                                 <div className="absolute -top-24 -left-24 w-48 h-48 bg-amber-500/10 blur-[60px] rounded-full group-hover:bg-amber-500/20 transition-colors"></div>
-                                                
+
                                                 <div className="relative z-10">
                                                     <div className="flex items-center gap-2 mb-3">
                                                         <FaCompass className="text-amber-500 text-xs" />
@@ -171,11 +171,11 @@ const PlanCategoriesList = () => {
                                                             Architecture
                                                         </span>
                                                     </div>
-                                                    
+
                                                     <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight group-hover:text-amber-200 transition-colors">
                                                         {category.name}
                                                     </h3>
-                                                    
+
                                                     <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/5">
                                                         <p className="text-slate-400 text-sm font-medium">
                                                             {category.planTypes ? `${category.planTypes.length} UNIQUE STYLES` : "REVEAL COLLECTION"}
