@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaBuilding, FaChevronRight, FaCompass } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
+import { FaBuilding, FaArrowRight, FaDraftingCompass } from "react-icons/fa";
+import { motion } from "framer-motion";
 import API from "../api/api";
 import Nev from "./Nev";
 import Footer from "./Footer";
+import blueprintBg from "../assets/images/blueprint_bg.png"; // Importing the new background
 
 const PlanCategoriesList = () => {
     const [categories, setCategories] = useState([]);
@@ -35,99 +36,99 @@ const PlanCategoriesList = () => {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.2
-            }
+            transition: { staggerChildren: 0.05, delayChildren: 0.1 }
         }
     };
 
     const itemVariants = {
-        hidden: { y: 30, opacity: 0 },
-        visible: {
-            y: 0,
-            opacity: 1,
-            transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+        hidden: { opacity: 0, scale: 0.98, y: 10 },
+        visible: { 
+            opacity: 1, 
+            scale: 1, 
+            y: 0, 
+            transition: { duration: 0.5, ease: "easeOut" } 
         }
     };
 
     return (
-        <div className="bg-[#0A0A0B] min-h-screen flex flex-col font-sans text-slate-200 selection:bg-amber-500/30 selection:text-amber-200">
+        <div className="bg-[#FAF9F6] min-h-screen flex flex-col font-sans text-zinc-900 selection:bg-zinc-200 selection:text-zinc-900 overflow-x-hidden relative">
             <Nev />
 
-            {/* Background Texture/Gradient */}
-            <div className="fixed inset-0 pointer-events-none opacity-20 overflow-hidden">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/40 blur-[120px]"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-amber-900/30 blur-[120px]"></div>
-                <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-purple-900/20 blur-[100px]"></div>
+            {/* Technical Blueprint Background */}
+            <div 
+                className="fixed inset-0 pointer-events-none opacity-[0.08] mix-blend-multiply z-0"
+                style={{ 
+                    backgroundImage: `url(${blueprintBg})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                }}
+            ></div>
+            
+            {/* Subtle Grid Pattern Overlay */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" 
+                 style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
             </div>
 
-            <main className="flex-grow pt-40 pb-24 relative z-10">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    {/* Cinematic Header */}
-                    <header className="mb-24 relative">
-                        <motion.div
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            className="flex items-center gap-3 mb-6"
-                        >
-                            <span className="h-px w-12 bg-amber-500/60"></span>
-                            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500/80">Premium Architecture</span>
-                        </motion.div>
-
-                        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <main className="flex-grow pt-44 pb-20 relative z-10 w-full px-4 sm:px-6 lg:px-12">
+                <div className="max-w-[1800px] mx-auto">
+                    {/* Minimalist Tech Header */}
+                    <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between border-b border-zinc-200 pb-10">
+                        <div className="max-w-2xl">
                             <motion.div
-                                initial={{ y: 30, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.1 }}
-                                className="max-w-3xl"
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="flex items-center gap-2 mb-4"
                             >
-                                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8 leading-[0.95] text-white">
-                                    DESIGN <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-500 to-amber-200">BEYOND</span> LIMITS
-                                </h1>
-                                <p className="text-xl md:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl border-l border-amber-500/30 pl-8">
-                                    Browse our curated collection of elite architectural categories. Each blueprint is crafted for precision, elegance, and sustainable living.
-                                </p>
+                                <span className="w-8 h-px bg-zinc-400"></span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500">Bureau Index / V2.0</span>
                             </motion.div>
-
-                            <motion.div
+                            <motion.h1
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className="text-4xl md:text-6xl font-light tracking-tight mb-4 text-zinc-900"
+                            >
+                                PROJECT <span className="font-bold">ARCHIVE</span>
+                            </motion.h1>
+                            <motion.p
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                transition={{ delay: 0.4 }}
-                                className="hidden lg:block pb-4"
+                                transition={{ delay: 0.2 }}
+                                className="text-zinc-500 text-sm md:text-base max-w-lg leading-relaxed font-normal"
                             >
-                                <div className="flex items-center gap-4 text-slate-500 group cursor-default">
-                                    <span className="text-sm tracking-widest uppercase">Scroll to explore</span>
-                                    <div className="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center group-hover:border-amber-500/50 transition-colors">
-                                        <motion.div
-                                            animate={{ y: [0, 5, 0] }}
-                                            transition={{ repeat: Infinity, duration: 2 }}
-                                        >
-                                            <FaChevronRight className="rotate-90 text-[10px]" />
-                                        </motion.div>
-                                    </div>
-                                </div>
-                            </motion.div>
+                                Technical blueprints for modern architecture. 
+                                High-precision engineering and aesthetic integrity in every design.
+                            </motion.p>
+                        </div>
+                        
+                        <div className="hidden md:flex flex-col items-end gap-1 font-mono text-[10px] text-zinc-400 uppercase tracking-widest mt-6 md:mt-0">
+                            <span>Lat: 28.6139° N</span>
+                            <span>Lon: 77.2090° E</span>
+                            <span>Ref: STIN-001</span>
                         </div>
                     </header>
 
-                    {/* Categories Grid */}
+                    {/* Full-Width Grid (4 columns) */}
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-40 gap-6">
-                            <div className="relative">
-                                <div className="w-20 h-20 border border-amber-500/20 rounded-full"></div>
-                                <div className="absolute inset-0 w-20 h-20 border-t-2 border-amber-500 rounded-full animate-spin"></div>
+                        <div className="flex flex-col items-center justify-center py-48 gap-8">
+                            <div className="w-16 h-[1px] bg-zinc-200 overflow-hidden relative">
+                                <motion.div 
+                                    className="absolute inset-0 bg-zinc-800"
+                                    animate={{ left: ['-100%', '100%'] }}
+                                    transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                                />
                             </div>
-                            <span className="text-amber-500/60 tracking-widest uppercase text-xs font-bold animate-pulse">Loading Collection</span>
+                            <span className="text-zinc-400 tracking-[0.3em] uppercase text-[9px] font-bold">Synchronizing Data</span>
                         </div>
                     ) : (
-                        <motion.div
+                        <motion.div 
                             variants={containerVariants}
                             initial="hidden"
                             animate="visible"
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-8 xl:gap-12"
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8"
                         >
-                            {categories.map((category, index) => (
+                            {categories.map((category) => (
                                 <motion.div
                                     key={category._id}
                                     variants={itemVariants}
@@ -135,63 +136,62 @@ const PlanCategoriesList = () => {
                                 >
                                     <Link
                                         to={`/project-categories/${encodeURIComponent(category.name)}`}
-                                        className="relative block aspect-[4/5] rounded-[2rem] overflow-hidden bg-zinc-900 border border-white/5 hover:border-amber-500/30 transition-all duration-700 shadow-2xl group/link"
+                                        className="relative block aspect-[3/4] bg-white border border-zinc-200 hover:border-zinc-800 transition-all duration-300 overflow-hidden shadow-sm hover:shadow-xl group/card"
                                     >
-                                        {/* Image Container (80% Focus) */}
-                                        <div className="absolute inset-0 w-full h-full overflow-hidden">
-                                            {category.image ? (
-                                                <motion.img
-                                                    src={getImageUrl(category.image)}
-                                                    alt={category.name}
-                                                    whileHover={{ scale: 1.1, filter: "brightness(0.6)" }}
-                                                    transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                                                    className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-800">
-                                                    <FaBuilding className="text-[120px]" />
-                                                </div>
-                                            )}
-
-                                            {/* Gradient Overlays */}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                        {/* Main Project Image - Maximum Visibility */}
+                                        <div className="absolute inset-0 w-full h-full p-1">
+                                            <div className="relative w-full h-full overflow-hidden">
+                                                {category.image ? (
+                                                    <img
+                                                        src={getImageUrl(category.image)}
+                                                        alt={category.name}
+                                                        className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 brightness-[1.02] group-hover:scale-110"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center bg-zinc-50 text-zinc-200">
+                                                        <FaBuilding className="text-6xl" />
+                                                    </div>
+                                                )}
+                                                
+                                                {/* Technical Grid Overlay on Image */}
+                                                <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-overlay border-[5px] border-zinc-900 group-hover:border-zinc-400 transition-all"></div>
+                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
+                                            </div>
                                         </div>
 
-                                        {/* Content Overlay (Glassmorphic) */}
-                                        <div className="absolute bottom-0 inset-x-0 p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                            <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden group/glass">
-                                                {/* Flare Effect */}
-                                                <div className="absolute -top-24 -left-24 w-48 h-48 bg-amber-500/10 blur-[60px] rounded-full group-hover:bg-amber-500/20 transition-colors"></div>
-
-                                                <div className="relative z-10">
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <FaCompass className="text-amber-500 text-xs" />
-                                                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500/80">
-                                                            Architecture
+                                        {/* Minimalist Info Label */}
+                                        <div className="absolute bottom-0 inset-x-0 bg-white border-t border-zinc-100 p-6 z-20 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                            <div className="relative">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div>
+                                                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">
+                                                            Project / {category.name.substring(0, 3).toUpperCase()}
                                                         </span>
+                                                        <h3 className="text-xl font-medium text-zinc-900 tracking-tight leading-none">
+                                                            {category.name}
+                                                        </h3>
                                                     </div>
+                                                    <div className="w-8 h-8 flex items-center justify-center text-zinc-300 group-hover:text-zinc-900 transition-colors">
+                                                        <FaDraftingCompass className="text-xs" />
+                                                    </div>
+                                                </div>
 
-                                                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight group-hover:text-amber-200 transition-colors">
-                                                        {category.name}
-                                                    </h3>
-
-                                                    <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/5">
-                                                        <p className="text-slate-400 text-sm font-medium">
-                                                            {category.planTypes ? `${category.planTypes.length} UNIQUE STYLES` : "REVEAL COLLECTION"}
-                                                        </p>
-                                                        <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-black -mr-1 shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-transform duration-300 group-hover:scale-110">
-                                                            <FaChevronRight className="text-xs" />
-                                                        </div>
+                                                <div className="flex items-center justify-between border-t border-zinc-50 pt-4 mt-2">
+                                                    <p className="text-[10px] font-bold text-zinc-500 tracking-widest uppercase">
+                                                        {category.planTypes ? `${category.planTypes.length} Variants` : "0 Variants"}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 text-zinc-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                        <span className="text-[9px] font-bold tracking-tighter">VIEW SPEC</span>
+                                                        <FaArrowRight className="text-[10px]" />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Hover Badge */}
-                                        <div className="absolute top-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                            <div className="px-4 py-2 rounded-full backdrop-blur-md bg-black/40 border border-white/10 text-[10px] font-bold tracking-widest text-white uppercase">
-                                                Premium
+                                        {/* Design Index Tag */}
+                                        <div className="absolute top-6 left-6 z-20 origin-left">
+                                            <div className="bg-zinc-900 text-white text-[8px] font-bold px-3 py-1.5 uppercase tracking-[0.2em] shadow-lg">
+                                                Active
                                             </div>
                                         </div>
                                     </Link>
@@ -200,20 +200,34 @@ const PlanCategoriesList = () => {
                         </motion.div>
                     )}
 
+                    {/* Technical Footer Message */}
+                    {!loading && categories.length > 0 && (
+                        <div className="mt-20 border-t border-zinc-100 pt-8 flex items-center justify-center text-zinc-300 gap-4">
+                            <span className="w-4 h-[1px] bg-zinc-200"></span>
+                            <span className="text-[9px] font-bold uppercase tracking-[0.5em]">End of Archive Registry</span>
+                            <span className="w-4 h-[1px] bg-zinc-200"></span>
+                        </div>
+                    )}
+
                     {/* Empty State */}
                     {!loading && categories.length === 0 && (
-                        <div className="text-center py-40 border border-dashed border-zinc-800 rounded-[3rem]">
-                            <h3 className="text-2xl font-bold text-slate-500">Catalog is currently private.</h3>
-                            <p className="text-slate-600 mt-2">Please check back later or contact us for custom requests.</p>
+                        <div className="text-center py-48 border border-dashed border-zinc-200">
+                            <h3 className="text-sm font-bold text-zinc-400 tracking-[0.2em] uppercase">No active projects matching parameters.</h3>
+                            <button className="mt-6 px-8 py-3 bg-zinc-900 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors">
+                                Reset Filters
+                            </button>
                         </div>
                     )}
                 </div>
             </main>
 
-            <Footer />
+            <div className="relative z-20">
+                <Footer />
+            </div>
         </div>
     );
 };
 
 export default PlanCategoriesList;
+
 
