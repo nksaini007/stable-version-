@@ -267,6 +267,10 @@ const ManagePlans = () => {
                                             ))}
                                         </select>
                                     </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-[#8E929C] uppercase tracking-wider mb-2">Project Brief (Description)</label>
+                                        <textarea required name="description" value={formData.description} onChange={handleInputChange} rows="3" className="w-full bg-[#0B0C10] border border-[#1F2833] rounded-lg px-4 py-3 text-sm text-white focus:border-[#66FCF1] outline-none resize-none" placeholder="Detail the architectural vision and scope..."></textarea>
+                                    </div>
                                 </div>
 
                                 {/* Images & Features Section */}
@@ -277,6 +281,10 @@ const ManagePlans = () => {
                                     <div>
                                         <label className="block text-xs font-semibold text-[#8E929C] uppercase tracking-wider mb-2">Gallery Upload</label>
                                         <input type="file" multiple onChange={handleFileChange} className="w-full text-xs text-[#45A29E] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-[#1F2833] file:text-[#66FCF1] hover:file:bg-white transition-all cursor-pointer" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-[#8E929C] uppercase tracking-wider mb-2">Key Features (Comma Sep)</label>
+                                        <input name="features" value={formData.features} onChange={handleInputChange} className="w-full bg-[#0B0C10] border border-[#1F2833] rounded-lg px-4 py-3 text-sm text-white focus:border-[#66FCF1] outline-none" placeholder="Earthquake Resistant, Solar Ready..." />
                                     </div>
                                     <div>
                                         <label className="block text-xs font-semibold text-[#8E929C] uppercase tracking-wider mb-2">Amenities (Comma Sep)</label>
