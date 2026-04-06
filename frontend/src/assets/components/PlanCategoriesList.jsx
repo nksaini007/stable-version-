@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaBuilding, FaArrowRight, FaDraftingCompass, FaLayerGroup, FaSearch } from "react-icons/fa";
+import { FaBuilding, FaArrowRight, FaLayerGroup, FaSearch, FaProjectDiagram } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/api";
 import Nev from "./Nev";
@@ -38,12 +38,12 @@ const PlanCategoriesList = () => {
     );
 
     return (
-        <div className="bg-[#0B0C10] min-h-screen flex flex-col font-sans selection:bg-[#66FCF1]/20 selection:text-[#66FCF1] overflow-hidden relative">
+        <div className="bg-[#FAF9F6] min-h-screen flex flex-col font-sans selection:bg-[#C5A059]/20 selection:text-[#C5A059] overflow-hidden relative">
             <Nev />
 
-            {/* Premium Technical Overlay */}
+            {/* Subtle Texture Overlay */}
             <div 
-                className="fixed inset-0 pointer-events-none opacity-[0.1] mix-blend-screen z-0"
+                className="fixed inset-0 pointer-events-none opacity-[0.03] grayscale mix-blend-multiply z-0"
                 style={{ 
                     backgroundImage: `url(${blueprintBg})`,
                     backgroundSize: 'cover',
@@ -53,127 +53,112 @@ const PlanCategoriesList = () => {
                 }}
             ></div>
             
-            {/* Dynamic Grid Background Overlay */}
-            <div className="fixed inset-0 pointer-events-none opacity-[0.05] z-0" 
-                 style={{ backgroundImage: 'linear-gradient(#1F2833 1px, transparent 1px), linear-gradient(90deg, #1F2833 1px, transparent 1px)', backgroundSize: '50px 50px' }}>
+            {/* Elegant Grid Overlay */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" 
+                 style={{ backgroundImage: 'linear-gradient(#1A1B1E 1px, transparent 1px), linear-gradient(90deg, #1A1B1E 1px, transparent 1px)', backgroundSize: '100px 100px' }}>
             </div>
 
-            <main className="flex-grow pt-32 pb-10 relative z-10 w-full px-4 md:px-10">
-                <div className="h-full flex flex-col">
-                    {/* Minimalist Floating Status Bar */}
-                    <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#1A1B1E]/40 backdrop-blur-md border border-[#1F2833] p-4 rounded-2xl">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#66FCF1] to-[#45A29E] flex items-center justify-center shadow-[0_0_20px_rgba(102,252,241,0.2)]">
-                                <FaLayerGroup className="text-[#0B0C10] text-lg" />
+            <main className="flex-grow pt-32 pb-16 relative z-10 w-full px-4 md:px-10">
+                <div className="max-w-[1600px] mx-auto h-full flex flex-col">
+                    {/* Premium Floating Header */}
+                    <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-8 bg-white/70 backdrop-blur-xl border border-white/40 p-6 rounded-[2.5rem] shadow-[0_8px_32px_rgba(0,0,0,0.03)]">
+                        <div className="flex items-center gap-6">
+                            <div className="w-14 h-14 rounded-2xl bg-[#1A1B1E] flex items-center justify-center shadow-xl transform rotate-3 hover:rotate-0 transition-transform">
+                                <FaLayerGroup className="text-[#C5A059] text-2xl" />
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold text-white tracking-tight uppercase">Archive <span className="text-[#45A29E]">Registry</span></h1>
-                                <p className="text-[9px] font-bold text-[#45A29E] uppercase tracking-[0.4em]">Stinchar / Systems / V2.0</p>
+                                <h1 className="text-3xl font-black text-[#1A1B1E] tracking-tight uppercase">archive.<span className="text-[#C5A059]">registry</span></h1>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em]">curated collections / stinchar v2.0</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4 flex-1 md:max-w-md">
-                            <div className="relative w-full">
-                                <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#45A29E] text-xs" />
+                        <div className="flex items-center gap-6 flex-1 md:max-w-xl">
+                            <div className="relative w-full group">
+                                <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#C5A059] transition-colors" />
                                 <input 
                                     type="text" 
-                                    placeholder="SCANNING CATEGORIES..." 
+                                    placeholder="search categories..." 
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full bg-[#0B0C10]/60 border border-[#1F2833] rounded-xl px-12 py-2.5 text-[10px] font-bold text-white tracking-widest placeholder:text-gray-600 focus:border-[#66FCF1] outline-none transition-all uppercase" 
+                                    className="w-full bg-white/50 border border-gray-100 rounded-2xl px-16 py-4 text-sm font-medium text-[#1A1B1E] placeholder:text-gray-300 focus:border-[#C5A059]/30 focus:bg-white outline-none transition-all shadow-sm" 
                                 />
                             </div>
                         </div>
 
-                        <div className="hidden lg:flex items-center gap-8 text-[10px] font-bold text-gray-500 tracking-[0.3em] uppercase">
+                        <div className="hidden lg:flex items-center gap-10">
+                            <div className="h-10 w-px bg-gray-100"></div>
                             <div className="flex flex-col items-end">
-                                <span className="text-[#66FCF1]">ACTIVE NODES</span>
-                                <span>{filteredCategories.length} OF {categories.length}</span>
+                                <span className="text-[10px] font-black text-[#1A1B1E] uppercase tracking-widest leading-none mb-1">active indices</span>
+                                <span className="text-[14px] font-bold text-[#C5A059] font-mono">{filteredCategories.length.toString().padStart(2, '0')}</span>
                             </div>
                         </div>
                     </header>
 
-                    {/* High-Impact Full-Screen Grid */}
                     {loading ? (
-                        <div className="flex-grow flex flex-col items-center justify-center gap-8">
-                            <div className="w-20 h-20 border-2 border-[#1F2833] border-t-[#66FCF1] rounded-full animate-spin"></div>
-                            <span className="text-[#66FCF1] tracking-[0.5em] uppercase text-[10px] font-bold">Initializing Catalog Interface</span>
+                        <div className="flex-grow flex flex-col items-center justify-center gap-6">
+                            <div className="w-12 h-12 border-4 border-gray-100 border-t-[#C5A059] rounded-full animate-spin"></div>
+                            <span className="text-gray-400 tracking-[0.4em] uppercase text-[9px] font-black animate-pulse">synchronizing catalog</span>
                         </div>
                     ) : (
                         <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 overflow-y-auto pr-2 no-scrollbar"
-                            style={{ maxHeight: 'calc(100vh - 250px)' }}
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 overflow-y-auto pr-2 no-scrollbar pb-10"
+                            style={{ maxHeight: 'calc(100vh - 300px)' }}
                         >
                             {filteredCategories.map((category, idx) => (
                                 <motion.div
                                     key={category._id}
-                                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                    initial={{ opacity: 0, scale: 0.98, y: 30 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    transition={{ delay: idx * 0.05 }}
-                                    className="group relative"
+                                    transition={{ delay: idx * 0.04 }}
+                                    className="group"
                                 >
                                     <Link
                                         to={`/project-categories/${encodeURIComponent(category.name)}`}
-                                        className="relative block aspect-[4/5] bg-[#1A1B1E] border border-[#1F2833] rounded-2xl overflow-hidden group/card shadow-2xl hover:border-[#66FCF1] transition-all duration-500"
+                                        className="relative block aspect-[4/5] bg-white rounded-[2.5rem] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(197,160,89,0.12)] transition-all duration-700 border border-white group-hover:border-[#C5A059]/20"
                                     >
-                                        {/* Dynamic Image Layer */}
-                                        <div className="absolute inset-0 w-full h-full p-2">
-                                            <div className="relative w-full h-full overflow-hidden rounded-xl bg-[#0B0C10]">
-                                                {category.image ? (
-                                                    <img
-                                                        src={getImageUrl(category.image)}
-                                                        alt={category.name}
-                                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 brightness-[0.8] group-hover:brightness-100 group-hover:scale-110"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-[#1F2833]">
-                                                        <FaBuilding className="text-8xl opacity-20" />
-                                                    </div>
-                                                )}
-                                                
-                                                {/* Technical Grid on Card */}
-                                                <div className="absolute inset-0 opacity-10 pointer-events-none border border-[#66FCF1] group-hover:border-[4px] transition-all"></div>
-                                                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C10] via-transparent to-transparent opacity-80"></div>
-                                            </div>
+                                        {/* Image Section */}
+                                        <div className="absolute inset-x-3 top-3 bottom-1/3 overflow-hidden rounded-[2rem] bg-gray-50">
+                                            {category.image ? (
+                                                <img
+                                                    src={getImageUrl(category.image)}
+                                                    alt={category.name}
+                                                    className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-200">
+                                                    <FaBuilding className="text-7xl" />
+                                                </div>
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         </div>
 
-                                        {/* Bottom Data Overlay */}
-                                        <div className="absolute bottom-6 inset-x-6 z-20">
-                                            <div className="flex justify-between items-end">
-                                                <div>
-                                                    <span className="text-[8px] font-bold text-[#66FCF1] uppercase tracking-[0.4em] block mb-2 transition-all group-hover:tracking-[0.6em]">
-                                                        CAT / {category.name.substring(0, 3).toUpperCase()}
-                                                    </span>
-                                                    <h3 className="text-2xl font-black text-white tracking-tighter uppercase leading-none group-hover:text-[#66FCF1] transition-colors">
-                                                        {category.name}
-                                                    </h3>
-                                                </div>
-                                                <div className="w-12 h-12 rounded-full border border-[#1F2833] flex items-center justify-center text-[#66FCF1] group-hover:bg-[#66FCF1] group-hover:text-[#0B0C10] transition-all shadow-xl">
-                                                    <FaArrowRight className="text-sm" />
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center gap-4 mt-6 pt-4 border-t border-[#1F2833]">
+                                        {/* Content Section */}
+                                        <div className="absolute bottom-10 inset-x-8">
+                                            <span className="inline-block px-3 py-1 bg-gray-50 text-[9px] font-black text-gray-400 uppercase tracking-widest rounded-full mb-4 group-hover:bg-[#C5A059]/10 group-hover:text-[#C5A059] transition-colors">
+                                                Collection 0{idx + 1}
+                                            </span>
+                                            <h3 className="text-2xl font-extrabold text-[#1A1B1E] tracking-tight group-hover:translate-x-2 transition-transform duration-500 capitalize">
+                                                {category.name}
+                                            </h3>
+                                            
+                                            <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-50">
                                                 <div className="flex flex-col">
-                                                    <span className="text-[7px] text-gray-500 font-bold uppercase tracking-widest">Specifications</span>
-                                                    <span className="text-[10px] text-white font-bold tracking-widest uppercase">
-                                                        {category.planTypes ? `${category.planTypes.length} Types` : "0 Types"}
+                                                    <span className="text-[7px] text-gray-400 font-black uppercase tracking-widest mb-1">Architecture</span>
+                                                    <span className="text-[11px] text-[#1A1B1E] font-bold uppercase tracking-wider">
+                                                        {category.planTypes ? `${category.planTypes.length} Styles` : "Bespoke"}
                                                     </span>
                                                 </div>
-                                                <div className="flex flex-col text-right ml-auto">
-                                                    <span className="text-[7px] text-gray-500 font-bold uppercase tracking-widest">Index Status</span>
-                                                    <span className="text-[10px] text-[#66FCF1] font-bold tracking-widest uppercase">Verified</span>
+                                                <div className="w-12 h-12 rounded-full bg-[#FAF9F6] border border-gray-50 flex items-center justify-center text-[#1A1B1E] group-hover:bg-[#1A1B1E] group-hover:text-white transition-all transform group-hover:rotate-[360deg] duration-700">
+                                                    <FaArrowRight className="text-xs" />
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Floating ID Tag */}
-                                        <div className="absolute top-6 right-6 z-20">
-                                            <div className="bg-[#0B0C10]/80 backdrop-blur-md border border-[#1F2833] text-gray-500 text-[7px] font-bold px-3 py-1.5 uppercase tracking-widest group-hover:text-[#66FCF1] group-hover:border-[#66FCF1] transition-all">
-                                                ID: {category._id.substring(0,6)}
-                                            </div>
+                                        {/* Premium Floating Tag */}
+                                        <div className="absolute top-8 right-8 mix-blend-difference">
+                                            <FaProjectDiagram className="text-white text-xs opacity-40" />
                                         </div>
                                     </Link>
                                 </motion.div>
@@ -181,15 +166,17 @@ const PlanCategoriesList = () => {
                         </motion.div>
                     )}
 
-                    {/* High-End Technical Indicator */}
-                    <div className="mt-auto pt-6 flex flex-col md:flex-row justify-between items-center bg-[#1A1B1E]/20 p-4 rounded-xl border border-[#1F2833]/50">
-                        <div className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.4em] text-gray-600">
-                            <span className="text-[#66FCF1] animate-pulse">●</span> SYSTEM READY
-                            <span className="w-10 h-px bg-[#1F2833]"></span>
-                            CATALOG CACHED / 100%
+                    {/* Refined Technical Footer Indicator */}
+                    <div className="mt-auto pt-8 flex flex-col md:flex-row justify-between items-center bg-white/40 p-6 rounded-[2rem] border border-white/60 shadow-sm">
+                        <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-[0.4em] text-gray-400">
+                            <span className="text-[#C5A059] animate-ping">●</span> system idle
+                            <span className="w-12 h-[1px] bg-gray-100"></span>
+                            data stream verified
                         </div>
-                        <div className="hidden md:block text-[8px] font-mono text-[#45A29E] tracking-widest uppercase mt-4 md:mt-0">
-                            COORD: 28.6139N / 77.2090E | REF: ARCH-INDEX-GLOBAL
+                        <div className="hidden md:flex items-center gap-6 text-[8px] font-bold text-gray-300 tracking-[0.3em] uppercase">
+                            <span>stn-res-lx-21</span>
+                            <span className="w-1 h-1 rounded-full bg-gray-200"></span>
+                            <span>lat: 28.6139 | lng: 77.2090</span>
                         </div>
                     </div>
                 </div>

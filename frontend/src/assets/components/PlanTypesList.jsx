@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaRulerCombined } from "react-icons/fa";
+import { FaArrowLeft, FaRulerCombined, FaCompass, FaChevronLeft } from "react-icons/fa";
 import { motion } from "framer-motion";
 import API from "../api/api";
 import Nev from "./Nev";
@@ -38,68 +38,92 @@ const PlanTypesList = () => {
     };
 
     return (
-        <div className="bg-slate-50 min-h-screen flex flex-col font-sans">
+        <div className="bg-[#FAF9F6] min-h-screen flex flex-col font-sans selection:bg-[#C5A059]/10 selection:text-[#C5A059] overflow-hidden relative">
             <Nev />
 
-            <main className="flex-grow pt-32 pb-24">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Header */}
-                    <div className="mb-16">
-                        <button
-                            onClick={() => navigate('/project-categories')}
-                            className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 bg-white border border-gray-200 shadow-sm px-4 py-2 rounded-full font-medium mb-8 transition-all hover:shadow-md hover:-translate-y-0.5"
-                        >
-                            <FaArrowLeft className="text-sm" /> <span>Back to Categories</span>
-                        </button>
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 mb-4">
-                            {categoryName} Styles
-                        </h1>
-                        <p className="text-lg md:text-xl text-slate-500 font-light max-w-2xl">
-                            Choose a specific architectural style below to explore our curated collection of pristine blueprints.
-                        </p>
-                    </div>
+            {/* Subtle Grid Overlay */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" 
+                 style={{ backgroundImage: 'radial-gradient(#1A1B1E 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
+            </div>
+
+            <main className="flex-grow pt-32 pb-24 relative z-10 w-full px-4 md:px-10">
+                <div className="max-w-[1600px] mx-auto h-full flex flex-col">
+                    {/* Premium Header */}
+                    <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-10">
+                        <div className="flex-1">
+                            <button
+                                onClick={() => navigate('/project-categories')}
+                                className="group flex items-center gap-3 text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-8 hover:text-[#1A1B1E] transition-colors"
+                            >
+                                <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:border-[#1A1B1E] transition-colors">
+                                    <FaChevronLeft className="text-[8px]" />
+                                </div>
+                                back to gallery
+                            </button>
+                            
+                            <div className="flex items-center gap-4 mb-4">
+                                <span className="h-px w-10 bg-[#C5A059]"></span>
+                                <span className="text-[10px] font-black text-[#C5A059] uppercase tracking-[0.6em]">Category / {categoryName}</span>
+                            </div>
+                            <h1 className="text-5xl md:text-7xl font-black text-[#1A1B1E] tracking-tighter leading-none uppercase">
+                                architectural.<span className="text-[#C5A059]">styles</span>
+                            </h1>
+                            <p className="mt-8 text-lg text-gray-500 font-medium max-w-2xl leading-relaxed">
+                                Exploration of structural archetypes within the {categoryName} discipline. Each style represents a unique philosophical approach to space.
+                            </p>
+                        </div>
+                        
+                        <div className="hidden lg:block pb-2">
+                            <div className="p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white flex flex-col items-end shadow-sm">
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Index capacity</span>
+                                <span className="text-3xl font-black text-[#1A1B1E] font-mono">{planTypes.length.toString().padStart(2, '0')}</span>
+                            </div>
+                        </div>
+                    </header>
 
                     {loading ? (
-                        <div className="flex justify-center py-20">
-                            <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-                        </div>
-                    ) : planTypes.length === 0 ? (
-                        <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
-                            <FaRulerCombined className="text-5xl text-gray-300 mx-auto mb-4" />
-                            <h2 className="text-xl font-semibold text-gray-800 mb-2">No Plan Types Found</h2>
-                            <p className="text-gray-500">There are currently no plan types available for this category.</p>
+                        <div className="flex-grow flex flex-col items-center justify-center py-40 gap-6">
+                            <div className="w-12 h-12 border-4 border-gray-100 border-t-[#C5A059] rounded-full animate-spin"></div>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {planTypes.map((type, index) => (
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}
                                     key={type._id}
+                                    className="group"
                                 >
                                     <Link
                                         to={`/project-categories/${encodeURIComponent(categoryName)}/${encodeURIComponent(type.name)}`}
-                                        className="block bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-500 hover:shadow-lg transition-all duration-300 group"
+                                        className="block bg-white rounded-[2.5rem] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(197,160,89,0.12)] transition-all duration-700 border border-white group-hover:border-[#C5A059]/20 p-3"
                                     >
-                                        <div className="aspect-[4/3] bg-gray-50 flex items-center justify-center p-2 sm:p-4">
+                                        <div className="aspect-[5/4] bg-[#FAF9F6] rounded-[2rem] overflow-hidden relative">
                                             {type.image ? (
                                                 <img
                                                     src={getImageUrl(type.image)}
                                                     alt={type.name}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-2xl"
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 grayscale group-hover:grayscale-0"
                                                 />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                    <FaRulerCombined className="text-4xl sm:text-6xl" />
+                                                <div className="w-full h-full flex items-center justify-center text-gray-200">
+                                                    <FaRulerCombined className="text-7xl" />
                                                 </div>
                                             )}
+                                            <div className="absolute inset-0 bg-[#1A1B1E]/0 group-hover:bg-[#1A1B1E]/5 transition-colors duration-500"></div>
                                         </div>
-                                        <div className="p-4 sm:p-5 bg-white border-t border-gray-100 flex items-center justify-between">
-                                            <h3 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors text-sm sm:text-lg line-clamp-1">
-                                                {type.name}
-                                            </h3>
-                                            <span className="text-gray-400 group-hover:text-blue-500 transition-colors">&rarr;</span>
+                                        
+                                        <div className="p-6 flex items-center justify-between">
+                                            <div className="flex flex-col">
+                                                <span className="text-[7px] font-black text-[#C5A059] uppercase tracking-widest mb-1 italic">Signature</span>
+                                                <h3 className="text-xl font-extrabold text-[#1A1B1E] tracking-tight capitalize line-clamp-1 group-hover:text-[#C5A059] transition-colors">
+                                                    {type.name}
+                                                </h3>
+                                            </div>
+                                            <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-[#1A1B1E] group-hover:bg-[#1A1B1E] group-hover:text-[#C5A059] transition-all">
+                                                <FaArrowLeft className="rotate-180 text-[10px]" />
+                                            </div>
                                         </div>
                                     </Link>
                                 </motion.div>

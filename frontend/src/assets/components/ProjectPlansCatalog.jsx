@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import API from "../api/api";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaMap, FaSearch, FaRulerCombined, FaTag, FaChevronLeft, FaCompass, FaCubes } from "react-icons/fa";
+import { FaMap, FaSearch, FaRulerCombined, FaTag, FaChevronLeft, FaCompass, FaCubes, FaArrowRight, FaGem } from "react-icons/fa";
 import Nev from "./Nev";
 import Footer from "./Footer";
 import blueprintBg from "../images/blueprint_bg.png"; 
@@ -48,12 +48,12 @@ const ProjectPlansCatalog = () => {
     };
 
     return (
-        <div className="bg-[#0B0C10] min-h-screen flex flex-col font-sans selection:bg-[#66FCF1]/20 selection:text-[#66FCF1] overflow-hidden relative">
+        <div className="bg-[#FAF9F6] min-h-screen flex flex-col font-sans selection:bg-[#C5A059]/10 selection:text-[#C5A059] overflow-hidden relative">
             <Nev />
 
-            {/* Fixed Depth Technical Overlay */}
+            {/* Subtle Technical Overlay */}
             <div 
-                className="fixed inset-0 pointer-events-none opacity-[0.12] mix-blend-screen z-0 grayscale"
+                className="fixed inset-0 pointer-events-none opacity-[0.02] grayscale mix-blend-multiply z-0"
                 style={{ 
                     backgroundImage: `url(${blueprintBg})`,
                     backgroundSize: 'cover',
@@ -63,129 +63,137 @@ const ProjectPlansCatalog = () => {
                 }}
             ></div>
             
-            {/* Structural Grid Overlay */}
-            <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" 
-                 style={{ backgroundImage: 'radial-gradient(#66FCF1 1px, transparent 1px)', backgroundSize: '30px 30px' }}>
+            {/* Elegant Background Grid */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.04] z-0" 
+                 style={{ backgroundImage: 'linear-gradient(#1A1B1E 1px, transparent 1px), linear-gradient(90deg, #1A1B1E 1px, transparent 1px)', backgroundSize: '60px 60px' }}>
             </div>
 
-            <main className="flex-grow pt-32 pb-10 relative z-10 w-full px-4 md:px-10">
-                <div className="h-full flex flex-col">
-                    {/* Minimalist Floating Status Bar */}
-                    <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#1A1B1E]/60 backdrop-blur-xl border border-[#1F2833] p-5 rounded-2xl">
-                        <div className="flex items-center gap-5">
+            <main className="flex-grow pt-32 pb-16 relative z-10 w-full px-4 md:px-10">
+                <div className="max-w-[1600px] mx-auto h-full flex flex-col">
+                    {/* Premium Status Header */}
+                    <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-8 bg-white/60 backdrop-blur-xl border border-white p-6 rounded-[2.5rem] shadow-sm">
+                        <div className="flex items-center gap-6">
                             <button 
                                 onClick={() => navigate(-1)}
-                                className="w-12 h-12 rounded-xl bg-[#0B0C10] border border-[#1F2833] flex items-center justify-center text-[#66FCF1] hover:bg-[#66FCF1] hover:text-[#0B0C10] transition-all shadow-xl"
+                                className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-[#1A1B1E] hover:bg-[#1A1B1E] hover:text-white transition-all shadow-sm"
                             >
-                                <FaChevronLeft className="text-xs" />
+                                <FaChevronLeft className="text-[10px]" />
                             </button>
                             <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-[8px] font-bold text-[#45A29E] uppercase tracking-[0.4em]">{categoryName}</span>
-                                    <span className="text-[8px] text-gray-700">/</span>
-                                    <span className="text-[8px] font-bold text-[#66FCF1] uppercase tracking-[0.4em]">{planTypeName}</span>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.4em]">{categoryName}</span>
+                                    <span className="w-1 h-1 rounded-full bg-gray-200"></span>
+                                    <span className="text-[9px] font-black text-[#C5A059] uppercase tracking-[0.4em]">{planTypeName}</span>
                                 </div>
-                                <h1 className="text-2xl font-black text-white tracking-tighter uppercase leading-none">Blueprint <span className="text-[#45A29E]">Catalog</span></h1>
+                                <h1 className="text-3xl font-black text-[#1A1B1E] tracking-tighter leading-none uppercase">blueprint.<span className="text-[#C5A059]">catalog</span></h1>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4 flex-1 md:max-w-2xl">
-                            <div className="relative w-full">
-                                <FaSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-[#45A29E] text-sm" />
+                        <div className="flex items-center gap-6 flex-1 md:max-w-2xl">
+                            <div className="relative w-full group">
+                                <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#C5A059] transition-colors" />
                                 <input 
                                     type="text" 
-                                    placeholder="PARSING BLUEPRINTS BY TITLE OR SPEC..." 
+                                    placeholder="filter specifications..." 
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full bg-[#0B0C10]/40 border border-[#1F2833] rounded-2xl px-14 py-3.5 text-[11px] font-bold text-white tracking-[0.2em] placeholder:text-gray-700 focus:border-[#66FCF1] outline-none transition-all uppercase" 
+                                    className="w-full bg-white/40 border border-gray-50 rounded-2xl px-16 py-4 text-sm font-medium text-[#1A1B1E] placeholder:text-gray-300 focus:border-[#C5A059]/20 focus:bg-white outline-none transition-all shadow-sm" 
                                 />
                             </div>
                         </div>
 
-                        <div className="hidden lg:flex items-center gap-8 text-[10px] font-bold text-gray-500 tracking-[0.3em] uppercase">
+                        <div className="hidden lg:flex items-center gap-10">
+                            <div className="h-10 w-px bg-gray-100"></div>
                             <div className="flex flex-col items-end">
-                                <span className="text-[#66FCF1]">CATALOG STATUS</span>
-                                <span>{filteredPlans.length} SPECIFICATIONS FOUND</span>
+                                <span className="text-[9px] font-black text-[#1A1B1E] uppercase tracking-widest mb-1">spec count</span>
+                                <span className="text-[14px] font-bold text-[#C5A059] font-mono">{filteredPlans.length.toString().padStart(3, '0')}</span>
                             </div>
                         </div>
                     </header>
 
-                    {/* Full-Screen Project Grid */}
                     {loading ? (
-                        <div className="flex-grow flex flex-col items-center justify-center gap-8">
-                            <div className="relative w-24 h-24">
-                                <div className="absolute inset-0 border-2 border-[#1F2833] border-t-[#66FCF1] rounded-full animate-spin"></div>
-                                <div className="absolute inset-4 border border-[#1F2833] border-b-[#45A29E] rounded-full animate-spin-slow"></div>
-                            </div>
-                            <span className="text-[#66FCF1] tracking-[0.6em] uppercase text-[10px] font-bold animate-pulse">Scanning Structural Ledger</span>
+                        <div className="flex-grow flex flex-col items-center justify-center gap-6 py-40">
+                            <div className="w-12 h-12 border-4 border-gray-100 border-t-[#C5A059] rounded-full animate-spin"></div>
+                            <span className="text-gray-400 tracking-[0.6em] uppercase text-[9px] font-black animate-pulse">scanning structural ledger</span>
                         </div>
                     ) : filteredPlans.length === 0 ? (
-                        <div className="flex-grow flex flex-col items-center justify-center border-2 border-dashed border-[#1F2833] rounded-3xl bg-[#1A1B1E]/10">
-                            <FaCubes className="text-6xl text-[#1F2833] mb-6" />
-                            <h3 className="text-[#45A29E] tracking-[0.4em] uppercase text-[10px] font-bold">No active blueprints matching query.</h3>
+                        <div className="flex-grow flex flex-col items-center justify-center border border-dashed border-gray-200 rounded-[3rem] bg-white/30 backdrop-blur-sm min-h-[400px]">
+                            <FaCubes className="text-7xl text-gray-100 mb-6" />
+                            <h3 className="text-gray-400 tracking-[0.4em] uppercase text-[10px] font-black">No specifications found matching query.</h3>
                         </div>
                     ) : (
                         <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 overflow-y-auto pr-3 no-scrollbar pb-10"
-                            style={{ maxHeight: 'calc(100vh - 280px)' }}
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 overflow-y-auto pr-3 no-scrollbar pb-20"
+                            style={{ maxHeight: 'calc(100vh - 350px)' }}
                         >
                             {filteredPlans.map((plan, idx) => (
                                 <motion.div
                                     key={plan._id}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    initial={{ opacity: 0, scale: 0.98, y: 30 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
                                     transition={{ delay: idx * 0.04 }}
                                 >
-                                    <Link to={`/project-plans/${plan._id}`} className="group block">
-                                        <div className="bg-[#1A1B1E] rounded-3xl border border-[#1F2833] group-hover:border-[#66FCF1] shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full relative">
+                                    <Link to={`/project-plans/${plan._id}`} className="group block h-full">
+                                        <div className="bg-white rounded-[2.5rem] border border-white group-hover:border-[#C5A059]/20 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(197,160,89,0.12)] transition-all duration-700 overflow-hidden flex flex-col h-full relative p-3">
                                             {/* Media Container */}
-                                            <div className="relative aspect-[4/3] overflow-hidden p-2 bg-[#0B0C10]">
+                                            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-gray-50 border border-gray-50">
                                                 {plan.images && plan.images.length > 0 ? (
                                                     <img 
                                                         src={getImageUrl(plan.images[0])} 
                                                         alt={plan.title} 
-                                                        className="w-full h-full object-cover rounded-2xl grayscale brightness-[0.7] group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-110 transition-all duration-700" 
+                                                        className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110" 
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-[#1F2833]">
-                                                        <FaMap className="text-6xl opacity-30" />
+                                                    <div className="w-full h-full flex items-center justify-center text-gray-200">
+                                                        <FaMap className="text-7xl" />
                                                     </div>
                                                 )}
                                                 
-                                                <div className="absolute top-6 left-6 flex gap-2">
-                                                    <span className="bg-[#0B0C10]/80 backdrop-blur-md text-[#66FCF1] border border-[#66FCF1]/20 px-3 py-1 text-[8px] font-bold uppercase tracking-widest shadow-2xl">
-                                                        SPEC: {plan._id.substring(0,4).toUpperCase()}
+                                                <div className="absolute top-6 left-6">
+                                                    <span className="bg-white/90 backdrop-blur-md text-[#1A1B1E] border border-white px-4 py-1.5 text-[9px] font-black uppercase tracking-widest shadow-xl rounded-full">
+                                                        {plan._id.substring(0,4).toUpperCase()} / MOD
                                                     </span>
+                                                </div>
+
+                                                <div className="absolute bottom-6 right-6">
+                                                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1A1B1E] shadow-xl transform translate-y-20 group-hover:translate-y-0 transition-transform duration-500">
+                                                        <FaArrowRight className="text-xs" />
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             {/* Details Container */}
-                                            <div className="p-8 flex flex-col h-full bg-gradient-to-b from-[#1A1B1E] to-[#0B0C10]">
-                                                <h3 className="text-xl font-black text-white mb-3 tracking-tighter uppercase line-clamp-1 group-hover:text-[#66FCF1] transition-colors">{plan.title}</h3>
-                                                <p className="text-gray-500 text-[10px] line-clamp-2 leading-relaxed mb-8 uppercase tracking-widest font-bold">{plan.description}</p>
+                                            <div className="p-8 flex flex-col h-full">
+                                                <div className="flex items-center gap-3 mb-4">
+                                                    <FaGem className="text-[#C5A059] text-[10px]" />
+                                                    <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Premium Specification</span>
+                                                </div>
+                                                <h3 className="text-xl font-extrabold text-[#1A1B1E] mb-3 tracking-tight capitalize line-clamp-1 group-hover:text-[#C5A059] transition-colors">{plan.title}</h3>
+                                                <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed mb-10 font-medium">{plan.description}</p>
 
-                                                <div className="mt-auto flex justify-between items-end border-t border-[#1F2833] pt-6">
-                                                    <div className="flex flex-col gap-2">
+                                                <div className="mt-auto pt-8 border-t border-gray-50 flex justify-between items-end">
+                                                    <div className="flex flex-col gap-3">
                                                         <div className="flex items-center gap-3">
-                                                            <FaRulerCombined className="text-[#66FCF1] text-xs" /> 
-                                                            <span className="text-[10px] font-bold text-white uppercase tracking-widest">{plan.area}</span>
+                                                            <div className="w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center">
+                                                                <FaRulerCombined className="text-[#C5A059] text-[8px]" /> 
+                                                            </div>
+                                                            <span className="text-[11px] font-bold text-gray-600 uppercase tracking-widest">Area: {plan.area}</span>
                                                         </div>
                                                         <div className="flex items-center gap-3">
-                                                            <FaCompass className="text-[#45A29E] text-xs" /> 
-                                                            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Global Ref</span>
+                                                            <div className="w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center">
+                                                                <FaCompass className="text-gray-300 text-[8px]" /> 
+                                                            </div>
+                                                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Geo-Ref</span>
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="text-[8px] font-bold text-gray-600 uppercase tracking-[0.2em] mb-1">Project Value</p>
-                                                        <span className="text-2xl font-black text-[#66FCF1] tracking-tighter">₹{plan.estimatedCost?.toLocaleString()}</span>
+                                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Est. Value</p>
+                                                        <span className="text-2xl font-black text-[#1A1B1E] tracking-tighter">₹{plan.estimatedCost?.toLocaleString()}</span>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            {/* Technical Design Overlay */}
-                                            <div className="absolute inset-0 border-[0.5px] border-[#66FCF1]/0 group-hover:border-[#66FCF1]/10 pointer-events-none transition-all"></div>
                                         </div>
                                     </Link>
                                 </motion.div>
@@ -193,15 +201,20 @@ const ProjectPlansCatalog = () => {
                         </motion.div>
                     )}
 
-                    {/* High-End Technical Indicator */}
-                    <div className="mt-auto pt-6 flex flex-col md:flex-row justify-between items-center border-t border-[#1F2833]/50">
-                        <div className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.4em] text-gray-700">
-                            <span className="text-[#66FCF1] animate-pulse">●</span> CATALOG STREAMING
-                            <span className="w-10 h-px bg-[#1F2833]"></span>
-                            OFFSET: {filteredPlans.length} MODS
+                    {/* High-End Refined Footer */}
+                    <div className="mt-auto pt-10 flex flex-col md:flex-row justify-between items-center border-t border-gray-100">
+                        <div className="flex items-center gap-6 text-[9px] font-black uppercase tracking-[0.4em] text-gray-300">
+                            <div className="flex items-center gap-3 text-[#1A1B1E]">
+                                <span className="w-2 h-2 rounded-full bg-[#C5A059] animate-pulse"></span>
+                                Live Feed
+                            </div>
+                            <span className="w-12 h-px bg-gray-100"></span>
+                            Ref: 0x{planTypeName?.substring(0,3).toUpperCase() || "GEN"}
                         </div>
-                        <div className="hidden md:block text-[9px] font-black text-[#45A29E] tracking-[0.4em] uppercase mt-4 md:mt-0">
-                            STINCHAR / ARCHITECTURAL LEDGER / GEN-3
+                        <div className="hidden md:flex items-center gap-8 text-[9px] font-black text-[#1A1B1E] tracking-[0.2em] uppercase mt-4 md:mt-0">
+                            <span>stinchar.studio</span>
+                            <span className="text-gray-200">/</span>
+                            <span>A-Class Documentation</span>
                         </div>
                     </div>
                 </div>
