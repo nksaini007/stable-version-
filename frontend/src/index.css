@@ -1,24 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  font-family: 'Space Grotesk', sans-serif;
-  --neon-accent: #bef264; /* Electric Lime */
-  --cyber-black: #050505;
+  font-family: 'IBM Plex Mono', monospace;
+  --industrial-grey: #e5e5e5;
+  --industrial-black: #000000;
+  --industrial-orange: #ff5c00;
 }
 
 h1, h2, h3, h4, .font-heading {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
   text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
-.text-outline {
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
-  color: transparent;
+.text-barcode {
+  letter-spacing: -0.1em;
+  font-weight: 900;
+  filter: stretch(2);
 }
 
-.glow-accent {
-  box-shadow: 0 0 20px rgba(190, 242, 100, 0.3);
+.bg-industrial {
+  background-color: var(--industrial-grey);
+}
+
+.border-industrial {
+  border-width: 2px;
+  border-color: var(--industrial-black);
 }
 
 html, body {

@@ -97,30 +97,34 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
   if (items.length === 0) return null;
 
   return (
-    <section className="pt-24 pb-24 bg-[#0a0a0b] overflow-hidden">
+    <section className="py-24 bg-[#e5e5e5] overflow-hidden border-t-4 border-black">
       <div className="mx-auto max-w-8xl px-6">
+        
         {/* Header */}
-        <div className="flex items-end justify-between mb-12">
-          <div className="space-y-2">
-            <h2 className="text-4xl md:text-5xl font-heading text-white tracking-tight">
-              {title || "Trending Collections"}
+        <div className="flex items-end justify-between mb-12 border-b-4 border-black pb-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#ff5c00]">
+              <div className="w-12 h-[2px] bg-[#ff5c00]"></div>
+              SYSTEM_TRENDING_LOG
+            </div>
+            <h2 className="text-6xl md:text-8xl font-heading text-black tracking-tight leading-none">
+              {title || "CATALOG.00"}
             </h2>
-            <div className="w-20 h-1 bg-white/20 rounded-full"></div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <button
               onClick={() => setIndex((i) => Math.max(i - 1, 0))}
-              className="p-3 rounded-full border border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-900 transition-all"
+              className="p-6 border-4 border-black text-black hover:bg-black hover:text-white transition-all shadow-[6px_6px_0px_rgba(0,0,0,0.1)]"
             >
-              <FaChevronLeft size={16} />
+              <FaChevronLeft size={20} />
             </button>
             <button
               onClick={() =>
                 setIndex((i) => Math.min(i + 1, items.length - 1))
               }
-              className="p-3 rounded-full border border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-900 transition-all"
+              className="p-6 border-4 border-black text-black hover:bg-black hover:text-white transition-all shadow-[6px_6px_0px_rgba(0,0,0,0.1)]"
             >
-              <FaChevronRight size={16} />
+              <FaChevronRight size={20} />
             </button>
           </div>
         </div>
@@ -128,7 +132,7 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
         {/* Carousel */}
         <div
           ref={listRef}
-          className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory py-22"
+          className="flex gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory py-12"
         >
           {items.map((it, i) => {
             const active = i === index;
@@ -137,56 +141,59 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
                 key={it.id || i}
                 data-idx={i}
                 onClick={() => nav(`/product/${it.id || i}`)}
-                className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[18%] cursor-pointer transition-all duration-500 ease-out ${active ? "scale-105" : "scale-[0.92] opacity-90 grayscale-[0.3]"
+                className={`snap-center flex-shrink-0 w-[90%] sm:w-[60%] md:w-[45%] lg:w-[28%] cursor-pointer transition-all duration-700 ease-in-out ${active ? "opacity-100 scale-100" : "opacity-30 scale-95 grayscale"
                   }`}
               >
-                <div className="group relative overflow-hidden bg-white/5 border border-white/10 hover:border-lime-400/50 transition-all duration-300 flex flex-col h-full rounded-none">
-                  {/* Image Background Section */}
-                  <div className="relative aspect-square overflow-hidden bg-[#0d0d11]">
+                <div className="group relative bg-white border-4 border-black flex flex-col h-full shadow-[12px_12px_0px_#000] hover:shadow-[18px_18px_0px_#ff5c00] transition-all">
+                  
+                  {/* Serial Header */}
+                  <div className="flex justify-between items-center p-3 border-b-4 border-black bg-black text-white text-[10px] font-black tracking-widest uppercase">
+                    <span>ITEM_ID: {it.id?.toString().slice(-8).toUpperCase()}</span>
+                    <span className="text-[#ff5c00]">ACTIVE</span>
+                  </div>
+
+                  {/* Image Section */}
+                  <div className="relative aspect-square overflow-hidden bg-white p-12">
                     <img
                       src={getOptimizedImage(it.image, 600)}
                       alt={it.name}
                       {...lazyImageProps}
-                      className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110 grayscale-[0.2] group-hover:grayscale-0"
+                      className="w-full h-full object-contain transform transition-transform duration-700 group-hover:scale-105"
                     />
-                    
-                    {/* Scanner line overlay */}
-                    <div className="absolute inset-0 bg-lime-400/10 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute top-0 left-0 w-full h-[1px] bg-lime-400/50 animate-pulse"></div>
+                    <div className="absolute top-4 right-4 text-[40px] font-heading opacity-10 text-black">
+                      {(i + 1).toString().padStart(2, '0')}
                     </div>
-
-                    {it.tag && (
-                      <span className="absolute left-0 top-0 bg-lime-400 text-black text-[10px] font-black uppercase tracking-widest px-4 py-1.5">
-                        {it.tag}
-                      </span>
-                    )}
                   </div>
  
-                  {/* Content Section */}
-                  <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="text-sm font-bold text-white mb-2 tracking-widest text-white/90 group-hover:text-lime-400 transition-colors uppercase">
+                  {/* Details Section */}
+                  <div className="p-8 border-t-4 border-black flex flex-col flex-grow bg-white">
+                    <h3 className="text-2xl font-black text-black mb-4 tracking-tighter uppercase leading-none">
                       {it.name}
                     </h3>
-                    <div className="flex flex-col gap-1 mb-6">
-                      <p className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em]">
-                        REF_ID: {it.id?.toString().slice(-8).toUpperCase()}
-                      </p>
-                    </div>
- 
-                    <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-lime-400 text-sm font-bold">₹</span>
-                        <span className="text-2xl font-heading text-white leading-none">
-                          {it.price}
-                        </span>
+                    
+                    <div className="flex justify-between items-end mt-auto pt-6 border-t border-black/10">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black opacity-30 uppercase">PRICE_VALUE</span>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-[#ff5c00] text-sm font-black">₹</span>
+                          <span className="text-4xl font-heading text-black leading-none">
+                            {it.price}
+                          </span>
+                        </div>
                       </div>
-                      <div className="p-3 bg-white/5 text-white/20 group-hover:bg-lime-400 group-hover:text-black transition-all">
-                         <FaPlus size={12} />
+                      <div className="w-16 h-16 bg-black text-[#ff5c00] flex items-center justify-center hover:bg-[#ff5c00] hover:text-black transition-colors">
+                         <FaPlus size={24} />
                       </div>
                     </div>
                   </div>
-                </div>
 
+                  {/* Barcode Accent */}
+                  <div className="h-6 bg-black flex gap-1 p-1">
+                    {[...Array(30)].map((_, j) => (
+                      <div key={j} className="h-full bg-white" style={{ width: `${Math.random() * 4 + 1}px` }}></div>
+                    ))}
+                  </div>
+                </div>
               </article>
             );
           })}

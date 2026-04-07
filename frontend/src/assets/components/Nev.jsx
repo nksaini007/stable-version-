@@ -47,65 +47,56 @@ const Nev = () => {
   return (
     <>
       {/* ================= NAVBAR ================= */}
-      <nav className="hidden md:block sticky top-0 w-full z-50">
-        <div className="absolute inset-0 bg-[#050505]/90 backdrop-blur-2xl border-b border-white/10"></div>
+      <nav className="fixed top-0 w-full z-50 bg-[#e5e5e5] border-b-4 border-black">
+        <div className="relative max-w-[1600px] mx-auto flex items-stretch h-[72px]">
 
-        <div className="relative max-w-[1400px] mx-auto px-10">
-          <div className="flex items-center justify-between h-[80px]">
+          {/* LOGO BOX */}
+          <Link to="/" className="flex items-center px-8 border-r-4 border-black bg-black text-white hover:bg-[#ff5c00] transition-colors group">
+            <span className="text-3xl font-heading tracking-tighter">STN.</span>
+          </Link>
 
-            {/* LOGO */}
-            <Link to="/" className="flex items-center gap-3 z-10 group">
-              <div className="w-12 h-12 bg-white flex items-center justify-center -rotate-3 group-hover:rotate-0 group-hover:bg-lime-400 transition-all duration-500">
-                <span className="text-black font-black text-2xl tracking-tighter">STN</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-heading text-white tracking-[0.3em] leading-none">STINCHAR</span>
-                <span className="text-[10px] font-bold text-lime-400 tracking-[0.5em] mt-1">V_2.0</span>
-              </div>
+          {/* LINKS GRID */}
+          <div className="flex-1 hidden md:flex">
+             {navLinks.map((link, i) => {
+               const path = getPath(link);
+               return (
+                 <NavLink
+                   key={i}
+                   to={path}
+                   className={({ isActive }) =>
+                     `flex items-center px-8 border-r-4 border-black text-[12px] font-black uppercase tracking-widest transition-all ${isActive
+                       ? "bg-black text-white"
+                       : "hover:bg-black/5 text-black"
+                     }`
+                   }
+                 >
+                   {link}
+                 </NavLink>
+               );
+             })}
+          </div>
+
+          {/* RIGHT ACTIONS */}
+          <div className="flex items-stretch border-l-4 border-black ml-auto">
+            <Link to="/cart" className="flex items-center px-8 border-r-4 border-black hover:bg-black hover:text-white transition-all group relative">
+              <ShoppingCart size={22} />
+              <span className="absolute top-2 right-4 text-[10px] font-bold">🛒</span>
             </Link>
 
-            {/* DESKTOP LINKS */}
-            <div className="hidden lg:flex items-center">
-              <div className="flex items-center gap-8">
-                {navLinks.map((link, i) => {
-                  const path = getPath(link);
-                  return (
-                    <NavLink
-                      key={i}
-                      to={path}
-                      className={({ isActive }) =>
-                        `text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${isActive
-                          ? "text-lime-400 border-b-2 border-lime-400 pb-1"
-                          : "text-white/40 hover:text-white"
-                        }`
-                      }
-                    >
-                      {link}
-                    </NavLink>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* RIGHT ACTIONS */}
-            <div className="flex items-center gap-6 z-10 text-white font-black text-xs tracking-widest">
-              <Link to="/cart" className="hover:text-lime-400 transition-colors flex items-center gap-2 uppercase">
-                <ShoppingCart size={18} />
-                <span className="hidden xl:inline">STORE.CART</span>
-              </Link>
-
-              {!user ? (
-                <Link
-                  to="/login"
-                  className="px-6 py-3 border border-white/20 hover:border-lime-400 hover:text-lime-400 transition-all text-[11px]"
-                >
-                  INITIALIZE_AUTH
-                </Link>
-              ) : (
-                <ProfileDropdown user={user} logout={logout} />
-              )}
-            </div>
+            {!user ? (
+               <Link
+                 to="/login"
+                 className="flex items-center px-10 bg-[#ff5c00] text-black font-black text-sm uppercase hover:bg-black hover:text-white transition-all"
+               >
+                 _AUTH_INITIALIZE
+               </Link>
+            ) : (
+               <div className="flex items-center px-6">
+                 <ProfileDropdown user={user} logout={logout} />
+               </div>
+            )}
           </div>
+
         </div>
       </nav>
 
