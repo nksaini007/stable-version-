@@ -22,16 +22,20 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
               <span className="text-[10px] font-bold tracking-widest uppercase">PROCEED_WITH_CAUTION</span>
             </div>
             
-            <motion.h1 
+            <motion.div 
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8 }}
-              className="text-[6rem] lg:text-[10rem] font-heading leading-[0.8] mb-4 tracking-tighter"
             >
-              STN.
-            </motion.h1>
+             <div className="flex flex-col gap-2">
+             <span className="text-[#ff5c00] font-black text-xs tracking-[0.5em]">// 00_INITIALIZE_CORE</span>
+             <h1 className="text-[6rem] md:text-[10rem] font-pixel text-lattice leading-[0.8] tracking-tighter">
+                STIN<br/>CHAR
+             </h1>
+          </div>
+            </motion.div>
             
-            <div className="space-y-4 opacity-70">
+            <div className="space-y-4 opacity-70 mt-8">
               <div className="flex justify-between border-b border-black/20 pb-2">
                 <span className="text-[10px] font-black">REF_NUMBER:</span>
                 <span className="text-[10px] font-mono">0923-ST-V2</span>

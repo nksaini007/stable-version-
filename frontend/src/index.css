@@ -15,9 +15,21 @@ h1, h2, h3, h4, .font-heading {
 }
 
 .text-barcode {
-  letter-spacing: -0.1em;
-  font-weight: 900;
-  filter: stretch(2);
+  letter-spacing: -2px;
+  opacity: 0.7;
+}
+
+.font-pixel {
+  font-family: 'Sixtyfour', cursive;
+}
+
+.text-lattice {
+  background: radial-gradient(circle, currentColor 20%, transparent 20%);
+  background-size: 3px 3px;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: black;
 }
 
 .bg-industrial {
