@@ -1,23 +1,22 @@
-
 import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import API from "../api/api";
-import { FaBoxes, FaSearch } from "react-icons/fa";
+import { FaBoxes, FaSearch, FaChevronRight } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
+import Nev from "./Nev";
+import Footer from "./Footer";
 
-/* ------------------- Skeleton ------------------- */
-
-/* ------------------- Skeleton ------------------- */
-const SkeletonCards = ({ count = 12 }) => (
-  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
+/* ------------------- Industrial Skeleton ------------------- */
+const SkeletonCards = ({ count = 8 }) => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     {Array.from({ length: count }).map((_, i) => (
       <div
         key={i}
-        className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 animate-pulse"
+        className="bg-white border-2 border-black/5 p-4 animate-pulse relative"
       >
-        <div className="w-full h-32 bg-gray-200 rounded-lg" />
-        <div className="mt-3 h-4 w-2/3 bg-gray-200 rounded" />
-        <div className="mt-2 h-3 w-1/2 bg-gray-200 rounded" />
+        <div className="w-full h-40 bg-black/5" />
+        <div className="mt-4 h-3 w-2/3 bg-black/5" />
+        <div className="mt-2 h-2 w-1/2 bg-black/5" />
       </div>
     ))}
   </div>
@@ -32,9 +31,7 @@ const Categories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await API.get(
-          `/categories`
-        );
+        const res = await API.get(`/categories`);
         setCategories(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error(err);
@@ -62,134 +59,154 @@ const Categories = () => {
           (b.subcategories?.length || 0) -
           (a.subcategories?.length || 0)
       )
-      .slice(0, 8);
+      .slice(0, 6);
   }, [categories]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ---------------- Header ---------------- */}
-      <div className="bg-red-900 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold font-century-gothic text-gray-100">
-            Browse Categories
-          </h1>
-          <p className="text-sm text-gray-100">
-            Compact view to explore more items at once
-          </p>
+    <div className="min-h-screen bg-[#e5e5e5] font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative">
+      <Nev />
+      <div className="scanline"></div>
+
+      {/* ---------------- Industrial Header ---------------- */}
+      <div className="max-w-[2000px] mx-auto pt-32 pb-16 px-6 md:px-12 relative z-10">
+        <div className="flex flex-col">
+            <span className="text-[#ff5c00] font-black text-[10px] tracking-[0.5em] mb-4 uppercase select-none">//_CATALOG_SYNC_V4.0_READY</span>
+            <h1 className="text-5xl md:text-8xl font-heading font-black tracking-tight leading-none uppercase">
+                BROWSE<span className="text-black/10">_CATALOG</span>
+            </h1>
+            <p className="text-[10px] font-black opacity-30 mt-4 uppercase tracking-[0.2em]">
+                ACTIVE_SECTORS: {categories.length} //_X_TOTAL_ENTRY_POINTS
+            </p>
         </div>
       </div>
 
-      {/* ---------------- Content ---------------- */}
-      <div className="max-w-8xl mx-auto px-4 py-6 bg-gray-100">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* ---------------- Sidebar ---------------- */}
-          <aside className="lg:col-span-3 space-y-4">
-            {/* Search */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
-              <label className="text-xs font-semibold text-gray-600">
-                Search
-              </label>
-              <div className="relative mt-1">
-                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+      {/* ---------------- Main Content ---------------- */}
+      <div className="max-w-[2000px] mx-auto px-6 md:px-12 pb-24 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          {/* ---------------- Sidebar: Operations Modules ---------------- */}
+          <aside className="lg:col-span-3 space-y-8 order-2 lg:order-1">
+            {/* Search Module */}
+            <div className="bg-white border-2 border-black p-6 relative">
+              <div className="absolute -top-3 left-4 bg-[#ff5c00] text-black text-[8px] font-black px-2 py-0.5 tracking-widest uppercase border border-black shadow-[2px_2px_0px_#000]">MODULE_SEARCH</div>
+              <div className="relative mt-2">
+                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/20 text-xs" />
                 <input
                   value={term}
                   onChange={(e) => setTerm(e.target.value)}
-                  placeholder="Search categories..."
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-gray-400 outline-none transition-all"
+                  placeholder="INIT_SEARCH..."
+                  className="w-full pl-10 pr-4 py-3 text-[10px] font-black bg-black/5 border-2 border-black/5 focus:border-black outline-none transition-all uppercase placeholder:text-black/20"
                 />
               </div>
             </div>
 
-            {/* Popular */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
-              <h3 className="text-xs font-semibold text-gray-700 mb-2">
-                Popular Categories
-              </h3>
-              <div className="space-y-1">
+            {/* Popular Sectors Module */}
+            <div className="bg-white border-2 border-black p-6 relative">
+              <div className="absolute -top-3 left-4 bg-black text-white text-[8px] font-black px-2 py-0.5 tracking-widest uppercase border border-black shadow-[2px_2px_0px_#ff5c00]">HIGH_FREQ_SECTORS</div>
+              <div className="space-y-2 mt-4">
                 {popular.map((cat, i) => (
                   <Link
                     key={cat._id || i}
                     to={`/category/${encodeURIComponent(cat.name)}`}
-                    className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-gray-100 text-sm"
+                    className="flex items-center justify-between px-3 py-2 border border-black/5 hover:border-[#ff5c00] hover:bg-[#ff5c00]/5 transition-all group"
                   >
-                    <span className="truncate capitalize">
+                    <span className="text-[9px] font-black uppercase text-black/60 group-hover:text-black">
                       {cat.name}
                     </span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700">
+                    <span className="text-[8px] font-black px-1.5 py-0.5 bg-black/5 group-hover:bg-black group-hover:text-[#ff5c00] transition-colors">
                       {cat.subcategories?.length || 0}
                     </span>
                   </Link>
                 ))}
               </div>
             </div>
+
+            {/* Technical Spec Sheet Accents */}
+            <div className="p-6 border-2 border-black/5 opacity-40 hidden lg:block">
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex justify-between items-center border-b border-black/10 pb-1">
+                    <div className="w-1/2 h-1 bg-black/20"></div>
+                    <div className="w-4 h-1 bg-[#ff5c00]"></div>
+                  </div>
+                ))}
+                <p className="text-[7px] text-black font-black uppercase leading-[1.5]">CONFIDENTIAL::STINCHAR_INTEL_SYSTEM. ALL_NODES_ENCRYPTED_V3.0</p>
+              </div>
+            </div>
           </aside>
 
-          {/* ---------------- Grid ---------------- */}
-          <main className="lg:col-span-9">
+          {/* ---------------- Grid: Data Packets ---------------- */}
+          <main className="lg:col-span-9 order-1 lg:order-2">
             {loading ? (
               <SkeletonCards />
             ) : filtered.length === 0 ? (
-              <div className="py-24 text-center">
-                <FaBoxes className="text-5xl text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600">
-                  No categories found
-                </p>
+              <div className="py-40 text-center border-2 border-black/5 bg-white/50 backdrop-blur-md">
+                <FaBoxes className="text-5xl text-black/10 mx-auto mb-6 animate-pulse" />
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/20">NO_CATEGORY_DETECTED_IN_SECTOR</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {filtered.map((category, idx) => {
                   const subs = category.subcategories || [];
-                  const imageUrl = getOptimizedImage(category.image, 400);
+                  const imageUrl = getOptimizedImage(category.image, 500);
                   const overflow = subs.length - 4;
 
                   return (
-                    <Link
-                      key={category._id || idx}
-                      to={`/category/${encodeURIComponent(
-                        category.name
-                      )}`}
-                      className="group"
-                    >
-                      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                        {/* Image */}
-                        <div className="relative h-32 bg-gray-100">
+                    <article key={category._id || idx} className="group">
+                      <Link
+                        to={`/category/${encodeURIComponent(category.name)}`}
+                        className="block bg-white border-2 border-black shadow-[10px_10px_0px_rgba(0,0,0,0.05)] hover:shadow-[10px_10px_0px_rgba(255,92,0,0.1)] transition-all relative overflow-hidden"
+                      >
+                        <div className="corner-decal decal-tl !border-black !w-2 !h-2"></div>
+                        <div className="absolute top-1 right-2 text-[6px] font-black opacity-10 uppercase tracking-widest">CAT_NODE_0{idx+1}</div>
+                        
+                        {/* Image Section */}
+                        <div className="relative h-48 bg-black/5 border-b-2 border-black overflow-hidden">
                           {imageUrl ? (
                             <img
                               src={imageUrl}
                               alt={category.name}
-                              className="w-full h-full p-1 rounded-xl object-cover"
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                               {...lazyImageProps}
                             />
                           ) : (
                             <div className="flex items-center justify-center h-full">
-                              <FaBoxes className="text-4xl text-gray-300" />
+                              <FaBoxes className="text-4xl text-black/10" />
                             </div>
                           )}
-                          <span className="absolute top-2 left-2 text-[11px] font-semibold bg-white/90 px-2 py-0.5 rounded-lg">
-                            {category.name}
-                          </span>
+                          <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+                          
+                          <div className="absolute bottom-4 left-4">
+                            <span className="bg-black text-[#ff5c00] text-[8px] font-black px-2 py-1 tracking-widest uppercase border border-white/20">
+                              {category.name}
+                            </span>
+                          </div>
                         </div>
 
-                        {/* Content */}
-                        <div className="p-3">
+                        {/* Content: Technical Metadata */}
+                        <div className="p-4 bg-white space-y-3">
                           <div className="flex flex-wrap gap-1.5">
                             {subs.slice(0, 4).map((sub, i) => (
                               <span
                                 key={sub._id || i}
-                                className="text-[11px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full"
+                                className="text-[7px] font-black bg-black/5 text-black/60 px-1.5 py-0.5 border border-black/5 uppercase tracking-tighter"
                               >
                                 {sub.name}
                               </span>
                             ))}
                             {overflow > 0 && (
-                              <span className="text-[11px] bg-gray-200 px-2 py-0.5 rounded-full">
-                                +{overflow}
+                              <span className="text-[7px] font-black text-[#ff5c00] px-1.5 py-0.5 uppercase tracking-tighter">
+                                +{overflow}_LOGS
                               </span>
                             )}
                           </div>
+                          <div className="pt-2 border-t border-black/5 flex justify-between items-center group-hover:text-[#ff5c00] transition-colors">
+                             <span className="text-[7px] font-black text-black/20 tracking-wider uppercase">INIT_ENTRY_POINT</span>
+                             <FaChevronRight size={8} />
+                          </div>
                         </div>
-                      </div>
-                    </Link>
+                      </Link>
+                    </article>
                   );
                 })}
               </div>
@@ -197,6 +214,7 @@ const Categories = () => {
           </main>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
