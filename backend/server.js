@@ -49,6 +49,20 @@ app.use(cors({
   optionsSuccessStatus: 200 // Some legacy browsers crash on 204
 }));
 app.use(express.json({ limit: "10kb" }));
+
+// ✅ Express 5 compatibility fix for mongoSanitize (req.query is read-only by default in v5)
+app.use((req, res, next) => {
+  if (req.query) {
+    Object.defineProperty(req, "query", {
+      value: { ...req.query },
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
+  }
+  next();
+});
+
 app.use(mongoSanitize()); // ✅ DATA SANITIZATION AGAINST NoSQL INJECTION
 app.use(cookieParser());
 
