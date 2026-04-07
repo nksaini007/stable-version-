@@ -8,24 +8,11 @@ import { FaBoxes, FaChevronRight } from "react-icons/fa";
 import PublicAds from "./PublicAds";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
-/* ------------------- Industrial Skeleton ------------------- */
-const SkeletonCards = ({ count = 8 }) => (
-  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-    {Array.from({ length: count }).map((_, i) => (
-      <div key={i} className="bg-white border border-black/5 p-3 animate-pulse">
-        <div className="aspect-square bg-black/5" />
-        <div className="mt-3 h-2 w-2/3 bg-black/5" />
-      </div>
-    ))}
-  </div>
-);
-
 const CategoryPage = () => {
   const { categoryName } = useParams();
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch category
   useEffect(() => {
     const fetchCategory = async () => {
       try {
@@ -44,10 +31,9 @@ const CategoryPage = () => {
     fetchCategory();
   }, [categoryName]);
 
-  // Loading
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#e5e5e5] tech-grid flex flex-col">
+      <div className="min-h-screen bg-[#e5e5e5] tech-grid flex flex-col pt-24">
         <Nev />
         <div className="flex-1 flex flex-col items-center justify-center">
             <div className="flex flex-col items-center">
@@ -60,10 +46,9 @@ const CategoryPage = () => {
     );
   }
 
-  // Category not found
   if (!category) {
     return (
-      <div className="min-h-screen bg-[#e5e5e5] tech-grid flex flex-col">
+      <div className="min-h-screen bg-[#e5e5e5] tech-grid flex flex-col pt-24">
         <Nev />
         <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
           <div className="bg-white border-2 border-black p-12 relative max-w-md">
@@ -88,11 +73,11 @@ const CategoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#e5e5e5] font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative flex flex-col">
+    <div className="min-h-screen bg-[#e5e5e5] font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative flex flex-col pt-24">
       <Nev />
       <div className="scanline"></div>
 
-      <main className="flex-1 max-w-[2000px] mx-auto w-full px-6 md:px-12 pt-32 pb-24 relative z-10">
+      <main className="flex-1 max-w-[2000px] mx-auto w-full px-6 md:px-12 py-10 relative z-10">
         
         {/* Breadcrumb - Industrial Style */}
         <nav className="flex items-center gap-2 mb-12" aria-label="Breadcrumb">
@@ -109,7 +94,7 @@ const CategoryPage = () => {
                 <div className="corner-decal decal-tl !border-black/20"></div>
                 <div className="corner-decal decal-tr !border-black/20"></div>
                 
-                <div className="relative h-64 md:h-96 w-full bg-black overflow-hidden group">
+                <div className="relative h-64 md:h-96 w-full bg-black overflow-hidden group border border-black/5">
                     {category.image ? (
                         <img
                             src={getOptimizedImage(category.image, 1400)}
@@ -165,7 +150,14 @@ const CategoryPage = () => {
         <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4">
           {category.subcategories && category.subcategories.length > 0 ? (
             category.subcategories.map((sub, index) => (
-              <article key={sub._id || index} className="group">
+              <motion.article 
+                key={sub._id || index} 
+                className="group"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+              >
                 <Link
                   to={`/category/${categoryName}/${sub.name.toLowerCase()}`}
                   className="block bg-white border border-black/10 group-hover:border-black p-3 relative overflow-hidden transition-all shadow-[6px_6px_0px_rgba(0,0,0,0.01)] group-hover:shadow-[10px_10px_0px_rgba(255,92,0,0.06)]"
@@ -200,7 +192,7 @@ const CategoryPage = () => {
                     </div>
                   </div>
                 </Link>
-              </article>
+              </motion.article>
             ))
           ) : (
             <div className="col-span-full py-20 text-center border-2 border-dashed border-black/10">

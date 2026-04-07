@@ -4,7 +4,7 @@ import Nev from "./Nev";
 import Footer from "./Footer";
 import { CartContext } from "../context/CartContext";
 import { Star, CheckCircle, XCircle, ShieldCheck, Truck, Sparkles, ChevronLeft, ChevronRight, Info } from "lucide-react";
-import { FaCube, FaTerminal } from "react-icons/fa";
+import { FaCube, FaTerminal, FaChevronRight } from "react-icons/fa";
 import ReviewSection from "./ReviewSection";
 import API from "../api/api";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
