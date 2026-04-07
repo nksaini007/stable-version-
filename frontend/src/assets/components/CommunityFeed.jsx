@@ -131,150 +131,158 @@ const CommunityFeed = () => {
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen flex flex-col">
+        <div className="bg-[#e5e5e5] min-h-screen flex flex-col font-mono selection:bg-[#ff5c00] selection:text-black tech-grid">
             <Nev />
+            <div className="scanline"></div>
 
-            <div className="flex-1 max-w-7xl mx-auto py-12 px-4 sm:px-6 w-full">
+            <div className="flex-1 max-w-[2000px] mx-auto py-20 px-6 w-full relative z-10">
+                <div className="mb-16 flex items-end gap-6 overflow-hidden">
+                    <div className="flex flex-col">
+                        <span className="text-[#ff5c00] font-black text-[10px] tracking-[0.5em] mb-2 uppercase select-none font-mono">//_COMM_STREAM_V2_LIVE</span>
+                        <h1 className="text-5xl md:text-8xl font-heading font-black tracking-tight leading-none uppercase">
+                            COMMUNITY<span className="text-black/10">_FEED</span>
+                        </h1>
+                    </div>
+                </div>
               
                 {posts.length === 0 ? (
-                    <div className="text-center text-gray-400 py-10">No community updates available yet.</div>
+                    <div className="text-center py-40 border-4 border-black/5 bg-white/50 backdrop-blur-md">
+                        <FaCrosshairs size={40} className="mx-auto mb-6 text-black/10 animate-pulse" />
+                        <p className="text-sm font-black uppercase tracking-[0.3em] text-black/20">NO_DATA_LOGGED_IN_SECTOR</p>
+                    </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
                         {posts.map(post => {
                             const isLikedByMe = user && post.likes.includes(user._id);
                             const showComments = activeCommentId === post._id;
                             const isExpanded = expandedPostId === post._id;
-
-                            // Truncation logic
                             const isLongText = post.content && post.content.length > 120;
 
                             return (
-                                <div key={post._id} className="relative h-[400px]">
+                                <div key={post._id} className="relative group">
                                     <div
-                                        className={`absolute inset-x-0 top-0 bg-white rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex flex-col ${isExpanded ? 'z-30 h-auto min-h-[400px] pb-[53px]' : 'z-0 h-full'}`}
+                                        className={`bg-white border-2 border-black shadow-[10px_10px_0px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-500 relative flex flex-col ${isExpanded ? 'z-30 h-auto pb-[60px]' : 'h-[480px]'}`}
                                     >
+                                        <div className="corner-decal decal-tl border-black"></div>
+                                        <div className="corner-decal decal-br border-black opacity-40 group-hover:opacity-100 transition-opacity"></div>
+
                                         {/* Header */}
                                         <div
-                                            className="px-5 py-1 flex items-center justify-between border-b border-gray-50 cursor-pointer hover:bg-gray-50/50 transition-colors"
+                                            className="px-6 py-4 flex items-center justify-between border-b-2 border-black/5 bg-white cursor-pointer group/header relative"
                                             onClick={() => navigate(`/community/post/${post._id}`)}
                                         >
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xs shadow-md overflow-hidden">
+                                           <div className="absolute top-1 right-2 text-[7px] font-black opacity-10">POST::{post._id.slice(-6)}</div>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 border-2 border-black flex items-center justify-center font-heading text-xl bg-black text-white shrink-0">
                                                     {post.author?.profileImage ? (
                                                         <img src={`${post.author.profileImage}`} alt="author" className="w-full h-full object-cover" />
                                                     ) : (
                                                         post.author?.name ? post.author.name.charAt(0).toUpperCase() : "S"
                                                     )}
                                                 </div>
-                                                <div>
-                                                    <h4 className="font-bold text-gray-900 text-xs">{post.author?.name || "Stinchar Team"}</h4>
-                                                    <p className="text-[10px] text-gray-400">
+                                                <div className="flex flex-col">
+                                                    <h4 className="font-black text-black text-xs uppercase tracking-tighter leading-none group-hover/header:text-[#ff5c00] transition-colors">{post.author?.name || "SYS_ADMIN"}</h4>
+                                                    <p className="text-[8px] font-black opacity-40 mt-1 uppercase">
                                                         {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                                     </p>
                                                 </div>
                                             </div>
+                                            <div className={`w-2 h-2 rounded-full border-2 border-black ${isLikedByMe ? 'bg-[#ff5c00]' : 'bg-transparent'}`}></div>
                                         </div>
 
-                                        {/* Title & Content */}
-                                        <div className="px-5 py-3 flex-shrink-0">
-                                            <h3 className="text-base font-bold text-gray-800 mb-1 leading-tight line-clamp-2">{post.title}</h3>
-                                            <div className="text-gray-600 text-xs leading-relaxed">
-                                                <p className={`whitespace-pre-line ${!isExpanded ? 'line-clamp-3' : ''}`}>
-                                                    {renderTextWithLinks(post.content)}
-                                                </p>
-                                                {isLongText && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setExpandedPostId(isExpanded ? null : post._id);
-                                                            if (showComments && !isExpanded) setActiveCommentId(null); // Close comments if opening text
-                                                        }}
-                                                        className="text-blue-500 hover:text-blue-700 font-semibold mt-1 text-[11px]"
-                                                    >
-                                                        {isExpanded ? "Read Less" : "Read More"}
-                                                    </button>
-                                                )}
+                                        {/* Content Wrapper */}
+                                        <div className="flex-1 flex flex-col">
+                                            {/* Image */}
+                                            {post.image && (
+                                                <div
+                                                    className="w-full bg-black/5 border-b-2 border-black relative overflow-hidden flex items-center justify-center shrink-0 cursor-pointer group/img"
+                                                    onClick={() => navigate(`/community/post/${post._id}`)}
+                                                >
+                                                    <img
+                                                        src={`${post.image}`}
+                                                        alt={post.title}
+                                                        className={`w-full object-cover transition-all duration-700 grayscale group-hover/img:grayscale-0 group-hover/img:scale-110 ${isExpanded ? 'max-h-[500px]' : 'h-48'}`}
+                                                    />
+                                                    <div className="absolute inset-0 border-[10px] border-white/5 pointer-events-none"></div>
+                                                </div>
+                                            )}
+
+                                            {/* Title & Body */}
+                                            <div className="px-6 py-6 space-y-4">
+                                                <h3 className="text-xl font-heading font-black text-black leading-none uppercase tracking-tighter line-clamp-2">{post.title}</h3>
+                                                <div className="text-black/60 text-[11px] font-bold leading-relaxed uppercase">
+                                                    <p className={`${!isExpanded ? 'line-clamp-3' : ''}`}>
+                                                        {renderTextWithLinks(post.content)}
+                                                    </p>
+                                                    {isLongText && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setExpandedPostId(isExpanded ? null : post._id);
+                                                            }}
+                                                            className="text-[#ff5c00] hover:text-black font-black mt-2 text-[9px] border-b-2 border-[#ff5c00]/20 pb-0.5"
+                                                        >
+                                                            {isExpanded ? "[ READ_LESS ]" : "[ READ_MORE ]"}
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-
-                                        {/* Image */}
-                                        {post.image && (
-                                            <div
-                                                className="w-full bg-gray-50 border-y border-gray-100 relative overflow-hidden flex items-center justify-center flex-shrink-0 cursor-pointer"
-                                                onClick={() => navigate(`/community/post/${post._id}`)}
-                                            >
-                                                <img
-                                                    src={`${post.image}`}
-                                                    alt={post.title}
-                                                    className={`w-full object-cover transition-all duration-500 ${isExpanded ? 'max-h-[500px]' : 'h-40 hover:scale-105'}`}
-                                                />
-                                            </div>
-                                        )}
-
-                                        {/* Spacer to push actions to bottom */}
-                                        <div className="flex-1"></div>
 
                                         {/* Actions */}
-                                        <div className={`px-5 py-3 flex items-center justify-between border-t border-gray-50 bg-white relative z-20 ${isExpanded ? 'absolute bottom-0 inset-x-0' : ''}`}>
-                                            <div className="flex items-center gap-4">
-                                                {/* Like Button */}
+                                        <div className={`px-6 py-4 flex items-center justify-between border-t-2 border-black bg-white z-20 ${isExpanded ? 'absolute bottom-0 inset-x-0' : 'mt-auto'}`}>
+                                            <div className="flex items-center gap-6">
                                                 <button
                                                     onClick={() => handleLike(post._id)}
-                                                    className="flex items-center gap-1.5 group transition"
+                                                    className="flex items-center gap-2 group/action"
                                                 >
-                                                    <div className={`p-1.5 rounded-full transition-all ${isLikedByMe ? "bg-rose-100 text-rose-500" : "bg-gray-50 text-gray-500 group-hover:bg-rose-50 group-hover:text-rose-400"}`}>
-                                                        {isLikedByMe ? <FaHeart className="text-sm drop-shadow-md scale-110 transition-transform" /> : <FaRegHeart className="text-sm" />}
+                                                    <div className={`transition-all ${isLikedByMe ? "glow-orange text-[#ff5c00]" : "text-black opacity-30 group-hover/action:opacity-100"}`}>
+                                                        {isLikedByMe ? <FaHeart size={16} /> : <FaRegHeart size={16} />}
                                                     </div>
-                                                    <span className={`text-xs font-semibold ${isLikedByMe ? "text-rose-500" : "text-gray-500"}`}>{post.likes.length}</span>
+                                                    <span className={`text-[10px] font-black ${isLikedByMe ? "text-[#ff5c00]" : "text-black/30"}`}>{post.likes.length}._</span>
                                                 </button>
 
-                                                {/* Comment Button */}
                                                 <button
                                                     onClick={() => setActiveCommentId(showComments ? null : post._id)}
-                                                    className="flex items-center gap-1.5 group transition"
+                                                    className="flex items-center gap-2 group/action"
                                                 >
-                                                    <div className={`p-1.5 rounded-full transition-all ${showComments ? "bg-blue-100 text-blue-600" : "bg-gray-50 text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-500"}`}>
-                                                        <FaCommentDots className="text-sm" />
+                                                    <div className={`transition-all ${showComments ? "text-black" : "text-black opacity-30 group-hover/action:opacity-100"}`}>
+                                                        <FaCommentDots size={16} />
                                                     </div>
-                                                    <span className={`text-xs font-semibold ${showComments ? "text-blue-600" : "text-gray-500"}`}>{post.comments.length}</span>
+                                                    <span className={`text-[10px] font-black ${showComments ? "text-black" : "text-black/30"}`}>{post.comments.length}._</span>
                                                 </button>
                                             </div>
 
-                                            <button className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors bg-gray-50 hover:bg-blue-50 rounded-full">
-                                                <FaShareAlt className="text-sm" />
+                                            <button className="text-black/20 hover:text-[#ff5c00] transition-colors">
+                                                <FaShareAlt size={14} />
                                             </button>
                                         </div>
 
-                                        {/* Comments Section Dropdown */}
+                                        {/* Comments Overlay */}
                                         {showComments && (
-                                            <div className="absolute inset-x-0 top-[65px] bottom-[53px] bg-white/95 backdrop-blur-sm z-10 flex flex-col px-4 pt-2 pb-4 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] border-t border-gray-100 rounded-t-xl transition-all duration-300">
-                                                <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-gray-200">
+                                            <div className="absolute inset-x-0 top-[70px] bottom-[56px] bg-white z-10 flex flex-col p-6 animate-in slide-in-from-bottom duration-300">
+                                                <div className="flex items-center gap-2 mb-6 border-b-2 border-black/5 pb-2">
+                                                   <span className="text-[10px] font-black opacity-20 uppercase tracking-[0.2em]">SCTR::COMMENTS</span>
+                                                </div>
+                                                <div className="flex-1 overflow-y-auto space-y-4 pr-1 scrollbar-tech">
                                                     {post.comments.length === 0 ? (
-                                                        <p className="text-center text-gray-400 text-xs py-2">No comments yet. Start the conversation!</p>
+                                                        <p className="text-center text-black/20 text-[9px] font-black uppercase py-4">BUFFER_EMPTY::START_CONN</p>
                                                     ) : (
                                                         post.comments.map(comment => (
-                                                            <div key={comment._id} className="flex gap-2 group/comment">
-                                                                <div className="w-6 h-6 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden mt-0.5">
-                                                                    {comment.user?.profileImage ? (
-                                                                        <img src={`${comment.user.profileImage}`} alt="user" className="w-full h-full object-cover" />
-                                                                    ) : (
-                                                                        <div className="w-full h-full flex items-center justify-center text-gray-500 text-[10px] font-bold">{comment.user?.name?.charAt(0) || "U"}</div>
-                                                                    )}
-                                                                </div>
-                                                                <div className="bg-white px-3 py-2 rounded-xl rounded-tl-none border border-gray-100 shadow-sm flex-1 relative">
-                                                                    <div className="flex justify-between items-start mb-0.5">
-                                                                        <p className="text-[10px] font-bold text-gray-800">{comment.user?.name || "User"}</p>
+                                                            <div key={comment._id} className="flex gap-4 group/comment border-l-2 border-black/10 pl-4 py-2 hover:border-black transition-colors">
+                                                                <div className="flex-1">
+                                                                    <div className="flex justify-between items-center mb-1">
+                                                                        <p className="text-[9px] font-black uppercase text-black/40">{comment.user?.name || "LOG_USER"}</p>
                                                                         {user?.role === 'admin' && (
                                                                             <button
                                                                                 onClick={() => handleDeleteComment(post._id, comment._id)}
-                                                                                title="Delete Comment"
-                                                                                className="text-gray-300 hover:text-red-500 opacity-0 group-hover/comment:opacity-100 transition-opacity ml-2 shrink-0"
+                                                                                className="text-black/10 hover:text-red-500 opacity-0 group-hover/comment:opacity-100 transition-all"
                                                                             >
-                                                                                <FaTrash className="text-[10px]" />
+                                                                                <FaTrash size={10} />
                                                                             </button>
                                                                         )}
                                                                     </div>
-                                                                    <p className="text-[11px] text-gray-600 leading-snug break-words whitespace-pre-line">
+                                                                    <p className="text-[10px] font-bold text-black leading-snug uppercase">
                                                                         {renderTextWithLinks(comment.text)}
                                                                     </p>
                                                                 </div>
@@ -283,27 +291,21 @@ const CommunityFeed = () => {
                                                     )}
                                                 </div>
 
-                                                {/* Add Comment Input */}
-                                                <form onSubmit={(e) => handleCommentSubmit(e, post._id)} className="flex items-end gap-2 mt-3 flex-shrink-0">
-                                                    <div className="w-7 h-7 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center text-blue-600 font-bold text-[10px]">
-                                                        {user?.name?.charAt(0) || "U"}
-                                                    </div>
-                                                    <div className="flex-1 relative">
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Write..."
-                                                            value={commentText}
-                                                            onChange={(e) => setCommentText(e.target.value)}
-                                                            className="w-full bg-white border border-gray-200 rounded-full py-1.5 pl-3 pr-8 text-xs outline-none focus:border-blue-400 transition-colors shadow-inner"
-                                                        />
-                                                        <button
-                                                            type="submit"
-                                                            disabled={!commentText.trim()}
-                                                            className="absolute right-1 top-1 bottom-1 w-6 flex items-center justify-center bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded-full transition-colors"
-                                                        >
-                                                            <FaPaperPlane className="text-[8px]" />
-                                                        </button>
-                                                    </div>
+                                                <form onSubmit={(e) => handleCommentSubmit(e, post._id)} className="flex items-center gap-3 mt-4 border-t-2 border-black pt-4">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="INIT_COMMENT..."
+                                                        value={commentText}
+                                                        onChange={(e) => setCommentText(e.target.value)}
+                                                        className="flex-1 bg-black/5 border-2 border-black/5 px-4 py-2 text-[10px] font-black outline-none focus:border-black transition-colors uppercase placeholder:text-black/20"
+                                                    />
+                                                    <button
+                                                        type="submit"
+                                                        disabled={!commentText.trim()}
+                                                        className="w-10 h-10 bg-black text-white flex items-center justify-center hover:bg-[#ff5c00] transition-colors disabled:opacity-20"
+                                                    >
+                                                        <FaPaperPlane size={12} />
+                                                    </button>
                                                 </form>
                                             </div>
                                         )}
