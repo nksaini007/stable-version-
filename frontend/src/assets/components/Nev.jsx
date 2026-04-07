@@ -55,12 +55,12 @@ const Nev = () => {
 
             {/* LOGO */}
             <Link to="/" className="flex items-center gap-3 z-10 group">
-              <div className="w-12 h-12 bg-white flex items-center justify-center -rotate-3 group-hover:rotate-0 group-hover:bg-cyan-400 transition-all duration-500">
+              <div className="w-12 h-12 bg-white flex items-center justify-center -rotate-3 group-hover:rotate-0 group-hover:bg-lime-400 transition-all duration-500">
                 <span className="text-black font-black text-2xl tracking-tighter">STN</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-heading text-white tracking-[0.3em] leading-none">STINCHAR</span>
-                <span className="text-[10px] font-bold text-cyan-400 tracking-[0.5em] mt-1">V_2.0</span>
+                <span className="text-[10px] font-bold text-lime-400 tracking-[0.5em] mt-1">V_2.0</span>
               </div>
             </Link>
 
@@ -75,7 +75,7 @@ const Nev = () => {
                       to={path}
                       className={({ isActive }) =>
                         `text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${isActive
-                          ? "text-cyan-400 border-b-2 border-cyan-400 pb-1"
+                          ? "text-lime-400 border-b-2 border-lime-400 pb-1"
                           : "text-white/40 hover:text-white"
                         }`
                       }
@@ -89,7 +89,7 @@ const Nev = () => {
 
             {/* RIGHT ACTIONS */}
             <div className="flex items-center gap-6 z-10 text-white font-black text-xs tracking-widest">
-              <Link to="/cart" className="hover:text-cyan-400 transition-colors flex items-center gap-2 uppercase">
+              <Link to="/cart" className="hover:text-lime-400 transition-colors flex items-center gap-2 uppercase">
                 <ShoppingCart size={18} />
                 <span className="hidden xl:inline">STORE.CART</span>
               </Link>
@@ -97,7 +97,7 @@ const Nev = () => {
               {!user ? (
                 <Link
                   to="/login"
-                  className="px-6 py-3 border border-white/20 hover:border-cyan-400 hover:text-cyan-400 transition-all text-[11px]"
+                  className="px-6 py-3 border border-white/20 hover:border-lime-400 hover:text-lime-400 transition-all text-[11px]"
                 >
                   INITIALIZE_AUTH
                 </Link>

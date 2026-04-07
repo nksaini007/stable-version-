@@ -55,8 +55,8 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           transition={{ duration: 0.8 }}
           className="flex items-center gap-4 mb-2"
         >
-          <div className="h-[2px] w-12 bg-cyan-500"></div>
-          <span className="text-[12px] font-bold tracking-[0.4em] text-cyan-400">
+          <div className="h-[2px] w-12 bg-lime-400"></div>
+          <span className="text-[12px] font-bold tracking-[0.4em] text-lime-400">
             SYSTEM_STINCHAR_V2.0
           </span>
         </motion.div>
@@ -89,12 +89,12 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           className="w-full max-w-4xl relative group"
         >
           {/* Scanner Line Animation */}
-          <div className={`absolute top-0 left-0 w-full h-[1px] bg-cyan-400 shadow-[0_0_10px_#06b6d4] z-20 transition-all duration-700 ${isFocused ? 'opacity-100 top-full translate-y-0' : 'opacity-0 top-0 animate-none'}`}></div>
+          <div className={`absolute top-0 left-0 w-full h-[1px] bg-lime-400 shadow-[0_0_10px_#bef264] z-20 transition-all duration-700 ${isFocused ? 'opacity-100 top-full translate-y-0' : 'opacity-0 top-0 animate-none'}`}></div>
 
           <div className={`relative flex items-center bg-[#0d0d11]/80 backdrop-blur-3xl border transition-all duration-500 rounded-2xl p-2 sm:p-3 
-            ${isFocused ? 'border-cyan-500/50 glow-cyan' : 'border-white/5 shadow-2xl'}`}
+            ${isFocused ? 'border-lime-400/50 glow-accent' : 'border-white/5 shadow-2xl'}`}
           >
-            <div className={`pl-6 transition-colors ${isFocused ? 'text-cyan-400' : 'text-white/20'}`}>
+            <div className={`pl-6 transition-colors ${isFocused ? 'text-lime-400' : 'text-white/20'}`}>
               <FaSearch className="text-2xl" />
             </div>
             
@@ -111,7 +111,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
 
             <button
               onClick={onSearch}
-              className="group/btn relative px-10 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-black rounded-lg flex items-center gap-3 transition-all active:scale-95"
+              className="group/btn relative px-10 py-5 bg-lime-400 hover:bg-lime-300 text-black font-black rounded-lg flex items-center gap-3 transition-all active:scale-95"
             >
               <span className="relative z-10">INITIALIZE</span>
               <FaArrowRight size={14} className="group-hover/btn:translate-x-2 transition-transform" />
@@ -127,12 +127,12 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 + (i * 0.1) }}
                 onClick={() => onCategoryClick(cat.name)}
-                className="group relative flex flex-col p-4 bg-white/5 border border-white/5 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all text-left rounded-xl"
+                className="group relative flex flex-col p-4 bg-white/5 border border-white/5 hover:border-lime-400/30 hover:bg-lime-400/5 transition-all text-left rounded-xl"
               >
-                <div className="text-cyan-500 text-xl mb-3 group-hover:scale-110 transition-transform">{cat.icon}</div>
-                <div className="text-[11px] font-black tracking-widest text-white/40 mb-1 group-hover:text-cyan-400 transition-colors uppercase">{cat.name}</div>
+                <div className="text-lime-400 text-xl mb-3 group-hover:scale-110 transition-transform">{cat.icon}</div>
+                <div className="text-[11px] font-black tracking-widest text-white/40 mb-1 group-hover:text-lime-400 transition-colors uppercase">{cat.name}</div>
                 <div className="text-lg font-bold tracking-tighter">{cat.count}</div>
-                <div className="absolute top-3 right-3 text-white/10 group-hover:text-cyan-400/40">
+                <div className="absolute top-3 right-3 text-white/10 group-hover:text-lime-400/40">
                   <FaPlus size={10} />
                 </div>
               </motion.button>

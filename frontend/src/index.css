@@ -2,8 +2,7 @@
 
 :root {
   font-family: 'Space Grotesk', sans-serif;
-  --neon-cyan: #06b6d4;
-  --neon-purple: #a855f7;
+  --neon-accent: #bef264; /* Electric Lime */
   --cyber-black: #050505;
 }
 
@@ -18,8 +17,8 @@ h1, h2, h3, h4, .font-heading {
   color: transparent;
 }
 
-.glow-cyan {
-  box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+.glow-accent {
+  box-shadow: 0 0 20px rgba(190, 242, 100, 0.3);
 }
 
 html, body {

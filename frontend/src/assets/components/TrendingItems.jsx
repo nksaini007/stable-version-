@@ -140,7 +140,7 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
                 className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[18%] cursor-pointer transition-all duration-500 ease-out ${active ? "scale-105" : "scale-[0.92] opacity-90 grayscale-[0.3]"
                   }`}
               >
-                <div className="group relative overflow-hidden bg-white/5 border border-white/10 hover:border-cyan-500/50 transition-all duration-300 flex flex-col h-full rounded-none">
+                <div className="group relative overflow-hidden bg-white/5 border border-white/10 hover:border-lime-400/50 transition-all duration-300 flex flex-col h-full rounded-none">
                   {/* Image Background Section */}
                   <div className="relative aspect-square overflow-hidden bg-[#0d0d11]">
                     <img
@@ -151,12 +151,12 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
                     />
                     
                     {/* Scanner line overlay */}
-                    <div className="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute top-0 left-0 w-full h-[1px] bg-cyan-400/50 animate-pulse"></div>
+                    <div className="absolute inset-0 bg-lime-400/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-0 left-0 w-full h-[1px] bg-lime-400/50 animate-pulse"></div>
                     </div>
 
                     {it.tag && (
-                      <span className="absolute left-0 top-0 bg-cyan-500 text-black text-[10px] font-black uppercase tracking-widest px-4 py-1.5">
+                      <span className="absolute left-0 top-0 bg-lime-400 text-black text-[10px] font-black uppercase tracking-widest px-4 py-1.5">
                         {it.tag}
                       </span>
                     )}
@@ -164,7 +164,7 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
  
                   {/* Content Section */}
                   <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="text-sm font-bold text-white mb-2 tracking-widest text-white/90 group-hover:text-cyan-400 transition-colors uppercase">
+                    <h3 className="text-sm font-bold text-white mb-2 tracking-widest text-white/90 group-hover:text-lime-400 transition-colors uppercase">
                       {it.name}
                     </h3>
                     <div className="flex flex-col gap-1 mb-6">
@@ -175,12 +175,12 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
  
                     <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-cyan-400 text-sm font-bold">₹</span>
+                        <span className="text-lime-400 text-sm font-bold">₹</span>
                         <span className="text-2xl font-heading text-white leading-none">
                           {it.price}
                         </span>
                       </div>
-                      <div className="p-3 bg-white/5 text-white/20 group-hover:bg-cyan-500 group-hover:text-black transition-all">
+                      <div className="p-3 bg-white/5 text-white/20 group-hover:bg-lime-400 group-hover:text-black transition-all">
                          <FaPlus size={12} />
                       </div>
                     </div>
