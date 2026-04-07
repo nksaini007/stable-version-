@@ -52,7 +52,7 @@ const ProductPage = () => {
         );
 
         setSelectedImage(getOptimizedImage(normalizedImages[0]));
-        if (data.arModelUrl) setShowAR(false); // Default to image
+        if (data.arModelUrl) setShowAR(true); // Default to AR
         if (data.variants && data.variants.length > 0) setSelectedVariant(data.variants[0]);
         setProductInfo({
           ...data,
@@ -148,7 +148,7 @@ const ProductPage = () => {
                     <img
                       src={selectedImage}
                       alt={productInfo.name}
-                      className="w-full h-full object-contain p-12 transition-transform duration-700 hover:scale-110"
+                      className="w-full h-full object-contain p-4 transition-transform duration-700 hover:scale-110"
                       {...lazyImageProps}
                     />
                   )}
@@ -260,18 +260,32 @@ const ProductPage = () => {
               </div>
 
               {/* Action Array */}
-              <div className="flex gap-4 mt-10">
+              <div className="flex flex-col sm:flex-row gap-4 mt-10">
+                {/* Quantity Control */}
+                <div className="flex items-center justify-between border border-black/10 bg-white/50 w-full sm:w-32 h-14 px-4 shadow-[4px_4px_0px_rgba(0,0,0,0.03)]">
+                  <button 
+                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    className="text-black/50 hover:text-black font-black p-2"
+                  >-</button>
+                  <span className="text-[14px] font-black w-8 text-center">{quantity}</span>
+                  <button 
+                    onClick={() => setQuantity(q => Math.min(productInfo.stock || 10, q + 1))}
+                    className="text-black/50 hover:text-black font-black p-2 disabled:opacity-30"
+                    disabled={quantity >= productInfo.stock}
+                  >+</button>
+                </div>
+
                 <button
                   onClick={handleAddToCart}
                   disabled={!inStock}
                   className={`flex-1 group relative h-14 border-2 transition-all flex items-center justify-center gap-3 active:scale-95 ${
                     added 
                     ? "bg-emerald-500 border-emerald-500 text-white" 
-                    : "bg-black border-black text-white hover:bg-[#ff5c00] hover:border-[#ff5c00] hover:text-black"
+                    : "bg-black border-black text-white hover:bg-[#ff5c00] hover:border-[#ff5c00] hover:text-black shadow-[4px_4px_0px_rgba(0,0,0,0.1)] hover:shadow-[6px_6px_0px_rgba(255,92,0,0.2)]"
                   } disabled:opacity-30`}
                 >
                   <span className="text-[11px] font-black uppercase tracking-[0.3em]">
-                    {added ? "RECORD_ADDED" : "ACQUIRE_UNIT"}
+                    {added ? `[${quantity}] RECORD ADDED` : "ACQUIRE_UNIT"}
                   </span>
                   {added ? <CheckCircle size={14} /> : <FaChevronRight size={10} className="group-hover:translate-x-1 transition-transform" />}
                 </button>
