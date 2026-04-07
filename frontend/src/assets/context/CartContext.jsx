@@ -92,11 +92,15 @@ export const CartProvider = ({ children }) => {
 
   // Add product to cart
   const addToCart = (product) => {
-    const exists = cartItems.find((item) => item._id === product._id);
+    // Treat as same item only if BOTH product ID and variant ID match
+    const exists = cartItems.find((item) => 
+      item._id === product._id && item.variantId === product.variantId
+    );
+    
     if (exists) {
       setCartItems(
         cartItems.map((item) =>
-          item._id === product._id
+          (item._id === product._id && item.variantId === product.variantId)
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
@@ -107,18 +111,20 @@ export const CartProvider = ({ children }) => {
   };
 
   // Remove product from cart
-  const removeFromCart = (productId) => {
-    setCartItems(cartItems.filter((item) => item._id !== productId));
+  const removeFromCart = (productId, variantId = null) => {
+    setCartItems(cartItems.filter((item) => 
+      !(item._id === productId && item.variantId === variantId)
+    ));
   };
 
   // Clear cart
   const clearCart = () => setCartItems([]);
 
   // Increase quantity
-  const increaseQuantity = (productId) => {
+  const increaseQuantity = (productId, variantId = null) => {
     setCartItems(
       cartItems.map((item) =>
-        item._id === productId
+        (item._id === productId && item.variantId === variantId)
           ? { ...item, quantity: item.quantity + 1 }
           : item
       )
@@ -126,10 +132,10 @@ export const CartProvider = ({ children }) => {
   };
 
   // Decrease quantity
-  const decreaseQuantity = (productId) => {
+  const decreaseQuantity = (productId, variantId = null) => {
     setCartItems(
       cartItems.map((item) =>
-        item._id === productId
+        (item._id === productId && item.variantId === variantId)
           ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 }
           : item
       )

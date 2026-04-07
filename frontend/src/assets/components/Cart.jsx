@@ -322,11 +322,11 @@ const Cart = () => {
 
                           <div className="flex items-center gap-4 mt-4">
                              <div className="flex items-center border border-white/10 bg-black/40">
-                                <button onClick={() => decreaseQuantity(item._id)} className="w-8 h-8 flex items-center justify-center hover:bg-[#ff5c00] hover:text-black transition-colors">−</button>
+                                <button onClick={() => decreaseQuantity(item._id, item.variantId)} className="w-8 h-8 flex items-center justify-center hover:bg-[#ff5c00] hover:text-black transition-colors">−</button>
                                 <span className="w-10 text-center text-xs font-black">{item.quantity}</span>
-                                <button onClick={() => increaseQuantity(item._id)} className="w-8 h-8 flex items-center justify-center hover:bg-[#ff5c00] hover:text-black transition-colors">+</button>
+                                <button onClick={() => increaseQuantity(item._id, item.variantId)} className="w-8 h-8 flex items-center justify-center hover:bg-[#ff5c00] hover:text-black transition-colors">+</button>
                              </div>
-                             <button onClick={() => removeFromCart(item._id)} className="text-white/20 hover:text-red-500 transition-colors uppercase text-[9px] font-black flex items-center gap-1">
+                             <button onClick={() => removeFromCart(item._id, item.variantId)} className="text-white/20 hover:text-red-500 transition-colors uppercase text-[9px] font-black flex items-center gap-1">
                                 <Trash2 size={12} /> PURGE_ITEM
                              </button>
                           </div>
