@@ -113,6 +113,25 @@ const SellerProducts = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Logical Price Validation
+        const mrp = Number(form.price);
+        const discPrice = Number(form.pricingTiers.normal);
+        if (discPrice > 0 && discPrice > mrp) {
+            alert("Discounted Price cannot be greater than MRP!");
+            return;
+        }
+
+        // Validate variants
+        for (const v of form.variants) {
+            const vMrp = Number(v.price);
+            const vDisc = Number(v.pricingTiers?.normal);
+            if (vDisc > 0 && vDisc > vMrp) {
+                alert(`Discounted Price for type '${v.name}' cannot be greater than its MRP!`);
+                return;
+            }
+        }
+
         try {
             const formData = new FormData();
             Object.entries(form).forEach(([k, v]) => {
@@ -303,7 +322,7 @@ const SellerProducts = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">Normal Price (₹)</label>
+                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-1">MRP (Original Price) (₹)</label>
                                         <input name="price" type="number" required placeholder="1,999" value={form.price} onChange={handleChange} className={inputCls} />
                                     </div>
                                     <div className="space-y-2">
@@ -421,7 +440,7 @@ const SellerProducts = () => {
                                 <div className="w-2 h-2 rounded-full bg-orange-500"></div> Specialized Pricing (₹)
                             </h4>
                             <div className="grid sm:grid-cols-3 gap-6">
-                                {[["architect", "Architect Price"], ["stinchar", "Partner Price"], ["normal", "Member Price"]].map(([k, l]) => (
+                                {[["architect", "Architect Price"], ["stinchar", "Partner Price"], ["normal", "Discounted Price"]].map(([k, l]) => (
                                     <div key={k} className="space-y-2">
                                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{l}</label>
                                         <input
@@ -429,7 +448,7 @@ const SellerProducts = () => {
                                             value={form.pricingTiers[k]}
                                             onChange={(e) => setForm({ ...form, pricingTiers: { ...form.pricingTiers, [k]: e.target.value } })}
                                             className={inputCls}
-                                            placeholder="Leave empty for Standard"
+                                            placeholder={k === 'normal' ? "Selling Price (Must be <= MRP)" : "Leave empty for Standard"}
                                         />
                                     </div>
                                 ))}
@@ -543,8 +562,8 @@ const SellerProducts = () => {
                                                     <input type="number" placeholder="Part" value={v.pricingTiers?.stinchar} onChange={(e) => updateVariant(i, "pricingTiers.stinchar", e.target.value)} className={`${inputCls} text-[12px] h-8`} />
                                                 </div>
                                                 <div>
-                                                    <label className="text-[9px] font-bold text-gray-600 uppercase">Member Price</label>
-                                                    <input type="number" placeholder="Memb" value={v.pricingTiers?.normal} onChange={(e) => updateVariant(i, "pricingTiers.normal", e.target.value)} className={`${inputCls} text-[12px] h-8`} />
+                                                    <label className="text-[9px] font-bold text-gray-600 uppercase tracking-tighter">Discounted Price</label>
+                                                    <input type="number" placeholder="Disc" value={v.pricingTiers?.normal} onChange={(e) => updateVariant(i, "pricingTiers.normal", e.target.value)} className={`${inputCls} text-[12px] h-8`} />
                                                 </div>
                                             </div>
                                         </div>

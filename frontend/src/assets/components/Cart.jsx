@@ -126,6 +126,7 @@ const Cart = () => {
       image: item.images?.[0],
       price: item.price,
       product: item._id,
+      variantId: item.variantId,
       seller: {
         _id: item.seller,
         name: item.sellerName || "Unknown Entity",
@@ -310,9 +311,16 @@ const Cart = () => {
                         <h3 className="text-lg font-bold text-slate-800 group-hover:text-cyan-600 truncate uppercase tracking-tight">
                           {item.name}
                         </h3>
-                        <p className="text-pink-600 font-black text-lg mt-1 tracking-wider">
-                          ₹{item.price}
-                        </p>
+                        <div className="flex flex-col">
+                          <p className="text-pink-600 font-black text-lg mt-1 tracking-wider leading-none">
+                            ₹{item.price}
+                          </p>
+                          {item.mrp > item.price && (
+                            <p className="text-[10px] text-slate-400 line-through font-bold mt-1">
+                              MRP: ₹{item.mrp}
+                            </p>
+                          )}
+                        </div>
 
                         <div className="flex items-center justify-between mt-4 border-t border-slate-200 pt-4">
                           <div className="flex items-center gap-1">

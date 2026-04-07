@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import fallbackItems from "../json/Itom.json";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 import API from "../api/api";
+import { getProductPricing } from "../utils/priceUtils";
 
 const TrendingItems = ({ title = "", autoplay = true }) => {
   const nav = useNavigate();
@@ -20,21 +21,27 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
         const res = await API.get(`/config`);
         const trending = res.data?.trendingItems || [];
         if (trending.length > 0) {
-          const mapped = trending.map((p, idx) => ({
-            id: p._id,
-            name: p.name,
-            price: p.price,
-            image:
-              p.images?.[0]?.url ||
-              p.images?.[0] ||
-              p.image ||
-              "https://via.placeholder.com/300x200?text=Product",
-            tag: "Trending",
-            category: p.category,
-            description: p.description,
-            stock: p.countInStock || 200,
-            bgColor: cardColors[idx % cardColors.length],
-          }));
+          const mapped = trending.map((p, idx) => {
+            const pricing = getProductPricing(p);
+            return {
+              id: p._id,
+              name: p.name,
+              price: pricing.sellingPrice,
+              mrp: pricing.mrp,
+              discountPct: pricing.discountPct,
+              hasDiscount: pricing.hasDiscount,
+              image:
+                p.images?.[0]?.url ||
+                p.images?.[0] ||
+                p.image ||
+                "https://via.placeholder.com/300x200?text=Product",
+              tag: "Trending",
+              category: p.category,
+              description: p.description,
+              stock: p.countInStock || 200,
+              bgColor: cardColors[idx % cardColors.length],
+            };
+          });
           setItems(mapped);
         } else {
           const fallbackWithColors = fallbackItems.map((item, idx) => ({
@@ -166,11 +173,16 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
                   <div className="space-y-1">
                     <span className="text-[7px] font-black text-[#ff5c00] uppercase tracking-widest">{it.tag?.slice(0,12) || "COMMERCE"}</span>
                     <h3 className="text-[10px] font-black uppercase text-black leading-tight line-clamp-1 group-hover:text-[#ff5c00] transition-colors">{it.name}</h3>
-                    <div className="flex justify-between items-center pt-2">
-                      <span className="text-[11px] font-black text-black">₹{it.price}</span>
-                      <button className="w-6 h-6 bg-black text-white flex items-center justify-center hover:bg-[#ff5c00] transition-colors">
-                        <FaPlus size={8} />
-                      </button>
+                    <div className="flex flex-col pt-2">
+                       <div className="flex justify-between items-center">
+                          <span className="text-[11px] font-black text-black">₹{it.price.toLocaleString()}</span>
+                          {it.hasDiscount && (
+                            <span className="text-[7px] font-black text-[#ff5c00]">{it.discountPct}% OFF</span>
+                          )}
+                       </div>
+                       {it.hasDiscount && (
+                         <div className="text-[7px] text-black/20 line-through font-bold">MRP ₹{it.mrp.toLocaleString()}</div>
+                       )}
                     </div>
                   </div>
                 </div>

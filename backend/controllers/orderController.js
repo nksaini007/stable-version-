@@ -44,12 +44,30 @@ const createOrder = async (req, res) => {
                 return res.status(404).json({ message: `Product not found: ${item.name}` });
             }
 
-            // Determine the correct price tier based on user role
-            let unitPrice = dbProduct.price; 
+            // 🛡️ SECURE PRICE EXTRACTION
+            // Base product defaults
+            let sourcePrice = dbProduct.price;
+            let sourceTiers = dbProduct.pricingTiers || {};
+
+            // If a variant is specified, we MUST use the variant's own secure pricing
+            if (item.variantId) {
+                const variant = dbProduct.variants.find(v => v._id.toString() === item.variantId.toString());
+                if (variant) {
+                    sourcePrice = variant.price;
+                    sourceTiers = variant.pricingTiers || {};
+                } else {
+                    // Critical security: if the variant doesn't exist, we fallback to base price 
+                    // or could log an error/prevent order. For now, we'll keep base as fallback.
+                    console.warn(`SECURITY_ALERT: Variant ${item.variantId} not found on product ${dbProduct._id}`);
+                }
+            }
+
+            // Apply Role-Based Pricing Securely
+            let unitPrice = sourcePrice; 
             if (req.user.role === "architect" || req.user.role === "architectPartner") {
-                unitPrice = dbProduct.pricingTiers?.architect || dbProduct.price;
-            } else if (dbProduct.pricingTiers?.normal) {
-                unitPrice = dbProduct.pricingTiers.normal;
+                unitPrice = sourceTiers.architect || sourcePrice;
+            } else if (sourceTiers.normal) {
+                unitPrice = sourceTiers.normal;
             }
 
             // Add weight for delivery calculation

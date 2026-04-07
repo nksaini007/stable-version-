@@ -9,6 +9,7 @@ import ReviewSection from "./ReviewSection";
 import API from "../api/api";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 import ARViewer from "./ARViewer";
+import { getProductPricing } from "../utils/priceUtils";
 
 const Skeleton = () => (
   <div className="min-h-screen bg-[#e5e5e5] tech-grid flex flex-col pt-24 animate-pulse">
@@ -79,10 +80,12 @@ const ProductPage = () => {
 
     const productToAdd = selectedVariant ? {
       ...productInfo,
-      price: selectedVariant.price,
+      price: sellingPrice,
+      mrp: mrp,
       selectedVariant: selectedVariant.name,
+      variantId: selectedVariant._id,
       quantity: quantity
-    } : { ...productInfo, quantity: quantity };
+    } : { ...productInfo, price: sellingPrice, mrp: mrp, quantity: quantity };
 
     addToCart(productToAdd);
     setAdded(true);
@@ -111,7 +114,7 @@ const ProductPage = () => {
   }
 
   const inStock = productInfo.stock > 0;
-  const unitPrice = selectedVariant ? selectedVariant.price : productInfo.price;
+  const { mrp, sellingPrice, discountPct, hasDiscount } = getProductPricing(productInfo, selectedVariant);
 
   return (
     <div className="bg-[#e5e5e5] min-h-screen font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative flex flex-col">
@@ -230,11 +233,17 @@ const ProductPage = () => {
               <div className="corner-decal decal-br !border-black/20"></div>
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                  <h3 className="text-[9px] font-black text-black/40 uppercase tracking-[0.3em] mb-2 text-glow-orange">FINANCIAL_UNIT::INR</h3>
-                  <div className="flex items-baseline gap-4">
-                    <span className="text-5xl font-black text-black leading-none">₹{unitPrice.toLocaleString()}</span>
-                    {productInfo.mrp > unitPrice && (
-                      <span className="text-xl text-black/20 line-through font-black">₹{productInfo.mrp.toLocaleString()}</span>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-3">
+                      <span className="text-5xl font-black text-black leading-none">₹{sellingPrice.toLocaleString()}</span>
+                      {hasDiscount && (
+                        <div className="bg-[#ff5c00] text-black text-[10px] font-black px-2 py-1 uppercase tracking-tighter">
+                          {discountPct}% OFF
+                        </div>
+                      )}
+                    </div>
+                    {hasDiscount && (
+                      <span className="text-xl text-black/20 line-through font-black">MRP: ₹{mrp.toLocaleString()}</span>
                     )}
                   </div>
                 </div>

@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import API from "../api/api";
 import { FaBoxes, FaChevronRight } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
+import { getProductPricing } from "../utils/priceUtils";
 
 const ItemList = () => {
   const { categoryName, itemName, itemList } = useParams();
@@ -181,15 +182,25 @@ const ItemList = () => {
                            {product.description}
                         </p>
                         
-                        <div className="mt-4 flex justify-between items-center border-t border-black/5 pt-3">
-                          <span className="text-[12px] font-black text-black">₹{product.price.toLocaleString()}</span>
-                          <span className={`text-[8px] px-2 py-0.5 font-black uppercase tracking-widest ${
-                                product.stock > 50 ? "bg-black/5 text-black" :
-                                product.stock > 10 ? "bg-[#ff5c00]/10 text-[#ff5c00]" :
-                                "bg-red-100 text-red-800"
-                            }`}>
-                            {product.stock > 50 ? "NOMINAL" : product.stock > 10 ? "DEPLEATED" : "CRITICAL"}
-                          </span>
+                        <div className="mt-4 border-t border-black/5 pt-3 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[12px] font-black text-black">₹{getProductPricing(product).sellingPrice.toLocaleString()}</span>
+                            {getProductPricing(product).hasDiscount && (
+                              <span className="text-[8px] font-black text-[#ff5c00]">{getProductPricing(product).discountPct}% OFF</span>
+                            )}
+                          </div>
+                          {getProductPricing(product).hasDiscount && (
+                            <div className="text-[8px] text-black/20 line-through font-bold">MRP: ₹{product.price.toLocaleString()}</div>
+                          )}
+                          <div className="flex justify-end">
+                            <span className={`text-[8px] px-2 py-0.5 font-black uppercase tracking-widest ${
+                                  product.stock > 50 ? "bg-black/5 text-black" :
+                                  product.stock > 10 ? "bg-[#ff5c00]/10 text-[#ff5c00]" :
+                                  "bg-red-100 text-red-800"
+                              }`}>
+                              {product.stock > 50 ? "NOMINAL" : product.stock > 10 ? "DEPLEATED" : "CRITICAL"}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -234,9 +245,16 @@ const ItemList = () => {
                       
                       <div className="space-y-1">
                         <h4 className="text-[10px] font-black uppercase text-black leading-tight group-hover:text-[#ff5c00] transition-colors">{product.name}</h4>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="text-[11px] font-black text-black">₹{product.price.toLocaleString()}</span>
-                          <FaChevronRight size={8} className="text-black/20 group-hover:text-black" />
+                        <div className="flex flex-col mt-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[11px] font-black text-black">₹{getProductPricing(product).sellingPrice.toLocaleString()}</span>
+                            {getProductPricing(product).hasDiscount && (
+                                <span className="text-[7px] font-black text-[#ff5c00]">{getProductPricing(product).discountPct}% OFF</span>
+                            )}
+                          </div>
+                          {getProductPricing(product).hasDiscount && (
+                              <div className="text-[7px] text-black/20 line-through font-bold">MRP ₹{product.price.toLocaleString()}</div>
+                          )}
                         </div>
                       </div>
                     </Link>

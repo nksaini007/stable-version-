@@ -7,6 +7,7 @@ import API from "../api/api";
 import ArchitectHero from "./ArchitectHero";
 import SellerHero from "./SellerHero";
 import CustomerLanding from "./CustomerLanding";
+import { getProductPricing } from "../utils/priceUtils";
 
 const AnimatedCard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -286,10 +287,20 @@ const AnimatedCard = () => {
                              </p>
                              <div className="mt-auto flex justify-between items-center pt-2 md:pt-6 border-t md:border-t-2 border-black/10">
                                 <div className="flex flex-col">
-                                  <span className="text-[6px] md:text-[10px] font-black text-black/30 tracking-widest uppercase mb-0 md:mb-1">PRICE</span>
-                                  <span className="text-sm md:text-3xl font-heading text-black leading-none">
-                                    ₹{product.price}
-                                  </span>
+                                   <div className="flex items-center gap-1">
+                                      <span className="text-[6px] md:text-[10px] font-black text-black/30 tracking-widest uppercase mb-0 md:mb-1">PRICE</span>
+                                      {getProductPricing(product).hasDiscount && (
+                                        <span className="text-[8px] bg-[#ff5c00] text-black px-1 font-black leading-none">{getProductPricing(product).discountPct}% OFF</span>
+                                      )}
+                                   </div>
+                                   <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
+                                      <span className="text-sm md:text-3xl font-heading text-black leading-none">
+                                        ₹{getProductPricing(product).sellingPrice.toLocaleString()}
+                                      </span>
+                                      {getProductPricing(product).hasDiscount && (
+                                        <span className="text-[8px] md:text-xs text-black/20 line-through font-black">₹{product.price.toLocaleString()}</span>
+                                      )}
+                                   </div>
                                 </div>
                                 <div className="w-8 h-8 md:w-14 md:h-14 bg-black text-white flex items-center justify-center group-hover:bg-[#ff5c00] group-hover:text-black transition-all">
                                   <FaArrowRight size={12} className="md:size-[20px]" />
