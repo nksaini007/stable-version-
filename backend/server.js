@@ -13,15 +13,38 @@ dotenv.config();
 const app = express();
 
 // ✅ Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://checkout.razorpay.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://m.media-amazon.com", "https://tse2.mm.bing.net"],
+      connectSrc: ["'self'", "https://stable-version-backend.onrender.com", "http://localhost:5000", "https://api.razorpay.com"],
+      frameSrc: ["'self'", "https://api.razorpay.com"],
+      upgradeInsecureRequests: [], // ✅ Automatically converts HTTP to HTTPS
+    },
+  },
+  permissionsPolicy: {
+    features: {
+      accelerometer: ["'none'"],
+      camera: ["'none'"],
+      geolocation: ["'self'"],
+      gyroscope: ["'none'"],
+      magnetometer: ["'none'"],
+      microphone: ["'none'"],
+      payment: ["'self'"],
+      usb: ["'none'"],
+    },
+  },
+}));
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); // Allow serving /uploads
+
 app.use(cors({
   origin: (origin, callback) => {
-    // If no origin (like a server-side or postman request), allow it
     if (!origin) return callback(null, true);
-
     const sanitizedOrigin = origin.replace(/\/$/, "").toLowerCase();
-    
     const allowedOrigins = [
       process.env.FRONTEND_URL,
       "https://stable-version.vercel.app",
@@ -30,23 +53,18 @@ app.use(cors({
       "http://localhost:5173",
       "http://127.0.0.1:5173"
     ].map(o => o?.replace(/\/$/, "").toLowerCase()).filter(Boolean);
-
-    // Support main domain and hyphenated preview subdomains (e.g. stable-version-git-main-nksaini007.vercel.app)
     const isVercel = sanitizedOrigin.endsWith(".vercel.app") && sanitizedOrigin.includes("stable-version");
     const isLocal = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+):517[0-9]$/.test(sanitizedOrigin);
 
     if (allowedOrigins.includes(sanitizedOrigin) || isVercel || isLocal) {
-      console.log(`[CORS Success] Origin: ${origin}`);
       callback(null, true);
     } else {
-      console.warn(`[CORS Rejected] Origin: ${origin}`);
-      // Instead of throwing an error which might crash the response, 
-      // just pass false to let the browser handle the block normally.
       callback(null, false);
     }
   },
   credentials: true,
-  optionsSuccessStatus: 200 // Some legacy browsers crash on 204
+  exposedHeaders: ["x-rtb-fingerprint-id", "request-id"], // ✅ Allow frontend to read these headers
+  optionsSuccessStatus: 200
 }));
 app.use(express.json({ limit: "10kb" }));
 
