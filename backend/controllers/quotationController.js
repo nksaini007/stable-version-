@@ -1,29 +1,73 @@
-const Quotation = require("../models/Quotation");
 const Order = require("../models/Order");
+const Product = require("../models/product");
 
 // @desc    Create a new quotation request
 // @route   POST /api/quotations
 // @access  Private
 const createQuotation = async (req, res) => {
   try {
-    const { items, shippingAddress, itemsPrice, customerNote } = req.body;
+    const { items: clientItems, shippingAddress, customerNote } = req.body;
 
-    if (!items || items.length === 0) {
+    if (!clientItems || clientItems.length === 0) {
       return res.status(400).json({ message: "No items in quotation request" });
+    }
+
+    // 🛡️ SECURE CALCULATION: Build verified items and calculate prices server-side
+    let itemsPrice = 0;
+    const verifiedItems = [];
+
+    for (const item of clientItems) {
+        const dbProduct = await Product.findById(item.product || item._id);
+        if (!dbProduct) {
+            return res.status(404).json({ message: `Product not found: ${item.name}` });
+        }
+
+        // Secure Price Extraction (Base vs Variant)
+        let sourcePrice = dbProduct.price;
+        let sourceTiers = dbProduct.pricingTiers || {};
+
+        if (item.variantId) {
+            const variant = dbProduct.variants.find(v => v._id.toString() === item.variantId.toString());
+            if (variant) {
+                sourcePrice = variant.price;
+                sourceTiers = variant.pricingTiers || {};
+            }
+        }
+
+        // Apply Role-Based Pricing Securely
+        let unitPrice = sourcePrice; 
+        if (req.user.role === "architect" || req.user.role === "architectPartner") {
+            unitPrice = sourceTiers.architect || sourcePrice;
+        } else if (sourceTiers.normal) {
+            unitPrice = sourceTiers.normal;
+        }
+
+        const itemSubtotal = unitPrice * item.qty;
+        itemsPrice += itemSubtotal;
+
+        verifiedItems.push({
+            product: dbProduct._id,
+            name: dbProduct.name,
+            qty: item.qty,
+            price: unitPrice,
+            variantId: item.variantId,
+            seller: dbProduct.seller,
+        });
     }
 
     const quotation = new Quotation({
       user: req.user._id,
-      items,
+      items: verifiedItems,
       shippingAddress,
       itemsPrice,
-      totalPrice: itemsPrice, // Initial price
+      totalPrice: itemsPrice, // Initial price before admin adjustment
       customerNote,
     });
 
     const createdQuotation = await quotation.save();
     res.status(201).json(createdQuotation);
   } catch (error) {
+    console.error("Quotation Creation Error:", error);
     res.status(500).json({ message: error.message });
   }
 };
