@@ -56,8 +56,8 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
               transition={{ duration: 0.8 }}
             >
               <div className="flex flex-col gap-1">
-                <span className="text-[#ff5c00] font-black text-[9px] tracking-[0.4em]">// 00_STINCHAR_CORE_INIT</span>
-                <h1 className="text-[5rem] md:text-[6.5rem] font-pixel text-lattice leading-[0.8] tracking-tighter">
+                <span className="text-[#ff5c00] font-black text-[8px] tracking-[0.3em]">// 00_STINCHAR_CORE_INIT</span>
+                <h1 className="text-[3.5rem] md:text-[5rem] font-pixel text-lattice leading-[0.85] tracking-tighter">
                    STIN<br/>CHAR
                 </h1>
               </div>
