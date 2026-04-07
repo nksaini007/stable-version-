@@ -250,49 +250,49 @@ const AnimatedCard = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-8">
                     {results.map((product, i) => {
                       const isLastElement = i === results.length - 1;
                       return (
                         <motion.div
                           ref={isLastElement ? lastElementRef : null}
                           key={`${product._id}-${i}`}
-                          initial={{ opacity: 0, y: 40 }}
+                          initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: (i % 10) * 0.05, duration: 0.6 }}
+                          transition={{ delay: (i % 10) * 0.05, duration: 0.5 }}
                           onClick={() => navigate(`/product/${product._id}`)}
-                          className="group cursor-pointer flex flex-col bg-white border-4 border-black shadow-[10px_10px_0px_#000] hover:shadow-[15px_15px_0px_#ff5c00] transition-all relative overflow-hidden"
+                          className="group cursor-pointer flex flex-col bg-white border-2 md:border-4 border-black shadow-[4px_4px_0px_#000] md:shadow-[10px_10px_0px_#000] hover:shadow-[15px_15px_0px_#ff5c00] transition-all relative overflow-hidden h-full"
                         >
-                           <div className="flex justify-between items-center bg-black text-white px-4 py-2 text-[10px] font-black tracking-widest uppercase">
+                           {/* Tech header on card */}
+                           <div className="flex justify-between items-center bg-black text-white px-2 md:px-4 py-1 md:py-2 text-[6px] md:text-[10px] font-black tracking-widest uppercase">
                              <span>REF: {product._id?.toString().slice(-6).toUpperCase()}</span>
-                             <FaPlus size={10} className="text-[#ff5c00]" />
+                             <FaPlus size={8} className="text-[#ff5c00]" />
                            </div>
 
-                           <div className="aspect-square bg-white p-8 relative overflow-hidden flex items-center justify-center border-b-4 border-black">
+                           <div className="aspect-square bg-white p-4 md:p-8 relative overflow-hidden flex items-center justify-center border-b-2 md:border-b-4 border-black">
                              <img
                                src={product.images?.[0]?.url ? `${product.images[0].url}` : product.image || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"}
                                alt={product.name}
                                className="w-full h-full object-contain filter group-hover:scale-110 transition-transform duration-700 ease-in-out"
                              />
-                             <div className="absolute inset-0 border-8 border-[#ff5c00]/0 group-hover:border-[#ff5c00]/5 transition-all pointer-events-none"></div>
                            </div>
  
-                           <div className="p-6 flex flex-col flex-1 bg-white">
-                             <h3 className="text-2xl font-black text-black leading-none mb-4 uppercase tracking-tighter line-clamp-1 group-hover:text-[#ff5c00] transition-colors">
+                           <div className="p-3 md:p-6 flex flex-col flex-1 bg-white">
+                             <h3 className="text-xs md:text-2xl font-black text-black leading-none mb-1 md:mb-4 uppercase tracking-tighter line-clamp-1 group-hover:text-[#ff5c00] transition-colors">
                                {product.name}
                              </h3>
-                             <p className="text-[11px] text-black/40 line-clamp-2 mb-8 font-mono leading-tight uppercase tracking-widest">
+                             <p className="hidden md:block text-[11px] text-black/40 line-clamp-2 mb-8 font-mono leading-tight uppercase tracking-widest">
                                // {product.description}
                              </p>
-                             <div className="mt-auto flex justify-between items-center pt-6 border-t-2 border-black/10">
+                             <div className="mt-auto flex justify-between items-center pt-2 md:pt-6 border-t md:border-t-2 border-black/10">
                                 <div className="flex flex-col">
-                                  <span className="text-[10px] font-black text-black/30 tracking-widest uppercase mb-1">UNIT_PRICE</span>
-                                  <span className="text-3xl font-heading text-black leading-none">
+                                  <span className="text-[6px] md:text-[10px] font-black text-black/30 tracking-widest uppercase mb-0 md:mb-1">PRICE</span>
+                                  <span className="text-sm md:text-3xl font-heading text-black leading-none">
                                     ₹{product.price}
                                   </span>
                                 </div>
-                                <div className="w-14 h-14 bg-black text-white flex items-center justify-center group-hover:bg-[#ff5c00] group-hover:text-black transition-all">
-                                  <FaArrowRight size={20} />
+                                <div className="w-8 h-8 md:w-14 md:h-14 bg-black text-white flex items-center justify-center group-hover:bg-[#ff5c00] group-hover:text-black transition-all">
+                                  <FaArrowRight size={12} className="md:size-[20px]" />
                                 </div>
                              </div>
                            </div>

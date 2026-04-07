@@ -115,26 +115,26 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 <div className="flex-1 h-[1px] bg-black/20"></div>
               </div>
 
-              <div className="relative flex border-4 border-black shadow-[12px_12px_0px_rgba(0,0,0,0.1)]">
-                <div className="p-6 bg-black text-white">
-                  <FaSearch size={28} />
+              <div className="relative flex border-2 md:border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,0.1)] md:shadow-[12px_12px_0px_rgba(0,0,0,0.1)]">
+                <div className="p-3 md:p-6 bg-black text-white flex items-center justify-center">
+                  <FaSearch className="text-xl md:text-2xl" />
                 </div>
                 <input 
                   type="text" 
-                  placeholder="FIND_MATERIALS_OR_ARCHITECTS_OR_MODELS..." 
+                  placeholder="FIND_MATERIALS..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && onSearch()}
-                  className="flex-1 bg-white px-8 text-2xl font-black placeholder-black/20 focus:outline-none uppercase"
+                  className="flex-1 bg-white px-4 md:px-8 text-lg md:text-2xl font-black placeholder-black/20 focus:outline-none uppercase min-w-0"
                 />
               </div>
 
-              <div className="flex gap-4 mt-8 flex-wrap">
-                {["RAW_MATERIALS", "ARCHITECTS", "CONSTRUCTION", "LOGISTICS"].map((cat, i) => (
+              <div className="flex gap-2 md:gap-4 mt-4 md:mt-8 flex-wrap">
+                {["RAW_MATERIALS", "ARCHITECTS", "CONSTRUCTION"].map((cat, i) => (
                    <button 
                     key={i}
                     onClick={() => onCategoryClick(cat)}
-                    className="px-6 py-2 border-2 border-black font-black text-xs hover:bg-black hover:text-white transition-all uppercase"
+                    className="px-3 md:px-6 py-1.5 md:py-2 border-2 border-black font-black text-[8px] md:text-xs hover:bg-black hover:text-white transition-all uppercase"
                    >
                      {cat}._
                    </button>
