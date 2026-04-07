@@ -145,7 +145,7 @@ const loginUser = async (req, res) => {
     const email = req.body.email?.toLowerCase();
     if (!email || !password) return res.status(400).json({ message: "Email and password required" });
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
     if (!user) return res.status(404).json({ message: "User not found. Please signup." });
 
     if (user.isActive === false) return res.status(403).json({ message: "Account has been deactivated. Contact admin." });
@@ -191,7 +191,7 @@ const adminSecretLogin = async (req, res) => {
 
     if (!email || !password) return res.status(400).json({ message: "Credentials required" });
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
     if (!user || user.role !== "admin")
       return res.status(403).json({ message: "Access denied" });
 
@@ -366,7 +366,7 @@ const changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword) return res.status(400).json({ message: "Both passwords required" });
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select("+password");
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) return res.status(401).json({ message: "Current password is incorrect" });
 
