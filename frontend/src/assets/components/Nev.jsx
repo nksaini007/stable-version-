@@ -48,24 +48,25 @@ const Nev = () => {
     <>
       {/* ================= NAVBAR ================= */}
       <nav className="hidden md:block sticky top-0 w-full z-50">
-        <div className="absolute inset-0 bg-[#0a0a0b]/80 backdrop-blur-xl border-b border-white/5"></div>
+        <div className="absolute inset-0 bg-[#050505]/90 backdrop-blur-2xl border-b border-white/10"></div>
 
-        <div className="relative max-w-[1400px] mx-auto px-6 lg:px-12">
-          <div className="flex items-center justify-between h-[72px]">
+        <div className="relative max-w-[1400px] mx-auto px-10">
+          <div className="flex items-center justify-between h-[80px]">
 
             {/* LOGO */}
             <Link to="/" className="flex items-center gap-3 z-10 group">
-              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center group-hover:rotate-6 transition-transform duration-500">
-                <span className="text-black font-black text-xl">S</span>
+              <div className="w-12 h-12 bg-white flex items-center justify-center -rotate-3 group-hover:rotate-0 group-hover:bg-cyan-400 transition-all duration-500">
+                <span className="text-black font-black text-2xl tracking-tighter">STN</span>
               </div>
-              <span className="text-2xl font-heading text-white tracking-tight">
-                Stin<span className="text-white/40">char</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="text-xl font-heading text-white tracking-[0.3em] leading-none">STINCHAR</span>
+                <span className="text-[10px] font-bold text-cyan-400 tracking-[0.5em] mt-1">V_2.0</span>
+              </div>
             </Link>
 
             {/* DESKTOP LINKS */}
             <div className="hidden lg:flex items-center">
-              <div className="flex items-center gap-0.5 bg-white/[0.04] rounded-2xl p-1 border border-white/[0.06]">
+              <div className="flex items-center gap-8">
                 {navLinks.map((link, i) => {
                   const path = getPath(link);
                   return (
@@ -73,9 +74,9 @@ const Nev = () => {
                       key={i}
                       to={path}
                       className={({ isActive }) =>
-                        `px-4 py-2 rounded-xl text-[12px] font-semibold tracking-wide transition-all duration-200 ${isActive
-                          ? "bg-gray-500/15 text-gray-300 shadow-sm"
-                          : "text-gray-400 hover:text-white hover:bg-white/[0.06]"
+                        `text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${isActive
+                          ? "text-cyan-400 border-b-2 border-cyan-400 pb-1"
+                          : "text-white/40 hover:text-white"
                         }`
                       }
                     >
@@ -87,20 +88,18 @@ const Nev = () => {
             </div>
 
             {/* RIGHT ACTIONS */}
-            <div className="flex items-center gap-3 z-10">
-              <Link
-                to="/cart"
-                className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-gray-400"
-              >
+            <div className="flex items-center gap-6 z-10 text-white font-black text-xs tracking-widest">
+              <Link to="/cart" className="hover:text-cyan-400 transition-colors flex items-center gap-2 uppercase">
                 <ShoppingCart size={18} />
+                <span className="hidden xl:inline">STORE.CART</span>
               </Link>
 
               {!user ? (
                 <Link
                   to="/login"
-                  className="hidden md:inline-flex px-5 py-2.5 rounded-xl text-[12px] font-bold text-white bg-gray-500"
+                  className="px-6 py-3 border border-white/20 hover:border-cyan-400 hover:text-cyan-400 transition-all text-[11px]"
                 >
-                  Sign In
+                  INITIALIZE_AUTH
                 </Link>
               ) : (
                 <ProfileDropdown user={user} logout={logout} />

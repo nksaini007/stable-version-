@@ -140,52 +140,53 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
                 className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[18%] cursor-pointer transition-all duration-500 ease-out ${active ? "scale-105" : "scale-[0.92] opacity-90 grayscale-[0.3]"
                   }`}
               >
-                <div className="group rounded-[2.5rem] overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-50 flex flex-col h-full transform hover:-translate-y-2 transition-all">
+                <div className="group relative overflow-hidden bg-white/5 border border-white/10 hover:border-cyan-500/50 transition-all duration-300 flex flex-col h-full rounded-none">
                   {/* Image Background Section */}
-                  <div
-                    className="m-3 rounded-[1.8rem] h-64 flex items-center justify-center p-8 relative overflow-hidden transition-colors duration-500"
-                    style={{ backgroundColor: it.bgColor || '#304877ff' }}
-                  >
+                  <div className="relative aspect-square overflow-hidden bg-[#0d0d11]">
                     <img
                       src={getOptimizedImage(it.image, 600)}
                       alt={it.name}
                       {...lazyImageProps}
-                      className="w-full h-full object-contain  transform transition-transform duration-700 group-hover:scale-170 filter brightness-[1.02] contrast-[1.02]"
+                      className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110 grayscale-[0.2] group-hover:grayscale-0"
                     />
+                    
+                    {/* Scanner line overlay */}
+                    <div className="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-0 left-0 w-full h-[1px] bg-cyan-400/50 animate-pulse"></div>
+                    </div>
+
                     {it.tag && (
-                      <span className="absolute left-5 top-5 bg-white text-gray-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-xl">
+                      <span className="absolute left-0 top-0 bg-cyan-500 text-black text-[10px] font-black uppercase tracking-widest px-4 py-1.5">
                         {it.tag}
                       </span>
                     )}
                   </div>
-
+ 
                   {/* Content Section */}
-                  <div className="p-6 pt-2 flex flex-col flex-grow">
-                    <h3 className="text-lg font-bold text-gray-800 line-clamp-1 mb-1 tracking-tight">
+                  <div className="p-6 flex flex-col flex-grow">
+                    <h3 className="text-sm font-bold text-white mb-2 tracking-widest text-white/90 group-hover:text-cyan-400 transition-colors uppercase">
                       {it.name}
                     </h3>
-                    <div className="flex flex-col gap-0.5 mb-6">
-                      <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
-                        {it.description?.toString().slice(-7).toUpperCase() || '1254654'}
+                    <div className="flex flex-col gap-1 mb-6">
+                      <p className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em]">
+                        REF_ID: {it.id?.toString().slice(-8).toUpperCase()}
                       </p>
-
                     </div>
-
-                    <div className="mt-auto flex items-center justify-between">
+ 
+                    <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-gray-400 text-sm font-bold">₹</span>
-                        <span className="text-2xl font-black text-gray-900 leading-none">
+                        <span className="text-cyan-400 text-sm font-bold">₹</span>
+                        <span className="text-2xl font-heading text-white leading-none">
                           {it.price}
                         </span>
                       </div>
-                      <div className="p-2.5 bg-gray-50 text-gray-300 rounded-xl group-hover:bg-gray-900 group-hover:text-white transition-all duration-300">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-                        </svg>
+                      <div className="p-3 bg-white/5 text-white/20 group-hover:bg-cyan-500 group-hover:text-black transition-all">
+                         <FaPlus size={12} />
                       </div>
                     </div>
                   </div>
                 </div>
+
               </article>
             );
           })}
