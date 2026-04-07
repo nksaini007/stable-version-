@@ -32,6 +32,64 @@ h1, h2, h3, h4, .font-heading {
   color: black;
 }
 
+/* 🛠️ PREMIUM INDUSTRIAL UI UTILITIES */
+.tech-grid {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.scanline {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 92, 0, 0.05);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  pointer-events: none;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.corner-decal {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: #000;
+  border-width: 2px;
+  z-index: 10;
+}
+
+.decal-tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+.decal-tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+.decal-bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+.decal-br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+
+.tech-shadow {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+}
+
+.glow-orange {
+  text-shadow: 0 0 10px rgba(255, 92, 0, 0.3);
+}
+
+.scrollbar-tech::-webkit-scrollbar {
+  width: 3px;
+}
+.scrollbar-tech::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-tech::-webkit-scrollbar-thumb {
+  background: #000;
+}
+.scrollbar-tech::-webkit-scrollbar-thumb:hover {
+  background: #ff5c00;
+}
+
 .font-vertical {
   writing-mode: vertical-rl;
   text-orientation: mixed;
