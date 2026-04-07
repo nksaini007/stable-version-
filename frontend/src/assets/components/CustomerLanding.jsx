@@ -1,9 +1,29 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { FaSearch, FaArrowRight, FaPlus, FaBox, FaTerminal, FaCodeBranch, FaCrosshairs } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaSearch, FaArrowRight, FaPlus, FaBox, FaTerminal, FaCodeBranch, FaCrosshairs, FaGlobe, FaShieldAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import heroImg from "../hero_vibe.png";
+import API from "../api/api";
 
 const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClick }) => {
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+
+  useEffect(() => {
+    const fetchLatestActivity = async () => {
+      try {
+        const response = await API.get("/posts?limit=3");
+        setPosts(response.data?.posts || []);
+      } catch (err) {
+        console.error("Failed to fetch community logs", err);
+      } finally {
+        setLoadingPosts(false);
+      }
+    };
+    fetchLatestActivity();
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-[#e5e5e5] text-black font-mono overflow-hidden flex flex-col pt-20">
       
@@ -17,50 +37,83 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
         {/* LEFT PANEL: MASSIVE BRANDING & HUD */}
         <div className="md:col-span-4 border-r-4 border-black p-8 flex flex-col justify-between bg-white/50">
           <div>
-            <div className="flex items-center gap-2 mb-8 bg-black text-white px-3 py-1 self-start inline-flex">
-              <FaTerminal size={12} />
-              <span className="text-[10px] font-bold tracking-widest uppercase">PROCEED_WITH_CAUTION</span>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-2 bg-black text-white px-3 py-1 self-start inline-flex">
+                <FaTerminal size={12} />
+                <span className="text-[10px] font-black tracking-widest uppercase">PROCEED_WITH_CAUTION</span>
+              </div>
+              <div className="flex items-center gap-2">
+                 <div className="w-2 h-2 bg-[#ff5c00] rounded-full animate-pulse"></div>
+                 <span className="text-[9px] font-black uppercase tracking-widest">LIVE_FEED</span>
+              </div>
             </div>
             
             <motion.div 
-              initial={{ x: -50, opacity: 0 }}
+              initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8 }}
             >
-             <div className="flex flex-col gap-2">
-             <span className="text-[#ff5c00] font-black text-xs tracking-[0.5em]">// 00_INITIALIZE_CORE</span>
-             <h1 className="text-[6rem] md:text-[10rem] font-pixel text-lattice leading-[0.8] tracking-tighter">
-                STIN<br/>CHAR
-             </h1>
-          </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-[#ff5c00] font-black text-[10px] tracking-[0.5em]">// 00_STINCHAR_CORE_INIT</span>
+                <h1 className="text-[6rem] md:text-[8rem] font-pixel text-lattice leading-[0.8] tracking-tighter">
+                   STIN<br/>CHAR
+                </h1>
+              </div>
             </motion.div>
             
-            <div className="space-y-4 opacity-70 mt-8">
-              <div className="flex justify-between border-b border-black/20 pb-2">
-                <span className="text-[10px] font-black">REF_NUMBER:</span>
-                <span className="text-[10px] font-mono">0923-ST-V2</span>
+            {/* DYNAMIC COMMUNITY HUD */}
+            <div className="mt-10 space-y-6">
+              <div className="flex items-center gap-2 border-b-2 border-black pb-2">
+                 <FaGlobe size={10} />
+                 <span className="text-[10px] font-black tracking-[0.2em] uppercase">COMMUNITY_INTELLIGENCE_STREAM:</span>
               </div>
-              <div className="flex justify-between border-b border-black/20 pb-2">
-                <span className="text-[10px] font-black">LOCATION:</span>
-                <span className="text-[10px] font-mono">IN_MH_01_77</span>
+
+              <div className="space-y-4">
+                {loadingPosts ? (
+                  Array(3).fill(0).map((_, i) => (
+                    <div key={i} className="h-6 bg-black/5 animate-pulse border-l-2 border-black/20"></div>
+                  ))
+                ) : posts.length > 0 ? (
+                  posts.map((post, index) => (
+                    <div 
+                      key={post._id} 
+                      className="group cursor-pointer border-l-2 border-[#ff5c00] pl-4 py-1 hover:bg-black hover:text-white transition-all"
+                      onClick={() => navigate('/community')}
+                    >
+                       <div className="flex justify-between items-center text-[9px] font-black opacity-50 group-hover:opacity-100">
+                          <span>LOG_00{index+1}</span>
+                          <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                       </div>
+                       <p className="text-[11px] font-black uppercase tracking-tight line-clamp-1">
+                         {post.user?.name || "ANON"}: {post.title || "NEW_UPDATE"}
+                       </p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-[10px] font-mono opacity-30 italic">NO_RECENT_COMM_ACTIVITY_FOUND...</div>
+                )}
               </div>
-              <div className="flex justify-between border-b border-black/20 pb-2">
-                <span className="text-[10px] font-black">STATUS:</span>
-                <span className="text-[10px] font-mono">DEPLOYED_ACTIVE</span>
-              </div>
+
+              <button 
+                onClick={() => navigate('/community')}
+                className="w-full py-4 bg-black text-white font-black text-xs uppercase tracking-[0.3em] hover:bg-[#ff5c00] hover:text-black transition-all flex items-center justify-center gap-4 group"
+              >
+                <FaShieldAlt size={14} className="group-hover:rotate-12 transition-transform" />
+                SECURE_COMM_ACCESS
+              </button>
             </div>
           </div>
 
           <div className="mt-12">
-            <div className="h-20 w-full mb-4 bg-black/5 flex items-end gap-1 p-2">
-              {[...Array(20)].map((_, i) => (
-                <div key={i} className="flex-1 bg-black" style={{ height: `${Math.random() * 100}%` }}></div>
+            <div className="h-16 w-full mb-4 bg-black/5 flex items-end gap-1 p-2 border border-black/10">
+              {[...Array(24)].map((_, i) => (
+                <div key={i} className="flex-1 bg-black/20 group-hover:bg-black transition-colors" style={{ height: `${Math.random() * 100}%` }}></div>
               ))}
             </div>
-            <p className="text-[9px] font-bold leading-tight uppercase opacity-50">
-              Technical Supply Chain Interface // Ver 2.0.4 <br />
-              All rights reserved to Stinchar Innovations
-            </p>
+            <div className="flex justify-between items-center text-[8px] font-black uppercase opacity-40">
+              <span>REF: STIN_INTEL_V2.0.4</span>
+              <span>LOC: IN_GLOBAL_NODE</span>
+            </div>
           </div>
         </div>
 
