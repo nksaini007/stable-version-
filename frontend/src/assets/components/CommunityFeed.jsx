@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/api';
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import API from '../api/api';
 import { AuthContext } from '../context/AuthContext';
 import { FaCrosshairs, FaCommentDots, FaShareAlt, FaPaperPlane, FaTrash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
