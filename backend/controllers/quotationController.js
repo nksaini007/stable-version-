@@ -1,3 +1,4 @@
+const Quotation = require("../models/Quotation");
 const Order = require("../models/Order");
 const Product = require("../models/product");
 
