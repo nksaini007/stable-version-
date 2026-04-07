@@ -549,5 +549,6 @@ module.exports = {
   assignDeliveryPerson,
   getDeliveryPersons,
   cancelOrder,
+  verifyPayment,
 };
 
