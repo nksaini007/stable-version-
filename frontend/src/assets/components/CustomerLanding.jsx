@@ -97,8 +97,8 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                   Engineered for scale. Stinchar provides a unified technical interface for modern construction and supply chain management.
                 </p>
               </div>
-              <button 
-                onClick={onSearch}
+            <button 
+                onClick={() => document.getElementById('search-initialize').scrollIntoView({ behavior: 'smooth' })}
                 className="w-full py-6 bg-[#ff5c00] text-black font-black text-xl hover:bg-white transition-colors flex items-center justify-center gap-4 group"
               >
                 NEXT
@@ -108,7 +108,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           </div>
 
           {/* Search Bar Grid Section */}
-          <div className="p-8 md:p-12 bg-white flex flex-col items-start gap-8">
+          <div id="search-initialize" className="p-8 md:p-12 bg-white flex flex-col items-start gap-8">
             <div className="w-full max-w-4xl">
               <div className="flex items-center gap-4 mb-4">
                 <span className="bg-[#ff5c00] text-black px-3 py-1 text-[10px] font-black uppercase">INITIALIZE SEARCH</span>

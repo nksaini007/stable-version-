@@ -1,7 +1,7 @@
-import React, { useContext, useState, useRef, useCallback } from "react";
+import React, { useContext, useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { FaSearch, FaArrowRight, FaShieldAlt, FaStore, FaTruck, FaHardHat, FaWrench, FaTags, FaRulerCombined, FaPalette, FaBuilding } from "react-icons/fa";
+import { FaSearch, FaArrowRight, FaShieldAlt, FaTruck, FaWrench, FaPlus, FaCrosshairs } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import API from "../api/api";
 import ArchitectHero from "./ArchitectHero";
@@ -21,9 +21,17 @@ const AnimatedCard = () => {
   // Auth and Routing
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const resultsRef = useRef(null);
 
   const role = user?.role || "guest";
   const userName = user?.name || "Welcome";
+
+  // Auto-scroll to results
+  useEffect(() => {
+    if (hasSearched && !loading && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [hasSearched, loading]);
 
   // Dashboard User Configurations
   const getRoleConfig = () => {
@@ -33,30 +41,27 @@ const AnimatedCard = () => {
           theme: "blue",
           title: "System Administration",
           subtitle: "Manage platform operations, users, and global settings.",
-          icon: <FaShieldAlt className="text-blue-500 text-5xl mb-4" />,
-          bgGradient: "from-blue-50/50 to-white",
-          accent: "bg-blue-600 hover:bg-blue-700",
-          dashRoute: "/admin"
+          icon: <FaShieldAlt className="text-black text-5xl mb-4" />,
+          dashRoute: "/admin",
+          accent: "bg-black text-white hover:bg-[#ff5c00]"
         };
       case 'delivery':
         return {
           theme: "amber",
           title: "Logistics Dashboard",
           subtitle: "View assigned routes, update deliveries, and manage fleet.",
-          icon: <FaTruck className="text-amber-500 text-5xl mb-4" />,
-          bgGradient: "from-amber-50/50 to-white",
-          accent: "bg-amber-600 hover:bg-amber-700",
-          dashRoute: "/delivery"
+          icon: <FaTruck className="text-black text-5xl mb-4" />,
+          dashRoute: "/delivery",
+          accent: "bg-black text-white hover:bg-[#ff5c00]"
         };
       case 'provider':
         return {
           theme: "purple",
           title: "Service Provider Hub",
           subtitle: "Manage your active service requests and professional bookings.",
-          icon: <FaWrench className="text-purple-500 text-5xl mb-4" />,
-          bgGradient: "from-purple-50/50 to-white",
-          accent: "bg-purple-600 hover:bg-purple-700",
-          dashRoute: "/provider"
+          icon: <FaWrench className="text-black text-5xl mb-4" />,
+          dashRoute: "/provider",
+          accent: "bg-black text-white hover:bg-[#ff5c00]"
         };
       default:
         return null;
@@ -149,48 +154,33 @@ const AnimatedCard = () => {
   }
 
   if (isDashboardUser && config && role !== 'architect' && role !== 'seller') {
-    const isDark = config.isDark;
     return (
-      <div className={`min-h-[85vh] flex flex-col items-center justify-center p-6 sm:p-12 transition-colors duration-700 ${isDark ? 'bg-black' : `bg-gradient-to-br ${config.bgGradient}`}`}>
+      <div className="min-h-screen bg-[#e5e5e5] flex flex-col items-center justify-center p-8 font-mono">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className={`w-full max-w-4xl ${isDark ? 'bg-[#121214] border-white/5' : 'bg-white border-gray-100'} rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden border flex flex-col md:flex-row`}
+          className="w-full max-w-4xl bg-white border-4 border-black shadow-[20px_20px_0px_#000] overflow-hidden flex flex-col md:grid md:grid-cols-12"
         >
-          <div className={`md:w-1/3 p-10 flex flex-col items-center justify-center text-center ${isDark ? 'bg-[#161618] border-white/5 md:border-r' : 'bg-gray-50/50 border-gray-100 md:border-r'} border-b md:border-b-0 flex flex-col items-center justify-center`}>
-            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
-              {config.icon}
-            </motion.div>
-            <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} tracking-tight mt-6`}>
-              Hi, {userName.split(' ')[0]}
-            </h2>
-            <p className={`text-sm font-medium ${isDark ? 'text-gray-500' : 'text-gray-500'} mt-2 uppercase tracking-wide`}>
-              {role.charAt(0).toUpperCase() + role.slice(1)} Account
-            </p>
+          <div className="md:col-span-4 p-12 border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col items-center justify-center text-center bg-black/5">
+             {config.icon}
+             <h2 className="text-2xl font-black mt-6 uppercase leading-tight">Hi, {userName.split(' ')[0]}</h2>
+             <span className="mt-2 px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest">{role}_ACCOUNT</span>
           </div>
 
-          <div className="md:w-2/3 p-10 flex flex-col justify-center relative overflow-hidden">
-            {/* Background dynamic glow for dark mode */}
-            {isDark && (
-              <div className="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-            )}
-            
-            <h3 className={`text-3xl font-extrabold ${isDark ? 'text-white' : 'text-gray-900'} mb-4 tracking-tight relative z-10`}>
-              {config.title}
-            </h3>
-            <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-8 leading-relaxed relative z-10`}>
-              {config.subtitle}
-            </p>
-            <div className="mt-auto relative z-10">
-              <button
+          <div className="md:col-span-8 p-12 flex flex-col justify-center">
+             <div className="flex items-center gap-2 mb-4 text-[#ff5c00]">
+                <FaCrosshairs size={14} />
+                <span className="text-[10px] font-black tracking-widest uppercase">INITIALIZE_SESSION</span>
+             </div>
+             <h3 className="text-4xl font-heading mb-4 text-black">{config.title}</h3>
+             <p className="text-black/60 mb-8 leading-relaxed">// {config.subtitle}</p>
+             <button
                 onClick={() => navigate(config.dashRoute)}
-                className={`group inline-flex items-center justify-center gap-3 px-8 py-4 ${config.accent} font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto`}
+                className="w-full sm:w-auto px-10 py-5 bg-black text-white font-black hover:bg-[#ff5c00] transition-colors flex items-center justify-center gap-4 group"
               >
-                Access Dashboard
-                <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+                ACCESS_DASHBOARD
+                <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
               </button>
-            </div>
           </div>
         </motion.div>
       </div>
@@ -198,7 +188,7 @@ const AnimatedCard = () => {
   }
 
   // ----------------------------------------------------------------------
-  // RENDER FOR CUSTOMERS & GUESTS (Restored to original state)
+  // RENDER FOR CUSTOMERS & GUESTS
   // ----------------------------------------------------------------------
   return (
     <div className="flex flex-col font-sans">
@@ -209,102 +199,124 @@ const AnimatedCard = () => {
         onCategoryClick={handleCategoryClick}
       />
 
-      {/* ✨ LIGHT CONTENT GRID SECTION ✨ */}
+      {/* ✨ INDUSTRIAL CONTENT GRID SECTION ✨ */}
       {(hasSearched || loading || error) && (
-        <div className="flex-1 w-full bg-gray-50 text-gray-900 pb-16">
-          <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-8 py-8 md:py-12">
+        <div ref={resultsRef} className="flex-1 w-full bg-[#e5e5e5] text-black pb-32 border-t-8 border-black">
+          <div className="max-w-[1600px] mx-auto w-full px-8 py-20 lg:py-32">
 
             {/* Status Handling */}
-            {
-              loading && (
-                <div className="flex flex-col items-center justify-center py-16">
-                  <div className="w-12 h-12 border-4 border-gray-200 border-t-neutral-800 rounded-full animate-spin mb-4 shadow-sm"></div>
-                  <p className="text-gray-500 font-medium tracking-wide">Gathering files...</p>
-                </div>
-              )
-            }
+            {loading && (
+              <div className="flex flex-col items-center justify-center py-32 border-4 border-dashed border-black/20 bg-white/50">
+                <div className="w-20 h-20 border-8 border-black/10 border-t-[#ff5c00] animate-spin mb-8"></div>
+                <p className="text-[12px] font-black tracking-[0.5em] uppercase">SYSTEM_FETCHING_QUERY_BATCH...</p>
+              </div>
+            )}
 
-            {
-              error && (
-                <div className="max-w-md mx-auto bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded-xl text-center shadow-sm">
-                  <span className="font-semibold">Oops!</span> {error}
-                </div>
-              )
-            }
+            {error && (
+              <div className="max-w-2xl mx-auto bg-[#ff5c00] border-4 border-black text-black px-10 py-8 shadow-[15px_15px_0px_#000] text-center font-black uppercase tracking-widest">
+                <span className="text-5xl block mb-4">⚠️</span>
+                <span className="text-2xl">QUERY_ERROR_LOG:</span> <br/>
+                <span className="text-sm mt-2 block opacity-80">{error}</span>
+              </div>
+            )}
 
-            {
-              !loading && !error && hasSearched && results.length === 0 && (
-                <div className="text-center py-24 bg-white rounded-[2rem] border border-gray-100 shadow-sm max-w-3xl mx-auto">
-                  <div className="text-5xl mb-4 opacity-50">🔍</div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">No items found</h3>
-                  <p className="text-gray-500">We couldn't find anything matching "{searchQuery}". Try a broader term.</p>
-                </div>
-              )
-            }
+            {!loading && !error && hasSearched && results.length === 0 && (
+              <div className="text-center py-40 bg-white border-4 border-black shadow-[20px_20px_0px_#000] max-w-4xl mx-auto flex flex-col items-center">
+                <div className="text-8xl mb-8 opacity-10 font-heading">NOT_FOUND</div>
+                <h3 className="text-4xl font-heading text-black mb-4">ZERO_RESULTS_FETCHED</h3>
+                <p className="text-black/50 font-mono text-sm max-w-md uppercase tracking-widest">// No matching assets found for tag "{searchQuery}". Recommended action: Expand parameters.</p>
+              </div>
+            )}
 
-            {/* Results Grid (Clean & Modern Structure) */}
+            {/* Results Grid (Industrial HUD Structure) */}
             <AnimatePresence>
               {!loading && results.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="w-full"
-                >
-                  <div className="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
-                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                      Results for <span className="text-neutral-500 font-medium">"{searchQuery}"</span>
-                    </h2>
-                    <span className="px-3 py-1 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-semibold shadow-sm">
-                      {results.length} Found
-                    </span>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full">
+                  <div className="mb-16 flex flex-col lg:flex-row lg:items-end justify-between border-b-8 border-black pb-12 gap-8">
+                    <div className="space-y-6">
+                       <div className="flex items-center gap-3 text-[12px] font-black uppercase text-[#ff5c00]">
+                         <div className="w-16 h-[3px] bg-[#ff5c00]"></div>
+                         DATA_STREAM_RESULTS
+                       </div>
+                       <h2 className="text-6xl md:text-9xl font-heading text-black tracking-tighter leading-none">
+                         "{searchQuery}"
+                       </h2>
+                    </div>
+                    <div className="flex flex-col items-start lg:items-end bg-black text-white p-6 min-w-[240px] shadow-[10px_10px_0px_#ff5c00]">
+                       <span className="text-[10px] font-bold opacity-50 uppercase tracking-[0.2em] mb-2">SYSTEM_BATCH_COUNT</span>
+                       <span className="text-4xl font-heading leading-tight">
+                         00{results.length} UNITS
+                       </span>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 lg:grid-cols-8 gap-2 xl:gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
                     {results.map((product, i) => {
                       const isLastElement = i === results.length - 1;
                       return (
                         <motion.div
                           ref={isLastElement ? lastElementRef : null}
                           key={`${product._id}-${i}`}
-                          initial={{ opacity: 0, y: 15 }}
+                          initial={{ opacity: 0, y: 40 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: (i % 10) * 0.03, duration: 0.4 }}
+                          transition={{ delay: (i % 10) * 0.05, duration: 0.6 }}
                           onClick={() => navigate(`/product/${product._id}`)}
-                          className="group cursor-pointer flex flex-col bg-white rounded-2xl p-4 border border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                          className="group cursor-pointer flex flex-col bg-white border-4 border-black shadow-[10px_10px_0px_#000] hover:shadow-[15px_15px_0px_#ff5c00] transition-all relative overflow-hidden"
                         >
-                          {/* Image Container - Clean and perfectly rounded */}
-                          <div className="w-full aspect-[4/4] bg-gray-50 rounded-xl overflow-hidden mb-4 relative">
-                            <img
-                              src={product.images?.[0]?.url ? `${product.images[0].url}` : product.image || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"}
-                              alt={product.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                          </div>
+                           <div className="flex justify-between items-center bg-black text-white px-4 py-2 text-[10px] font-black tracking-widest uppercase">
+                             <span>REF: {product._id?.toString().slice(-6).toUpperCase()}</span>
+                             <FaPlus size={10} className="text-[#ff5c00]" />
+                           </div>
 
-                          {/* Content Details - Soft and legible */}
-                          <div className="px-2 flex flex-col flex-1 pb-1">
-                            <h3 className="text-sm font-semibold text-gray-900 leading-tight mb-1.5 line-clamp-1 group-hover:text-neutral-600 transition-colors">
-                              {product.name}
-                            </h3>
-                            <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">
-                              {product.description}
-                            </p>
-                            <div className="mt-auto flex justify-between items-end">
-                              <span className="text-[17px] font-black text-gray-900">
-                                ₹{product.price}
-                              </span>
-                            </div>
-                          </div>
+                           <div className="aspect-square bg-white p-8 relative overflow-hidden flex items-center justify-center border-b-4 border-black">
+                             <img
+                               src={product.images?.[0]?.url ? `${product.images[0].url}` : product.image || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"}
+                               alt={product.name}
+                               className="w-full h-full object-contain filter group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                             />
+                             <div className="absolute inset-0 border-8 border-[#ff5c00]/0 group-hover:border-[#ff5c00]/5 transition-all pointer-events-none"></div>
+                           </div>
+ 
+                           <div className="p-6 flex flex-col flex-1 bg-white">
+                             <h3 className="text-2xl font-black text-black leading-none mb-4 uppercase tracking-tighter line-clamp-1 group-hover:text-[#ff5c00] transition-colors">
+                               {product.name}
+                             </h3>
+                             <p className="text-[11px] text-black/40 line-clamp-2 mb-8 font-mono leading-tight uppercase tracking-widest">
+                               // {product.description}
+                             </p>
+                             <div className="mt-auto flex justify-between items-center pt-6 border-t-2 border-black/10">
+                                <div className="flex flex-col">
+                                  <span className="text-[10px] font-black text-black/30 tracking-widest uppercase mb-1">UNIT_PRICE</span>
+                                  <span className="text-3xl font-heading text-black leading-none">
+                                    ₹{product.price}
+                                  </span>
+                                </div>
+                                <div className="w-14 h-14 bg-black text-white flex items-center justify-center group-hover:bg-[#ff5c00] group-hover:text-black transition-all">
+                                  <FaArrowRight size={20} />
+                                </div>
+                             </div>
+                           </div>
+
+                           <div className="h-2 bg-black w-full flex opacity-0 group-hover:opacity-100 transition-opacity">
+                             {[...Array(15)].map((_, j) => (
+                               <div key={j} className="h-full flex-1 border-r border-[#ff5c00]/30 last:border-r-0"></div>
+                             ))}
+                           </div>
                         </motion.div>
                       )
                     })}
                   </div>
 
-                  {/* Clean Infinite Scroll Loader */}
                   {loadingMore && (
-                    <div className="flex justify-center py-12 mt-8">
-                      <div className="w-10 h-10 border-4 border-gray-100 border-t-orange-500 rounded-full animate-spin"></div>
+                    <div className="flex flex-col items-center justify-center py-24 mt-20 border-t-4 border-black/5 bg-black/5">
+                       <div className="w-24 h-3 bg-black/10 overflow-hidden relative">
+                         <motion.div 
+                           animate={{ x: [-100, 150] }}
+                           transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                           className="absolute top-0 left-0 h-full w-24 bg-[#ff5c00]"
+                         ></motion.div>
+                       </div>
+                       <span className="mt-6 text-[12px] font-black tracking-[0.5em] text-black">BUFFERING_QUERY_STREAM...</span>
                     </div>
                   )}
                 </motion.div>

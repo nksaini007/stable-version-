@@ -9,7 +9,6 @@ import {
   Store,
   Users,
   HardHat,
-  Wrench,
   LogIn,
 } from "lucide-react";
 import logo from "../logo.png";
@@ -46,8 +45,8 @@ const Nev = () => {
 
   return (
     <>
-      {/* ================= NAVBAR ================= */}
-      <nav className="fixed top-0 w-full z-50 bg-[#e5e5e5] border-b-4 border-black">
+      {/* ================= DESKTOP NAVBAR ================= */}
+      <nav className="fixed top-0 w-full z-50 bg-[#e5e5e5] border-b-4 border-black hidden md:block">
         <div className="relative max-w-[1600px] mx-auto flex items-stretch h-[72px]">
 
           {/* LOGO BOX */}
@@ -56,7 +55,7 @@ const Nev = () => {
           </Link>
 
           {/* LINKS GRID */}
-          <div className="flex-1 hidden md:flex">
+          <div className="flex-1 flex">
              {navLinks.map((link, i) => {
                const path = getPath(link);
                return (
@@ -64,7 +63,7 @@ const Nev = () => {
                    key={i}
                    to={path}
                    className={({ isActive }) =>
-                     `flex items-center px-8 border-r-4 border-black text-[12px] font-black uppercase tracking-widest transition-all ${isActive
+                     `flex items-center px-6 xl:px-8 border-r-4 border-black text-[12px] font-black uppercase tracking-widest transition-all ${isActive
                        ? "bg-black text-white"
                        : "hover:bg-black/5 text-black"
                      }`
@@ -100,52 +99,43 @@ const Nev = () => {
         </div>
       </nav>
 
-      {/* MOBILE MENU BUTTON */}
-      <div className="md:hidden fixed top-4 left-4 z-[90]">
-        <button
-          onClick={() => setMobileMenuOpen(true)}
-          className="w-10 h-10 rounded-xl bg-neutral-900/85 backdrop-blur-md border border-neutral-800 flex items-center justify-center text-gray-300"
-        >
-          <Menu size={20} />
-        </button>
-      </div>
-
-      {/* MOBILE CART */}
-      <div className="md:hidden fixed top-4 right-4 z-[90]">
-        <Link
-          to="/cart"
-          className="w-10 h-10 rounded-xl bg-[#0d1117]/85 border border-white/10 flex items-center justify-center text-gray-300"
-        >
-          <ShoppingCart size={18} />
+      {/* ================= MOBILE HEADER ================= */}
+      <div className="md:hidden fixed top-0 w-full h-[64px] bg-[#e5e5e5] border-b-4 border-black z-[100] flex items-center justify-between px-6">
+        <Link to="/" className="flex items-center gap-2">
+           <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-heading text-xl">STN</div>
+           <span className="text-xs font-black tracking-widest uppercase">STINCHAR_V2</span>
         </Link>
+        <div className="flex items-center gap-4">
+           <Link to="/cart" className="text-black p-2 border-2 border-black">
+              <ShoppingCart size={20} />
+           </Link>
+           <button 
+            onClick={() => setMobileMenuOpen(true)}
+            className="p-2 bg-black text-white border-2 border-black"
+           >
+              <Menu size={24} />
+           </button>
+        </div>
       </div>
 
       {/* MOBILE SIDE DRAWER */}
       {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/60 z-[190]"
+        <div 
+          className="fixed inset-0 bg-black/80 z-[190] backdrop-blur-sm"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
-
       <div
-        className={`fixed inset-y-0 left-0 w-[280px] bg-neutral-900 z-[200] transform transition-transform ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed inset-y-0 right-0 w-[85%] max-w-[320px] bg-[#e5e5e5] border-l-4 border-black z-[200] transform transition-transform duration-500 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        <div className="flex justify-between p-5 border-b border-neutral-800">
-          <Link to="/" className="flex items-center gap-2.5" onClick={() => setMobileMenuOpen(false)}>
-            <img src={logo} alt="Stinchar Logo" className="h-7 w-auto object-contain" />
-            <span className="text-xl font-black text-white">
-              Stin<span className="text-gray-400">char</span>
-            </span>
-          </Link>
-
+        <div className="flex justify-between items-center p-6 border-b-4 border-black bg-black text-white">
+          <span className="font-heading text-xl tracking-tighter">STN.MENU</span>
           <button onClick={() => setMobileMenuOpen(false)}>
-            <X size={20} />
+            <X size={28} />
           </button>
         </div>
 
-        <div className="p-4 space-y-2">
+        <div className="p-4 space-y-3">
           {navLinks.map((link, i) => {
             const path = getPath(link);
             return (
@@ -153,61 +143,61 @@ const Nev = () => {
                 key={i}
                 to={path}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 rounded-xl text-gray-400 hover:bg-white/10"
+                className={({ isActive }) => 
+                  `block px-6 py-5 border-4 border-black font-black uppercase text-sm tracking-widest transition-all ${isActive ? "bg-black text-white translate-x-2" : "hover:bg-[#ff5c00]"}`
+                }
               >
-                {link}
+                {link}._
               </NavLink>
             );
           })}
         </div>
-      </div>
 
-      {/* ================= FLOATING STINCHAR LOGO ================= */}
-      <div className="md:hidden fixed bottom-[85px] left-1/2 -translate-x-1/2 z-[110] pointer-events-none">
-        <div className="px-4 py-1 rounded-full bg-neutral-900/90 backdrop-blur-xl border border-neutral-800 shadow-lg">
-          <span className="text-sm font-black text-white tracking-wide">
-            Stin<span className="text-gray-400">char</span>
-          </span>
+        <div className="absolute bottom-0 w-full p-6 bg-black text-white">
+           <span className="text-[10px] font-mono opacity-50 uppercase tracking-[0.3em]">
+             Ref_system_stinchar_v2.0.4
+           </span>
         </div>
       </div>
 
       {/* ================= MOBILE BOTTOM NAVBAR ================= */}
-      <div className="fixed bottom-2 left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] md:hidden z-[100]">
-        <div className="bg-neutral-900/85 backdrop-blur-3xl border border-neutral-800 rounded-3xl shadow-2xl ">
-          <div className="flex justify-between items-center px-3">
+      <div className="fixed bottom-0 left-0 w-full md:hidden z-[100] bg-[#e5e5e5] border-t-4 border-black">
+          <div className="flex justify-between items-stretch">
 
             {[
-              { to: "/", icon: Home },
-              { to: "/project-plans", icon: Store },
-              { to: "/community", icon: Users },
-              { to: "/my-construction", icon: HardHat },
-              { to: "/services", icon: Wrench },
-            ].map(({ to, icon: Icon }, i) => (
+              { to: "/", icon: Home, label: "INIT" },
+              { to: "/project-plans", icon: Store, label: "PLAN" },
+              { to: "/community", icon: Users, label: "COMM" },
+              { to: "/my-construction", icon: HardHat, label: "HARD" },
+            ].map(({ to, icon: Icon, label }, i) => (
               <NavLink
                 key={i}
                 to={to}
                 className={({ isActive }) =>
-                  `flex items-center justify-center w-[46px] h-[52px] rounded-2xl ${isActive ? "text-gray-300 bg-white/5" : "text-gray-400"
+                  `flex-1 flex flex-col items-center justify-center h-[68px] border-r-2 border-black/10 transition-all ${isActive ? "bg-black text-[#ff5c00]" : "text-black hover:bg-black/5"
                   }`
                 }
               >
                 <Icon size={20} />
+                <span className="text-[8px] font-black mt-1 tracking-tighter">{label}</span>
               </NavLink>
             ))}
 
-            {user ? (
-              <ProfileDropdown user={user} logout={logout} mobile />
-            ) : (
-              <NavLink
-                to="/login"
-                className="flex items-center justify-center w-[46px] h-[52px] text-gray-400"
-              >
-                <LogIn size={20} />
-              </NavLink>
-            )}
+            <div className="flex-1 flex items-center justify-center bg-black">
+               {user ? (
+                 <ProfileDropdown user={user} logout={logout} mobile />
+               ) : (
+                <NavLink
+                  to="/login"
+                  className="flex flex-col items-center justify-center w-full h-full bg-[#ff5c00] text-black border-l-2 border-black"
+                >
+                  <LogIn size={20} />
+                  <span className="text-[8px] font-black mt-1">AUTH</span>
+                </NavLink>
+               )}
+            </div>
 
           </div>
-        </div>
       </div>
     </>
   );
