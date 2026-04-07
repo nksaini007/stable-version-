@@ -6,6 +6,7 @@ import { AuthContext } from "../context/AuthContext";
 import API from "../api/api";
 import ArchitectHero from "./ArchitectHero";
 import SellerHero from "./SellerHero";
+import CustomerLanding from "./CustomerLanding";
 
 const AnimatedCard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -201,94 +202,12 @@ const AnimatedCard = () => {
   // ----------------------------------------------------------------------
   return (
     <div className="flex flex-col font-sans">
-
-      {/* 🌟 PREMIUM DARK HERO SECTION 🌟 */}
-      <div className="relative w-full pt-16 pb-24 px-4 sm:px-8 lg:px-12 bg-white-300 border-b border-neutral-100 overflow-hidden text-white">
-
-        {/* Soft Background Blurs */}
-        <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gray-500/10 rounded-full blur-[120px] opacity-40 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-gray-400/5 rounded-full blur-[120px] opacity-40 translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
-
-        <div className="max-w-7xl mx-auto relative z-10 flex flex-col items-center">
-
-          {/* Main Hero Image Display */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-5xl relative mb-12"
-          >
-            {/* Stunning Image Container */}
-            <div className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] rounded-[1.5rem] overflow-hidden shadow-2xl bg-neutral-800 relative group border border-neutral-800">
-              {/* Replace url with specific user upload if desired */}
-              <img
-                // src="https://image2url.com/r2/default/images/1774156367779-ef5ba5aa-29aa-4d80-a3f1-627d52dbd842.jpeg"
-                src="https://image2url.com/r2/default/images/1774837789134-e77475b8-ce1c-4c29-8b62-2dc6aa1734b7.jpg"
-                alt="Main Visual"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-in-out"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-
-              {/* Overlay Text inside the Image */}
-              <div className="absolute bottom-8 left-8 sm:bottom-12 sm:left-12 max-w-2xl">
-                <span className="px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-xs sm:text-sm font-semibold tracking-widest text-white border border-white/20 mb-4 inline-block shadow-sm">
-                  STINCHAR INNOVATIONS
-                </span>
-                <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight drop-shadow-md">
-                  BY<br />NK_SAINI and Team
-                </h1>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Sleek Floating Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="w-full max-w-3xl -mt-6 sm:-mt-24 relative z-20 px-4 sm:px-0"
-          >
-            <form onSubmit={handleSearch} className="relative flex flex-col sm:flex-row items-center w-full shadow-2xl rounded-2xl sm:rounded-full bg-neutral-800/80 backdrop-blur-md p-2 border border-neutral-700 gap-2 sm:gap-0">
-              <div className="hidden sm:block pl-4 text-gray-500">
-                <FaSearch className="text-xl" />
-              </div>
-
-              <div className="flex w-full items-center pl-2 sm:pl-1 pr-2 sm:pr-6 py-2 sm:py-4">
-                <FaSearch className="text-gray-500 text-lg sm:hidden mr-2" />
-                <input
-                  type="text"
-                  placeholder="Search premium assets, designers..."
-                  value={searchQuery || ""}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent text-white text-sm sm:text-base font-medium focus:outline-none placeholder-gray-500"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full sm:w-auto px-8 py-3 sm:py-4 bg-white hover:bg-gray-100 text-neutral-900 text-base sm:text-lg font-semibold rounded-2xl sm:rounded-full transition-all shadow-md hover:-translate-y-0.5"
-              >
-                Search
-              </button>
-            </form>
-
-            {/* Elegant Category Pills */}
-            <div className="flex flex-wrap justify-center gap-3 mt-8">
-              {["Web Design", "Architects", "3D Models", "Concrete", "Tools"].map((cat, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handleCategoryClick(cat)}
-                  className="px-5 py-2.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm border border-gray-200 text-gray-700 font-semibold text-sm hover:border-orange-400 hover:text-orange-600 hover:shadow-md transition-all ease-out"
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </motion.div >
-
-        </div >
-      </div >
+      <CustomerLanding 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onSearch={handleSearch}
+        onCategoryClick={handleCategoryClick}
+      />
 
       {/* ✨ LIGHT CONTENT GRID SECTION ✨ */}
       {(hasSearched || loading || error) && (

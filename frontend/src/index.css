@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+:root {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: 'Marcellus', serif;
+}
+
 html, body {
   /* Prevent content from being hidden behind the floating mobile dock */
   padding-bottom: 5rem;

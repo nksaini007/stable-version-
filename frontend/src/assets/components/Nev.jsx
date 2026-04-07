@@ -48,16 +48,18 @@ const Nev = () => {
     <>
       {/* ================= NAVBAR ================= */}
       <nav className="hidden md:block sticky top-0 w-full z-50">
-        <div className="absolute inset-0 bg-neutral-900/90 backdrop-blur-2xl border-b border-neutral-800"></div>
+        <div className="absolute inset-0 bg-[#0a0a0b]/80 backdrop-blur-xl border-b border-white/5"></div>
 
-        <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-[60px] md:h-[64px]">
+        <div className="relative max-w-[1400px] mx-auto px-6 lg:px-12">
+          <div className="flex items-center justify-between h-[72px]">
 
             {/* LOGO */}
-            <Link to="/" className="flex items-center gap-2.5 z-10">
-              {/* <img src={logo} alt="Stinchar Logo" className="h-8 md:h-9 w-auto object-contain" /> */}
-              <span className="text-xl md:text-[22px] font-black text-white tracking-tight">
-                Stin<span className="text-gray-400">char</span>
+            <Link to="/" className="flex items-center gap-3 z-10 group">
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center group-hover:rotate-6 transition-transform duration-500">
+                <span className="text-black font-black text-xl">S</span>
+              </div>
+              <span className="text-2xl font-heading text-white tracking-tight">
+                Stin<span className="text-white/40">char</span>
               </span>
             </Link>
 

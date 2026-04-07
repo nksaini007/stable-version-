@@ -15,7 +15,7 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
   // Fetch trending items from config API, fallback to JSON
   useEffect(() => {
     const fetchTrending = async () => {
-      const cardColors = ["#FFB38E", "#E5E7EB", "#DCD6F7", "#F8B195", "#A8E6CF", "#DCEDC1"];
+      const cardColors = ["#161618", "#1c1c1f", "#121214", "#1a1a1c", "#0f0f10", "#18181b"];
       try {
         const res = await API.get(`/config`);
         const trending = res.data?.trendingItems || [];
@@ -97,17 +97,15 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
   if (items.length === 0) return null;
 
   return (
-    <section className="pt-0 pb-16 bg-gray-200 overflow-hidden">
+    <section className="pt-24 pb-24 bg-[#0a0a0b] overflow-hidden">
       <div className="mx-auto max-w-8xl px-6">
         {/* Header */}
-        <div className="flex items-end justify-between mb-10">
-          <div className="space-y-1">
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight capitalize leading-none">
-              {title.split('\t')[0]}
+        <div className="flex items-end justify-between mb-12">
+          <div className="space-y-2">
+            <h2 className="text-4xl md:text-5xl font-heading text-white tracking-tight">
+              {title || "Trending Collections"}
             </h2>
-            <p className="text-gray-400 font-medium text-sm tracking-wide uppercase">
-              {title.split('\t')[1] || ""}
-            </p>
+            <div className="w-20 h-1 bg-white/20 rounded-full"></div>
           </div>
           <div className="flex gap-3">
             <button
