@@ -39,20 +39,20 @@ const createOrder = async (req, res) => {
         const verifiedOrderItems = [];
 
         for (const item of clientItems) {
-            const dbProduct = await Product.findById(item.product || item._id);
+            const dbProduct = await Product.findById(item.product || item._id).populate("seller", "name email phone businessName");
             if (!dbProduct) {
                 return res.status(404).json({ message: `Product not found: ${item.name}` });
             }
 
             // Determine the correct price tier based on user role
-            let unitPrice = dbProduct.price; // Default
+            let unitPrice = dbProduct.price; 
             if (req.user.role === "architect" || req.user.role === "architectPartner") {
                 unitPrice = dbProduct.pricingTiers?.architect || dbProduct.price;
             } else if (dbProduct.pricingTiers?.normal) {
                 unitPrice = dbProduct.pricingTiers.normal;
             }
 
-            // Add weight for delivery calculation (parsing weight string like "10kg")
+            // Add weight for delivery calculation
             const weightMatch = (dbProduct.weight || "0").match(/(\d+(\.\d+)?)/);
             const unitWeight = weightMatch ? parseFloat(weightMatch[0]) : 0;
             totalWeight += unitWeight * item.qty;
@@ -66,7 +66,12 @@ const createOrder = async (req, res) => {
                 image: dbProduct.images?.[0]?.url || "",
                 price: unitPrice,
                 product: dbProduct._id,
-                seller: dbProduct.seller,
+                seller: {
+                    _id: dbProduct.seller._id,
+                    name: dbProduct.seller.businessName || dbProduct.seller.name,
+                    email: dbProduct.seller.email,
+                    phone: dbProduct.seller.phone,
+                },
             });
         }
 
