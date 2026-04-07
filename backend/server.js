@@ -140,38 +140,54 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/health", (req, res) => {
-  res.status(200).json({ 
+  const isAdmin = req.headers["admin-key"] === process.env.ADMIN_MASTER_KEY;
+  
+  const healthData = { 
     status: "ok", 
     message: "Server is healthy",
     version: "1.0.6",
     timestamp: new Date().toISOString(),
-    gmailConfigured: !!(process.env.GMAIL_USER && process.env.GMAIL_PASS),
-    brevoConfigured: !!process.env.BREVO_API_KEY,
-  });
+  };
+
+  if (isAdmin) {
+    healthData.gmailConfigured = !!(process.env.GMAIL_USER && process.env.GMAIL_PASS);
+    healthData.brevoConfigured = !!process.env.BREVO_API_KEY;
+  }
+
+  res.status(200).json(healthData);
 });
 
 // ✅ Email diagnostics endpoint — checks if Gmail SMTP is working
 app.get("/api/email-check", async (req, res) => {
   try {
+    if (req.headers["admin-key"] !== process.env.ADMIN_MASTER_KEY) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
     const { verifyEmailConfig } = require("./config/otpService");
     const result = await verifyEmailConfig();
     res.json({
       gmailUser: process.env.GMAIL_USER || "NOT SET",
-      gmailPassLength: process.env.GMAIL_PASS?.replace(/\s/g, "").length || 0,
       smtpVerified: result.ok,
       error: result.error || null,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Internal server error during diagnostics" });
   }
 });
 
 // ✅ Global error handler — prevents unhandled errors from killing CORS headers
 app.use((err, req, res, next) => {
-  console.error("[Global Error Handler]", err.message);
-  res.status(err.status || 500).json({
-    message: err.message || "Internal Server Error",
-  });
+  const status = err.status || 500;
+  const message = status === 500 && process.env.NODE_ENV === "production"
+    ? "Internal Server Error"
+    : err.message || "Internal Server Error";
+
+  if (status === 500) {
+    console.error("[Global Error Handler]", err.message, err.stack);
+  }
+
+  res.status(status).json({ message });
 });
 
 // ✅ Start server

@@ -43,18 +43,16 @@ const sendViaBrevo = async (to, subject, htmlContent) => {
         const data = await response.json();
 
         if (response.ok) {
-            console.log(`[Brevo] ✅ Email sent to ${to} | MessageId: ${data.messageId}`);
+            const maskedTo = to.replace(/^(.)(.*)(.@.*)$/, (_, a, b, c) => a + b.replace(/./g, "*") + c);
+            console.log(`[Brevo] ✅ Email sent to ${maskedTo} | MessageId: ${data.messageId}`);
             return { success: true, messageId: data.messageId };
         } else {
-            console.error(`[Brevo] ❌ API Error Details:`, JSON.stringify(data, null, 2));
-            let detail = data.message || "Unknown Brevo Error";
-            if (data.code === "unauthorized") detail = "Invalid API Key";
-            if (data.code === "account_not_active") detail = "Brevo account deactivated";
-            return { success: false, error: detail };
+            console.error(`[Brevo] ❌ API Error:`, data.message || "Unknown error");
+            return { success: false, error: data.message || "Unknown Brevo Error" };
         }
     } catch (err) {
-        console.error(`[Brevo] ❌ Network Error:`, err.message);
-        return { success: false, error: err.message };
+        console.error(`[Brevo] ❌ Network Error`);
+        return { success: false, error: "Network error during email delivery" };
     }
 };
 
@@ -85,21 +83,17 @@ const sendViaGmail = async (to, subject, htmlContent) => {
             html: htmlContent,
         });
 
-        console.log(`[Gmail SMTP] ✅ Email sent to ${to} | MessageId: ${info.messageId}`);
+        const maskedTo = to.replace(/^(.)(.*)(.@.*)$/, (_, a, b, c) => a + b.replace(/./g, "*") + c);
+        console.log(`[Gmail SMTP] ✅ Email sent to ${maskedTo} | MessageId: ${info.messageId}`);
         return { success: true, messageId: info.messageId };
     } catch (err) {
-        console.error(`[Gmail SMTP] ❌ Error Flow:`, {
-            message: err.message,
-            code: err.code,
-            command: err.command,
-            response: err.response
-        });
+        console.error(`[Gmail SMTP] ❌ Delivery Error`);
         
-        let customError = err.message;
-        if (err.code === 'ETIMEDOUT') customError = "Connection timed out. Render/ISP might be blocking SMTP ports.";
-        if (err.code === 'EAUTH') customError = "Gmail Authentication failed. Check App Password.";
+        let customError = "SMTP delivery failure";
+        if (err.code === 'ETIMEDOUT') customError = "Connection timed out.";
+        if (err.code === 'EAUTH') customError = "Authentication failed.";
         
-        return { success: false, error: customError, code: err.code };
+        return { success: false, error: customError };
     }
 };
 
@@ -137,18 +131,15 @@ const sendEmailOTP = async (email, otp) => {
 
     // Try Brevo first (works everywhere, including Render)
     if (process.env.BREVO_API_KEY) {
-        console.log(`[otpService] Using Brevo API to send OTP to: ${email}`);
         const result = await sendViaBrevo(email, subject, html);
         if (result.success) return result;
-        console.error(`[otpService] Brevo delivery failed for ${email}:`, result.error);
-        console.warn(`[otpService] Trying Gmail SMTP fallback...`);
+        console.warn(`[otpService] Brevo delivery failed, trying fallback...`);
     } else {
         console.warn(`[otpService] Skipping Brevo (BREVO_API_KEY missing)`);
     }
 
     // Fallback to Gmail SMTP (works locally, blocked on Render free tier)
     if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
-        console.log(`[otpService] Using Gmail SMTP to send OTP to: ${email}`);
         return await sendViaGmail(email, subject, html);
     }
 
@@ -224,14 +215,12 @@ const sendPhoneOTPViaEmail = async (phone, otp, email) => {
 
     // Use the same email sending pipeline (Brevo → Gmail fallback)
     if (process.env.BREVO_API_KEY) {
-        console.log(`[otpService] Sending phone OTP for ${phone} via Brevo to email: ${email}`);
         const result = await sendViaBrevo(email, subject, html);
         if (result.success) return result;
         console.warn(`[otpService] Brevo failed for phone OTP, trying Gmail...`);
     }
 
     if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
-        console.log(`[otpService] Sending phone OTP for ${phone} via Gmail to email: ${email}`);
         return await sendViaGmail(email, subject, html);
     }
 

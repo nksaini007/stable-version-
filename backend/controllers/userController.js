@@ -131,8 +131,8 @@ const createUser = async (req, res) => {
     delete userResponse.password;
     res.status(201).json({ message: "Signup successful", token, user: userResponse });
   } catch (err) {
-    console.error("Signup Error:", err);
-    res.status(500).json({ error: err.message, stack: err.stack });
+    console.error("Signup Error:", err.message);
+    res.status(500).json({ error: "Internal server error during signup" });
   }
 };
 
@@ -242,7 +242,6 @@ const updateMyProfile = async (req, res) => {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    console.log("Profile update request for user:", req.user._id, req.body);
     const {
       name, phone, bio, address, pincode, aadhaarNumber,
       businessName, gstNumber, panNumber, businessAddress, businessCategory, bankAccount, ifscCode, companyRegistrationNumber, tradeLicenseNumber, fssaiLicense,
@@ -354,13 +353,8 @@ const updateMyProfile = async (req, res) => {
     delete userResponse.password;
     res.json({ message: "Profile updated", user: userResponse });
   } catch (err) {
-    console.error("Profile update error details:", {
-      userId: req.user?._id,
-      message: err.message,
-      name: err.name,
-      stack: err.stack
-    });
-    res.status(400).json({ error: err.message, type: err.name });
+    console.error("Profile update error for user:", req.user?._id, err.message);
+    res.status(400).json({ error: "Failed to update profile", type: err.name });
   }
 };
 
@@ -612,7 +606,6 @@ const getArchitectPublicProfile = async (req, res) => {
  * Body: { email, phone, type } where type is 'email' or 'phone'
  */
 const sendOTP = async (req, res) => {
-    console.log(`[sendOTP] Request received. Body:`, JSON.stringify(req.body));
     try {
         const { phone, type } = req.body;
         const email = req.body.email?.toLowerCase();
