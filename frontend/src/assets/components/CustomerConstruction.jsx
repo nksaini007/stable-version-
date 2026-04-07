@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../api/api";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     FaMapMarkerAlt, FaUserTie, FaTasks,
     FaHardHat, FaBullhorn, FaCubes, FaChevronDown, FaChevronUp,
-    FaEnvelope
+    FaEnvelope, FaTerminal, FaCrosshairs, FaShieldAlt
 } from "react-icons/fa";
 import { getOptimizedImage } from "../utils/imageUtils";
 import Nev from "./Nev";
@@ -15,6 +15,7 @@ import Footer from "./Footer";
 
 const CustomerConstruction = () => {
     const { token } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [expandedProject, setExpandedProject] = useState(null);
@@ -55,7 +56,6 @@ const CustomerConstruction = () => {
         if (token) {
             fetchProjects();
         } else {
-            // If No Token, stop loading and show login/signup prompt
             setLoading(false);
         }
     }, [token, fetchProjects]);
@@ -64,268 +64,294 @@ const CustomerConstruction = () => {
         setExpandedProject(expandedProject === id ? null : id);
     };
 
-
     if (loading) return (
-        <div className="min-h-screen bg-[#0d1117] flex flex-col justify-center items-center gap-4">
-            <div className="w-12 h-12 border-4 border-white/5 border-t-white rounded-full animate-spin"></div>
-            <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest mt-2">Loading Construction Workspace...</p>
+        <div className="min-h-screen bg-[#e5e5e5] flex flex-col justify-center items-center gap-4 font-mono">
+            <div className="w-12 h-12 border-4 border-black/5 border-t-black rounded-full animate-spin"></div>
+            <p className="text-black font-black uppercase text-[10px] tracking-widest mt-2">INIT_CONSTRUCTION_WORKSPACE...</p>
         </div>
     );
 
     return (
-        <div className="bg-[#0d1117] min-h-screen text-white font-sans selection:bg-indigo-500 selection:text-white">
+        <div className="bg-[#e5e5e5] min-h-screen text-black font-mono selection:bg-[#ff5c00] selection:text-black overflow-hidden flex flex-col pt-20">
             <Nev />
+            
+            {/* 🏁 INDUSTRIAL GRID OVERLAY */}
+            <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
+                 style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
 
-            <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
+            <main className="relative z-10 w-full max-w-[1600px] mx-auto flex-1 flex flex-col px-4 md:px-8 border-t-4 border-black">
+                
                 {!token ? (
-                    <div className="flex flex-col items-center justify-center py-20 text-center">
-                        <div className="w-20 h-20 bg-white/[0.03] rounded-3xl flex items-center justify-center mb-6 border border-white/5">
-                            <FaUserTie className="text-3xl text-gray-400" />
+                    <div className="flex-1 flex flex-col items-center justify-center py-20 text-center">
+                        <div className="w-20 h-20 bg-black text-white flex items-center justify-center mb-8 border-4 border-black shadow-[10px_10px_0px_rgba(0,0,0,0.1)]">
+                            <FaShieldAlt className="text-3xl text-[#ff5c00]" />
                         </div>
-                        <h2 className="text-2xl md:text-3xl font-black text-white mb-4">Access Denied</h2>
-                        <p className="text-gray-400 max-w-md mx-auto mb-8 font-medium">Please login or signup to view your construction projects and track real-time progress.</p>
+                        <h2 className="text-4xl md:text-5xl font-heading font-black mb-4 uppercase tracking-tighter">Access Reserved</h2>
+                        <p className="text-black/50 max-w-sm mx-auto mb-10 font-bold uppercase text-xs leading-loose tracking-widest">
+                           IDENTIFICATION_REQUIRED. PLEASE AUTHENTICATE TO ACCESS SECURE PROJECT DATA STREAM.
+                        </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link to="/login" className="px-10 py-4 bg-white text-[#0d1117] rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-gray-200 transition-all">
-                                Login
+                            <Link to="/login" className="px-12 py-5 bg-black text-white font-black text-xs uppercase tracking-[0.3em] hover:bg-[#ff5c00] hover:text-black transition-all">
+                                [ LOGIN_INIT ]
                             </Link>
-                            <Link to="/signup" className="px-10 py-4 bg-white/5 text-white border border-white/10 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/10 transition-all text-center">
-                                Create Account
+                            <Link to="/signup" className="px-12 py-5 border-4 border-black text-black font-black text-xs uppercase tracking-[0.3em] hover:bg-black hover:text-white transition-all text-center">
+                                CREATE_NODE
                             </Link>
                         </div>
                     </div>
                 ) : (
-                    <>
-                        {/* Simplified Header */}
-                <motion.div 
-                    initial={{ opacity: 0, y: 15 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    className="mb-12"
-                >
-                    <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight flex items-center gap-3">
-                        Construction <span className="text-gray-500 font-medium">Workspace</span>
-                    </h1>
-                    <p className="text-gray-400 mt-3 text-base md:text-lg max-w-2xl font-medium leading-relaxed">
-                        Track your project's heartbeat. Monitor real-time progress, material allocation, and site updates in one reliable place.
-                    </p>
-                </motion.div>
+                    <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-0">
+                        
+                        {/* LEFT SIDEBAR: HUD & NAVIGATION */}
+                        <div className="md:col-span-3 border-r-4 border-black p-8 hidden md:flex flex-col justify-between bg-white/50">
+                           <div>
+                              <div className="flex items-center gap-2 mb-8 bg-black text-white px-3 py-1 self-start inline-flex">
+                                 <FaTerminal size={12} />
+                                 <span className="text-[10px] font-black tracking-widest uppercase">SYSTM_CNTL</span>
+                              </div>
+                              <div className="flex flex-col gap-1 mb-10">
+                                 <span className="text-[#ff5c00] font-black text-[9px] tracking-[0.4em]">// 00_CORE_STRM</span>
+                                 <h1 className="text-5xl font-pixel text-lattice leading-[0.85] tracking-tighter uppercase font-black">
+                                    CONST<br/>RUCT
+                                 </h1>
+                              </div>
 
-                {/* Projects Section */}
-                <div className="space-y-6">
-                    {projects.length === 0 ? (
-                        <div className="bg-white/[0.02] border border-white/5 py-20 px-6 rounded-3xl text-center">
-                            <FaHardHat className="text-5xl text-gray-700 mx-auto mb-4 opacity-30" />
-                            <h3 className="text-xl font-bold text-gray-400">No projects found</h3>
-                            <p className="text-gray-500 mt-2 max-w-sm mx-auto text-sm">You don't have any active construction projects assigned to your account yet.</p>
+                              <div className="space-y-4">
+                                 <div className="text-[9px] font-black opacity-30 tracking-[0.3em] mb-4">ACTIVE_NODES</div>
+                                 {projects.map((p, idx) => (
+                                    <div 
+                                      key={p._id} 
+                                      className={`p-3 border-l-4 cursor-pointer transition-all ${expandedProject === p._id ? 'border-[#ff5c00] bg-black text-white' : 'border-black/10 hover:border-black'}`}
+                                      onClick={() => setExpandedProject(p._id)}
+                                    >
+                                       <span className="text-[8px] font-black block leading-none opacity-50 mb-1">NODE_00{idx+1}</span>
+                                       <span className="text-[10px] font-black uppercase tracking-tight truncate block">{p.name}</span>
+                                    </div>
+                                 ))}
+                              </div>
+                           </div>
+
+                           <div className="mt-12">
+                              <div className="h-16 w-full mb-4 bg-black/5 flex items-end gap-1 p-2 border border-black/10">
+                                 {[...Array(18)].map((_, i) => (
+                                    <div key={i} className="flex-1 bg-black/20" style={{ height: `${Math.random() * 100}%` }}></div>
+                                 ))}
+                              </div>
+                              <div className="flex justify-between items-center text-[8px] font-black uppercase opacity-40">
+                                 <span>VER: 2.4.0</span>
+                                 <span>STAT: DEPLOYED</span>
+                              </div>
+                           </div>
                         </div>
-                    ) : (
-                        projects.map((project) => (
-                            <motion.div 
-                                key={project._id} 
-                                layout
-                                className="bg-white/[0.03] rounded-3xl border border-white/5 shadow-xl overflow-hidden transition-all"
-                            >
-                                {/* Project Card Header */}
-                                <div
-                                    className={`p-6 md:p-8 cursor-pointer transition-colors ${expandedProject === project._id ? "bg-white/5" : "hover:bg-white/[0.04]"}`}
-                                    onClick={() => toggleExpand(project._id)}
-                                >
-                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                                        <div className="flex-1 space-y-3">
-                                            <div className="flex items-center gap-2">
-                                                <span className="px-3 py-1 bg-white/[0.05] text-gray-400 rounded-full text-[10px] font-bold uppercase tracking-widest border border-white/5">
-                                                    {project.type}
-                                                </span>
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
-                                                    project.status === "Completed" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/10" :
-                                                    project.status === "In Progress" ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/10" :
-                                                    "bg-amber-500/10 text-amber-400 border-amber-500/10"
-                                                }`}>
-                                                    {project.status}
-                                                </span>
-                                            </div>
-                                            <h2 className="text-2xl md:text-3xl font-black text-white">{project.name}</h2>
-                                            <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold">
-                                                <FaMapMarkerAlt className="text-gray-600" /> {project.location}
-                                            </div>
-                                        </div>
 
-                                        <div className="flex items-center gap-6 w-full md:w-auto">
-                                            {/* Progress Info */}
-                                            <div className="flex flex-col items-end gap-1">
-                                                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Progress</span>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-32 h-2 bg-white/5 rounded-full overflow-hidden hidden sm:block">
-                                                        <motion.div 
+                        {/* RIGHT MAIN PANEL: PROJECT DETAILS */}
+                        <div className="md:col-span-9 flex flex-col">
+                           
+                           {/* HEADER BAR */}
+                           <div className="h-14 bg-black flex items-center px-8 justify-between">
+                              <div className="flex gap-4">
+                                 {[...Array(6)].map((_, i) => (
+                                    <div key={i} className="w-8 h-full skew-x-[30deg] border-r border-white/20"></div>
+                                 ))}
+                              </div>
+                              <div className="text-white text-[10px] font-black tracking-[0.4em] flex items-center gap-3">
+                                 <FaCrosshairs size={12} className="text-[#ff5c00]" />
+                                 SECURE_WORKSPACE_ACTIVE
+                              </div>
+                           </div>
+
+                           <div className="flex-1 p-6 md:p-12 overflow-y-auto">
+                              {projects.length === 0 ? (
+                                 <div className="flex-1 flex flex-col items-center justify-center py-20 text-center opacity-30 select-none">
+                                    <FaHardHat size={80} className="mb-6" />
+                                    <h3 className="text-2xl font-black uppercase tracking-tight">No Active Projects</h3>
+                                    <p className="text-[10px] font-black uppercase mt-2">SYSTEM_IDLE: Awaiting project assignment.</p>
+                                 </div>
+                              ) : (
+                                 <div className="space-y-12">
+                                    {projects.filter(p => p._id === expandedProject).map((project) => (
+                                       <div key={project._id} className="space-y-10 animate-in fade-in duration-700">
+                                          
+                                          {/* PROJECT HEADER CARD */}
+                                          <div className="border-4 border-black p-8 md:p-12 relative overflow-hidden bg-white">
+                                             <div className="absolute top-0 right-0 p-8 flex flex-col items-end opacity-10 select-none">
+                                                <span className="font-heading text-8xl md:text-9xl font-vertical leading-none tracking-tighter">{project.type?.charAt(0) || "P"}</span>
+                                             </div>
+
+                                             <div className="relative z-10">
+                                                <div className="flex flex-wrap gap-4 mb-6">
+                                                   <span className="bg-black text-white px-4 py-1 text-[9px] font-black uppercase tracking-widest">{project.type}._</span>
+                                                   <span className="border-2 border-black px-4 py-1 text-[9px] font-black uppercase tracking-widest text-[#ff5c00]">{project.status}</span>
+                                                   <span className="bg-[#ff5c00] text-black px-4 py-1 text-[9px] font-black uppercase tracking-widest">LOC: {project.location}</span>
+                                                </div>
+                                                <h2 className="text-5xl md:text-7xl font-heading font-black tracking-tight leading-none mb-8 uppercase max-w-3xl">
+                                                   {project.name}
+                                                </h2>
+
+                                                <div className="flex flex-col md:flex-row gap-12 items-start md:items-end">
+                                                   <div className="flex-1 w-full">
+                                                      <div className="flex justify-between items-end mb-4">
+                                                         <span className="text-[10px] font-black uppercase tracking-widest opacity-50">COMPLETION_INDEX</span>
+                                                         <span className="text-4xl font-heading font-black">{project.progressPercentage}%</span>
+                                                      </div>
+                                                      <div className="h-6 border-4 border-black p-1 relative overflow-hidden">
+                                                         <motion.div 
                                                             initial={{ width: 0 }}
                                                             animate={{ width: `${project.progressPercentage}%` }}
-                                                            className={`h-full ${project.progressPercentage === 100 ? "bg-emerald-500" : "bg-indigo-500"}`}
-                                                        />
-                                                    </div>
-                                                    <span className="text-xl font-black text-white">{project.progressPercentage}%</span>
+                                                            className={`h-full ${project.progressPercentage === 100 ? "bg-black" : "bg-[#ff5c00] animate-pulse"}`}
+                                                         />
+                                                      </div>
+                                                   </div>
+                                                   <div className="flex-shrink-0 bg-black text-white p-6 shadow-[10px_10px_0px_rgba(255,92,0,0.4)]">
+                                                      <span className="text-[8px] font-black block opacity-50 uppercase mb-2">Principal Architect</span>
+                                                      <div className="flex items-center gap-3">
+                                                         <div className="w-10 h-10 border border-white/20 flex items-center justify-center font-heading text-xl">
+                                                            {project.architectId?.name?.charAt(0) || "A"}
+                                                         </div>
+                                                         <p className="text-sm font-black uppercase tracking-tight">{project.architectId?.name || "ASSIGNING..."}</p>
+                                                      </div>
+                                                   </div>
                                                 </div>
-                                            </div>
+                                             </div>
+                                          </div>
 
-                                            <div className="text-white/20 ml-2">
-                                                {expandedProject === project._id ? <FaChevronUp /> : <FaChevronDown />}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Expanded Details */}
-                                <AnimatePresence>
-                                    {expandedProject === project._id && (
-                                        <motion.div 
-                                            initial={{ height: 0, opacity: 0 }} 
-                                            animate={{ height: "auto", opacity: 1 }} 
-                                            exit={{ height: 0, opacity: 0 }} 
-                                            className="overflow-hidden bg-black/20"
-                                        >
-                                            <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
+                                          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                             
+                                             {/* LEFT: FEED & LOGS */}
+                                             <div className="lg:col-span-8 space-y-12">
                                                 
-                                                {/* Left Column: Timeline & Feed */}
-                                                <div className="lg:col-span-8 space-y-12">
-                                                    
-                                                    {/* Milestones */}
-                                                    <section>
-                                                        <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-                                                            <FaTasks className="text-indigo-400" /> Milestones
-                                                        </h3>
-                                                        <div className="space-y-6 relative ml-2 border-l border-white/5 pl-8">
-                                                            {project.tasks.length === 0 ? (
-                                                                <p className="text-gray-500 text-sm">No milestones logged.</p>
-                                                            ) : (
-                                                                project.tasks.map((task) => (
-                                                                    <div key={task._id} className="relative group">
-                                                                        <div className={`absolute -left-[41px] top-1 w-5 h-5 rounded-full border-4 border-[#0d1117] shadow-lg z-10 ${
-                                                                            task.status === "Completed" ? "bg-emerald-500" :
-                                                                            task.status === "In Progress" ? "bg-indigo-500" : "bg-gray-700"
-                                                                        }`}></div>
-                                                                        <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-colors">
-                                                                            {task.images?.[0] && (
-                                                                                <img 
-                                                                                    src={getOptimizedImage(task.images[0])} 
-                                                                                    alt="" 
-                                                                                    className="w-full h-40 object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                                                                                />
-                                                                            )}
-                                                                            <div className="p-5">
-                                                                                <div className="flex justify-between items-start mb-2">
-                                                                                    <h4 className="font-bold text-lg text-white">{task.title}</h4>
-                                                                                    <span className="text-[10px] uppercase font-black tracking-widest text-gray-500">{task.status}</span>
-                                                                                </div>
-                                                                                <p className="text-gray-400 text-sm leading-relaxed">{task.description}</p>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                ))
-                                                            )}
-                                                        </div>
-                                                    </section>
-
-                                                    {/* Site Updates Feed */}
-                                                    <section>
-                                                        <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-                                                            <FaBullhorn className="text-indigo-400" /> Site Activity
-                                                        </h3>
-                                                        <div className="space-y-6">
-                                                            {project.updates.length === 0 ? (
-                                                                <p className="text-gray-500 text-sm">Activity feed is empty.</p>
-                                                            ) : (
-                                                                project.updates.map(upd => (
-                                                                    <div key={upd._id} className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.03] transition-colors">
-                                                                        <div className="flex items-center justify-between mb-4">
-                                                                            <div className="flex items-center gap-3">
-                                                                                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 text-xs border border-indigo-500/10">
-                                                                                    <FaUserTie />
-                                                                                </div>
-                                                                                <div>
-                                                                                    <p className="text-xs font-bold text-white uppercase tracking-tight">{upd.authorId?.name || "Admin"}</p>
-                                                                                    <p className="text-[10px] text-gray-500 font-bold uppercase">{new Date(upd.createdAt).toLocaleDateString()}</p>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <h4 className="font-bold text-white mb-2">{upd.title}</h4>
-                                                                        <p className="text-gray-400 text-sm mb-4 leading-relaxed">{upd.content}</p>
-                                                                        {upd.images?.[0] && (
-                                                                            <div className="rounded-xl overflow-hidden border border-white/5 max-w-lg shadow-2xl">
-                                                                                <img src={getOptimizedImage(upd.images[0])} alt="" className="w-full object-cover" />
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                ))
-                                                            )}
-                                                        </div>
-                                                    </section>
-                                                </div>
-
-                                                {/* Right Column: Statistics & Team */}
-                                                <div className="lg:col-span-4 space-y-8">
-                                                    
-                                                    {/* Material Table */}
-                                                    <section className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
-                                                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                                                            <FaCubes className="text-amber-500" /> Resources
-                                                        </h3>
-                                                        <div className="space-y-5">
-                                                            {project.materials.length === 0 ? (
-                                                                <p className="text-gray-600 text-[10px] uppercase font-bold text-center py-4 tracking-widest">No allocations yet</p>
-                                                            ) : (
-                                                                project.materials.map(m => {
-                                                                    const percentage = Math.round((m.quantityUsed / m.quantityAllocated) * 100);
-                                                                    return (
-                                                                        <div key={m._id} className="group">
-                                                                            <div className="flex justify-between items-end mb-1.5">
-                                                                                <span className="text-xs font-bold text-gray-300 capitalize">{m.materialId?.name}</span>
-                                                                                <span className="text-[10px] font-black text-gray-500">{percentage}% used</span>
-                                                                            </div>
-                                                                            <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                                                                                <div 
-                                                                                    className={`h-full rounded-full transition-all duration-1000 ${percentage > 90 ? 'bg-red-500' : 'bg-indigo-500'}`} 
-                                                                                    style={{ width: `${percentage}%` }}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="flex justify-between mt-1">
-                                                                                <span className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">Usage: {m.quantityUsed} / {m.quantityAllocated} {m.materialId?.unit}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    );
-                                                                })
-                                                            )}
-                                                        </div>
-                                                    </section>
-
-                                                    {/* Contact & Team */}
-                                                    <section className="space-y-4">
-                                                        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
-                                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">Site Leadership</p>
-                                                            <div className="flex items-center gap-4 mb-6">
-                                                                <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 border border-orange-500/10">
-                                                                    {project.architectId?.name?.charAt(0) || <FaUserTie />}
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm font-black text-white">{project.architectId?.name || "Assigning..."}</p>
-                                                                    <p className="text-[10px] text-gray-500 font-bold uppercase">Principal Architect</p>
-                                                                </div>
+                                                {/* MILESTONES SECTION */}
+                                                <section>
+                                                   <div className="flex items-center gap-4 mb-8">
+                                                      <span className="bg-[#ff5c00] text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest">01_MILESTONES._</span>
+                                                      <div className="flex-1 h-[2px] bg-black"></div>
+                                                   </div>
+                                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                      {project.tasks.length === 0 ? (
+                                                         <div className="col-span-full py-10 border-2 border-black border-dashed flex items-center justify-center">
+                                                            <span className="text-[10px] font-black opacity-30 uppercase tracking-widest">DATA_LOG_EMPTY</span>
+                                                         </div>
+                                                      ) : (
+                                                         project.tasks.map((task, idx) => (
+                                                            <div key={task._id} className="border-2 border-black p-6 group hover:bg-[#ff5c00] transition-colors relative overflow-hidden">
+                                                               <div className="absolute top-0 right-0 p-2 opacity-5 font-heading text-4xl">{idx+1}</div>
+                                                               <div className="flex justify-between items-start mb-4">
+                                                                  <span className={`text-[8px] font-black px-2 py-0.5 border border-black uppercase ${task.status === "Completed" ? 'bg-black text-white' : 'bg-transparent text-black'}`}>
+                                                                     {task.status}
+                                                                  </span>
+                                                               </div>
+                                                               <h4 className="text-xl font-heading font-black mb-2 uppercase truncate">{task.title}</h4>
+                                                               <p className="text-[11px] font-bold text-black/60 leading-relaxed uppercase">{task.description}</p>
+                                                               {task.images?.[0] && (
+                                                                  <div className="mt-6 border-2 border-black overflow-hidden aspect-video">
+                                                                     <img src={getOptimizedImage(task.images[0])} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                                                                  </div>
+                                                               )}
                                                             </div>
-                                                            <Link to="/support" className="block">
-                                                                <button className="w-full py-4 bg-white text-[#0d1117] rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
-                                                                    <FaEnvelope /> Contact Support
-                                                                </button>
-                                                            </Link>
-                                                        </div>
-                                                    </section>
+                                                         ))
+                                                      )}
+                                                   </div>
+                                                </section>
 
+                                                {/* SITE UPDATES FEED */}
+                                                <section>
+                                                   <div className="flex items-center gap-4 mb-8">
+                                                      <span className="bg-black text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">02_SITE_COMMUNICATIONS._</span>
+                                                      <div className="flex-1 h-[2px] bg-black/10"></div>
+                                                   </div>
+                                                   <div className="space-y-6">
+                                                      {project.updates.length === 0 ? (
+                                                         <div className="p-8 border-2 border-black border-dashed flex items-center justify-center">
+                                                            <span className="text-[10px] font-black opacity-30 uppercase tracking-widest">STREAM_OFFLINE</span>
+                                                         </div>
+                                                      ) : (
+                                                         project.updates.map(upd => (
+                                                            <div key={upd._id} className="border-2 border-black p-8 bg-white flex flex-col md:flex-row gap-8 items-start">
+                                                               <div className="w-24 flex-shrink-0">
+                                                                  <div className="text-[10px] font-black uppercase opacity-40 mb-1">{new Date(upd.createdAt).toLocaleDateString()}</div>
+                                                                  <div className="text-[8px] font-black text-[#ff5c00] uppercase tracking-widest animate-pulse">LOG_ENTRY</div>
+                                                               </div>
+                                                               <div className="flex-1">
+                                                                  <div className="flex items-center gap-3 mb-4">
+                                                                     <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-[10px] font-heading">
+                                                                        {upd.authorId?.name?.charAt(0) || "S"}
+                                                                     </div>
+                                                                     <h4 className="text-lg font-heading font-black uppercase">{upd.title}</h4>
+                                                                  </div>
+                                                                  <p className="text-xs font-bold text-black/70 leading-relaxed uppercase mb-6">{upd.content}</p>
+                                                                  {upd.images?.[0] && (
+                                                                     <div className="border-4 border-black max-w-xl">
+                                                                        <img src={getOptimizedImage(upd.images[0])} alt="" className="w-full grayscale hover:grayscale-0 transition-all" />
+                                                                     </div>
+                                                                  )}
+                                                               </div>
+                                                            </div>
+                                                         ))
+                                                      )}
+                                                   </div>
+                                                </section>
+                                             </div>
+
+                                             {/* RIGHT: RESOURCES & DASHBOARD */}
+                                             <div className="lg:col-span-4 space-y-8">
+                                                
+                                                {/* RESOURCE HUB */}
+                                                <div className="border-4 border-black p-8 bg-white">
+                                                   <h3 className="text-sm font-heading font-black mb-8 border-b-4 border-[#ff5c00] pb-2 uppercase tracking-tight">RES_INDEX._</h3>
+                                                   <div className="space-y-8">
+                                                      {project.materials.length === 0 ? (
+                                                         <div className="text-center py-6 opacity-20">
+                                                            <FaCubes size={30} className="mx-auto mb-2" />
+                                                            <span className="text-[9px] font-black uppercase">Null Allocation</span>
+                                                         </div>
+                                                      ) : (
+                                                         project.materials.map(m => {
+                                                            const percentage = Math.round((m.quantityUsed / m.quantityAllocated) * 100);
+                                                            return (
+                                                               <div key={m._id} className="space-y-2">
+                                                                  <div className="flex justify-between items-end">
+                                                                     <span className="text-xs font-black uppercase">{m.materialId?.name}</span>
+                                                                     <span className={`text-[10px] font-black ${percentage > 90 ? 'text-[#ff5c00]' : 'text-black'}`}>{percentage}% USED</span>
+                                                                  </div>
+                                                                  <div className="h-1 bg-black/10">
+                                                                     <div className={`h-full ${percentage > 90 ? 'bg-[#ff5c00]' : 'bg-black'}`} style={{ width: `${percentage}%` }}></div>
+                                                                  </div>
+                                                                  <div className="text-[8px] font-black opacity-40 uppercase tracking-tighter">
+                                                                     STK: {m.quantityUsed} / {m.quantityAllocated} {m.materialId?.unit}
+                                                                  </div>
+                                                               </div>
+                                                            );
+                                                         })
+                                                      )}
+                                                   </div>
                                                 </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </motion.div>
-                        ))
-                    )}
-                </div>
-                    </>
+
+                                                {/* ACTIONS HUB */}
+                                                <div className="border-4 border-black p-8 bg-black text-white space-y-6">
+                                                   <h3 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mb-4">Command Center</h3>
+                                                   <p className="text-[10px] font-black leading-relaxed uppercase opacity-70">Execute secure communication with the principal site architect or request material audit.</p>
+                                                   <Link to="/support" className="block">
+                                                      <button className="w-full py-5 bg-[#ff5c00] text-black font-black text-xs uppercase tracking-[0.3em] hover:bg-white transition-all flex items-center justify-center gap-3">
+                                                         <FaEnvelope /> DIRECT_CONNECT
+                                                      </button>
+                                                   </Link>
+                                                   <button 
+                                                      onClick={() => toast.info("Audit packet generated. check your stinchar mail.") }
+                                                      className="w-full py-5 border-2 border-white/20 text-white font-black text-xs uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all flex items-center justify-center gap-3"
+                                                   >
+                                                      REQUST_AUDIT
+                                                   </button>
+                                                </div>
+
+                                             </div>
+                                          </div>
+                                       </div>
+                                    ))}
+                                 </div>
+                              )}
+                           </div>
+                        </div>
+                    </div>
                 )}
             </main>
             <Footer />
