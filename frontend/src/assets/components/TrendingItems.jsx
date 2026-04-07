@@ -101,42 +101,42 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
   if (items.length === 0) return null;
 
   return (
-    <section className="py-20 md:py-28 bg-[#e5e5e5] overflow-hidden border-t-8 border-black">
-      <div className="mx-auto max-w-[1600px] px-8">
+    <section className="py-10 md:py-16 bg-[#e5e5e5] overflow-hidden border-t-2 border-black/5">
+      <div className="mx-auto max-w-[1600px] px-6 md:px-10">
         
-        {/* Sleek Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 border-b-2 border-black/10 pb-10 gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-[#ff5c00]">
-              <div className="w-16 h-[2px] bg-[#ff5c00]"></div>
-              DATA_CATALOG_SCAN_V2
+        {/* Compact Industrial Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-black/10 pb-6 gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 text-[8px] font-black uppercase tracking-[0.4em] text-[#ff5c00]">
+              <div className="w-8 h-[1px] bg-[#ff5c00]"></div>
+              DATA_CATALOG_SCAN_00{Math.floor(Math.random()*9)}
             </div>
-            <h2 className="text-5xl md:text-8xl font-heading text-black tracking-tighter leading-none">
-              {title || "CATALOG_00"}
+            <h2 className="text-3xl md:text-4xl font-heading text-black tracking-tighter leading-none uppercase">
+              {title || "TRENDING_BLOCK"}
             </h2>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-2">
             <button
               onClick={() => setIndex((i) => Math.max(i - 1, 0))}
-              className="w-16 h-16 border-2 border-black flex items-center justify-center text-black hover:bg-black hover:text-white transition-all bg-white"
+              className="w-10 h-10 border border-black flex items-center justify-center text-black hover:bg-black hover:text-white transition-all bg-white"
             >
-              <FaChevronLeft size={18} />
+              <FaChevronLeft size={12} />
             </button>
             <button
               onClick={() =>
                 setIndex((i) => Math.min(i + 1, items.length - 1))
               }
-              className="w-16 h-16 border-2 border-black flex items-center justify-center text-black hover:bg-black hover:text-white transition-all bg-white"
+              className="w-10 h-10 border border-black flex items-center justify-center text-black hover:bg-black hover:text-white transition-all bg-white"
             >
-              <FaChevronRight size={18} />
+              <FaChevronRight size={12} />
             </button>
           </div>
         </div>
 
-        {/* Dense Carousel */}
+        {/* Compact Dense Carousel */}
         <div
           ref={listRef}
-          className="flex gap-6 md:gap-10 overflow-x-auto no-scrollbar snap-x snap-mandatory py-6"
+          className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory py-4"
         >
           {items.map((it, i) => {
             const active = i === index;
@@ -145,57 +145,33 @@ const TrendingItems = ({ title = "", autoplay = true }) => {
                 key={it.id || i}
                 data-idx={i}
                 onClick={() => nav(`/product/${it.id || i}`)}
-                className={`snap-center flex-shrink-0 w-[85%] sm:w-[50%] md:w-[35%] lg:w-[22%] cursor-pointer transition-all duration-500 ease-out ${active ? "opacity-100 scale-100" : "opacity-40 scale-95 grayscale"
+                className={`snap-center flex-shrink-0 w-[65%] sm:w-[40%] md:w-[25%] lg:w-[15%] cursor-pointer transition-all duration-500 ease-out relative group ${active ? "opacity-100 scale-100" : "opacity-40 scale-95"
                   }`}
               >
-                <div className="group relative bg-white border-2 border-black flex flex-col h-full shadow-[6px_6px_0px_#000] hover:shadow-[10px_10px_0px_#ff5c00] transition-all hover:-translate-y-2">
+                <div className="bg-white border border-black/10 group-hover:border-black p-4 relative overflow-hidden flex flex-col h-full shadow-[5px_5px_0px_rgba(0,0,0,0.02)] group-hover:shadow-[8px_8px_0px_rgba(0,0,0,0.05)] transition-all">
+                  <div className="corner-decal decal-tl border-black/20 group-hover:border-black !w-2 !h-2"></div>
+                  <div className="absolute top-1 right-1 text-[6px] font-black opacity-10 uppercase tracking-widest leading-none">TRD_NODE_{i+1}</div>
                   
-                  {/* Subtle Tech Header */}
-                  <div className="flex justify-between items-center px-4 py-2 border-b-2 border-black bg-black text-white text-[8px] font-mono tracking-widest uppercase">
-                    <span>REF: {it.id?.toString().slice(-6).toUpperCase()}</span>
-                    <span className="text-[#ff5c00] animate-pulse">●_LIVE</span>
-                  </div>
-
-                  {/* Image Section (Compact) */}
-                  <div className="relative aspect-square overflow-hidden bg-white p-8 border-b-2 border-black/5">
+                  {/* Image Container - Colored & Compact */}
+                  <div className="aspect-square bg-black/5 border border-black/5 mb-4 overflow-hidden relative">
                     <img
-                      src={getOptimizedImage(it.image, 500)}
+                      src={getOptimizedImage(it.image)}
                       alt={it.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       {...lazyImageProps}
-                      className="w-full h-full object-contain transform transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="absolute top-2 right-4 text-[24px] font-heading opacity-5 text-black">
-                      {(i + 1).toString().padStart(2, '0')}
-                    </div>
-                  </div>
- 
-                  {/* Modern Details Section */}
-                  <div className="p-5 flex flex-col flex-grow bg-white">
-                    <h3 className="text-xl font-black text-black mb-1 uppercase tracking-tighter line-clamp-1 group-hover:text-[#ff5c00] transition-colors">
-                      {it.name}
-                    </h3>
-                    <p className="text-[9px] text-black/30 font-mono uppercase mb-6 tracking-widest line-clamp-1">
-                      // DATA_STREAM: CATEGORY_{it.category?.toUpperCase() || "N/A"}
-                    </p>
-                    
-                    <div className="mt-auto pt-4 border-t-2 border-black/5 flex justify-between items-center">
-                      <div className="flex flex-col">
-                        <span className="text-[8px] font-black opacity-20 uppercase tracking-widest">NET_VALUE</span>
-                        <span className="text-2xl font-heading text-black leading-none">
-                          ₹{it.price}
-                        </span>
-                      </div>
-                      <div className="w-12 h-12 bg-black text-white flex items-center justify-center group-hover:bg-[#ff5c00] group-hover:text-black transition-all">
-                         <FaPlus size={16} />
-                      </div>
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   </div>
 
-                  {/* Sleek Accents */}
-                  <div className="h-1 bg-black w-full flex opacity-50">
-                    {[...Array(12)].map((_, j) => (
-                      <div key={j} className="h-full flex-1 border-r border-[#ff5c00]/20 last:border-r-0"></div>
-                    ))}
+                  <div className="space-y-1">
+                    <span className="text-[7px] font-black text-[#ff5c00] uppercase tracking-widest">{it.tag?.slice(0,12) || "COMMERCE"}</span>
+                    <h3 className="text-[10px] font-black uppercase text-black leading-tight line-clamp-1 group-hover:text-[#ff5c00] transition-colors">{it.name}</h3>
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="text-[11px] font-black text-black">₹{it.price}</span>
+                      <button className="w-6 h-6 bg-black text-white flex items-center justify-center hover:bg-[#ff5c00] transition-colors">
+                        <FaPlus size={8} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </article>
