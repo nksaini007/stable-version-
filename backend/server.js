@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
+const mongoSanitize = require("express-mongo-sanitize");
 const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 // Load env variables
@@ -50,6 +51,7 @@ app.use(cors({
   optionsSuccessStatus: 200 // Some legacy browsers crash on 204
 }));
 app.use(express.json({ limit: "10kb" }));
+app.use(mongoSanitize()); // ✅ DATA SANITIZATION AGAINST NoSQL INJECTION
 app.use(cookieParser());
 
 // ✅ Rate Limiting

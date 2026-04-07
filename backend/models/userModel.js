@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true, select: false },
   role: {
     type: String,
     enum: ["customer", "seller", "delivery", "admin", "provider", "architect", "architectPartner"],
@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema({
   deliveryAreaPincode: String,
 
   // ADMIN fields
-  adminAccessCode: String,
+  adminAccessCode: { type: String, select: false },
 
   // PROVIDER fields
   serviceCategory: String, // Keep as string for display
@@ -73,7 +73,7 @@ const userSchema = new mongoose.Schema({
   serviceSubCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'ServiceCategory.subcategories' },
   serviceDescription: String,
   experience: String,
-  verificationDocuments: [String],
+  verificationDocuments: { type: [String], select: false },
   offeredServices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Service' }],
 
   // ARCHITECT fields
@@ -106,8 +106,8 @@ const userSchema = new mongoose.Schema({
   shopLikes: { type: Number, default: 0 },
 
   // OTP Verification fields
-  otp: String,
-  otpExpires: Date,
+  otp: { type: String, select: false },
+  otpExpires: { type: Date, select: false },
   isEmailVerified: { type: Boolean, default: false },
   isPhoneVerified: { type: Boolean, default: false },
 

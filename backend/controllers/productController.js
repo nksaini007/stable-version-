@@ -71,8 +71,8 @@ const getAdminProducts = async (req, res) => {
     console.log("products found: ", products.length);
     res.json(products);
   } catch (error) {
-    console.error('Error fetching admin products:', error.stack || error.message);
-    res.status(500).json({ message: 'Server Error', error: error.message, stack: error.stack });
+    console.error('Error fetching admin products:', error.message);
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
