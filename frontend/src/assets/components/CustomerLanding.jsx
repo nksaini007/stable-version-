@@ -13,8 +13,10 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
   useEffect(() => {
     const fetchLatestActivity = async () => {
       try {
-        const response = await API.get("/posts?limit=3");
-        setPosts(response.data?.posts || []);
+        const response = await API.get("/posts");
+        // Backend returns array directly, not an object with .posts
+        const data = Array.isArray(response.data) ? response.data : [];
+        setPosts(data.slice(0, 3)); 
       } catch (err) {
         console.error("Failed to fetch community logs", err);
       } finally {
