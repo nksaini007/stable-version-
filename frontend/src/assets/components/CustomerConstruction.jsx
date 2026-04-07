@@ -169,13 +169,23 @@ const CustomerConstruction = () => {
                                           {project.tasks.map((task, idx) => (
                                              <div key={task._id} className="relative group">
                                                 <div className={`absolute -left-[31px] top-1 w-3 h-3 rounded-full border-2 border-[#e5e5e5] ${task.status === "Completed" ? 'bg-black' : 'bg-white border-black/20'}`}></div>
-                                                <div className="p-3 border-2 border-black/5 hover:border-black transition-all bg-white relative">
+                                                <div className="p-3 border-2 border-black/5 hover:border-black transition-all bg-white relative overflow-hidden">
                                                    <span className="absolute top-1 right-2 text-[7px] font-black opacity-10">{idx+1}</span>
                                                    <span className={`text-[7px] font-black px-1.5 py-0.5 border border-black uppercase mb-2 inline-block ${task.status === "Completed" ? 'bg-black text-white' : 'text-black'}`}>
                                                       {task.status}
                                                    </span>
                                                    <h4 className="text-[10px] font-heading font-black uppercase mb-1">{task.title}</h4>
-                                                   <p className="text-[9px] font-bold text-black/50 uppercase leading-none">{task.description?.slice(0, 40)}...</p>
+                                                   <p className="text-[9px] font-bold text-black/50 uppercase mb-3 leading-tight">{task.description}</p>
+                                                   
+                                                   {task.images?.[0] && (
+                                                      <div className="mt-2 border border-black/10 overflow-hidden aspect-video">
+                                                         <img 
+                                                           src={getOptimizedImage(task.images[0])} 
+                                                           alt="" 
+                                                           className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" 
+                                                         />
+                                                      </div>
+                                                   )}
                                                 </div>
                                              </div>
                                           ))}
