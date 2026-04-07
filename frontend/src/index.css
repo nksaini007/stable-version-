@@ -32,6 +32,22 @@ h1, h2, h3, h4, .font-heading {
   color: black;
 }
 
+.font-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.bg-glass-hud {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.text-glow-orange {
+  text-shadow: 0 0 10px rgba(255, 92, 0, 0.5);
+}
+
 .bg-industrial {
   background-color: var(--industrial-grey);
 }

@@ -119,51 +119,95 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           </div>
         </div>
 
-        {/* CENTER PANEL: HERO & SEARCH */}
-        <div className="md:col-span-8 flex flex-col">
+        {/* CENTER PANEL: FRAGMENTED HERO GALLERY */}
+        <div className="md:col-span-8 flex flex-col min-h-[400px] md:min-h-[500px]">
           
-          {/* Top Warning Bar */}
-          <div className="h-14 bg-black flex items-center px-8 justify-between">
-            <div className="flex gap-4">
-               {[...Array(5)].map((_, i) => (
-                 <div key={i} className="w-8 h-full skew-x-[30deg] border-r border-white/20"></div>
+          {/* Top Integrated Progress Bar */}
+          <div className="h-10 bg-black flex items-center px-6 justify-between border-b border-white/10">
+            <div className="flex gap-1 h-full items-center">
+               {[...Array(8)].map((_, i) => (
+                 <div key={i} className={`w-8 h-1/2 -skew-x-[25deg] ${i < 3 ? 'bg-[#ff5c00]' : 'bg-white/10'}`}></div>
                ))}
             </div>
-            <div className="text-white text-[12px] font-black tracking-[0.4em] flex items-center gap-3">
-              <FaCrosshairs size={14} className="text-[#ff5c00]" />
-              SEARCH_INITIALIZE
+            <div className="text-white text-[9px] font-black tracking-[0.4em] flex items-center gap-2">
+              <FaCrosshairs size={10} className="text-[#ff5c00]" />
+              SECURE_DATA_FRAGMENT_01
             </div>
           </div>
 
-          {/* Hero Visual Area */}
-          <div className="flex-1 flex flex-col md:flex-row border-b-4 border-black">
+          <div className="flex-1 flex flex-col md:flex-row border-b-4 border-black relative overflow-hidden bg-black">
             
-            <div className="flex-1 bg-[#ff5c00] relative overflow-hidden group">
-              <img 
-                src={heroImg} 
-                className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-[2s]"
-                alt="Industrial Vibe"
+            {/* FRAGMENT 002 (Small/Black) */}
+            <div className="w-full md:w-[35%] bg-black relative border-r-2 border-white/10 flex items-center justify-center group overflow-hidden">
+               <img 
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800" 
+                className="w-full h-full object-cover opacity-40 blur-[2px] group-hover:blur-0 transition-all duration-700"
+                alt="Tech 002"
               />
-              <div className="absolute top-8 left-8 bg-white px-6 py-4 border-4 border-black shadow-[10px_10px_0px_#000]">
-                 <span className="text-3xl font-heading">001</span>
+              <div className="absolute top-4 left-4 h-full flex flex-col">
+                 <span className="font-heading text-6xl text-white font-vertical opacity-10">002</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+              
+              {/* Metric HUD 002 */}
+              <div className="absolute bottom-6 left-6 right-6 bg-glass-hud p-4">
+                 <div className="flex justify-between items-center text-[8px] text-white/50 mb-2 font-mono">
+                    <span>LKS: 1,628</span>
+                    <span>MDL: STN_B</span>
+                 </div>
+                 <div className="h-1 w-full bg-white/10 overflow-hidden">
+                    <div className="h-full bg-white/40 w-[60%] animate-[pulse_2s_infinite]"></div>
+                 </div>
               </div>
             </div>
 
-            <div className="w-full md:w-80 bg-black text-white p-8 flex flex-col justify-between">
-              <div>
-                <span className="text-[#ff5c00] text-[4rem] font-heading leading-none">V2.</span>
-                <p className="text-xs mt-4 leading-relaxed opacity-60">
-                  Engineered for scale. Stinchar provides a unified technical interface for modern construction and supply chain management.
-                </p>
+            {/* FRAGMENT 001 (Main/Orange) */}
+            <div className="flex-1 bg-[#ff5c00] relative group flex items-center justify-center overflow-hidden">
+              <img 
+                src={heroImg} 
+                className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:scale-105 transition-transform duration-[2s]"
+                alt="Industrial Main"
+              />
+              
+              {/* Vertical Label */}
+              <div className="absolute top-8 right-8 flex flex-col items-center">
+                 <span className="font-heading text-7xl md:text-9xl text-black font-vertical tracking-tight leading-none">001</span>
               </div>
-            <button 
+
+              {/* Central Controller HUD */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                 <div className="w-48 h-48 border-2 border-black/20 rounded-full animate-spin-slow"></div>
+              </div>
+
+              {/* Metric HUD 001 (Ref Image Style) */}
+              <div className="absolute bottom-8 right-8 w-48 md:w-64 bg-glass-hud p-6 border-l-4 border-black shadow-2xl">
+                 <div className="flex justify-between items-end mb-4">
+                    <div className="flex flex-col">
+                       <span className="text-[10px] font-black text-black/50 tracking-widest uppercase">SCAN_INDEX</span>
+                       <span className="text-3xl font-heading text-black leading-none">2,628</span>
+                    </div>
+                    <div className="w-12 h-1 bg-black/20"></div>
+                 </div>
+                 <div className="flex gap-1 h-4 items-end">
+                    {[...Array(12)].map((_, i) => (
+                      <div key={i} className="flex-1 bg-black/40" style={{ height: `${Math.random() * 100}%` }}></div>
+                    ))}
+                 </div>
+              </div>
+
+              {/* Integrated Navigation HUD */}
+              <button 
                 onClick={() => document.getElementById('search-initialize').scrollIntoView({ behavior: 'smooth' })}
-                className="w-full py-6 bg-[#ff5c00] text-black font-black text-xl hover:bg-white transition-colors flex items-center justify-center gap-4 group"
+                className="absolute top-8 left-8 bg-glass-hud px-4 py-2 flex items-center gap-4 text-white hover:bg-white hover:text-black transition-all border border-white/20 pointer-events-auto"
               >
-                NEXT
-                <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
+                <div className="flex flex-col items-start leading-none">
+                   <span className="text-[7px] font-black opacity-50 uppercase">INIT_PROCEDURE</span>
+                   <span className="text-[12px] font-black uppercase">NEXT_LOG_</span>
+                </div>
+                <FaArrowRight size={14} className="text-[#ff5c00]" />
               </button>
             </div>
+
           </div>
 
           {/* Search Bar Grid Section */}
