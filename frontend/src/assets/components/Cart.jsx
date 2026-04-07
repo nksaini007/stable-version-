@@ -147,12 +147,64 @@ const Cart = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await API.post(`/orders`, orderData, {
+      const { data } = await API.post(`/orders`, orderData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setLoading(false);
-      setMessage("SYSTEM_MSG: ORDER COMPILED SUCCESSFULLY.");
-      clearCart();
+
+      if (paymentMethod === "Razorpay") {
+        const options = {
+          key: data.razorpayKey,
+          amount: Math.round(data.totalPrice * 100),
+          currency: "INR",
+          name: "Stinchar",
+          description: "Purchase Order Payment",
+          order_id: data.razorpayOrderId,
+          handler: async (response) => {
+            try {
+              setLoading(true);
+              setMessage("VERIFYING PAYMENT SIGNAL...");
+              const verifyRes = await API.post(
+                "/orders/verify-payment",
+                {
+                  orderId: data._id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+
+              if (verifyRes.data.success) {
+                setLoading(false);
+                setMessage("SYSTEM_MSG: PAYMENT VERIFIED. ORDER FINALIZED.");
+                clearCart();
+                setTimeout(() => navigate("/dashboard/customer/orders"), 2000);
+              }
+            } catch (err) {
+              setLoading(false);
+              setMessage(`ERROR: VERIFICATION_FAILED: ${err.response?.data?.message || err.message}`);
+            }
+          },
+          prefill: {
+            name: shippingAddress.fullName,
+            contact: shippingAddress.phone,
+          },
+          theme: { color: "#06B6D4" },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", (response) => {
+          setMessage(`[ALERT] PAYMENT_FAILED: ${response.error.description}`);
+          setLoading(false);
+        });
+        rzp.open();
+      } else {
+        // COD path
+        setLoading(false);
+        setMessage("SYSTEM_MSG: ORDER COMPILED SUCCESSFULLY. CASH ON DELIVERY ENGAGED.");
+        clearCart();
+        setTimeout(() => navigate("/dashboard/customer/orders"), 2000);
+      }
     } catch (err) {
       setLoading(false);
       setMessage(

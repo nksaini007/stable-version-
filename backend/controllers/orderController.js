@@ -1,128 +1,169 @@
 const Order = require("../models/Order");
 const User = require("../models/userModel");
-const Product = require("../models/product"); // ✅ NEW: Correctly import Product model
+const Product = require("../models/product");
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+const { calculateServerSideDelivery } = require("../utils/deliveryCalculator");
 const mongoose = require("mongoose");
 
 // ------------------ CUSTOMER FUNCTIONS ------------------
 
-// Create a new order
+// @desc    Create new order
+// @route   POST /api/orders
+// @access  Private
 const createOrder = async (req, res) => {
-  try {
-    const {
-      orderItems: clientItems,
-      shippingAddress,
-      paymentMethod,
-      shippingPrice: clientShippingPrice, // We still take shipping as it's calculated based on zone/distance
-      deliveryZone,
-      deliveryVehicleType,
-      multiVehicle,
-      deliveryVehicleCount,
-      deliveryChargeBreakdown,
-    } = req.body;
-
-    if (!clientItems || clientItems.length === 0) {
-      return res.status(400).json({ message: "No order items" });
-    }
-
-    // 1️⃣ Fetch actual products from DB to prevent price fabrication
-    const productIds = clientItems.map(item => item.product);
-    const dbProducts = await Product.find({ _id: { $in: productIds } });
-
-    if (dbProducts.length !== clientItems.length) {
-      return res.status(404).json({ message: "One or more products not found" });
-    }
-
-    // 2️⃣ Verify all sellers are active (existing logic)
-    const sellerIds = [...new Set(dbProducts.map(p => p.seller.toString()))];
-    const inactiveSellers = await User.find({
-      _id: { $in: sellerIds },
-      isActive: false,
-    });
-
-    if (inactiveSellers.length > 0) {
-      const names = inactiveSellers.map(s => s.businessName || s.name).join(", ");
-      return res.status(403).json({
-        message: `Order cannot be placed. The following shops are currently inactive: ${names}`,
-      });
-    }
-
-    // 3️⃣ SECURE CALCULATION: Build verified order items and calculate prices server-side
-    let itemsPrice = 0;
-    const verifiedOrderItems = clientItems.map(item => {
-      const dbProduct = dbProducts.find(p => p._id.toString() === item.product.toString());
-      
-      const itemSubtotal = dbProduct.price * item.qty;
-      itemsPrice += itemSubtotal;
-
-      return {
-        product: dbProduct._id,
-        name: dbProduct.name,
-        image: dbProduct.images?.[0] || dbProduct.image,
-        qty: item.qty,
-        price: dbProduct.price, // Use DB price, NOT client price
-        variantName: item.variantName, // ✅ Capture variant details
-        variantId: item.variantId,     // ✅ Capture variant details
-        seller: {
-          _id: dbProduct.seller,
-          name: dbProduct.sellerName || "Partner",
-          // The orderItems schema expects seller details. We'll populate these from the dbProduct or user.
-          // For now, keeping it consistent with the existing schema.
-        },
-        itemStatus: "Pending"
-      };
-    });
-
-    // 4️⃣ Final Security check: Calculate total price
-    const taxPrice = 0; // Or calculate based on category/rate if needed
-    const shippingPrice = Number(clientShippingPrice || 0);
-    const totalPrice = itemsPrice + taxPrice + shippingPrice;
-
-    const order = new Order({
-      user: req.user._id,
-      orderItems: verifiedOrderItems,
-      shippingAddress,
-      paymentMethod,
-      itemsPrice,
-      taxPrice,
-      shippingPrice,
-      totalPrice,
-      deliveryZone,
-      deliveryVehicleType,
-      multiVehicle,
-      deliveryVehicleCount,
-      deliveryChargeBreakdown,
-    });
-
-    const createdOrder = await order.save();
-
-    // 5️⃣ ✅ NEW: DYNAMIC STOCK ADJUSTMENT
     try {
-      for (const item of verifiedOrderItems) {
-        const product = await Product.findById(item.product);
-        if (product) {
-          // Decrement global stock
-          product.stock = Math.max(0, product.stock - item.qty);
+        const {
+            orderItems: clientItems,
+            shippingAddress,
+            paymentMethod,
+            itemsPrice: clientItemsPrice,
+            taxPrice: clientTaxPrice,
+            shippingPrice: clientShippingPrice,
+            totalPrice: clientTotalPrice,
+        } = req.body;
 
-          // Decrement variant stock if applicable
-          if (item.variantId && product.variants && product.variants.length > 0) {
-            const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
-            if (variant) {
-              variant.stock = Math.max(0, variant.stock - item.qty);
-            }
-          }
-          await product.save();
+        if (!clientItems || clientItems.length === 0) {
+            return res.status(400).json({ message: "No order items" });
         }
-      }
-    } catch (stockErr) {
-      console.error("Stock Adjustment Error (Post-Order):", stockErr);
-      // We don't fail the order if stock update fails, but we log it.
-    }
 
-    res.status(201).json(createdOrder);
-  } catch (error) {
-    console.error("Order Creation Error:", error);
-    res.status(500).json({ message: "Server error during order creation" });
-  }
+        // 1️⃣ Initialize Razorpay
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET,
+        });
+
+        // 2️⃣ SECURE CALCULATION: Build verified order items and calculate prices server-side
+        let itemsPrice = 0;
+        let totalWeight = 0;
+        const verifiedOrderItems = [];
+
+        for (const item of clientItems) {
+            const dbProduct = await Product.findById(item.product || item._id);
+            if (!dbProduct) {
+                return res.status(404).json({ message: `Product not found: ${item.name}` });
+            }
+
+            // Determine the correct price tier based on user role
+            let unitPrice = dbProduct.price; // Default
+            if (req.user.role === "architect" || req.user.role === "architectPartner") {
+                unitPrice = dbProduct.pricingTiers?.architect || dbProduct.price;
+            } else if (dbProduct.pricingTiers?.normal) {
+                unitPrice = dbProduct.pricingTiers.normal;
+            }
+
+            // Add weight for delivery calculation (parsing weight string like "10kg")
+            const weightMatch = (dbProduct.weight || "0").match(/(\d+(\.\d+)?)/);
+            const unitWeight = weightMatch ? parseFloat(weightMatch[0]) : 0;
+            totalWeight += unitWeight * item.qty;
+
+            const itemSubtotal = unitPrice * item.qty;
+            itemsPrice += itemSubtotal;
+
+            verifiedOrderItems.push({
+                name: dbProduct.name,
+                qty: item.qty,
+                image: dbProduct.images?.[0]?.url || "",
+                price: unitPrice,
+                product: dbProduct._id,
+                seller: dbProduct.seller,
+            });
+        }
+
+        // 3️⃣ Secure Delivery Calculation
+        const deliveryResult = await calculateServerSideDelivery(
+            shippingAddress.postalCode,
+            totalWeight,
+            itemsPrice
+        );
+        const shippingPrice = deliveryResult.totalCharge;
+
+        // 4️⃣ Final Security check: Calculate total price
+        const taxPrice = 0; 
+        const totalPrice = itemsPrice + taxPrice + shippingPrice;
+
+        // 5️⃣ Create Order in Database
+        const order = new Order({
+            orderItems: verifiedOrderItems,
+            user: req.user._id,
+            shippingAddress,
+            paymentMethod,
+            itemsPrice,
+            taxPrice,
+            shippingPrice,
+            totalPrice,
+            isPaid: false, // Default to false
+            deliveryZone: deliveryResult.zone,
+            deliveryVehicleType: deliveryResult.vehicleType,
+            deliveryVehicleCount: deliveryResult.vehicleCount,
+        });
+
+        // 6️⃣ If Razorpay, create Razorpay Order
+        let razorpayOrder = null;
+        if (paymentMethod === "Razorpay") {
+            const options = {
+                amount: Math.round(totalPrice * 100), // Amount in paise
+                currency: "INR",
+                receipt: `order_rcpt_${Date.now()}`,
+            };
+            razorpayOrder = await razorpay.orders.create(options);
+            order.paymentResult = {
+                id: razorpayOrder.id, // Store Razorpay Order ID
+                status: "Created",
+            };
+        }
+
+        const createdOrder = await order.save();
+
+        res.status(201).json({
+            ...createdOrder.toObject(),
+            razorpayOrderId: razorpayOrder ? razorpayOrder.id : null,
+            razorpayKey: process.env.RAZORPAY_KEY_ID
+        });
+    } catch (error) {
+        console.error("Order Creation Error:", error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+/**
+ * @desc    Verify Razorpay payment signature
+ * @route   POST /api/orders/verify-payment
+ * @access  Private
+ */
+const verifyPayment = async (req, res) => {
+    try {
+        const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+        // Verify signature
+        const body = razorpay_order_id + "|" + razorpay_payment_id;
+        const expectedSignature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+            .update(body.toString())
+            .digest("hex");
+
+        if (expectedSignature !== razorpay_signature) {
+            return res.status(400).json({ success: false, message: "Invalid payment signature" });
+        }
+
+        // Update Order in DB
+        const order = await Order.findById(orderId);
+        if (!order) return res.status(404).json({ message: "Order not found" });
+
+        order.isPaid = true;
+        order.paidAt = Date.now();
+        order.paymentResult = {
+            id: razorpay_payment_id,
+            status: "Success",
+            update_time: new Date().toISOString(),
+        };
+
+        await order.save();
+
+        res.json({ success: true, message: "Payment verified successfully", order });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 // Get orders of logged-in customer
@@ -182,28 +223,6 @@ const getSellerOrders = async (req, res) => {
   }
 };
 
-// Update item-level status by seller
-// const updateItemStatus = async (req, res) => {
-//   try {
-//     const { orderId, itemId, status } = req.body;
-
-//     const order = await Order.findById(orderId);
-//     if (!order) return res.status(404).json({ message: "Order not found" });
-
-//     const item = order.orderItems.id(itemId);
-//     if (!item) return res.status(404).json({ message: "Item not found" });
-
-//     if (item.seller._id.toString() !== req.user._id.toString()) {
-//       return res.status(403).json({ message: "Not authorized to update this item" });
-//     }
-
-//     item.itemStatus = status;
-//     await order.save();
-//     res.json({ message: "Item status updated", item });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 // ✅ Update item-level status by seller
 const updateItemStatus = async (req, res) => {
   try {

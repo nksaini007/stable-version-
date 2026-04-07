@@ -8,6 +8,9 @@ const { protect, authorize } = require("../middlewares/authMiddleware");
 // Create a new order
 router.post("/", protect, authorize("customer"), orderController.createOrder);
 
+// Verify payment signature
+router.post("/verify-payment", protect, authorize("customer"), orderController.verifyPayment);
+
 // Get logged-in customer's orders
 router.get("/myorders", protect, authorize("customer"), orderController.getMyOrders);
 
