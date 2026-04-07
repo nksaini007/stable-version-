@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight, FaHeart, FaShoppingCart, FaFire } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaPlus, FaHeart, FaShoppingCart, FaFire } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import fallbackItems from "../json/Itom.json";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
