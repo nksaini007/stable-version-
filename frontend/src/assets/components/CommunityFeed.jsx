@@ -135,23 +135,23 @@ const CommunityFeed = () => {
             <Nev />
             <div className="scanline"></div>
 
-            <div className="flex-1 max-w-[2000px] mx-auto py-20 px-6 w-full relative z-10">
-                <div className="mb-16 flex items-end gap-6 overflow-hidden">
+            <div className="flex-1 max-w-[2000px] mx-auto py-12 md:py-20 px-0 md:px-6 w-full relative z-10">
+                <div className="mb-12 md:mb-16 flex items-end gap-6 overflow-hidden px-6 md:px-0">
                     <div className="flex flex-col">
                         <span className="text-[#ff5c00] font-black text-[10px] tracking-[0.5em] mb-2 uppercase select-none font-mono">//_COMM_SYNC_V3.1_NODE</span>
-                        <h1 className="text-5xl md:text-8xl font-heading font-black tracking-tight leading-none uppercase">
+                        <h1 className="text-4xl md:text-8xl font-heading font-black tracking-tight leading-none uppercase">
                             COMMUNITY<span className="text-black/10">_LOG</span>
                         </h1>
                     </div>
                 </div>
               
                 {posts.length === 0 ? (
-                    <div className="text-center py-40 border-4 border-black/5 bg-white/50 backdrop-blur-md">
+                    <div className="text-center py-40 border-y-4 md:border-4 border-black/5 bg-white/50 backdrop-blur-md mx-6 md:mx-0">
                         <FaCrosshairs size={40} className="mx-auto mb-6 text-black/10 animate-pulse" />
                         <p className="text-sm font-black uppercase tracking-[0.3em] text-black/20">NO_ENTRY_DETECTED_IN_SECTOR</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-0 md:gap-12">
                         {posts.map(post => {
                             const isLikedByMe = user && post.likes.includes(user._id);
                             const showComments = activeCommentId === post._id;
@@ -161,14 +161,14 @@ const CommunityFeed = () => {
                             return (
                                 <div key={post._id} className="relative group">
                                     <div
-                                        className={`bg-white border-2 border-black shadow-[10px_10px_0px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-500 relative flex flex-col ${isExpanded ? 'z-30 h-auto pb-[60px]' : 'h-[500px]'}`}
+                                        className={`bg-white border-y-2 md:border-2 border-black shadow-none md:shadow-[10px_10px_0px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-500 relative flex flex-col mb-4 md:mb-0 ${isExpanded ? 'z-30 h-auto pb-[60px]' : 'h-auto md:h-[500px]'}`}
                                     >
-                                        <div className="corner-decal decal-tl border-black"></div>
-                                        <div className="corner-decal decal-br border-black opacity-30 group-hover:opacity-100 transition-opacity"></div>
+                                        <div className="hidden md:block corner-decal decal-tl border-black"></div>
+                                        <div className="hidden md:block corner-decal decal-br border-black opacity-30 group-hover:opacity-100 transition-opacity"></div>
 
                                         {/* Header */}
                                         <div
-                                            className="px-5 py-4 flex items-center justify-between border-b-2 border-black/5 bg-white cursor-pointer group/header relative"
+                                            className="px-6 md:px-5 py-4 flex items-center justify-between border-b-2 border-black/5 bg-white cursor-pointer group/header relative"
                                             onClick={() => navigate(`/community/post/${post._id}`)}
                                         >
                                            <div className="absolute top-1 right-2 text-[6px] font-black opacity-10 uppercase tracking-widest">POST_P_00{post._id.slice(-4)}</div>
@@ -201,14 +201,14 @@ const CommunityFeed = () => {
                                                     <img
                                                         src={`${post.image}`}
                                                         alt={post.title}
-                                                        className={`w-full object-cover transition-all duration-700 group-hover/img:scale-105 ${isExpanded ? 'max-h-[500px]' : 'h-56'}`}
+                                                        className={`w-full object-cover transition-all duration-700 group-hover/img:scale-105 h-auto md:h-56`}
                                                     />
-                                                    <div className="absolute inset-0 border-[12px] border-white/5 pointer-events-none"></div>
+                                                    <div className="hidden md:block absolute inset-0 border-[12px] border-white/5 pointer-events-none"></div>
                                                 </div>
                                             )}
 
                                             {/* Title & Body */}
-                                            <div className="px-5 py-6 space-y-3">
+                                            <div className="px-6 md:px-5 py-6 space-y-3">
                                                 <h3 className="text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter line-clamp-2">{post.title}</h3>
                                                 <div className="text-black/60 text-[9px] font-bold leading-relaxed uppercase">
                                                     <p className={`${!isExpanded ? 'line-clamp-3' : ''}`}>
