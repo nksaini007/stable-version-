@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaSearch, FaArrowRight, FaShapes, FaHammer, FaDraftingCompass, FaTruckMoving } from "react-icons/fa";
-import heroImg from "../assets/hero_vibe.png";
+import heroImg from "../hero_vibe.png";
 
 const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClick }) => {
   const [isFocused, setIsFocused] = useState(false);
