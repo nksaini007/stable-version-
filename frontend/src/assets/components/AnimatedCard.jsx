@@ -191,7 +191,7 @@ const AnimatedCard = () => {
   // RENDER FOR CUSTOMERS & GUESTS
   // ----------------------------------------------------------------------
   return (
-    <div className="flex flex-col font-sans">
+    <div className="flex flex-col font-mono">
       <CustomerLanding 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
