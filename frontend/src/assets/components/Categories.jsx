@@ -7,16 +7,12 @@ import Nev from "./Nev";
 import Footer from "./Footer";
 
 /* ------------------- Industrial Skeleton ------------------- */
-const SkeletonCards = ({ count = 8 }) => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+const SkeletonCards = ({ count = 12 }) => (
+  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8 gap-4">
     {Array.from({ length: count }).map((_, i) => (
-      <div
-        key={i}
-        className="bg-white border-2 border-black/5 p-4 animate-pulse relative"
-      >
-        <div className="w-full h-40 bg-black/5" />
-        <div className="mt-4 h-3 w-2/3 bg-black/5" />
-        <div className="mt-2 h-2 w-1/2 bg-black/5" />
+      <div key={i} className="bg-white border border-black/5 p-3 animate-pulse">
+        <div className="aspect-square bg-black/5" />
+        <div className="mt-3 h-2 w-2/3 bg-black/5" />
       </div>
     ))}
   </div>
@@ -67,101 +63,90 @@ const Categories = () => {
       <Nev />
       <div className="scanline"></div>
 
-      {/* ---------------- Industrial Header ---------------- */}
-      <div className="max-w-[2000px] mx-auto pt-32 pb-16 px-6 md:px-12 relative z-10">
-        <div className="flex flex-col">
-            <span className="text-[#ff5c00] font-black text-[10px] tracking-[0.5em] mb-4 uppercase select-none">//_CATALOG_SYNC_V4.0_READY</span>
-            <h1 className="text-5xl md:text-8xl font-heading font-black tracking-tight leading-none uppercase">
-                BROWSE<span className="text-black/10">_CATALOG</span>
+      {/* ---------------- Industrial Header (Compact) ---------------- */}
+      <div className="max-w-[1600px] mx-auto pt-24 pb-10 px-6 md:px-10 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-black/10 pb-6 gap-4">
+          <div className="space-y-1">
+            <span className="text-[#ff5c00] font-black text-[8px] tracking-[0.4em] mb-1 uppercase select-none opacity-60">//_CATALOG_ACCESS</span>
+            <h1 className="text-3xl md:text-5xl font-heading font-black tracking-tight leading-none uppercase">
+                BROWSE<span className="text-black/10">_SECTORS</span>
             </h1>
-            <p className="text-[10px] font-black opacity-30 mt-4 uppercase tracking-[0.2em]">
-                ACTIVE_SECTORS: {categories.length} //_X_TOTAL_ENTRY_POINTS
-            </p>
+          </div>
+          <div className="hidden md:block">
+             <p className="text-[9px] font-black opacity-30 uppercase tracking-[0.2em]">NODES_FOUND: {categories.length} //_V4.1</p>
+          </div>
         </div>
       </div>
 
       {/* ---------------- Main Content ---------------- */}
-      <div className="max-w-[2000px] mx-auto px-6 md:px-12 pb-24 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div className="max-w-[1600px] mx-auto px-6 md:px-10 pb-24 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           
           {/* ---------------- Sidebar: Operations Modules ---------------- */}
-          <aside className="lg:col-span-3 space-y-8 order-2 lg:order-1">
+          <aside className="lg:col-span-3 space-y-6 order-2 lg:order-1">
             {/* Search Module */}
-            <div className="bg-white border-2 border-black p-6 relative">
-              <div className="absolute -top-3 left-4 bg-[#ff5c00] text-black text-[8px] font-black px-2 py-0.5 tracking-widest uppercase border border-black shadow-[2px_2px_0px_#000]">MODULE_SEARCH</div>
+            <div className="bg-white border border-black/10 p-5 relative">
+              <div className="absolute -top-2.5 left-4 bg-black text-white text-[7px] font-black px-2 py-0.5 tracking-widest uppercase">CAT_SEARCH</div>
               <div className="relative mt-2">
-                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/20 text-xs" />
+                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/20 text-[10px]" />
                 <input
                   value={term}
                   onChange={(e) => setTerm(e.target.value)}
-                  placeholder="INIT_SEARCH..."
-                  className="w-full pl-10 pr-4 py-3 text-[10px] font-black bg-black/5 border-2 border-black/5 focus:border-black outline-none transition-all uppercase placeholder:text-black/20"
+                  placeholder="FILTER_NODES..."
+                  className="w-full pl-9 pr-4 py-2 text-[9px] font-black bg-black/5 border border-black/5 focus:border-black outline-none transition-all uppercase placeholder:text-black/20"
                 />
               </div>
             </div>
 
             {/* Popular Sectors Module */}
-            <div className="bg-white border-2 border-black p-6 relative">
-              <div className="absolute -top-3 left-4 bg-black text-white text-[8px] font-black px-2 py-0.5 tracking-widest uppercase border border-black shadow-[2px_2px_0px_#ff5c00]">HIGH_FREQ_SECTORS</div>
-              <div className="space-y-2 mt-4">
+            <div className="bg-white border border-black/10 p-5 relative">
+              <div className="absolute -top-2.5 left-4 bg-black text-white text-[7px] font-black px-2 py-0.5 tracking-widest uppercase">POPULAR_FLUX</div>
+              <div className="space-y-1.5 mt-2">
                 {popular.map((cat, i) => (
                   <Link
                     key={cat._id || i}
                     to={`/category/${encodeURIComponent(cat.name)}`}
-                    className="flex items-center justify-between px-3 py-2 border border-black/5 hover:border-[#ff5c00] hover:bg-[#ff5c00]/5 transition-all group"
+                    className="flex items-center justify-between px-2 py-1.5 border border-transparent hover:border-black/10 hover:bg-black/5 transition-all group"
                   >
-                    <span className="text-[9px] font-black uppercase text-black/60 group-hover:text-black">
+                    <span className="text-[8px] font-black uppercase text-black/40 group-hover:text-black">
                       {cat.name}
                     </span>
-                    <span className="text-[8px] font-black px-1.5 py-0.5 bg-black/5 group-hover:bg-black group-hover:text-[#ff5c00] transition-colors">
+                    <span className="text-[7px] font-black text-black/20 group-hover:text-[#ff5c00]">
                       {cat.subcategories?.length || 0}
                     </span>
                   </Link>
                 ))}
               </div>
             </div>
-
-            {/* Technical Spec Sheet Accents */}
-            <div className="p-6 border-2 border-black/5 opacity-40 hidden lg:block">
-              <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex justify-between items-center border-b border-black/10 pb-1">
-                    <div className="w-1/2 h-1 bg-black/20"></div>
-                    <div className="w-4 h-1 bg-[#ff5c00]"></div>
-                  </div>
-                ))}
-                <p className="text-[7px] text-black font-black uppercase leading-[1.5]">CONFIDENTIAL::STINCHAR_INTEL_SYSTEM. ALL_NODES_ENCRYPTED_V3.0</p>
-              </div>
-            </div>
           </aside>
 
-          {/* ---------------- Grid: Data Packets ---------------- */}
+          {/* ---------------- Grid: Compact Data Packets ---------------- */}
           <main className="lg:col-span-9 order-1 lg:order-2">
             {loading ? (
               <SkeletonCards />
             ) : filtered.length === 0 ? (
-              <div className="py-40 text-center border-2 border-black/5 bg-white/50 backdrop-blur-md">
-                <FaBoxes className="text-5xl text-black/10 mx-auto mb-6 animate-pulse" />
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/20">NO_CATEGORY_DETECTED_IN_SECTOR</p>
+              <div className="py-32 text-center border border-black/10 bg-white/50">
+                <FaBoxes className="text-4xl text-black/10 mx-auto mb-4 animate-pulse" />
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-black/20">BUFFER_EMPTY</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
                 {filtered.map((category, idx) => {
                   const subs = category.subcategories || [];
-                  const imageUrl = getOptimizedImage(category.image, 500);
-                  const overflow = subs.length - 4;
+                  const imageUrl = getOptimizedImage(category.image, 400);
+                  const overflow = subs.length - 2;
 
                   return (
                     <article key={category._id || idx} className="group">
                       <Link
                         to={`/category/${encodeURIComponent(category.name)}`}
-                        className="block bg-white border-2 border-black shadow-[10px_10px_0px_rgba(0,0,0,0.05)] hover:shadow-[10px_10px_0px_rgba(255,92,0,0.1)] transition-all relative overflow-hidden"
+                        className="block bg-white border border-black/10 group-hover:border-black p-3 relative overflow-hidden transition-all shadow-[5px_5px_0px_rgba(0,0,0,0.02)] group-hover:shadow-[8px_8px_0px_rgba(0,0,0,0.05)]"
                       >
-                        <div className="corner-decal decal-tl !border-black !w-2 !h-2"></div>
-                        <div className="absolute top-1 right-2 text-[6px] font-black opacity-10 uppercase tracking-widest">CAT_NODE_0{idx+1}</div>
+                        <div className="corner-decal decal-tl !border-black/20 group-hover:!border-black !w-2 !h-2"></div>
+                        <div className="absolute top-1 right-1.5 text-[6px] font-black opacity-10 uppercase tracking-widest">CAT_IDX_{idx+1}</div>
                         
-                        {/* Image Section */}
-                        <div className="relative h-48 bg-black/5 border-b-2 border-black overflow-hidden">
+                        {/* Image: Aspect Square Style like Trending */}
+                        <div className="relative aspect-square bg-black/5 border border-black/5 mb-3 overflow-hidden">
                           {imageUrl ? (
                             <img
                               src={imageUrl}
@@ -171,38 +156,29 @@ const Categories = () => {
                             />
                           ) : (
                             <div className="flex items-center justify-center h-full">
-                              <FaBoxes className="text-4xl text-black/10" />
+                              <FaBoxes className="text-2xl text-black/5" />
                             </div>
                           )}
-                          <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
-                          
-                          <div className="absolute bottom-4 left-4">
-                            <span className="bg-black text-[#ff5c00] text-[8px] font-black px-2 py-1 tracking-widest uppercase border border-white/20">
-                              {category.name}
-                            </span>
-                          </div>
                         </div>
 
-                        {/* Content: Technical Metadata */}
-                        <div className="p-4 bg-white space-y-3">
-                          <div className="flex flex-wrap gap-1.5">
-                            {subs.slice(0, 4).map((sub, i) => (
-                              <span
-                                key={sub._id || i}
-                                className="text-[7px] font-black bg-black/5 text-black/60 px-1.5 py-0.5 border border-black/5 uppercase tracking-tighter"
-                              >
-                                {sub.name}
+                        {/* Content: Minimal Technical Meta */}
+                        <div className="space-y-1">
+                          <span className="text-[7px] font-black text-[#ff5c00] uppercase tracking-widest">SECTOR_{idx+1}</span>
+                          <h3 className="text-[10px] font-black uppercase text-black leading-tight line-clamp-1 group-hover:text-[#ff5c00] transition-colors">
+                            {category.name}
+                          </h3>
+                          
+                          <div className="flex flex-wrap gap-1 pt-2">
+                            {subs.slice(0, 2).map((sub, i) => (
+                              <span key={i} className="text-[6px] font-black bg-black/5 text-black/40 px-1 py-0.5 uppercase tracking-tighter">
+                                {sub.name?.slice(0,10)}
                               </span>
                             ))}
                             {overflow > 0 && (
-                              <span className="text-[7px] font-black text-[#ff5c00] px-1.5 py-0.5 uppercase tracking-tighter">
+                              <span className="text-[6px] font-black text-black/20 uppercase pt-0.5">
                                 +{overflow}_LOGS
                               </span>
                             )}
-                          </div>
-                          <div className="pt-2 border-t border-black/5 flex justify-between items-center group-hover:text-[#ff5c00] transition-colors">
-                             <span className="text-[7px] font-black text-black/20 tracking-wider uppercase">INIT_ENTRY_POINT</span>
-                             <FaChevronRight size={8} />
                           </div>
                         </div>
                       </Link>
