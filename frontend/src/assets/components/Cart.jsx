@@ -4,14 +4,14 @@ import { CartContext } from "../context/CartContext";
 import { useNavigate, Link } from "react-router-dom";
 import Nev from "./Nev";
 import Footer from "./Footer";
-import { Trash2, ShieldCheck, Truck, FileText, ChevronRight, AlertCircle, Package } from "lucide-react";
+import { Trash2, ShieldCheck, Truck, FileText, ChevronRight, AlertCircle, ShoppingBag, ArrowLeft } from "lucide-react";
 import API from "../api/api";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Cart = () => {
   const navigate = useNavigate();
 
-  // Redirect unsigned users to login
+  // Security: Redirect unsigned users
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -44,19 +44,11 @@ const Cart = () => {
   const [showQuotationModal, setShowQuotationModal] = useState(false);
   const [customerNote, setCustomerNote] = useState("");
 
-  const itemsTotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
-  const totalWeightKg = cartItems.reduce(
-    (sum, item) => sum + (item.weight || 5) * item.quantity,
-    0
-  );
-
+  const itemsTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalWeightKg = cartItems.reduce((sum, item) => sum + (item.weight || 5) * item.quantity, 0);
   const total = itemsTotal + (deliveryData?.totalCharge || 0);
 
-  // Fetch Config for thresholds
+  // Fetch Config
   useEffect(() => {
     const fetchConfig = async () => {
       try {
@@ -67,7 +59,7 @@ const Cart = () => {
     fetchConfig();
   }, []);
 
-  // Auto-calculate delivery when pincode changes
+  // Delivery Calculation
   useEffect(() => {
     if (shippingAddress.postalCode?.length === 6) {
       calculateDelivery();
@@ -99,22 +91,8 @@ const Cart = () => {
   };
 
   const handleCheckout = async () => {
-    if (cartItems.length === 0) {
-      setMessage("ERROR: INVENTORY EMPTY!");
-      return;
-    }
-
-    if (deliveryData?.error || !deliveryData) {
-      setMessage("ERROR: VALID DELIVERY PINCODE REQUIRED!");
-      return;
-    }
-
-    for (let key in shippingAddress) {
-      if (!shippingAddress[key]) {
-        setMessage(`ERROR: DATA_MISSING_IN [${key.toUpperCase()}]`);
-        return;
-      }
-    }
+    if (cartItems.length === 0) return setMessage("SYSTEM_ERROR: Empty Cart");
+    if (deliveryData?.error || !deliveryData) return setMessage("SYSTEM_ERROR: Invalid Pincode");
 
     setLoading(true);
     setMessage("");
@@ -126,10 +104,7 @@ const Cart = () => {
       price: item.price,
       product: item._id,
       variantId: item.variantId,
-      seller: {
-        _id: item.seller,
-        name: item.sellerName || "Unknown Entity",
-      },
+      seller: { _id: item.seller, name: item.sellerName || "Partner" },
     }));
 
     const orderData = {
@@ -162,47 +137,31 @@ const Cart = () => {
           handler: async (response) => {
             try {
               setLoading(true);
-              setMessage("VERIFYING PAYMENT SIGNAL...");
-              const verifyRes = await API.post(
-                "/orders/verify-payment",
-                {
-                  orderId: data._id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
+              setMessage("VERIFYING TRANSACTION SIGNAL...");
+              const verifyRes = await API.post("/orders/verify-payment", {
+                orderId: data._id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }, { headers: { Authorization: `Bearer ${token}` } });
 
               if (verifyRes.data.success) {
-                setLoading(false);
-                setMessage("SYSTEM_MSG: PAYMENT VERIFIED. ORDER FINALIZED.");
                 clearCart();
-                setTimeout(() => navigate("/dashboard/customer/orders"), 2000);
+                navigate("/dashboard/customer/orders");
               }
             } catch (err) {
               setLoading(false);
-              setMessage(`ERROR: VERIFICATION_FAILED: ${err.response?.data?.message || err.message}`);
+              setMessage(`SECURITY_ERROR: Payment Verification Failed`);
             }
           },
-          prefill: {
-            name: shippingAddress.fullName,
-            contact: shippingAddress.phone,
-          },
-          theme: { color: "#ff5c00" },
+          prefill: { name: shippingAddress.fullName, contact: shippingAddress.phone },
+          theme: { color: "#fbbf24" },
         };
-
         const rzp = new window.Razorpay(options);
-        rzp.on("payment.failed", (response) => {
-          setMessage(`[ALERT] PAYMENT_FAILED: ${response.error.description}`);
-          setLoading(false);
-        });
         rzp.open();
       } else {
-        setLoading(false);
-        setMessage("SYSTEM_MSG: ORDER COMPILED SUCCESSFULLY. CASH ON DELIVERY ENGAGED.");
         clearCart();
-        setTimeout(() => navigate("/dashboard/customer/orders"), 2000);
+        navigate("/dashboard/customer/orders");
       }
     } catch (err) {
       setLoading(false);
@@ -214,364 +173,313 @@ const Cart = () => {
 
   const handleQuotationRequest = async () => {
     setLoading(true);
-    setMessage("");
-
     const quotationData = {
-      items: cartItems.map(item => ({
-        product: item._id,
-        name: item.name,
-        qty: item.quantity,
-        price: item.price,
-        variantId: item.variantId,
-        seller: item.seller,
-      })),
+      items: cartItems.map(item => ({ product: item._id, name: item.name, qty: item.quantity, price: item.price, variantId: item.variantId, seller: item.seller })),
       shippingAddress,
       customerNote,
     };
-
     try {
       const token = localStorage.getItem("token");
-      await API.post(`/quotations`, quotationData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setLoading(false);
-      setMessage("SYSTEM_MSG: QUOTATION REQUEST LOGGED. ADMIN REVIEW PENDING.");
-      setShowQuotationModal(false);
-      setTimeout(() => navigate("/dashboard/customer/quotations"), 2000);
+      await API.post(`/quotations`, quotationData, { headers: { Authorization: `Bearer ${token}` } });
+      clearCart();
+      navigate("/dashboard/customer/quotations");
     } catch (err) {
       setLoading(false);
-      setMessage(`ERROR: QUOTATION_FAILURE: ${err.response?.data?.message || err.message}`);
+      setMessage(`ERROR: Quotation Submission Failed`);
     }
   };
 
   return (
-    <div className="bg-[#0a0a0a] min-h-screen text-white font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative flex flex-col pt-24">
+    <div className="bg-[#0f172a] min-h-screen text-slate-100 font-sans selection:bg-amber-400 selection:text-black pt-28 pb-20">
       <Nev />
-      <div className="scanline"></div>
-
-      <div className="max-w-[1800px] mx-auto w-full px-6 md:px-12 py-10 relative z-10 flex-1">
+      
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
         
-        {/* Header Terminal */}
-        <div className="relative mb-14 border-l-4 border-[#ff5c00] pl-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-3 text-[#ff5c00] text-[10px] font-black tracking-[0.5em] uppercase mb-2 animate-pulse">
-              <ShieldCheck size={14} />
-              ACQUISITION_PROTOCOL_v.2.4 :: SECURE_NODE
-            </div>
-            <h1 className="text-4xl md:text-6xl font-heading font-black text-white uppercase leading-tight">
-              Cart <span className="text-[#ff5c00]">Manifest</span>
-            </h1>
-          </div>
-          <div className="bg-white/5 border border-white/10 p-4 backdrop-blur-md hidden md:block">
-             <div className="text-[9px] text-white/40 uppercase mb-1">SYSTEM_STATUS</div>
-             <div className="text-xs font-black flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-ping"></div>
-                TERMINAL_ACTIVE // ENCRYPTION_ENABLED
-             </div>
-          </div>
+        {/* Page Header */}
+        <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+                Studio <span className="text-amber-400 font-medium">Cart</span>
+             </h1>
+             <p className="mt-3 text-slate-400 text-sm font-medium flex items-center gap-2">
+                <ShoppingBag size={16} className="text-amber-400" />
+                {cartItems.length} Products Allocated to Manifest
+             </p>
+          </motion.div>
+          <Link to="/products" className="text-slate-400 hover:text-white transition-colors bg-slate-800/50 hover:bg-slate-800 px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-2 w-fit">
+             <ArrowLeft size={14} /> Continue Selection
+          </Link>
         </div>
 
         {cartItems.length === 0 ? (
-          <div className="py-40 flex flex-col items-center justify-center border-2 border-dashed border-white/10 bg-white/5 backdrop-blur-sm relative group">
-            <div className="corner-decal decal-tl !border-white/20"></div>
-            <div className="corner-decal decal-br !border-white/20"></div>
-            <Package size={64} className="text-white/10 mb-8 group-hover:text-[#ff5c00] transition-colors duration-500" />
-            <p className="text-[12px] font-black opacity-30 uppercase tracking-[0.5em] mb-8">INVENTORY_UNITS_UNALLOCATED</p>
-            <Link to="/products" className="px-10 py-4 bg-[#ff5c00] text-black font-black uppercase tracking-widest hover:bg-white transition-all">REP_POPULATE_INVENTORY</Link>
-          </div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-32 flex flex-col items-center justify-center bg-slate-900/50 rounded-3xl border border-slate-800 border-dashed">
+             <div className="p-8 bg-slate-800/40 rounded-full mb-8">
+               <ShoppingBag size={48} className="text-slate-600" />
+             </div>
+             <p className="text-xl font-bold text-slate-500 mb-8">Your cart is currently empty</p>
+             <Link to="/products" className="px-10 py-4 bg-amber-400 text-slate-900 font-bold rounded-xl hover:bg-white transition-all shadow-xl shadow-amber-400/10">Browse Inventory</Link>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             
-            {/* 🛠️ LEFT: INVENTORY FEED */}
-            <div className="lg:col-span-8 space-y-6">
-              <div className="flex items-center gap-4 mb-8">
-                 <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-white/40">ALLOCATED_CARGO</h2>
-                 <div className="flex-1 h-[1px] bg-white/10"></div>
-              </div>
+            {/* 📋 PART 1: Item Manifest */}
+            <div className="lg:col-span-12 xl:col-span-7">
+               <div className="space-y-4">
+                  {cartItems.map((item, idx) => (
+                    <motion.div 
+                      layout
+                      key={item._id + (item.variantId || "")} 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/80 group hover:border-amber-400/30 transition-all shadow-sm"
+                    >
+                      <div className="flex flex-col sm:flex-row gap-8">
+                         <div className="w-full sm:w-28 h-28 bg-slate-950 rounded-xl overflow-hidden flex-shrink-0 border border-slate-800">
+                            <img src={item.images?.[0] || item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                         </div>
 
-              <div className="space-y-4">
-                {cartItems.map((item, idx) => (
-                  <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    key={item._id + (item.variantId || "")} 
-                    className="bg-white/5 border border-white/10 hover:border-[#ff5c00] transition-all p-4 relative group"
-                  >
-                    <div className="flex flex-col md:flex-row gap-6">
-                       {/* Spec Image */}
-                       <div className="w-full md:w-32 h-32 bg-black/40 border border-white/5 relative overflow-hidden flex-shrink-0">
-                          <img src={item.images?.[0] || item.image} alt={item.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                       </div>
-
-                       {/* Specs */}
-                       <div className="flex-1 space-y-2">
-                          <div className="flex flex-wrap gap-2">
-                             <span className="text-[8px] bg-white/10 px-2 py-0.5 font-black uppercase tracking-widest text-[#ff5c00]">{item.category}</span>
-                             <span className="text-[8px] bg-white/5 px-2 py-0.5 font-black uppercase tracking-widest text-white/40">{item.subcategory}</span>
-                          </div>
-                          <h3 className="text-xl font-black uppercase text-white group-hover:text-[#ff5c00] transition-colors">{item.name}</h3>
-                          
-                          {item.selectedVariant && (
-                            <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-white/60">
-                               <div className="w-2 h-2 bg-[#ff5c00] rounded-full"></div>
-                               VARIANT_SPEC :: {item.selectedVariant}
+                         <div className="flex-1 flex flex-col justify-between">
+                            <div>
+                               <div className="flex items-center gap-3 mb-1">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-500/80">{item.category}</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">• {item.subcategory}</span>
+                               </div>
+                               <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors uppercase">{item.name}</h3>
+                               {item.selectedVariant && (
+                                 <p className="text-xs font-semibold text-slate-400 mt-1 flex items-center gap-2 tracking-tight">
+                                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
+                                    {item.selectedVariant}
+                                 </p>
+                               )}
                             </div>
-                          )}
 
-                          <div className="flex items-center gap-4 mt-4">
-                             <div className="flex items-center border border-white/10 bg-black/40">
-                                <button onClick={() => decreaseQuantity(item._id, item.variantId)} className="w-8 h-8 flex items-center justify-center hover:bg-[#ff5c00] hover:text-black transition-colors">−</button>
-                                <span className="w-10 text-center text-xs font-black">{item.quantity}</span>
-                                <button onClick={() => increaseQuantity(item._id, item.variantId)} className="w-8 h-8 flex items-center justify-center hover:bg-[#ff5c00] hover:text-black transition-colors">+</button>
-                             </div>
-                             <button onClick={() => removeFromCart(item._id, item.variantId)} className="text-white/20 hover:text-red-500 transition-colors uppercase text-[9px] font-black flex items-center gap-1">
-                                <Trash2 size={12} /> PURGE_ITEM
-                             </button>
-                          </div>
-                       </div>
+                            <div className="flex items-center gap-6 mt-6 pt-4 border-t border-slate-800/50">
+                               <div className="flex items-center bg-slate-950 rounded-lg p-1 border border-slate-800">
+                                  <button onClick={() => decreaseQuantity(item._id, item.variantId)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-amber-400 transition-colors">−</button>
+                                  <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
+                                  <button onClick={() => increaseQuantity(item._id, item.variantId)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-amber-400 transition-colors">+</button>
+                               </div>
+                               <button onClick={() => removeFromCart(item._id, item.variantId)} className="text-slate-500 hover:text-red-400 text-xs font-bold transition-colors">REMOVE</button>
+                            </div>
+                         </div>
 
-                       {/* Price Unit */}
-                       <div className="text-right flex flex-col justify-between">
-                          <div className="space-y-1">
-                             <div className="text-2xl font-black text-white">₹{item.price.toLocaleString()}</div>
-                             {item.mrp > item.price && (
-                               <div className="text-[10px] text-white/20 line-through font-black text-right">MRP: ₹{item.mrp.toLocaleString()}</div>
-                             )}
-                          </div>
-                          <div className="text-[9px] text-white/30 font-black uppercase tracking-widest">
-                             SUB: ₹{(item.price * item.quantity).toLocaleString()}
-                          </div>
-                       </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <button onClick={clearCart} className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 hover:text-red-500 transition-colors flex items-center gap-2">
-                 [!] INITIALIZE_LOGISTICS_PURGE
-              </button>
+                         <div className="sm:text-right flex flex-col justify-between">
+                            <div>
+                               <div className="text-2xl font-bold text-white">₹{item.price.toLocaleString()}</div>
+                               {item.mrp > item.price && (
+                                 <div className="text-xs text-slate-500 line-through mt-1">₹{item.mrp.toLocaleString()}</div>
+                               )}
+                            </div>
+                            <div className="text-[10px] font-black text-slate-600 bg-slate-950/50 px-2 py-1 rounded w-fit sm:ml-auto">
+                               SUB_TOTAL: ₹{(item.price * item.quantity).toLocaleString()}
+                            </div>
+                         </div>
+                      </div>
+                    </motion.div>
+                  ))}
+               </div>
+               {cartItems.length > 0 && (
+                  <button onClick={clearCart} className="mt-8 text-slate-500 hover:text-slate-300 text-[10px] font-bold tracking-widest uppercase transition-colors px-4 py-2 border border-slate-800 rounded-lg">Purge Manifest</button>
+               )}
             </div>
 
-            {/* 🧾 RIGHT: LOGISTICS HUB */}
-            <div className="lg:col-span-4 space-y-8">
-               
-               {/* Shipping Protocol */}
-               <div className="bg-white text-black p-8 relative shadow-[10px_10px_0px_#ff5c00]">
-                  <div className="corner-decal decal-tl !border-black/20"></div>
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.4em] mb-6 flex items-center gap-2 border-b border-black/5 pb-4">
-                    <Truck size={14} className="text-[#ff5c00]" />
-                    LOGISTICS_PROTOCOL :: DESTINATION
-                  </h3>
+            {/* 📦 PART 2: Logistics Desk */}
+            <div className="lg:col-span-12 xl:col-span-5">
+               <div className="sticky top-32 space-y-8">
+                  
+                  {/* Address Section */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
+                     <h3 className="text-base font-bold text-white mb-8 flex items-center gap-3">
+                        <Truck size={20} className="text-amber-400" />
+                        Logistics <span className="text-amber-400/60 font-medium">Protocol</span>
+                     </h3>
 
-                  <div className="space-y-4 mb-8">
-                     {[
-                       { label: "Entity Name", name: "fullName" },
-                       { label: "Target Address", name: "address" },
-                       { label: "Sector (City)", name: "city" },
-                       { label: "Post Code", name: "postalCode" },
-                       { label: "Contact Channel", name: "phone" },
-                     ].map((field) => (
-                       <div key={field.name} className="space-y-1">
-                          <label className="text-[7px] font-black uppercase text-black/40 ml-1">{field.label}</label>
-                          <input
-                            type="text"
-                            name={field.name}
-                            placeholder={`SET_${field.name.toUpperCase()}`}
-                            value={shippingAddress[field.name]}
-                            onChange={handleInputChange}
-                            className="w-full bg-[#f5f5f5] border border-black/5 p-3 text-xs font-black outline-none focus:border-[#ff5c00] transition-colors"
-                          />
-                       </div>
-                     ))}
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                        {[
+                          { label: "Target Name", name: "fullName", placeholder: "e.g. John Doe", span: "col-span-2" },
+                          { label: "Post Code", name: "postalCode", placeholder: "6-Digits Required", span: "col-span-1" },
+                          { label: "City", name: "city", placeholder: "Settlement Unit", span: "col-span-1" },
+                          { label: "Address", name: "address", placeholder: "Full Street Data", span: "col-span-2" },
+                          { label: "Comm Channel", name: "phone", placeholder: "Mobile Identifier", span: "col-span-2" },
+                        ].map((field) => (
+                          <div key={field.name} className={field.span}>
+                             <label className="text-[9px] font-black uppercase text-slate-500 ml-1 mb-1.5 block tracking-widest">{field.label}</label>
+                             <input
+                               type="text"
+                               name={field.name}
+                               placeholder={field.placeholder}
+                               value={shippingAddress[field.name]}
+                               onChange={handleInputChange}
+                               className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 placeholder:text-slate-700 text-sm font-semibold focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/10 outline-none transition-all shadow-inner"
+                             />
+                          </div>
+                        ))}
+                     </div>
+
+                     {/* Delivery Intel */}
+                     <AnimatePresence>
+                       {shippingAddress.postalCode?.length === 6 && (
+                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mb-10 bg-slate-950/50 border border-slate-800 rounded-2xl p-5 overflow-hidden">
+                            <h4 className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-4 inline-block border-b-2 border-amber-400/20 pb-1">Logistics Recon</h4>
+                            {calcLoading ? (
+                              <div className="text-xs font-bold text-slate-500 animate-pulse">Calculating Dispatch Variables...</div>
+                            ) : deliveryData?.error ? (
+                              <div className="text-xs font-bold text-red-400 uppercase">{deliveryData.error}</div>
+                            ) : deliveryData ? (
+                               <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-xs">
+                                  <div>
+                                     <span className="text-[10px] text-slate-600 block uppercase font-black tracking-tight mb-0.5">Fleet</span>
+                                     <span className="font-bold text-slate-300">{deliveryData.vehicleCount}x {deliveryData.vehicleLabel}</span>
+                                  </div>
+                                  <div>
+                                     <span className="text-[10px] text-slate-600 block uppercase font-black tracking-tight mb-0.5">Zone</span>
+                                     <span className="font-bold text-slate-300">{deliveryData.zone} Block</span>
+                                  </div>
+                                  <div>
+                                     <span className="text-[10px] text-slate-600 block uppercase font-black tracking-tight mb-0.5">Payload</span>
+                                     <span className="font-bold text-slate-300">{totalWeightKg} KG Net</span>
+                                  </div>
+                                  <div>
+                                     <span className="text-[10px] text-slate-600 block uppercase font-black tracking-tight mb-0.5">Origin</span>
+                                     <span className="font-bold text-green-500">Secure Node</span>
+                                  </div>
+                               </div>
+                            ) : null}
+                         </motion.div>
+                       )}
+                     </AnimatePresence>
+
+                     {/* Financial Manifest */}
+                     <div className="space-y-4 border-t border-slate-800 pt-8 mb-8 font-sans">
+                        <div className="flex justify-between text-xs font-semibold text-slate-400">
+                           <span>Total Asset Value</span>
+                           <span className="text-slate-200">₹{itemsTotal.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-xs font-semibold text-slate-400">
+                           <span>Estimated Dispatch Cost</span>
+                           <span className="text-slate-200">{deliveryData?.totalCharge ? `₹${deliveryData.totalCharge.toLocaleString()}` : "Pending Recon"}</span>
+                        </div>
+                        <div className="flex justify-between items-end pt-4">
+                           <span className="text-sm font-bold text-white uppercase tracking-tighter">Gross Secure Total</span>
+                           <div className="text-right">
+                              <span className="text-3xl font-black text-amber-400 leading-none tracking-tight">₹{total.toLocaleString()}</span>
+                              <p className="text-[9px] font-bold text-slate-600 uppercase flex items-center justify-end gap-1 mt-1.5">
+                                 <ShieldCheck size={10} className="text-green-500/50" /> Secure Price Verified
+                              </p>
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* Payment Protocol */}
+                     <div className="grid grid-cols-2 gap-3 mb-10">
+                        {["COD", "Razorpay"].map((m) => (
+                           <button
+                             key={m}
+                             onClick={() => setPaymentMethod(m)}
+                             className={`px-4 py-3 text-[11px] font-black uppercase rounded-xl transition-all border ${paymentMethod === m ? "bg-amber-400 text-slate-900 border-amber-400 shadow-lg shadow-amber-400/10" : "bg-slate-950 text-slate-500 border-slate-800"}`}
+                           >
+                              {m === "COD" ? "Manual Dispatch" : "Digital Crypt"}
+                           </button>
+                        ))}
+                     </div>
+
+                     {/* Executive Action */}
+                     <div className="space-y-5">
+                       {isQuotationRequired ? (
+                         <button
+                           onClick={() => setShowQuotationModal(true)}
+                           disabled={loading}
+                           className="w-full py-5 bg-white text-slate-900 font-extrabold uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 hover:translate-y-[-2px] transition-all"
+                         >
+                           <FileText size={18} /> {loading ? "Communicating..." : "Request Studio Quotation"}
+                         </button>
+                       ) : (
+                         <button
+                           onClick={handleCheckout}
+                           disabled={loading || calcLoading || !deliveryData || deliveryData.error}
+                           className="w-full py-5 bg-amber-400 text-slate-900 font-extrabold uppercase tracking-widest rounded-2xl shadow-xl shadow-amber-400/10 flex items-center justify-center gap-3 hover:bg-white hover:translate-y-[-2px] transition-all disabled:opacity-30 disabled:translate-y-0 disabled:shadow-none"
+                         >
+                           {loading ? "Processing..." : "Confirm & Execute Order"}
+                           <ChevronRight size={18} />
+                         </button>
+                       )}
+                     </div>
+
+                     {message && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 p-4 bg-slate-950 border border-slate-800 rounded-xl relative overflow-hidden">
+                           <div className="absolute top-0 left-0 w-1 h-full bg-amber-400"></div>
+                           <p className="text-[10px] font-black text-slate-400 uppercase leading-relaxed flex items-start gap-3">
+                              <AlertCircle size={14} className="text-amber-400 flex-shrink-0" />
+                              {message}
+                           </p>
+                        </motion.div>
+                     )}
                   </div>
-
-                  {/* Logistics Status Report */}
-                  <AnimatePresence>
-                    {shippingAddress.postalCode?.length === 6 && (
-                      <motion.div 
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mb-8 border-l-2 border-[#ff5c00] bg-black/5 p-4 overflow-hidden"
-                      >
-                         <h4 className="text-[8px] font-black uppercase text-black/60 mb-2 underline decoration-[#ff5c00]">LOGISTICS_RECON_REPORT</h4>
-                         {calcLoading ? (
-                           <div className="text-[10px] font-black animate-pulse uppercase tracking-widest text-[#ff5c00]">CALCULATING_ROUTE_LOAD...</div>
-                         ) : deliveryData?.error ? (
-                           <div className="text-[10px] font-black text-red-500 uppercase">{deliveryData.error}</div>
-                         ) : deliveryData ? (
-                            <div className="grid grid-cols-2 gap-4 text-[10px] font-black uppercase">
-                               <div className="space-y-1">
-                                  <div className="text-black/40 text-[7px]">ZONE_TAG</div>
-                                  <div>{deliveryData.zone}</div>
-                               </div>
-                               <div className="space-y-1">
-                                  <div className="text-black/40 text-[7px]">PAYLOAD_WEIGHT</div>
-                                  <div>{totalWeightKg} KG</div>
-                               </div>
-                               <div className="space-y-1">
-                                  <div className="text-black/40 text-[7px]">FLEET_REQUIREMENT</div>
-                                  <div>{deliveryData.vehicleCount}x {deliveryData.vehicleLabel}</div>
-                               </div>
-                               <div className="space-y-1">
-                                  <div className="text-black/40 text-[7px]">DISPATCH_STATUS</div>
-                                  <div className="text-[#ff5c00]">READY</div>
-                               </div>
-                            </div>
-                         ) : null}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Financial Summary */}
-                  <div className="space-y-3 mb-8 border-t border-black/5 pt-6">
-                     <div className="flex justify-between text-[10px] font-black uppercase text-black/40">
-                        <span>ASSET_VALUATION</span>
-                        <span>₹{itemsTotal.toLocaleString()}</span>
-                     </div>
-                     <div className="flex justify-between text-[10px] font-black uppercase text-black/40">
-                        <span>LOGISTICS_CHARGE</span>
-                        <span>{deliveryData?.totalCharge ? `₹${deliveryData.totalCharge.toLocaleString()}` : "TBD"}</span>
-                     </div>
-                     <div className="flex justify-between items-end pt-4 border-t-2 border-black">
-                        <span className="text-xs font-black uppercase">TOTAL_SECURE_COST</span>
-                        <div className="text-right">
-                           <div className="text-3xl font-black leading-none uppercase">₹{total.toLocaleString()}</div>
-                           <div className="text-[7px] text-green-600 font-bold mt-1 flex items-center justify-end gap-1">
-                             <ShieldCheck size={8} /> SERVER_VERIFIED_PRICE
+                  
+                  <div className="bg-amber-400 shadow-2xl p-0.5 rounded-3xl group">
+                     <div className="bg-slate-950 rounded-[inherit] px-8 py-6 relative overflow-hidden">
+                        <div className="flex items-center gap-5">
+                           <div className="p-3 bg-amber-400/10 rounded-full">
+                              <FileText size={20} className="text-amber-400" />
+                           </div>
+                           <div>
+                              <h4 className="text-sm font-bold text-white uppercase tracking-tight">Enterprise Pricing?</h4>
+                              <p className="text-xs text-slate-500">Manual valuation for bulk/architect units.</p>
                            </div>
                         </div>
                      </div>
                   </div>
-
-                  {/* Payment Matrix */}
-                  <div className="grid grid-cols-2 gap-2 mb-8">
-                     {["COD", "Razorpay"].map((method) => (
-                       <button
-                         key={method}
-                         onClick={() => setPaymentMethod(method)}
-                         className={`py-3 text-[9px] font-black uppercase border-2 transition-all ${paymentMethod === method ? "bg-black text-white border-black" : "border-black/10 text-black shadow-inner"}`}
-                       >
-                         {method === "COD" ? "Cash_On_Dispatch" : "Secure_Gateway"}
-                       </button>
-                     ))}
-                  </div>
-
-                  {/* Action Terminal */}
-                  <div className="space-y-4">
-                    {isQuotationRequired ? (
-                      <button
-                        onClick={() => setShowQuotationModal(true)}
-                        disabled={loading}
-                        className="w-full px-8 py-5 bg-[#ff5c00] text-black font-black uppercase tracking-widest shadow-[6px_6px_0px_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-4 group"
-                      >
-                        <FileText size={18} />
-                        {loading ? "PROCESSING_INQUIRY..." : "INITIATE_QUOTATION_PROTOCOL"}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handleCheckout}
-                        disabled={loading || calcLoading || !deliveryData || deliveryData.error}
-                        className="w-full px-8 py-5 bg-black text-white font-black uppercase tracking-widest shadow-[6px_6px_0px_#ff5c00] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all disabled:bg-black/20 disabled:shadow-none flex items-center justify-center gap-4 group"
-                      >
-                        {loading ? "PROCESSING_TRANSACTION..." : "EXECUTE_FINAL_ORDER"}
-                        <ChevronRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                      </button>
-                    )}
-                  </div>
-
-                  {message && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }} 
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`mt-6 p-4 border-l-4 text-[9px] font-black uppercase tracking-widest bg-black/5 ${message.includes('ERROR') || message.includes('FAILURE') ? 'border-red-500 text-red-600' : 'border-[#ff5c00] text-black'}`}
-                    >
-                      <div className="flex items-start gap-2">
-                        <AlertCircle size={14} className="mt-0.5" />
-                        <span>{message}</span>
-                      </div>
-                    </motion.div>
-                  )}
                </div>
-
-               {/* Threshold Alert for Quotation */}
-               {isQuotationRequired && (
-                 <div className="bg-[#ff5c00]/10 border border-[#ff5c00] p-6 relative overflow-hidden">
-                    <div className="text-[10px] font-black text-[#ff5c00] uppercase mb-2">SYSTEM_THRESHOLD_WARNING</div>
-                    <p className="text-[10px] text-white/60 font-medium leading-relaxed uppercase">
-                      The current inventory valuation (₹{itemsTotal.toLocaleString()}) falls outside standard transaction bounds. 
-                      Standard checkout is disabled. Manual quotation protocol engaged for professional valuation and logistics optimization.
-                    </p>
-                 </div>
-               )}
             </div>
           </div>
         )}
       </div>
 
-      {/* 📋 QUOTATION PROTOCOL MODAL */}
+      {/* 📋 MODAL: QUOTATION OVERLAY */}
       <AnimatePresence>
         {showQuotationModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white border-4 border-black shadow-[20px_20px_0px_#ff5c00] w-full max-w-2xl p-10 relative overflow-hidden"
-            >
-              <div className="corner-decal decal-tl !border-black/20"></div>
-              <div className="corner-decal decal-br !border-black/20"></div>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl">
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl max-w-2xl w-full p-10 relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-full h-2 bg-amber-400"></div>
+               
+               <div className="flex items-center gap-4 mb-10">
+                  <div className="w-14 h-14 bg-amber-400/10 rounded-2xl flex items-center justify-center">
+                     <FileText size={28} className="text-amber-400" />
+                  </div>
+                  <div>
+                     <h3 className="text-3xl font-bold text-white tracking-tight">Studio <span className="text-amber-400">Inquiry</span></h3>
+                     <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">Protocol ID: INQ_{Date.now().toString().slice(-4)}</p>
+                  </div>
+               </div>
 
-              <div className="flex items-center gap-4 mb-8">
-                 <div className="w-12 h-12 bg-black text-white flex items-center justify-center">
-                    <FileText size={24} />
-                 </div>
-                 <div>
-                    <h3 className="text-3xl font-black uppercase text-black leading-tight tracking-tighter">Quotation <span className="text-[#ff5c00]">Request</span></h3>
-                    <p className="text-[9px] font-black text-black/40 uppercase tracking-widest">PROTOCOL_ID :: QUO_INIT_00{Date.now().toString().slice(-4)}</p>
-                 </div>
-              </div>
+               <div className="space-y-6 mb-10">
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-slate-500 block mb-2 px-1">Detailed Requirements (Optional)</label>
+                    <textarea
+                      placeholder="e.g. Need delivery by next Tuesday, special protective packaging, etc."
+                      value={customerNote}
+                      onChange={(e) => setCustomerNote(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-3xl p-6 text-sm font-medium text-white focus:border-amber-400/50 outline-none transition-all min-h-[160px] shadow-inner"
+                    />
+                  </div>
+                  <div className="flex gap-10 px-2">
+                     <div>
+                        <span className="text-[9px] font-black text-slate-600 uppercase block mb-1">Entity Name</span>
+                        <span className="text-sm font-bold text-slate-300">{shippingAddress.fullName || "GUEST"}</span>
+                     </div>
+                     <div>
+                        <span className="text-[9px] font-black text-slate-600 uppercase block mb-1">估算估值 (Valuation)</span>
+                        <span className="text-sm font-bold text-amber-400">₹{itemsTotal.toLocaleString()}</span>
+                     </div>
+                  </div>
+               </div>
 
-              <div className="space-y-6 mb-10">
-                <div>
-                   <label className="text-[10px] font-black uppercase text-black/60 block mb-2">Technical Note / Custom Requirements</label>
-                   <textarea
-                     className="w-full p-5 bg-black/5 border border-black/10 focus:border-[#ff5c00] outline-none text-black text-xs font-medium min-h-[160px]"
-                     placeholder="Specify bulk discount needs, custom lead times, or site-specific logistics instructions..."
-                     value={customerNote}
-                     onChange={(e) => setCustomerNote(e.target.value)}
-                   />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 bg-black/5 p-4 border border-black/10">
-                   <div className="space-y-1">
-                      <div className="text-[8px] font-black text-black/40 uppercase">ENTITY_SIGNAL</div>
-                      <div className="text-xs font-black text-black uppercase truncate">{shippingAddress.fullName || "GUEST_UNIT"}</div>
-                   </div>
-                   <div className="space-y-1">
-                      <div className="text-[8px] font-black text-black/40 uppercase">VALUATION_ESTIMATE</div>
-                      <div className="text-xs font-black text-black uppercase">₹{itemsTotal.toLocaleString()}</div>
-                   </div>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setShowQuotationModal(false)}
-                  className="flex-1 py-4 bg-black/5 border-2 border-black text-black font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all"
-                >
-                  ABORT_SESSION
-                </button>
-                <button
-                  onClick={handleQuotationRequest}
-                  className="flex-1 py-4 bg-[#ff5c00] text-black font-black uppercase tracking-widest shadow-[6px_6px_0px_#000] hover:shadow-none transition-all flex items-center justify-center gap-3"
-                >
-                  <FileText size={16} />
-                  SUBMIT_INQUIRY
-                </button>
-              </div>
+               <div className="flex gap-4">
+                  <button onClick={() => setShowQuotationModal(false)} className="flex-1 py-4 bg-slate-800/50 text-slate-400 font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase text-xs tracking-widest">Abort</button>
+                  <button onClick={handleQuotationRequest} className="flex-1 py-4 bg-amber-400 text-slate-900 font-extrabold rounded-2xl shadow-xl shadow-amber-400/10 hover:bg-white transition-all uppercase text-xs tracking-widest">Submit Proposal</button>
+               </div>
             </motion.div>
           </div>
         )}
