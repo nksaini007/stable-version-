@@ -43,40 +43,27 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); // Allow 
 
 app.use(cors({
   origin: (origin, callback) => {
-    // 1. Allow non-browser requests (like server-to-server or tools)
     if (!origin) return callback(null, true);
-
     const sanitizedOrigin = origin.replace(/\/$/, "").toLowerCase();
-    
-    // 2. Explicitly allowed production and staging domains
     const allowedOrigins = [
       process.env.FRONTEND_URL,
+      "https://stable-version.vercel.app",
       "https://stinchar.com",
       "https://www.stinchar.com",
-      "https://stable-version.vercel.app"
+      "http://localhost:5173",
+      "http://127.0.0.1:5173"
     ].map(o => o?.replace(/\/$/, "").toLowerCase()).filter(Boolean);
+    const isVercel = sanitizedOrigin.endsWith(".vercel.app") && sanitizedOrigin.includes("stable-version");
+    const isLocal = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+):517[0-9]$/.test(sanitizedOrigin);
 
-    // 3. Security-conscious pattern matching for Vercel previews and Localhost
-    const isVercelPreview = sanitizedOrigin.endsWith(".vercel.app") && sanitizedOrigin.includes("stable-version");
-    const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+):517[0-9]$/.test(sanitizedOrigin);
-
-    if (allowedOrigins.includes(sanitizedOrigin) || isVercelPreview || isLocalhost) {
+    if (allowedOrigins.includes(sanitizedOrigin) || isVercel || isLocal) {
       callback(null, true);
     } else {
-      // For high security, we restrict unknown origins
       callback(null, false);
     }
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: [
-    "Content-Type", 
-    "Authorization", 
-    "x-rtb-fingerprint-id", 
-    "request-id", 
-    "admin-key"
-  ],
-  exposedHeaders: ["x-rtb-fingerprint-id", "request-id"],
+  exposedHeaders: ["x-rtb-fingerprint-id", "request-id"], // ✅ Allow frontend to read these headers
   optionsSuccessStatus: 200
 }));
 app.use(express.json({ limit: "10kb" }));
