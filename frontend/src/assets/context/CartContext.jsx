@@ -82,13 +82,71 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     // Load cart from localStorage if available
     const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
+    const checksum = localStorage.getItem("cart_integrity");
+    
+    if (savedCart) {
+      const parsed = JSON.parse(savedCart);
+      // Basic Zero-Trust Checksum Verification
+      const calculatedHash = btoa(JSON.stringify(parsed)).slice(0, 16);
+      if (checksum && checksum !== calculatedHash) {
+        console.warn("SECURITY_SIGNAL: Cart integrity mismatch detected. Sanitizing...");
+        localStorage.removeItem("cart");
+        localStorage.removeItem("cart_integrity");
+        return [];
+      }
+      return parsed;
+    }
+    return [];
   });
 
-  // Persist cart to localStorage
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  // Persist cart to localStorage with Integrity Hash
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
+    const cartData = JSON.stringify(cartItems);
+    localStorage.setItem("cart", cartData);
+    const calculatedHash = btoa(cartData).slice(0, 16);
+    localStorage.setItem("cart_integrity", calculatedHash);
   }, [cartItems]);
+
+  // Zero-Trust Verification Loop
+  const verifyCart = async () => {
+    if (cartItems.length === 0) return;
+    try {
+      setIsVerifying(true);
+      const verifiedItems = await Promise.all(
+        cartItems.map(async (item) => {
+          try {
+            const { data } = await API.get(`/products/${item._id}`);
+            let currentPrice = data.price;
+            let inStock = data.stock > 0;
+
+            if (item.variantId) {
+              const variant = data.variants?.find(v => v._id === item.variantId);
+              if (variant) {
+                currentPrice = variant.price;
+                inStock = variant.stock > 0;
+              }
+            }
+
+            return {
+              ...item,
+              price: currentPrice,
+              inStock,
+              lastVerified: new Date().toISOString()
+            };
+          } catch (err) {
+            return { ...item, inStock: false }; // Defensive fallback
+          }
+        })
+      );
+      setCartItems(verifiedItems);
+    } catch (error) {
+      console.error("Cart Verification Failure:", error);
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   // Add product to cart
   const addToCart = (product) => {
@@ -112,9 +170,11 @@ export const CartProvider = ({ children }) => {
 
   // Remove product from cart
   const removeFromCart = (productId, variantId = null) => {
-    setCartItems(cartItems.filter((item) => 
-      !(item._id === productId && item.variantId === variantId)
-    ));
+    setCartItems(cartItems.filter((item) => {
+      const isSameProduct = item._id === productId;
+      const isSameVariant = item.variantId === variantId || (!item.variantId && !variantId);
+      return !(isSameProduct && isSameVariant);
+    }));
   };
 
   // Clear cart
@@ -123,22 +183,26 @@ export const CartProvider = ({ children }) => {
   // Increase quantity
   const increaseQuantity = (productId, variantId = null) => {
     setCartItems(
-      cartItems.map((item) =>
-        (item._id === productId && item.variantId === variantId)
+      cartItems.map((item) => {
+        const isSameProduct = item._id === productId;
+        const isSameVariant = item.variantId === variantId || (!item.variantId && !variantId);
+        return (isSameProduct && isSameVariant)
           ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
+          : item;
+      })
     );
   };
 
   // Decrease quantity
   const decreaseQuantity = (productId, variantId = null) => {
     setCartItems(
-      cartItems.map((item) =>
-        (item._id === productId && item.variantId === variantId)
+      cartItems.map((item) => {
+        const isSameProduct = item._id === productId;
+        const isSameVariant = item.variantId === variantId || (!item.variantId && !variantId);
+        return (isSameProduct && isSameVariant)
           ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 }
-          : item
-      )
+          : item;
+      })
     );
   };
 
@@ -191,7 +255,9 @@ export const CartProvider = ({ children }) => {
         clearCart,
         increaseQuantity,
         decreaseQuantity,
-        createOrder, // ✅ Expose order creation
+        createOrder, 
+        verifyCart,
+        isVerifying,
       }}
     >
       {children}

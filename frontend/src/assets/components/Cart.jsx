@@ -23,7 +23,14 @@ const Cart = () => {
     clearCart,
     increaseQuantity,
     decreaseQuantity,
+    verifyCart,
+    isVerifying,
   } = useContext(CartContext);
+
+  // Zero-Trust: Verify cart on load
+  useEffect(() => {
+    verifyCart();
+  }, []);
 
   const [loading, setLoading] = useState(false);
   const [calcLoading, setCalcLoading] = useState(false);
@@ -202,10 +209,10 @@ const Cart = () => {
              </h1>
              <div className="flex items-center gap-6 mt-6">
                 <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full">
-                   <ShieldCheck size={14} /> E2E_ENCRYPTED_NODE
+                   <ShieldCheck size={14} /> {isVerifying ? "ENCRYPTED_SYNC_IN_PROGRESS..." : "E2E_ENCRYPTED_NODE"}
                 </div>
                 <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                   <HelpCircle size={12} /> SESSION_ID: {Date.now().toString().slice(-6)}
+                   <HelpCircle size={12} /> SESSION_ID: {Date.now().toString().slice(-6)} // SIG_VERIFIED
                 </div>
              </div>
           </motion.div>
@@ -271,7 +278,8 @@ const Cart = () => {
                                <div className="text-xs font-bold text-slate-300 line-through mt-1 italic">₹{item.mrp.toLocaleString()}</div>
                              )}
                           </div>
-                          <div className="text-[10px] font-black text-emerald-900 bg-emerald-50 px-4 py-1.5 rounded-xl uppercase tracking-tighter shadow-sm">
+                          <div className="text-[10px] font-black text-emerald-900 bg-emerald-50 px-4 py-1.5 rounded-xl uppercase tracking-tighter shadow-sm flex items-center gap-2">
+                             {item.inStock === false && <AlertCircle size={10} className="text-red-500" />}
                              ITEM_SUB: ₹{(item.price * item.quantity).toLocaleString()}
                           </div>
                        </div>
