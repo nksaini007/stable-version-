@@ -223,7 +223,9 @@ app.use((err, req, res, next) => {
 });
 
 // ✅ Start server
-const PORT = process.env.PORT || 5000;
+// Render uses port 10000 by default if PORT env var is not explicitly set in the dashboard
+const PORT = process.env.PORT || (process.env.RENDER ? 10000 : process.env.NODE_ENV === 'production' ? 10000 : 5000);
+
 connectDB().then(() => {
   app.listen(PORT, "0.0.0.0", () =>
     console.log(`🚀 Server running on port ${PORT}`)
