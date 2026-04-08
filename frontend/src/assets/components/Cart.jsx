@@ -50,7 +50,11 @@ const Cart = () => {
   const [customerNote, setCustomerNote] = useState("");
 
   const itemsTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const totalWeightKg = cartItems.reduce((sum, item) => sum + (item.weight || 5) * item.quantity, 0);
+  const totalWeightKg = cartItems.reduce((sum, item) => {
+    const weightMatch = String(item.weight || "0").match(/(\d+(\.\d+)?)/);
+    const unitWeight = weightMatch ? parseFloat(weightMatch[0]) : 0;
+    return sum + unitWeight * item.quantity;
+  }, 0);
   const total = itemsTotal + (deliveryData?.totalCharge || 0);
 
   // Fetch Config

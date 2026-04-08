@@ -75,8 +75,10 @@
 // };
 import React, { createContext, useState, useEffect } from "react";
 import API from "../api/api";
+import { getProductPricing } from "../utils/priceUtils";
 
 export const CartContext = createContext();
+
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
@@ -118,20 +120,24 @@ export const CartProvider = ({ children }) => {
         cartItems.map(async (item) => {
           try {
             const { data } = await API.get(`/products/${item._id}`);
-            let currentPrice = data.price;
             let inStock = data.stock > 0;
+            let currentVariant = null;
 
             if (item.variantId) {
               const variant = data.variants?.find(v => v._id === item.variantId);
               if (variant) {
-                currentPrice = variant.price;
+                currentVariant = variant;
                 inStock = variant.stock > 0;
               }
             }
 
+            // Secure Pricing Calculation utilizing Base vs Member-Tiers
+            const { sellingPrice, mrp } = getProductPricing(data, currentVariant);
+
             return {
               ...item,
-              price: currentPrice,
+              price: sellingPrice,
+              mrp: mrp,
               inStock,
               lastVerified: new Date().toISOString()
             };
