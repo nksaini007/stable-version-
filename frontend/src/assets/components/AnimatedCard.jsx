@@ -327,7 +327,6 @@ const AnimatedCard = () => {
                       };
 
                       return (
-                      return (
                         <motion.div
                           ref={isLastElement ? lastElementRef : null}
                           key={`${item._id}-${i}`}
