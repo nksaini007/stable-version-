@@ -18,7 +18,7 @@ const AnimatedCard = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
-
+  const [activeFilter, setActiveFilter] = useState('all');
   // Auth and Routing
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -85,7 +85,7 @@ const AnimatedCard = () => {
     if (node) observer.current.observe(node);
   }, [loading, loadingMore, hasMore]);
 
-  const performGlobalSearch = async (query) => {
+  const performGlobalSearch = async (query, customFilter = activeFilter) => {
     setLoading(true);
     setError("");
     setHasSearched(true);
@@ -94,36 +94,55 @@ const AnimatedCard = () => {
       let aggregated = [];
       let hasMoreProducts = false;
 
-      // Fetch Products
-      try {
-        const prodRes = await API.get(`/products/public?search=${encodeURIComponent(query)}&page=1&limit=10`);
-        const pData = (prodRes.data.products || []).map(p => ({ ...p, itemType: 'product' }));
-        aggregated.push(...pData);
-        hasMoreProducts = prodRes.data.hasMore || false;
-      } catch (e) {
-        console.error("Products error", e);
+      const promises = [];
+
+      if (customFilter === 'all' || customFilter === 'product') {
+        promises.push(
+          API.get(`/products/public?search=${encodeURIComponent(query)}&page=1&limit=10`)
+             .then(res => ({ type: 'product', data: res.data }))
+             .catch(e => { console.error("Products error", e); return { type: 'product', error: true }; })
+        );
       }
 
-      // Fetch Services
-      try {
-        const servRes = await API.get(`/services?search=${encodeURIComponent(query)}`);
-        const sData = (servRes.data || []).map(s => ({ ...s, itemType: 'service' }));
-        aggregated.push(...sData);
-      } catch (e) {
-        console.error("Services error", e);
+      if (customFilter === 'all' || customFilter === 'service') {
+        promises.push(
+          API.get(`/services?search=${encodeURIComponent(query)}`)
+             .then(res => ({ type: 'service', data: res.data }))
+             .catch(e => { console.error("Services error", e); return { type: 'service', error: true }; })
+        );
       }
 
-      // Fetch Construction Plans
-      try {
-        const planRes = await API.get(`/construction-plans?search=${encodeURIComponent(query)}`);
-        const plData = (planRes.data.plans || []).map(pl => ({ ...pl, itemType: 'plan' }));
-        aggregated.push(...plData);
-      } catch (e) {
-        console.error("Plans error", e);
+      if (customFilter === 'all' || customFilter === 'plan') {
+         promises.push(
+          API.get(`/construction-plans?search=${encodeURIComponent(query)}`)
+             .then(res => ({ type: 'plan', data: res.data }))
+             .catch(e => { console.error("Plans error", e); return { type: 'plan', error: true }; })
+        );
       }
 
-      // Shuffle results for dynamic grid logic
-      aggregated.sort(() => 0.5 - Math.random());
+      const resultsArray = await Promise.all(promises);
+      
+      resultsArray.forEach(result => {
+        if (result.error) return;
+        if (result.type === 'product') {
+           const pData = (result.data.products || []).map(p => ({ ...p, itemType: 'product' }));
+           aggregated.push(...pData);
+           hasMoreProducts = result.data.hasMore || false;
+        } else if (result.type === 'service') {
+           const sData = (result.data || []).map(s => ({ ...s, itemType: 'service' }));
+           aggregated.push(...sData);
+        } else if (result.type === 'plan') {
+           const plData = (result.data.plans || []).map(pl => ({ ...pl, itemType: 'plan' }));
+           aggregated.push(...plData);
+        }
+      });
+
+      // Deterministic sort by createdAt descending (newest first)
+      aggregated.sort((a, b) => {
+         const dateA = new Date(a.createdAt || 0).getTime();
+         const dateB = new Date(b.createdAt || 0).getTime();
+         return dateB - dateA;
+      });
 
       setResults(aggregated);
       setHasMore(hasMoreProducts);
@@ -134,7 +153,6 @@ const AnimatedCard = () => {
       setLoading(false);
     }
   };
-
   const handleSearch = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     if (!(searchQuery || "").trim()) return;
@@ -147,7 +165,7 @@ const AnimatedCard = () => {
   };
 
   const loadMore = async () => {
-    if (loadingMore || !hasMore) return;
+    if (loadingMore || !hasMore || (activeFilter !== 'all' && activeFilter !== 'product')) return;
     setLoadingMore(true);
     const nextPage = page + 1;
     try {
@@ -225,6 +243,24 @@ const AnimatedCard = () => {
       {(hasSearched || loading || error) && (
         <div ref={resultsRef} className="flex-1 w-full bg-[#e5e5e5] text-black pb-32 border-t-8 border-black">
           <div className="max-w-[1600px] mx-auto w-full px-8 py-20 lg:py-32">
+
+            {/* Filter Navigation */}
+            {!loading && !error && hasSearched && (
+              <div className="flex flex-wrap gap-4 mb-10 pb-4 border-b-2 border-black/5">
+                {['all', 'product', 'service', 'plan'].map(filter => (
+                  <button 
+                    key={filter}
+                    onClick={() => {
+                        setActiveFilter(filter);
+                        performGlobalSearch(searchQuery, filter);
+                    }}
+                    className={`px-6 py-2 text-xs font-black tracking-widest uppercase rounded-full transition-all border-2 ${activeFilter === filter ? 'bg-black text-white border-black' : 'bg-transparent text-gray-500 border-gray-300 hover:border-black hover:text-black'}`}
+                  >
+                    {filter === 'all' ? 'VIEW ALL' : filter + 'S'}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Status Handling */}
             {loading && (
