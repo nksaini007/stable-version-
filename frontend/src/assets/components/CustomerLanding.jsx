@@ -1,29 +1,93 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaSearch, FaArrowRight, FaPlus, FaBox, FaTerminal, FaCodeBranch, FaCrosshairs, FaGlobe, FaShieldAlt } from "react-icons/fa";
+import { FaSearch, FaArrowRight, FaPlus, FaBox, FaTerminal, FaCodeBranch, FaCrosshairs, FaGlobe, FaShieldAlt, FaComments, FaFileContract, FaHardHat } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import heroImg from "../hero_vibe.png";
 import API from "../api/api";
 
 const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClick }) => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
-  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [updates, setUpdates] = useState([]);
+  const [loadingUpdates, setLoadingUpdates] = useState(true);
 
   useEffect(() => {
-    const fetchLatestActivity = async () => {
+    const fetchAggregatedData = async () => {
+      setLoadingUpdates(true);
       try {
-        const response = await API.get("/posts");
-        // Backend returns array directly, not an object with .posts
-        const data = Array.isArray(response.data) ? response.data : [];
-        setPosts(data.slice(0, 3));
+        const token = localStorage.getItem("token");
+        let aggregated = [];
+
+        // 1. Fetch Posts
+        try {
+          const postRes = await API.get("/posts");
+          const postsData = Array.isArray(postRes.data) ? postRes.data : [];
+          aggregated.push(...postsData.slice(0, 2).map((p, i) => ({
+            id: `post_${p._id || i}`,
+            type: "POST",
+            tag: "LOG",
+            icon: <FaComments className="text-[#ff5c00] mt-0.5" />,
+            title: p.user?.name || "ANON",
+            detail: p.title || "NEW_UPDATE",
+            date: new Date(p.createdAt),
+            link: "/community"
+          })));
+        } catch (e) {
+          console.error("Post fetch error", e);
+        }
+
+        // 2. Fetch User-specific data if logged in
+        if (token) {
+          // Quotations
+          try {
+            const qRes = await API.get("/quotations/my", {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            const quotesData = Array.isArray(qRes.data) ? qRes.data : [];
+            aggregated.push(...quotesData.slice(0, 2).map((q, i) => ({
+              id: `quote_${q._id || i}`,
+              type: "QUOTE",
+              tag: "QTE",
+              icon: <FaFileContract className="text-cyan-500 mt-0.5" />,
+              title: `Quote: ${q.status}`,
+              detail: `Items: ${q.items?.length || 0} - Total: ₹${q.totalPrice?.toFixed(2) || 0}`,
+              date: new Date(q.createdAt),
+              link: "/dashboard/customer/quotations"
+            })));
+          } catch (e) {
+            console.error("Quotation fetch error", e);
+          }
+
+          // Construction Projects
+          try {
+            const cRes = await API.get("/construction/customer/projects", {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            const projData = Array.isArray(cRes.data.projects) ? cRes.data.projects : [];
+            aggregated.push(...projData.slice(0, 2).map((pr, i) => ({
+              id: `const_${pr._id || i}`,
+              type: "BUILD",
+              tag: "BLD",
+              icon: <FaHardHat className="text-emerald-500 mt-0.5" />,
+              title: pr.name,
+              detail: `Progress: ${pr.progressPercentage}%`,
+              date: new Date(pr.createdAt),
+              link: "/my-construction"
+            })));
+          } catch (e) {
+            console.error("Construction fetch error", e);
+          }
+        }
+
+        // Sort descending by date and take top 4
+        aggregated.sort((a, b) => b.date - a.date);
+        setUpdates(aggregated.slice(0, 4));
       } catch (err) {
-        console.error("Failed to fetch community logs", err);
+        console.error("Failed to fetch intelligence stream", err);
       } finally {
-        setLoadingPosts(false);
+        setLoadingUpdates(false);
       }
     };
-    fetchLatestActivity();
+    fetchAggregatedData();
   }, []);
 
   return (
@@ -67,41 +131,49 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
             <div className="mt-10 space-y-6">
               <div className="flex items-center gap-2 border-b-2 border-black pb-2">
                 <FaGlobe size={10} />
-                <span className="text-[10px] font-black tracking-[0.2em] uppercase">COMMUNITY_INTELLIGENCE_STREAM:</span>
+                <span className="text-[10px] font-black tracking-[0.2em] uppercase">USER_INTELLIGENCE_STREAM:</span>
               </div>
 
               <div className="space-y-4">
-                {loadingPosts ? (
-                  Array(3).fill(0).map((_, i) => (
-                    <div key={i} className="h-6 bg-black/5 animate-pulse border-l-2 border-black/20"></div>
+                {loadingUpdates ? (
+                  Array(4).fill(0).map((_, i) => (
+                    <div key={i} className="h-10 bg-black/5 animate-pulse border-l-2 border-black/20"></div>
                   ))
-                ) : posts.length > 0 ? (
-                  posts.map((post, index) => (
+                ) : updates.length > 0 ? (
+                  updates.map((update, index) => (
                     <div
-                      key={post._id}
-                      className="group cursor-pointer border-l-2 border-[#ff5c00] pl-4 py-1 hover:bg-black hover:text-white transition-all"
-                      onClick={() => navigate('/community')}
+                      key={update.id}
+                      className="group cursor-pointer border-l-2 border-[#ff5c00] pl-3 py-1 hover:bg-black hover:text-white transition-all flex gap-3"
+                      onClick={() => navigate(update.link)}
                     >
-                      <div className="flex justify-between items-center text-[9px] font-black opacity-50 group-hover:opacity-100">
-                        <span>LOG_00{index + 1}</span>
-                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                      <div className="pt-0.5 opacity-50 group-hover:opacity-100 transition-opacity">
+                        {update.icon}
                       </div>
-                      <p className="text-[11px] font-black uppercase tracking-tight line-clamp-1">
-                        {post.user?.name || "ANON"}: {post.title || "NEW_UPDATE"}
-                      </p>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center text-[8px] font-black opacity-50 group-hover:opacity-100 mb-0.5">
+                          <span>{update.tag}_00{index + 1}</span>
+                          <span>{update.date.toLocaleDateString()}</span>
+                        </div>
+                        <p className="text-[11px] font-black uppercase tracking-tight line-clamp-1">
+                          {update.title}
+                        </p>
+                        <p className="text-[9px] font-bold text-black/60 group-hover:text-white/60 uppercase tracking-tighter line-clamp-1">
+                          {update.detail}
+                        </p>
+                      </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-[10px] font-mono opacity-30 italic">NO_RECENT_COMM_ACTIVITY_FOUND...</div>
+                  <div className="text-[10px] font-mono opacity-30 italic">NO_DATA_STREAM_FOUND...</div>
                 )}
               </div>
 
               <button
-                onClick={() => navigate('/community')}
-                className="w-full py-4 bg-black text-white font-black text-xs uppercase tracking-[0.3em] hover:bg-[#ff5c00] hover:text-black transition-all flex items-center justify-center gap-4 group"
+                onClick={() => navigate('/dashboard')}
+                className="w-full py-4 bg-black text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#ff5c00] hover:text-black transition-all flex items-center justify-center gap-4 group mt-2"
               >
                 <FaShieldAlt size={14} className="group-hover:rotate-12 transition-transform" />
-                SECURE_COMM_ACCESS
+                SYSTEM_DASHBOARD_ACCESS
               </button>
             </div>
           </div>
