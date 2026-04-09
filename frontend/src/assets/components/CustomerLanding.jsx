@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaSearch, FaArrowRight, FaPlus, FaBox, FaTerminal, FaCodeBranch, FaCrosshairs, FaGlobe, FaShieldAlt, FaComments, FaFileContract, FaHardHat } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import heroImg from "../hero_vibe.png";
+import heroImg from "../hero_vibe.jpg";
 import API from "../api/api";
 
 const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClick }) => {
@@ -101,98 +101,10 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
       <div className="relative z-10 w-full max-w-[1600px] mx-auto flex-1 flex flex-col md:grid md:grid-cols-12 border-t-4 border-black">
 
         {/* LEFT PANEL: MASSIVE BRANDING & HUD */}
-        <div className="md:col-span-4 border-r-4 border-black p-8 flex flex-col justify-between bg-white/50">
-          <div>
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-2 bg-black text-white px-3 py-1 self-start inline-flex">
-                <FaTerminal size={12} />
-                <span className="text-[10px] font-black tracking-widest uppercase">PROCEED_WITH_CAUTION</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-[#ff5c00] rounded-full animate-pulse"></div>
-                <span className="text-[9px] font-black uppercase tracking-widest">LIVE_FEED</span>
-              </div>
-            </div>
 
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="flex flex-col gap-1">
-                <span className="text-[#ff5c00] font-black text-[8px] tracking-[0.3em]">// 00_STINCHAR_CORE_INIT</span>
-                <h1 className="text-[3.5rem] md:text-[3rem] font-pixel text-lattice leading-[0.85] tracking-tighter">
-                  STINCHAR
-                </h1>
-              </div>
-            </motion.div>
-
-            {/* DYNAMIC COMMUNITY HUD */}
-            <div className="mt-10 space-y-6">
-              <div className="flex items-center gap-2 border-b-2 border-black pb-2">
-                <FaGlobe size={10} />
-                <span className="text-[10px] font-black tracking-[0.2em] uppercase">USER_INTELLIGENCE_STREAM:</span>
-              </div>
-
-              <div className="space-y-4">
-                {loadingUpdates ? (
-                  Array(4).fill(0).map((_, i) => (
-                    <div key={i} className="h-10 bg-black/5 animate-pulse border-l-2 border-black/20"></div>
-                  ))
-                ) : updates.length > 0 ? (
-                  updates.map((update, index) => (
-                    <div
-                      key={update.id}
-                      className="group cursor-pointer border-l-2 border-[#ff5c00] pl-3 py-1 hover:bg-black hover:text-white transition-all flex gap-3"
-                      onClick={() => navigate(update.link)}
-                    >
-                      <div className="pt-0.5 opacity-50 group-hover:opacity-100 transition-opacity">
-                        {update.icon}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center text-[8px] font-black opacity-50 group-hover:opacity-100 mb-0.5">
-                          <span>{update.tag}_00{index + 1}</span>
-                          <span>{update.date.toLocaleDateString()}</span>
-                        </div>
-                        <p className="text-[11px] font-black uppercase tracking-tight line-clamp-1">
-                          {update.title}
-                        </p>
-                        <p className="text-[9px] font-bold text-black/60 group-hover:text-white/60 uppercase tracking-tighter line-clamp-1">
-                          {update.detail}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-[10px] font-mono opacity-30 italic">NO_DATA_STREAM_FOUND...</div>
-                )}
-              </div>
-
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="w-full py-4 bg-black text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#ff5c00] hover:text-black transition-all flex items-center justify-center gap-4 group mt-2"
-              >
-                <FaShieldAlt size={14} className="group-hover:rotate-12 transition-transform" />
-                SYSTEM_DASHBOARD_ACCESS
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-12">
-            <div className="h-16 w-full mb-4 bg-black/5 flex items-end gap-1 p-2 border border-black/10">
-              {[...Array(24)].map((_, i) => (
-                <div key={i} className="flex-1 bg-black/20 group-hover:bg-black transition-colors" style={{ height: `${Math.random() * 100}%` }}></div>
-              ))}
-            </div>
-            <div className="flex justify-between items-center text-[8px] font-black uppercase opacity-40">
-              <span>REF: STIN_INTEL_V2.0.4</span>
-              <span>LOC: IN_GLOBAL_NODE</span>
-            </div>
-          </div>
-        </div>
 
         {/* CENTER PANEL: FRAGMENTED HERO GALLERY */}
-        <div className="md:col-span-8 flex flex-col min-h-[400px] md:min-h-[500px]">
+        <div className="md:col-span-8 flex flex-col min-h-[400px] md:min-h-[400px]">
 
           {/* Top Integrated Progress Bar */}
           <div className="h-10 bg-black flex items-center px-6 justify-between border-b border-white/10">
@@ -281,6 +193,95 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
             </div>
 
           </div>
+          <div className="md:col-span-4 border-r-4 border-black p-8 flex flex-col justify-between bg-white/50">
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-2 bg-black text-white px-3 py-1 self-start inline-flex">
+                  <FaTerminal size={12} />
+                  <span className="text-[10px] font-black tracking-widest uppercase">PROCEED_WITH_CAUTION</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-[#ff5c00] rounded-full animate-pulse"></div>
+                  <span className="text-[9px] font-black uppercase tracking-widest">LIVE_FEED</span>
+                </div>
+              </div>
+
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="flex flex-col gap-1">
+                  <span className="text-[#ff5c00] font-black text-[8px] tracking-[0.3em]">00_STINCHAR_CORE_INIT</span>
+                  <h1 className="text-[3.5rem] md:text-[3rem] font-pixel text-lattice leading-[1] tracking-tighter">
+                    Be your own architect
+                  </h1>
+                </div>
+              </motion.div>
+
+              {/* DYNAMIC COMMUNITY HUD */}
+              <div className="mt-10 space-y-6">
+                <div className="flex items-center gap-2 border-b-2 border-black pb-2">
+                  <FaGlobe size={10} />
+                  <span className="text-[10px] font-black tracking-[0.2em] uppercase">USER_INTELLIGENCE_STREAM:</span>
+                </div>
+
+                <div className="space-y-4">
+                  {loadingUpdates ? (
+                    Array(4).fill(0).map((_, i) => (
+                      <div key={i} className="h-10 bg-black/5 animate-pulse border-l-2 border-black/20"></div>
+                    ))
+                  ) : updates.length > 0 ? (
+                    updates.map((update, index) => (
+                      <div
+                        key={update.id}
+                        className="group cursor-pointer border-l-2 border-[#ff5c00] pl-3 py-1 hover:bg-black hover:text-white transition-all flex gap-3"
+                        onClick={() => navigate(update.link)}
+                      >
+                        <div className="pt-0.5 opacity-50 group-hover:opacity-100 transition-opacity">
+                          {update.icon}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center text-[8px] font-black opacity-50 group-hover:opacity-100 mb-0.5">
+                            <span>{update.tag}_00{index + 1}</span>
+                            <span>{update.date.toLocaleDateString()}</span>
+                          </div>
+                          <p className="text-[11px] font-black uppercase tracking-tight line-clamp-1">
+                            {update.title}
+                          </p>
+                          <p className="text-[9px] font-bold text-black/60 group-hover:text-white/60 uppercase tracking-tighter line-clamp-1">
+                            {update.detail}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-[10px] font-mono opacity-30 italic">NO_DATA_STREAM_FOUND...</div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="w-full py-4 bg-black text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#ff5c00] hover:text-black transition-all flex items-center justify-center gap-4 group mt-2"
+                >
+                  <FaShieldAlt size={14} className="group-hover:rotate-12 transition-transform" />
+                  SYSTEM_DASHBOARD_ACCESS
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-12">
+              <div className="h-16 w-full mb-4 bg-black/5 flex items-end gap-1 p-2 border border-black/10">
+                {[...Array(24)].map((_, i) => (
+                  <div key={i} className="flex-1 bg-black/20 group-hover:bg-black transition-colors" style={{ height: `${Math.random() * 100}%` }}></div>
+                ))}
+              </div>
+              <div className="flex justify-between items-center text-[8px] font-black uppercase opacity-40">
+                <span>REF: STIN_INTEL_V2.0.4</span>
+                <span>LOC: IN_GLOBAL_NODE</span>
+              </div>
+            </div>
+          </div>
 
           {/* Search Bar Grid Section */}
           <div id="search-initialize" className="p-8 md:p-12 bg-white flex flex-col items-start gap-8">
@@ -319,6 +320,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           </div>
 
         </div>
+
       </div>
 
     </div>
