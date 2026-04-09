@@ -35,7 +35,7 @@ import CategoryPage from "./assets/components/CategoryPage";
 import ItemPage from "./assets/components/ItemPage";
 import ItemList from "./assets/components/ItemList";
 import ProductPage from "./assets/components/ProductPage";
-
+import ServiceDetails from "./assets/components/ServiceDetails";
 // Dashboards
 import Dashboardloader from "./assets/components/dashboard/Dashboardloader";
 import SellerOrders from "./assets/components/dashboard/order/SellerOrders";
@@ -125,6 +125,7 @@ function App() {
           <Route path="/services" element={<ServiceCategories />} />
           <Route path="/services/:categoryId" element={<ServiceSubCategories />} />
           <Route path="/services/:categoryId/:subCategoryId" element={<ServiceSearch />} />
+          <Route path="/service/:id" element={<ServiceDetails />} />
           <Route path="/project-showcase/:id" element={<PublicProjectPage />} />
 
           {/* Product / Category */}

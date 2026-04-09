@@ -47,7 +47,7 @@ const createPlan = async (req, res) => {
 // @access  Public
 const getAllPlans = async (req, res) => {
     try {
-        const { category, planType } = req.query;
+        const { category, planType, search } = req.query;
         let query = { isActive: true };
         
         // Safety check for query parameters
@@ -56,6 +56,12 @@ const getAllPlans = async (req, res) => {
         }
         if (typeof planType === 'string' && planType.trim() !== "") {
             query.planType = planType.trim();
+        }
+        if (typeof search === 'string' && search.trim() !== "") {
+            query.$or = [
+                { title: { $regex: search.trim(), $options: 'i' } },
+                { description: { $regex: search.trim(), $options: 'i' } }
+            ];
         }
 
         console.log("Fetching plans with query:", JSON.stringify(query));

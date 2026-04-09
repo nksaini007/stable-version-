@@ -85,14 +85,75 @@ const AnimatedCard = () => {
     if (node) observer.current.observe(node);
   }, [loading, loadingMore, hasMore]);
 
+  const performGlobalSearch = async (query) => {
+    setLoading(true);
+    setError("");
+    setHasSearched(true);
+    setPage(1);
+    try {
+      let aggregated = [];
+      let hasMoreProducts = false;
+
+      // Fetch Products
+      try {
+        const prodRes = await API.get(`/products/public?search=${encodeURIComponent(query)}&page=1&limit=10`);
+        const pData = (prodRes.data.products || []).map(p => ({ ...p, itemType: 'product' }));
+        aggregated.push(...pData);
+        hasMoreProducts = prodRes.data.hasMore || false;
+      } catch (e) {
+        console.error("Products error", e);
+      }
+
+      // Fetch Services
+      try {
+        const servRes = await API.get(`/services?search=${encodeURIComponent(query)}`);
+        const sData = (servRes.data || []).map(s => ({ ...s, itemType: 'service' }));
+        aggregated.push(...sData);
+      } catch (e) {
+        console.error("Services error", e);
+      }
+
+      // Fetch Construction Plans
+      try {
+        const planRes = await API.get(`/construction-plans?search=${encodeURIComponent(query)}`);
+        const plData = (planRes.data.plans || []).map(pl => ({ ...pl, itemType: 'plan' }));
+        aggregated.push(...plData);
+      } catch (e) {
+        console.error("Plans error", e);
+      }
+
+      // Shuffle results for dynamic grid logic
+      aggregated.sort(() => 0.5 - Math.random());
+
+      setResults(aggregated);
+      setHasMore(hasMoreProducts);
+    } catch (err) {
+      console.error("Search Error:", err);
+      setError("Unable to retrieve items. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!(searchQuery || "").trim()) return;
+    await performGlobalSearch(searchQuery);
+  };
+
+  const handleCategoryClick = async (categoryName) => {
+    setSearchQuery(categoryName);
+    await performGlobalSearch(categoryName);
+  };
+
   const loadMore = async () => {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     const nextPage = page + 1;
     try {
-      const response = await API.get(`/products/public?search=${searchQuery}&page=${nextPage}&limit=10`);
+      const response = await API.get(`/products/public?search=${encodeURIComponent(searchQuery)}&page=${nextPage}&limit=10`);
       const data = response.data;
-      const newProducts = data.products || [];
+      const newProducts = (data.products || []).map(p => ({ ...p, itemType: 'product' }));
       setResults(prev => [...prev, ...newProducts]);
       setPage(nextPage);
       setHasMore(data.hasMore || false);
@@ -101,46 +162,6 @@ const AnimatedCard = () => {
     } finally {
       setLoadingMore(false);
     }
-  };
-
-  const handleSearch = async (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    if (!(searchQuery || "").trim()) return;
-
-    setLoading(true);
-    setError("");
-    setHasSearched(true);
-    setPage(1);
-    try {
-      const response = await API.get(`/products/public?search=${searchQuery}&page=1&limit=10`);
-      const data = response.data;
-      setResults(data.products || []);
-      setHasMore(data.hasMore || false);
-    } catch (err) {
-      console.error(err);
-      setError("Unable to retrieve products. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCategoryClick = (categoryName) => {
-    setSearchQuery(categoryName);
-    setLoading(true);
-    setError("");
-    setHasSearched(true);
-    setPage(1);
-    API.get(`/products/public?search=${categoryName}&page=1&limit=10`)
-      .then(res => {
-        const data = res.data;
-        setResults(data.products || []);
-        setHasMore(data.hasMore || false);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Unable to retrieve products.");
-        setLoading(false);
-      });
   };
 
   // ----------------------------------------------------------------------
@@ -252,57 +273,110 @@ const AnimatedCard = () => {
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-8">
-                    {results.map((product, i) => {
+                    {results.map((item, i) => {
                       const isLastElement = i === results.length - 1;
+                      
+                      let tag = "PRD";
+                      let navPath = `/product/${item._id}`;
+                      let itemName = item.name || item.title;
+                      let itemPrice = item.price || 0;
+                      let sellingPrice = itemPrice;
+                      let hasDiscount = false;
+                      let discountPct = 0;
+                      
+                      let imgUrl = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500";
+                      
+                      if (item.itemType === 'product') {
+                        imgUrl = item.images?.[0]?.url ? `${item.images[0].url}` : item.image || imgUrl;
+                        const pricing = getProductPricing(item);
+                        sellingPrice = pricing.sellingPrice;
+                        hasDiscount = pricing.hasDiscount;
+                        discountPct = pricing.discountPct;
+                      } else if (item.itemType === 'service') {
+                        tag = "SVC";
+                        navPath = `/service/${item._id}`;
+                        imgUrl = item.images?.[0] ? `${item.images[0]}` : imgUrl;
+                      } else if (item.itemType === 'plan') {
+                        tag = "PLN";
+                        navPath = `/project-plans/${item._id}`;
+                        imgUrl = item.images?.[0] ? `${item.images[0]}` : imgUrl;
+                        itemPrice = item.estimatedCost || 0;
+                        sellingPrice = itemPrice;
+                      }
+
+                      // Dynamic styling based on itemType
+                      const borderColorMap = {
+                        'product': 'hover:shadow-[15px_15px_0px_#ff5c00]',
+                        'service': 'hover:shadow-[15px_15px_0px_#3b82f6]',
+                        'plan':    'hover:shadow-[15px_15px_0px_#10b981]'
+                      };
+                      const textColorMap = {
+                        'product': 'text-[#ff5c00]',
+                        'service': 'text-blue-500',
+                        'plan':    'text-emerald-500'
+                      };
+                      const hoverBgMap = {
+                        'product': 'group-hover:bg-[#ff5c00]',
+                        'service': 'group-hover:bg-blue-500',
+                        'plan':    'group-hover:bg-emerald-500'
+                      };
+                      const hoverTextColorMap = {
+                        'product': 'group-hover:text-[#ff5c00]',
+                        'service': 'group-hover:text-blue-500',
+                        'plan':    'group-hover:text-emerald-600'
+                      };
+
                       return (
                         <motion.div
                           ref={isLastElement ? lastElementRef : null}
-                          key={`${product._id}-${i}`}
+                          key={`${item._id}-${i}`}
                           initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: (i % 10) * 0.05, duration: 0.5 }}
-                          onClick={() => navigate(`/product/${product._id}`)}
-                          className="group cursor-pointer flex flex-col bg-white border-2 md:border-4 border-black shadow-[4px_4px_0px_#000] md:shadow-[10px_10px_0px_#000] hover:shadow-[15px_15px_0px_#ff5c00] transition-all relative overflow-hidden h-full"
+                          onClick={() => navigate(navPath)}
+                          className={`group cursor-pointer flex flex-col bg-white border-2 md:border-4 border-black shadow-[4px_4px_0px_#000] md:shadow-[10px_10px_0px_#000] ${borderColorMap[item.itemType]} transition-all relative overflow-hidden h-full`}
                         >
                            {/* Tech header on card */}
                            <div className="flex justify-between items-center bg-black text-white px-2 md:px-4 py-1 md:py-2 text-[6px] md:text-[10px] font-black tracking-widest uppercase">
-                             <span>REF: {product._id?.toString().slice(-6).toUpperCase()}</span>
-                             <FaPlus size={8} className="text-[#ff5c00]" />
+                             <span>{tag}_REF: {item._id?.toString().slice(-6).toUpperCase()}</span>
+                             <FaPlus size={8} className={`${textColorMap[item.itemType]}`} />
                            </div>
 
                            <div className="aspect-square bg-white p-4 md:p-8 relative overflow-hidden flex items-center justify-center border-b-2 md:border-b-4 border-black">
                              <img
-                               src={product.images?.[0]?.url ? `${product.images[0].url}` : product.image || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"}
-                               alt={product.name}
+                               src={imgUrl}
+                               alt={itemName}
                                className="w-full h-full object-contain filter group-hover:scale-110 transition-transform duration-700 ease-in-out"
                              />
                            </div>
  
                            <div className="p-3 md:p-6 flex flex-col flex-1 bg-white">
-                             <h3 className="text-xs md:text-2xl font-black text-black leading-none mb-1 md:mb-4 uppercase tracking-tighter line-clamp-1 group-hover:text-[#ff5c00] transition-colors">
-                               {product.name}
+                             <h3 className={`text-xs md:text-2xl font-black text-black leading-none mb-1 md:mb-4 uppercase tracking-tighter line-clamp-1 ${hoverTextColorMap[item.itemType]} transition-colors`}>
+                               {itemName}
                              </h3>
                              <p className="hidden md:block text-[11px] text-black/40 line-clamp-2 mb-8 font-mono leading-tight uppercase tracking-widest">
-                               // {product.description}
+                               // {item.description}
                              </p>
                              <div className="mt-auto flex justify-between items-center pt-2 md:pt-6 border-t md:border-t-2 border-black/10">
                                 <div className="flex flex-col">
                                    <div className="flex items-center gap-1">
-                                      <span className="text-[6px] md:text-[10px] font-black text-black/30 tracking-widest uppercase mb-0 md:mb-1">PRICE</span>
-                                      {getProductPricing(product).hasDiscount && (
-                                        <span className="text-[8px] bg-[#ff5c00] text-black px-1 font-black leading-none">{getProductPricing(product).discountPct}% OFF</span>
+                                      <span className="text-[6px] md:text-[10px] font-black text-black/30 tracking-widest uppercase mb-0 md:mb-1">
+                                         {item.itemType === 'plan' ? 'EST_COST' : 'PRICE'}
+                                      </span>
+                                      {hasDiscount && (
+                                        <span className="text-[8px] bg-[#ff5c00] text-black px-1 font-black leading-none">{discountPct}% OFF</span>
                                       )}
                                    </div>
                                    <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
                                       <span className="text-sm md:text-3xl font-heading text-black leading-none">
-                                        ₹{getProductPricing(product).sellingPrice.toLocaleString()}
+                                        ₹{sellingPrice.toLocaleString()}
                                       </span>
-                                      {getProductPricing(product).hasDiscount && (
-                                        <span className="text-[8px] md:text-xs text-black/20 line-through font-black">₹{product.price.toLocaleString()}</span>
+                                      {hasDiscount && (
+                                        <span className="text-[8px] md:text-xs text-black/20 line-through font-black">₹{itemPrice.toLocaleString()}</span>
                                       )}
                                    </div>
                                 </div>
-                                <div className="w-8 h-8 md:w-14 md:h-14 bg-black text-white flex items-center justify-center group-hover:bg-[#ff5c00] group-hover:text-black transition-all">
+                                <div className={`w-8 h-8 md:w-14 md:h-14 bg-black text-white flex items-center justify-center ${hoverBgMap[item.itemType]} group-hover:text-black transition-all`}>
                                   <FaArrowRight size={12} className="md:size-[20px]" />
                                 </div>
                              </div>
