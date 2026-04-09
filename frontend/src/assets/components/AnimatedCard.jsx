@@ -327,6 +327,7 @@ const AnimatedCard = () => {
                       };
 
                       return (
+                      return (
                         <motion.div
                           ref={isLastElement ? lastElementRef : null}
                           key={`${item._id}-${i}`}
@@ -334,58 +335,45 @@ const AnimatedCard = () => {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: (i % 10) * 0.05, duration: 0.5 }}
                           onClick={() => navigate(navPath)}
-                          className={`group cursor-pointer flex flex-col bg-white border-2 md:border-4 border-black shadow-[4px_4px_0px_#000] md:shadow-[10px_10px_0px_#000] ${borderColorMap[item.itemType]} transition-all relative overflow-hidden h-full`}
+                          className="bg-white rounded-2xl md:rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col overflow-hidden cursor-pointer"
                         >
-                           {/* Tech header on card */}
-                           <div className="flex justify-between items-center bg-black text-white px-2 md:px-4 py-1 md:py-2 text-[6px] md:text-[10px] font-black tracking-widest uppercase">
-                             <span>{tag}_REF: {item._id?.toString().slice(-6).toUpperCase()}</span>
-                             <FaPlus size={8} className={`${textColorMap[item.itemType]}`} />
-                           </div>
-
-                           <div className="aspect-square bg-white p-4 md:p-8 relative overflow-hidden flex items-center justify-center border-b-2 md:border-b-4 border-black">
+                           <div className="h-40 md:h-48 bg-gray-50 relative overflow-hidden">
                              <img
                                src={imgUrl}
                                alt={itemName}
-                               className="w-full h-full object-contain filter group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                               className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                              />
+                             <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-gray-800 shadow-sm uppercase tracking-wider">
+                               {item.itemType === 'product' ? 'PRODUCT' : item.itemType === 'service' ? 'SERVICE' : 'PLAN'}
+                             </div>
                            </div>
  
-                           <div className="p-3 md:p-6 flex flex-col flex-1 bg-white">
-                             <h3 className={`text-xs md:text-2xl font-black text-black leading-none mb-1 md:mb-4 uppercase tracking-tighter line-clamp-1 ${hoverTextColorMap[item.itemType]} transition-colors`}>
+                           <div className="p-4 md:p-5 flex-1 flex flex-col">
+                             <h3 className="font-bold text-gray-900 text-sm md:text-lg leading-tight line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">
                                {itemName}
                              </h3>
-                             <p className="hidden md:block text-[11px] text-black/40 line-clamp-2 mb-8 font-mono leading-tight uppercase tracking-widest">
-                               // {item.description}
+                             <p className="text-gray-500 text-[10px] md:text-xs line-clamp-2">
+                               {item.description || "View full details to learn more."}
                              </p>
-                             <div className="mt-auto flex justify-between items-center pt-2 md:pt-6 border-t md:border-t-2 border-black/10">
-                                <div className="flex flex-col">
-                                   <div className="flex items-center gap-1">
-                                      <span className="text-[6px] md:text-[10px] font-black text-black/30 tracking-widest uppercase mb-0 md:mb-1">
-                                         {item.itemType === 'plan' ? 'EST_COST' : 'PRICE'}
-                                      </span>
-                                      {hasDiscount && (
-                                        <span className="text-[8px] bg-[#ff5c00] text-black px-1 font-black leading-none">{discountPct}% OFF</span>
-                                      )}
+                             
+                             <div className="mt-auto flex items-end justify-between pt-4">
+                                <div>
+                                   <div className="text-[10px] text-gray-400 font-medium tracking-wider uppercase mb-0.5">
+                                      {item.itemType === 'plan' ? 'EST COST' : 'PRICE'}
                                    </div>
-                                   <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
-                                      <span className="text-sm md:text-3xl font-heading text-black leading-none">
+                                   <div className="flex items-baseline gap-2">
+                                      <span className="text-lg md:text-xl font-black text-gray-900 leading-none">
                                         ₹{sellingPrice.toLocaleString()}
                                       </span>
                                       {hasDiscount && (
-                                        <span className="text-[8px] md:text-xs text-black/20 line-through font-black">₹{itemPrice.toLocaleString()}</span>
+                                        <span className="text-[10px] md:text-xs text-gray-400 line-through font-medium">₹{itemPrice.toLocaleString()}</span>
                                       )}
                                    </div>
                                 </div>
-                                <div className={`w-8 h-8 md:w-14 md:h-14 bg-black text-white flex items-center justify-center ${hoverBgMap[item.itemType]} group-hover:text-black transition-all`}>
-                                  <FaArrowRight size={12} className="md:size-[20px]" />
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                                  <FaArrowRight size={12} className="md:size-[14px]" />
                                 </div>
                              </div>
-                           </div>
-
-                           <div className="h-2 bg-black w-full flex opacity-0 group-hover:opacity-100 transition-opacity">
-                             {[...Array(15)].map((_, j) => (
-                               <div key={j} className="h-full flex-1 border-r border-[#ff5c00]/30 last:border-r-0"></div>
-                             ))}
                            </div>
                         </motion.div>
                       )
