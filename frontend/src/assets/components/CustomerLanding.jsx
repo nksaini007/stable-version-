@@ -93,9 +93,32 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
   return (
     <div className="relative min-h-screen bg-[#e5e5e5] text-black font-mono overflow-hidden flex flex-col pt-20">
 
-      {/* 🏁 INDUSTRIAL GRID OVERLAY */}
-      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
-        style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+      {/* 🏁 INDUSTRIAL GRID OVERLAY (SUBTLE) */}
+      <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none"
+        style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+
+      {/* 📺 SCAN LINE & BLUR */}
+      <style>{`
+        @keyframes scanline {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100vh); }
+        }
+        .animate-scan-slow {
+          animation: scanline 12s linear infinite;
+        }
+        .bg-glass-premium {
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .blueprint-lines {
+          background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+          background-size: 50px 50px;
+        }
+      `}</style>
 
       {/* 🏗️ MAIN CONTENT CONTAINER */}
       <div className="relative z-10 w-full max-w-[1600px] mx-auto flex-1 flex flex-col md:grid md:grid-cols-12 border-t-4 border-black">
@@ -119,212 +142,202 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col md:flex-row border-b-4 border-black relative overflow-hidden bg-black">
+          <div className="flex-1 flex flex-col md:flex-row border-b-2 border-black/10 relative overflow-hidden bg-[#0a0a0a] group/hero">
+            
+            {/* Blueprint Grid Overlay */}
+            <div className="absolute inset-0 blueprint-lines opacity-20 pointer-events-none"></div>
 
-            {/* FRAGMENT 002 (Small/Black) */}
-            <div className="w-full md:w-[35%] bg-black relative border-r-2 border-white/10 flex items-center justify-center group overflow-hidden">
+            {/* FRAGMENT 002 (Left/Technical Data) */}
+            <motion.div 
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 1.2, ease: "circOut" }}
+              className="w-full md:w-[30%] bg-black relative border-r border-white/5 flex items-center justify-center overflow-hidden group/f2"
+            >
               <img
                 src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800"
-                className="w-full h-full object-cover opacity-40 blur-[2px] group-hover:blur-0 transition-all duration-700"
+                className="w-full h-full object-cover opacity-30 grayscale group-hover/f2:grayscale-0 group-hover/f2:scale-105 transition-all duration-1000"
                 alt="Tech 002"
               />
-              <div className="absolute top-4 left-4 h-full flex flex-col">
-                <span className="font-heading text-6xl text-white font-vertical opacity-10">002</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent opacity-60"></div>
+              
+              {/* Data Overlay */}
+              <div className="absolute top-6 left-6 flex flex-col gap-1 pointer-events-none">
+                <span className="text-[8px] font-black text-[#ff5c00] tracking-[0.4em] opacity-50">NODE_ACCESS_POINT</span>
+                <span className="text-4xl font-heading text-white/10 uppercase tracking-tighter">OS_VERSION_2.0</span>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
 
-              {/* Metric HUD 002 */}
-              <div className="absolute bottom-6 left-6 right-6 bg-glass-hud p-4">
-                <div className="flex justify-between items-center text-[8px] text-white/50 mb-2 font-mono">
-                  <span>LKS: 1,628</span>
-                  <span>MDL: STN_B</span>
+              {/* HUD 002 (Minimalist) */}
+              <div className="absolute bottom-8 left-8 right-8 bg-black/40 backdrop-blur-md p-5 border border-white/5 group-hover/f2:border-[#ff5c00]/30 transition-colors">
+                <div className="flex justify-between items-center text-[7px] text-white/40 mb-3 font-mono">
+                  <span className="flex items-center gap-1.5"><div className="w-1 h-1 bg-[#ff5c00] rounded-full animate-pulse"></div> INTEL_FETCH_SUCCESS</span>
+                  <span>REF: STN_32</span>
                 </div>
-                <div className="h-1 w-full bg-white/10 overflow-hidden">
-                  <div className="h-full bg-white/40 w-[60%] animate-[pulse_2s_infinite]"></div>
+                <div className="h-[1px] w-full bg-white/5">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: "75%" }}
+                    transition={{ duration: 2, delay: 0.5 }}
+                    className="h-full bg-[#ff5c00]"
+                  ></motion.div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* FRAGMENT 001 (Main/Orange) */}
-            <div className="flex-1 bg-[#ff5c00] relative group flex items-center justify-center overflow-hidden">
+            {/* FRAGMENT 001 (Main Showcase) */}
+            <motion.div 
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 1.2, ease: "circOut", delay: 0.1 }}
+              className="flex-1 bg-black relative group/f1 flex items-center justify-center overflow-hidden"
+            >
               <img
                 src={heroImg}
-                className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:scale-105 transition-transform duration-[2s]"
-                alt="Industrial Main"
+                className="w-full h-full object-cover opacity-60 mix-blend-screen group-hover/f1:scale-110 transition-transform duration-[4s] ease-out"
+                alt="Industrial Premium"
               />
 
-              {/* Vertical Label */}
-              <div className="absolute top-8 right-8 flex flex-col items-center">
-                <span className="font-heading text-7xl md:text-9xl text-black font-vertical tracking-tight leading-none">001</span>
+              {/* Floating Blueprint Markers */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-10 right-10 w-20 h-20 border-t border-r border-[#ff5c00]/20"></div>
+                <div className="absolute bottom-40 left-10 w-20 h-20 border-b border-l border-[#ff5c00]/20"></div>
               </div>
 
-              {/* Central Controller HUD */}
+              {/* Brand Floating Label */}
+              <div className="absolute top-12 left-12 flex flex-col pointer-events-none">
+                <motion.span 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
+                  className="text-[10px] font-black text-[#ff5c00] tracking-[0.6em] mb-2 drop-shadow-lg"
+                >STINCHAR_PRIME</motion.span>
+                <h1 className="text-6xl md:text-8xl font-heading text-white leading-none tracking-tighter opacity-10 group-hover/f1:opacity-40 transition-opacity duration-1000">ESTABLISHED<br/>MMXXVI</h1>
+              </div>
+
+              {/* Central Radar HUD */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-48 h-48 border-2 border-black/20 rounded-full animate-spin-slow"></div>
+                <div className="w-[500px] h-[500px] border border-white/5 rounded-full opacity-10"></div>
+                <div className="absolute w-[300px] h-[300px] border border-[#ff5c00]/10 rounded-full animate-ping opacity-20"></div>
               </div>
-
-              {/* Metric HUD 001 (Ref Image Style) */}
-              <div className="absolute bottom-8 right-8 w-48 md:w-64 bg-glass-hud p-6 border-l-4 border-black shadow-2xl">
-                <div className="flex justify-between items-end mb-4">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-black/50 tracking-widest uppercase">SCAN_INDEX</span>
-                    <span className="text-3xl font-heading text-black leading-none">2,628</span>
-                  </div>
-                  <div className="w-12 h-1 bg-black/20"></div>
-                </div>
-                <div className="flex gap-1 h-4 items-end">
-                  {[...Array(12)].map((_, i) => (
-                    <div key={i} className="flex-1 bg-black/40" style={{ height: `${Math.random() * 100}%` }}></div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Integrated Navigation HUD */}
-              <button
-                onClick={() => document.getElementById('search-initialize').scrollIntoView({ behavior: 'smooth' })}
-                className="absolute top-8 left-8 bg-glass-hud px-4 py-2 flex items-center gap-4 text-white hover:bg-white hover:text-black transition-all border border-white/20 pointer-events-auto"
-              >
-                <div className="flex flex-col items-start leading-none">
-                  <span className="text-[7px] font-black opacity-50 uppercase">INIT_PROCEDURE</span>
-                  <span className="text-[12px] font-black uppercase">NEXT_LOG_</span>
-                </div>
-                <FaArrowRight size={14} className="text-[#ff5c00]" />
-              </button>
-            </div>
-
+            </motion.div>
           </div>
-          <div className="md:col-span-4 border-r-4 border-black p-8 flex flex-col justify-between bg-white/50">
-            <div>
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-2 bg-black text-white px-3 py-1 self-start inline-flex">
-                  <FaTerminal size={12} />
-                  <span className="text-[10px] font-black tracking-widest uppercase">PROCEED_WITH_CAUTION</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-[#ff5c00] rounded-full animate-pulse"></div>
-                  <span className="text-[9px] font-black uppercase tracking-widest">LIVE_FEED</span>
-                </div>
-              </div>
-
-              <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.8 }}
-              >
-                <div className="flex flex-col gap-1">
-                  <span className="text-[#ff5c00] font-black text-[8px] tracking-[0.3em]">00_STINCHAR_CORE_INIT</span>
-                  <h1 className="text-[3.5rem] md:text-[3rem] font-pixel text-lattice leading-[1] tracking-tighter">
-                    Be your own architect
-                  </h1>
-                </div>
-              </motion.div>
-
-              {/* DYNAMIC COMMUNITY HUD */}
-              <div className="mt-10 space-y-6">
-                <div className="flex items-center gap-2 border-b-2 border-black pb-2">
-                  <FaGlobe size={10} />
-                  <span className="text-[10px] font-black tracking-[0.2em] uppercase">USER_INTELLIGENCE_STREAM:</span>
-                </div>
-
-                <div className="space-y-4">
-                  {loadingUpdates ? (
-                    Array(4).fill(0).map((_, i) => (
-                      <div key={i} className="h-10 bg-black/5 animate-pulse border-l-2 border-black/20"></div>
-                    ))
-                  ) : updates.length > 0 ? (
-                    updates.map((update, index) => (
-                      <div
-                        key={update.id}
-                        className="group cursor-pointer border-l-2 border-[#ff5c00] pl-3 py-1 hover:bg-black hover:text-white transition-all flex gap-3"
-                        onClick={() => navigate(update.link)}
-                      >
-                        <div className="pt-0.5 opacity-50 group-hover:opacity-100 transition-opacity">
-                          {update.icon}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex justify-between items-center text-[8px] font-black opacity-50 group-hover:opacity-100 mb-0.5">
-                            <span>{update.tag}_00{index + 1}</span>
-                            <span>{update.date.toLocaleDateString()}</span>
-                          </div>
-                          <p className="text-[11px] font-black uppercase tracking-tight line-clamp-1">
-                            {update.title}
-                          </p>
-                          <p className="text-[9px] font-bold text-black/60 group-hover:text-white/60 uppercase tracking-tighter line-clamp-1">
-                            {update.detail}
-                          </p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-[10px] font-mono opacity-30 italic">NO_DATA_STREAM_FOUND...</div>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => navigate('/dashboard')}
-                  className="w-full py-4 bg-black text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#ff5c00] hover:text-black transition-all flex items-center justify-center gap-4 group mt-2"
-                >
-                  <FaShieldAlt size={14} className="group-hover:rotate-12 transition-transform" />
-                  SYSTEM_DASHBOARD_ACCESS
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-12">
-              <div className="h-16 w-full mb-4 bg-black/5 flex items-end gap-1 p-2 border border-black/10">
-                {[...Array(24)].map((_, i) => (
-                  <div key={i} className="flex-1 bg-black/20 group-hover:bg-black transition-colors" style={{ height: `${Math.random() * 100}%` }}></div>
-                ))}
-              </div>
-              <div className="flex justify-between items-center text-[8px] font-black uppercase opacity-40">
-                <span>REF: STIN_INTEL_V2.0.4</span>
-                <span>LOC: IN_GLOBAL_NODE</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Search Bar Grid Section */}
-          <div id="search-initialize" className="p-8 md:p-12 bg-white flex flex-col items-start gap-8">
-            <div className="w-full max-w-4xl">
-              <div className="flex items-center gap-4 mb-4">
-                <span className="bg-[#ff5c00] text-black px-3 py-1 text-[10px] font-black uppercase">INITIALIZE SEARCH</span>
-                <div className="flex-1 h-[1px] bg-black/20"></div>
-              </div>
-
-              <div className="relative flex border-2 md:border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,0.1)] md:shadow-[12px_12px_0px_rgba(0,0,0,0.1)]">
-                <div className="p-3 md:p-6 bg-black text-white flex items-center justify-center">
-                  <FaSearch className="text-xl md:text-2xl" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="FIND_MATERIALS..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && onSearch()}
-                  className="flex-1 bg-white px-4 md:px-8 text-lg md:text-2xl font-black placeholder-black/20 focus:outline-none uppercase min-w-0"
-                />
-              </div>
-
-              <div className="flex gap-2 md:gap-4 mt-4 md:mt-8 flex-wrap">
-                {["RAW_MATERIALS", "ARCHITECTS", "CONSTRUCTION"].map((cat, i) => (
-                  <button
-                    key={i}
-                    onClick={() => onCategoryClick(cat)}
-                    className="px-3 md:px-6 py-1.5 md:py-2 border-2 border-black font-black text-[8px] md:text-xs hover:bg-black hover:text-white transition-all uppercase"
-                  >
-                    {cat}._
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
         </div>
 
-      </div>
+        {/* HUD SIDE PANEL - Refined "Intelligence Stream" */}
+        <div className="md:col-span-4 border-l border-black/10 bg-[#0f0f0f] flex flex-col relative">
+          
+          {/* Panel Header */}
+          <div className="p-8 border-b border-white/5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+               <div className="w-1.5 h-1.5 bg-[#ff5c00] rounded-full animate-ping"></div>
+               <span className="text-[10px] font-black text-white/80 tracking-widest uppercase">INTEL_STREAM</span>
+            </div>
+            <span className="text-[8px] font-mono text-white/30 tracking-[0.3em]">REF_CODE: STN_324A</span>
+          </div>
 
-    </div>
-  );
-};
+          {/* Stream Content */}
+          <div className="flex-1 overflow-y-auto scrollbar-tech p-8 space-y-6">
+            {loadingUpdates ? (
+              Array(3).fill(0).map((_, i) => (
+                <div key={i} className="h-24 bg-white/5 border border-white/5 animate-pulse"></div>
+              ))
+            ) : updates.map((update, index) => (
+              <motion.div
+                key={update.id}
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: index * 0.1 }}
+                className="group cursor-pointer border-b border-white/5 pb-6 hover:translate-x-1 transition-transform"
+                onClick={() => navigate(update.link)}
+              >
+                 <div className="flex justify-between items-center text-[7px] font-black text-[#ff5c00]/60 mb-2">
+                    <span>{update.tag}_FRAGMENT_0{index + 1}</span>
+                    <span>{update.date.toLocaleDateString()}</span>
+                 </div>
+                 <h4 className="text-sm font-black text-white/90 group-hover:text-white mb-1 uppercase tracking-tight line-clamp-1">{update.title}</h4>
+                 <p className="text-[10px] text-white/40 leading-relaxed line-clamp-2 uppercase font-medium">{update.detail}</p>
+                 <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex-1 h-[1px] bg-white/10"></div>
+                    <span className="text-[8px] font-black text-white">ACCESS_DATA</span>
+                    <FaArrowRight size={10} className="text-[#ff5c00]" />
+                 </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Quick Access Stats at Bottom */}
+          <div className="p-8 bg-black/40 border-t border-white/5">
+            <div className="grid grid-cols-2 gap-4">
+               <div className="flex flex-col gap-1">
+                  <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Global_Index</span>
+                  <span className="text-2xl font-heading text-white tracking-widest">2.0</span>
+               </div>
+               <div className="flex flex-col gap-1">
+                  <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Node_Status</span>
+                  <span className="text-[12px] font-black text-[#ff5c00] animate-pulse">OPTIMIZED</span>
+               </div>
+            </div>
+            <button 
+              onClick={() => navigate('/dashboard')}
+              className="mt-6 w-full py-4 bg-white text-black font-black text-[10px] tracking-[0.3em] hover:bg-[#ff5c00] transition-colors flex items-center justify-center gap-3 group"
+            >
+               ACCESS_FULL_SYSTEM
+               <FaShieldAlt size={12} className="group-hover:rotate-12 transition-transform" />
+            </button>
+          </div>
+        </div>
+
+        {/* REFINED SEARCH COMMAND CENTER (Bottom Full Width) */}
+        <div id="search-initialize" className="md:col-span-12 border-t-2 border-black/10 bg-white p-12 md:p-20 flex flex-col items-center justify-center relative overflow-hidden group/search-area">
+          
+          {/* Subtle Background Art for Search Area */}
+          <div className="absolute inset-0 blueprint-lines opacity-[0.05] pointer-events-none"></div>
+          
+          <div className="w-full max-w-4xl mx-auto z-10">
+            <div className="flex items-center gap-4 mb-8">
+              <span className="bg-[#ff5c00] text-black px-4 py-1.5 text-[10px] font-black uppercase tracking-widest">INITIALIZE_MASTER_QUERY</span>
+              <div className="flex-1 h-[1px] bg-black/10"></div>
+            </div>
+
+            <motion.div 
+               whileHover={{ y: -5 }}
+               className="relative flex border-4 border-black shadow-[15px_15px_0px_rgba(0,0,0,0.1)] focus-within:shadow-[20px_20px_0px_#ff5c00] transition-all duration-500"
+            >
+              <div className="p-6 md:p-8 bg-black text-white flex items-center justify-center">
+                <FaSearch className="text-2xl md:text-3xl" />
+              </div>
+              <input
+                type="text"
+                placeholder="FIND_MATERIALS_OR_SERVICE..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && onSearch()}
+                className="flex-1 bg-white px-6 md:px-10 text-xl md:text-3xl font-black placeholder-black/10 focus:outline-none uppercase min-w-0"
+              />
+              <button 
+                onClick={onSearch}
+                className="hidden md:flex items-center gap-4 px-10 bg-black text-white hover:bg-[#ff5c00] hover:text-black transition-all font-black text-xs tracking-widest"
+              >
+                EXECUTE_SEARCH
+                <FaArrowRight size={14} />
+              </button>
+            </motion.div>
+
+            <div className="flex gap-3 md:gap-5 mt-10 flex-wrap justify-center">
+              {["RAW_MATERIALS", "ARCHITECTS", "CONSTRUCTION", "LOGISTICS"].map((cat, i) => (
+                <button
+                  key={i}
+                  onClick={() => onCategoryClick(cat)}
+                  className="px-5 md:px-8 py-2 md:py-3 border-2 border-black font-black text-[9px] md:text-[11px] hover:bg-black hover:text-white transition-all uppercase tracking-widest flex items-center gap-3 group/cat"
+                >
+                  <span className="w-1.5 h-1.5 bg-black group-hover/cat:bg-white transition-colors"></span>
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    );
+  };
 
 export default CustomerLanding;
