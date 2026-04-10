@@ -143,12 +143,12 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           </div>
 
           <div className="flex-1 flex flex-col md:flex-row border-b-2 border-black/10 relative overflow-hidden bg-[#0a0a0a] group/hero">
-            
+
             {/* Blueprint Grid Overlay */}
             <div className="absolute inset-0 blueprint-lines opacity-20 pointer-events-none"></div>
 
             {/* FRAGMENT 002 (Left/Technical Data) */}
-            <motion.div 
+            <motion.div
               initial={{ x: -100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 1.2, ease: "circOut" }}
@@ -160,7 +160,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 alt="Tech 002"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent opacity-60"></div>
-              
+
               {/* Data Overlay */}
               <div className="absolute top-6 left-6 flex flex-col gap-1 pointer-events-none">
                 <span className="text-[8px] font-black text-[#ff5c00] tracking-[0.4em] opacity-50">NODE_ACCESS_POINT</span>
@@ -174,7 +174,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                   <span>REF: STN_32</span>
                 </div>
                 <div className="h-[1px] w-full bg-white/5">
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: "75%" }}
                     transition={{ duration: 2, delay: 0.5 }}
@@ -185,7 +185,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
             </motion.div>
 
             {/* FRAGMENT 001 (Main Showcase) */}
-            <motion.div 
+            <motion.div
               initial={{ x: 100, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 1.2, ease: "circOut", delay: 0.1 }}
@@ -205,11 +205,11 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
 
               {/* Brand Floating Label */}
               <div className="absolute top-12 left-12 flex flex-col pointer-events-none">
-                <motion.span 
+                <motion.span
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
                   className="text-[10px] font-black text-[#ff5c00] tracking-[0.6em] mb-2 drop-shadow-lg"
                 >STINCHAR_PRIME</motion.span>
-                <h1 className="text-6xl md:text-8xl font-heading text-white leading-none tracking-tighter opacity-10 group-hover/f1:opacity-40 transition-opacity duration-1000">ESTABLISHED<br/>MMXXVI</h1>
+                <h1 className="text-6xl md:text-8xl font-heading text-white leading-none tracking-tighter opacity-10 group-hover/f1:opacity-40 transition-opacity duration-1000">ESTABLISHED<br />21st MARCH 2026</h1>
               </div>
 
               {/* Central Radar HUD */}
@@ -223,12 +223,12 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
 
         {/* HUD SIDE PANEL - Refined "Intelligence Stream" */}
         <div className="md:col-span-4 border-l border-black/10 bg-[#0f0f0f] flex flex-col relative">
-          
+
           {/* Panel Header */}
           <div className="p-8 border-b border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-               <div className="w-1.5 h-1.5 bg-[#ff5c00] rounded-full animate-ping"></div>
-               <span className="text-[10px] font-black text-white/80 tracking-widest uppercase">INTEL_STREAM</span>
+              <div className="w-1.5 h-1.5 bg-[#ff5c00] rounded-full animate-ping"></div>
+              <span className="text-[10px] font-black text-white/80 tracking-widest uppercase">INTEL_STREAM</span>
             </div>
             <span className="text-[8px] font-mono text-white/30 tracking-[0.3em]">REF_CODE: STN_324A</span>
           </div>
@@ -248,17 +248,17 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 className="group cursor-pointer border-b border-white/5 pb-6 hover:translate-x-1 transition-transform"
                 onClick={() => navigate(update.link)}
               >
-                 <div className="flex justify-between items-center text-[7px] font-black text-[#ff5c00]/60 mb-2">
-                    <span>{update.tag}_FRAGMENT_0{index + 1}</span>
-                    <span>{update.date.toLocaleDateString()}</span>
-                 </div>
-                 <h4 className="text-sm font-black text-white/90 group-hover:text-white mb-1 uppercase tracking-tight line-clamp-1">{update.title}</h4>
-                 <p className="text-[10px] text-white/40 leading-relaxed line-clamp-2 uppercase font-medium">{update.detail}</p>
-                 <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="flex-1 h-[1px] bg-white/10"></div>
-                    <span className="text-[8px] font-black text-white">ACCESS_DATA</span>
-                    <FaArrowRight size={10} className="text-[#ff5c00]" />
-                 </div>
+                <div className="flex justify-between items-center text-[7px] font-black text-[#ff5c00]/60 mb-2">
+                  <span>{update.tag}_FRAGMENT_0{index + 1}</span>
+                  <span>{update.date.toLocaleDateString()}</span>
+                </div>
+                <h4 className="text-sm font-black text-white/90 group-hover:text-white mb-1 uppercase tracking-tight line-clamp-1">{update.title}</h4>
+                <p className="text-[10px] text-white/40 leading-relaxed line-clamp-2 uppercase font-medium">{update.detail}</p>
+                <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex-1 h-[1px] bg-white/10"></div>
+                  <span className="text-[8px] font-black text-white">ACCESS_DATA</span>
+                  <FaArrowRight size={10} className="text-[#ff5c00]" />
+                </div>
               </motion.div>
             ))}
           </div>
@@ -266,40 +266,40 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           {/* Quick Access Stats at Bottom */}
           <div className="p-8 bg-black/40 border-t border-white/5">
             <div className="grid grid-cols-2 gap-4">
-               <div className="flex flex-col gap-1">
-                  <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Global_Index</span>
-                  <span className="text-2xl font-heading text-white tracking-widest">2.0</span>
-               </div>
-               <div className="flex flex-col gap-1">
-                  <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Node_Status</span>
-                  <span className="text-[12px] font-black text-[#ff5c00] animate-pulse">OPTIMIZED</span>
-               </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Global_Index</span>
+                <span className="text-2xl font-heading text-white tracking-widest">2.0</span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Node_Status</span>
+                <span className="text-[12px] font-black text-[#ff5c00] animate-pulse">OPTIMIZED</span>
+              </div>
             </div>
-            <button 
+            <button
               onClick={() => navigate('/dashboard')}
               className="mt-6 w-full py-4 bg-white text-black font-black text-[10px] tracking-[0.3em] hover:bg-[#ff5c00] transition-colors flex items-center justify-center gap-3 group"
             >
-               ACCESS_FULL_SYSTEM
-               <FaShieldAlt size={12} className="group-hover:rotate-12 transition-transform" />
+              ACCESS_FULL_SYSTEM
+              <FaShieldAlt size={12} className="group-hover:rotate-12 transition-transform" />
             </button>
           </div>
         </div>
 
         {/* REFINED SEARCH COMMAND CENTER (Bottom Full Width) */}
         <div id="search-initialize" className="md:col-span-12 border-t-2 border-black/10 bg-white p-12 md:p-20 flex flex-col items-center justify-center relative overflow-hidden group/search-area">
-          
+
           {/* Subtle Background Art for Search Area */}
           <div className="absolute inset-0 blueprint-lines opacity-[0.05] pointer-events-none"></div>
-          
+
           <div className="w-full max-w-4xl mx-auto z-10">
             <div className="flex items-center gap-4 mb-8">
               <span className="bg-[#ff5c00] text-black px-4 py-1.5 text-[10px] font-black uppercase tracking-widest">INITIALIZE_MASTER_QUERY</span>
               <div className="flex-1 h-[1px] bg-black/10"></div>
             </div>
 
-            <motion.div 
-               whileHover={{ y: -5 }}
-               className="relative flex border-4 border-black shadow-[15px_15px_0px_rgba(0,0,0,0.1)] focus-within:shadow-[20px_20px_0px_#ff5c00] transition-all duration-500"
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="relative flex border-4 border-black shadow-[15px_15px_0px_rgba(0,0,0,0.1)] focus-within:shadow-[20px_20px_0px_#ff5c00] transition-all duration-500"
             >
               <div className="p-6 md:p-8 bg-black text-white flex items-center justify-center">
                 <FaSearch className="text-2xl md:text-3xl" />
@@ -312,7 +312,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 onKeyDown={(e) => e.key === 'Enter' && onSearch()}
                 className="flex-1 bg-white px-6 md:px-10 text-xl md:text-3xl font-black placeholder-black/10 focus:outline-none uppercase min-w-0"
               />
-              <button 
+              <button
                 onClick={onSearch}
                 className="hidden md:flex items-center gap-4 px-10 bg-black text-white hover:bg-[#ff5c00] hover:text-black transition-all font-black text-xs tracking-widest"
               >
@@ -335,9 +335,9 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
             </div>
           </div>
         </div>
-        </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 export default CustomerLanding;
