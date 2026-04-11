@@ -1,6 +1,8 @@
 const Quotation = require("../models/Quotation");
 const Order = require("../models/Order");
 const Product = require("../models/product");
+const { calculateServerSideDelivery } = require("../utils/deliveryCalculator");
+
 
 // @desc    Create a new quotation request
 // @route   POST /api/quotations
@@ -15,6 +17,7 @@ const createQuotation = async (req, res) => {
 
     // 🛡️ SECURE CALCULATION: Build verified items and calculate prices server-side
     let itemsPrice = 0;
+    let totalWeight = 0;
     const verifiedItems = [];
 
     for (const item of clientItems) {
@@ -43,6 +46,11 @@ const createQuotation = async (req, res) => {
             unitPrice = sourceTiers.normal;
         }
 
+        // Add weight for delivery calculation
+        const weightMatch = (dbProduct.weight || "0").match(/(\d+(\.\d+)?)/);
+        const unitWeight = weightMatch ? parseFloat(weightMatch[0]) : 0;
+        totalWeight += unitWeight * item.qty;
+
         const itemSubtotal = unitPrice * item.qty;
         itemsPrice += itemSubtotal;
 
@@ -56,14 +64,32 @@ const createQuotation = async (req, res) => {
         });
     }
 
+    // 🚚 Secure Delivery Calculation for Quotation
+    let shippingPrice = 0;
+    try {
+        if (shippingAddress && shippingAddress.postalCode) {
+            const deliveryResult = await calculateServerSideDelivery(
+                shippingAddress.postalCode,
+                totalWeight,
+                itemsPrice
+            );
+            shippingPrice = deliveryResult.totalCharge;
+        }
+    } catch (deliveryError) {
+        console.warn("Delivery Calculation Warning in Quotation:", deliveryError.message);
+        // Fallback or leave as 0 if unserviceable, user can discuss in note
+    }
+
     const quotation = new Quotation({
       user: req.user._id,
       items: verifiedItems,
       shippingAddress,
       itemsPrice,
-      totalPrice: itemsPrice, // Initial price before admin adjustment
+      shippingPrice,
+      totalPrice: itemsPrice + shippingPrice,
       customerNote,
     });
+
 
     const createdQuotation = await quotation.save();
     res.status(201).json(createdQuotation);

@@ -26,17 +26,26 @@ export const formatPrice = (amount) => {
  * Get the effective pricing for a product.
  * @param {object} product - The product object.
  * @param {object} variant - Optional selected variant.
+ * @param {string} userRole - User's role (architect, architectPartner, user).
  * @returns {object} { mrp, sellingPrice, discountPct, hasDiscount }
  */
-export const getProductPricing = (product, variant = null) => {
+export const getProductPricing = (product, variant = null, userRole = "user") => {
   const basePrice = (variant ? variant.price : product.price) || 0;
-  const tiers = variant ? variant.pricingTiers : product.pricingTiers;
-  const discountedPrice = tiers?.normal || 0;
+  const tiers = (variant ? variant.pricingTiers : product.pricingTiers) || {};
+  
+  // SECURE SYNC: Must match backend role-based logic
+  let unitPrice = basePrice;
+  if (userRole === "architect" || userRole === "architectPartner") {
+      unitPrice = tiers.architect || basePrice;
+  } else if (tiers.normal) {
+      unitPrice = tiers.normal;
+  }
 
-  const hasDiscount = discountedPrice > 0 && discountedPrice < basePrice;
-  const sellingPrice = hasDiscount ? discountedPrice : basePrice;
+  const sellingPrice = unitPrice;
   const mrp = basePrice;
   const discountPct = calculateDiscount(mrp, sellingPrice);
+  const hasDiscount = sellingPrice < mrp;
 
   return { mrp, sellingPrice, discountPct, hasDiscount };
 };
+

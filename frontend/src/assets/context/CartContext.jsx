@@ -73,9 +73,11 @@
 //     </CartContext.Provider>
 //   );
 // };
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import API from "../api/api";
 import { getProductPricing } from "../utils/priceUtils";
+import { AuthContext } from "./AuthContext";
+
 
 export const CartContext = createContext();
 
@@ -100,6 +102,9 @@ export const CartProvider = ({ children }) => {
     }
     return [];
   });
+
+  const { user } = useContext(AuthContext);
+
 
   const [isVerifying, setIsVerifying] = useState(false);
 
@@ -132,7 +137,8 @@ export const CartProvider = ({ children }) => {
             }
 
             // Secure Pricing Calculation utilizing Base vs Member-Tiers
-            const { sellingPrice, mrp } = getProductPricing(data, currentVariant);
+            const { sellingPrice, mrp } = getProductPricing(data, currentVariant, user?.role);
+
 
             return {
               ...item,
