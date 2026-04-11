@@ -35,8 +35,9 @@ const createQuotation = async (req, res) => {
         let sourcePrice = dbProduct.price;
         let sourceTiers = dbProduct.pricingTiers || {};
 
-        if (item.variantId) {
+        if (item.variantId && item.variantId !== "" && item.variantId !== "undefined") {
             const variant = dbProduct.variants.find(v => v._id.toString() === item.variantId.toString());
+
             if (variant) {
                 sourcePrice = variant.price;
                 sourceTiers = variant.pricingTiers || {};
@@ -100,10 +101,22 @@ const createQuotation = async (req, res) => {
     const createdQuotation = await quotation.save();
     res.status(201).json(createdQuotation);
   } catch (error) {
-    console.error("Quotation Creation Error:", error);
-    res.status(500).json({ message: error.message });
+    console.error("Quotation Creation Error Security Context:", {
+        message: error.message,
+        stack: error.stack,
+        user: req.user?._id
+    });
+    
+    // Send detailed error message for 400 Bad Request validation
+    if (error.name === "ValidationError") {
+        const messages = Object.values(error.errors).map(err => err.message);
+        return res.status(400).json({ message: `SCHEMA_ERROR: ${messages.join(", ")}` });
+    }
+
+    res.status(500).json({ message: `INTERNAL_FAILURE: ${error.message}` });
   }
 };
+
 
 // @desc    Get logged in user quotations
 // @route   GET /api/quotations/my

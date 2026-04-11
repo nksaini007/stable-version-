@@ -198,8 +198,9 @@ const Cart = () => {
       navigate("/dashboard/customer/quotations");
     } catch (err) {
       setLoading(false);
-      setMessage(`ERROR: Quotation Routing Failed`);
+      setMessage(`ERROR: ${err.response?.data?.message || "Quotation Routing Failed"}`);
     }
+
   };
 
   return (
