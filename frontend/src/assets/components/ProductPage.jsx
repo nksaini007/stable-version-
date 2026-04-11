@@ -10,6 +10,8 @@ import API from "../api/api";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 import ARViewer from "./ARViewer";
 import { getProductPricing } from "../utils/priceUtils";
+import { AuthContext } from "../context/AuthContext";
+
 
 const Skeleton = () => (
   <div className="min-h-screen bg-[#e5e5e5] tech-grid flex flex-col pt-24 animate-pulse">
@@ -31,7 +33,9 @@ const Skeleton = () => (
 
 const ProductPage = () => {
   const { addToCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
   const { productId } = useParams();
+
   const [productInfo, setProductInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -114,7 +118,8 @@ const ProductPage = () => {
   }
 
   const inStock = productInfo.stock > 0;
-  const { mrp, sellingPrice, discountPct, hasDiscount } = getProductPricing(productInfo, selectedVariant);
+  const { mrp, sellingPrice, discountPct, hasDiscount } = getProductPricing(productInfo, selectedVariant, user?.role);
+
 
   return (
     <div className="bg-[#e5e5e5] min-h-screen font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative flex flex-col">

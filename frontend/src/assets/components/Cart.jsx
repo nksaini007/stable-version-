@@ -6,7 +6,9 @@ import Nev from "./Nev";
 import Footer from "./Footer";
 import { Trash2, ShieldCheck, Truck, FileText, ChevronRight, AlertCircle, ShoppingBag, ArrowLeft, Info, HelpCircle } from "lucide-react";
 import API from "../api/api";
+import { AuthContext } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
+
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -26,6 +28,8 @@ const Cart = () => {
     verifyCart,
     isVerifying,
   } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
+
 
   // Zero-Trust: Verify cart on load
   useEffect(() => {
@@ -181,9 +185,10 @@ const Cart = () => {
     setLoading(true);
     const quotationData = {
       items: cartItems.map(item => ({ product: item._id, name: item.name, qty: item.quantity, price: item.price, variantId: item.variantId, seller: item.seller })),
-      shippingAddress,
       customerNote,
+      userRole: user?.role
     };
+
     try {
       const token = localStorage.getItem("token");
       await API.post(`/quotations`, quotationData, { headers: { Authorization: `Bearer ${token}` } });

@@ -162,19 +162,23 @@ const AdminQuotations = () => {
                                             
                                             <div className="mt-4 grid grid-cols-2 gap-2">
                                                 <div className="p-2 bg-[#121212] rounded-lg border border-[#2A2B2F]">
-                                                    <p className="text-[8px] text-[#6B7280] uppercase">Cost (Stinchar):</p>
-                                                    <p className="text-[10px] text-orange-400 font-bold">₹{item.product?.pricingTiers?.stinchar ?? '0'}</p>
+                                                    <p className="text-[8px] text-[#6B7280] uppercase">Procurement (Stinchar):</p>
+                                                    <p className="text-[10px] text-orange-400 font-bold">₹{item.product?.pricingTiers?.stinchar || '0'}</p>
                                                 </div>
                                                 <div className="p-2 bg-[#121212] rounded-lg border border-[#2A2B2F]">
-                                                    <p className="text-[8px] text-[#6B7280] uppercase">Admin Margin:</p>
+                                                    <p className="text-[8px] text-[#6B7280] uppercase">Estimated Margin:</p>
                                                     <p className={`text-[10px] font-bold ${item.price - (item.product?.pricingTiers?.stinchar || 0) > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
                                                         ₹{(item.price - (item.product?.pricingTiers?.stinchar || 0)).toFixed(2)}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <p className="text-[9px] text-[#6B7280] mt-3 uppercase tracking-tighter">Qty: {item.qty} | Public Price: ₹{item.product?.price || '?'}</p>
+                                            <div className="mt-3 flex items-center justify-between text-[9px] uppercase tracking-tighter">
+                                                <span className="text-[#6B7280]">Quantity: {item.qty}</span>
+                                                <span className="text-cyan-400 font-bold bg-cyan-500/5 px-2 py-0.5 rounded">Standard List Price: ₹{item.product?.price || 'TBD'}</span>
+                                            </div>
                                         </div>
                                     </div>
+
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>

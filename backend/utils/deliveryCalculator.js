@@ -29,9 +29,14 @@ const calculateServerSideDelivery = async (pincode, weight, itemsPrice) => {
         matchedRules = allRules;
     }
 
-    // Sort vehicle types by capacity
+    // Sort vehicle types by capacity AND then by price (most affordable first)
     const vehicleOrder = ["bike", "mini_truck", "truck", "heavy_trailer"];
-    matchedRules.sort((a, b) => vehicleOrder.indexOf(a.vehicleType) - vehicleOrder.indexOf(b.vehicleType));
+    matchedRules.sort((a, b) => {
+        const typeOrder = vehicleOrder.indexOf(a.vehicleType) - vehicleOrder.indexOf(b.vehicleType);
+        if (typeOrder !== 0) return typeOrder;
+        return (a.basePrice || 0) - (b.basePrice || 0);
+    });
+
 
     // Find the single vehicle type that can carry weight
     let selectedRule = matchedRules.find((r) => (r.maxWeightKg || 0) >= weight);

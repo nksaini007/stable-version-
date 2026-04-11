@@ -38,13 +38,14 @@ const createQuotation = async (req, res) => {
             }
         }
 
-        // Apply Role-Based Pricing Securely
+        // Sync Logic with frontend priceUtils.js
         let unitPrice = sourcePrice; 
         if (req.user.role === "architect" || req.user.role === "architectPartner") {
             unitPrice = sourceTiers.architect || sourcePrice;
-        } else if (sourceTiers.normal) {
+        } else if (sourceTiers.normal && sourceTiers.normal > 0) {
             unitPrice = sourceTiers.normal;
         }
+
 
         // Add weight for delivery calculation
         const weightMatch = (dbProduct.weight || "0").match(/(\d+(\.\d+)?)/);
