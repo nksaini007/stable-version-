@@ -15,6 +15,11 @@ const createQuotation = async (req, res) => {
       return res.status(400).json({ message: "No items in quotation request" });
     }
 
+    if (!shippingAddress || !shippingAddress.postalCode) {
+        return res.status(400).json({ message: "Shipping address with pincode is required for quotation" });
+    }
+
+
     // 🛡️ SECURE CALCULATION: Build verified items and calculate prices server-side
     let itemsPrice = 0;
     let totalWeight = 0;

@@ -185,9 +185,11 @@ const Cart = () => {
     setLoading(true);
     const quotationData = {
       items: cartItems.map(item => ({ product: item._id, name: item.name, qty: item.quantity, price: item.price, variantId: item.variantId, seller: item.seller })),
+      shippingAddress,
       customerNote,
       userRole: user?.role
     };
+
 
     try {
       const token = localStorage.getItem("token");
@@ -479,7 +481,14 @@ const Cart = () => {
 
                <div className="flex gap-6">
                   <button onClick={() => setShowQuotationModal(false)} className="flex-1 py-5 bg-slate-50 text-slate-400 font-black rounded-3xl hover:bg-slate-100 transition-all uppercase text-[11px] tracking-widest">Abort Inquiry</button>
-                  <button onClick={handleQuotationRequest} className="flex-1 py-5 bg-[#064e3b] text-white font-black rounded-3xl shadow-xl shadow-emerald-900/20 hover:scale-[1.03] transition-all uppercase text-[11px] tracking-widest">Transmit Protocol</button>
+                  <button 
+                    onClick={handleQuotationRequest} 
+                    disabled={loading || !shippingAddress.fullName || shippingAddress.postalCode.length < 6}
+                    className="flex-1 py-5 bg-[#064e3b] text-white font-black rounded-3xl shadow-xl shadow-emerald-900/20 hover:scale-[1.03] transition-all uppercase text-[11px] tracking-widest disabled:opacity-30 disabled:grayscale"
+                  >
+                    Transmit Protocol
+                  </button>
+
                </div>
             </motion.div>
           </div>
