@@ -41,6 +41,7 @@ const orderSchema = new mongoose.Schema(
         itemStatus: {
           type: String,
           enum: [
+            "Payment Pending",
             "Pending",
             "Confirmed",
             "Processing",
@@ -52,6 +53,7 @@ const orderSchema = new mongoose.Schema(
           ],
           default: "Pending",
         },
+
       },
     ],
 
@@ -96,6 +98,7 @@ const orderSchema = new mongoose.Schema(
     orderStatus: {
       type: String,
       enum: [
+        "Payment Pending",
         "Pending",
         "Confirmed",
         "Processing",
@@ -109,12 +112,14 @@ const orderSchema = new mongoose.Schema(
       default: "Pending",
     },
 
+
     // 🚀 ORDER TRACKING
     tracking: [
       {
         status: {
           type: String,
           enum: [
+            "Payment Pending",
             "Order Placed",
             "Confirmed by Seller",
             "Packed",
@@ -125,6 +130,7 @@ const orderSchema = new mongoose.Schema(
           ],
           required: true,
         },
+
         location: { type: String },
         date: { type: Date, default: Date.now },
         note: { type: String },

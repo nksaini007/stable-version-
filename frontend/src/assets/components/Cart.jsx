@@ -144,20 +144,26 @@ const Cart = () => {
           name: "Stinchar",
           description: "Secure Order Payment",
           order_id: data.razorpayOrderId,
-          handler: async (response) => {
+          handler: async function (response) {
+            setLoading(true);
+            setMessage("VERIFYING_PAYMENT_SIGNATURE...");
             try {
-              setLoading(true);
-              setMessage("VERIFYING SECURITY SIGNAL...");
-              const verifyRes = await API.post("/orders/verify-payment", {
+              const verifyData = {
                 orderId: data._id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-              }, { headers: { Authorization: `Bearer ${token}` } });
+              };
+              
+              const { data: verifyRes } = await API.post("/orders/verify-payment", verifyData, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
 
-              if (verifyRes.data.success) {
+              if (verifyRes.success) {
                 clearCart();
                 navigate("/dashboard/customer/orders");
+              } else {
+                throw new Error("Signature verification failed");
               }
             } catch (err) {
               setLoading(false);

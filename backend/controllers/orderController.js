@@ -115,11 +115,27 @@ const createOrder = async (req, res) => {
             taxPrice,
             shippingPrice,
             totalPrice,
-            isPaid: false, // Default to false
+            isPaid: false, 
+            orderStatus: paymentMethod === "Razorpay" ? "Payment Pending" : "Pending",
             deliveryZone: deliveryResult.zone,
             deliveryVehicleType: deliveryResult.vehicleType,
             deliveryVehicleCount: deliveryResult.vehicleCount,
         });
+
+        // Add initial tracking
+        order.tracking.push({
+            status: paymentMethod === "Razorpay" ? "Payment Pending" : "Order Placed",
+            note: paymentMethod === "Razorpay" ? "Waiting for payment verification" : "Order successfully placed via COD"
+        });
+
+        // 5.5 Check Stock availability before proceeding
+        for (const item of verifiedOrderItems) {
+            const product = await Product.findById(item.product);
+            if (!product || product.stock < item.qty) {
+                 return res.status(400).json({ message: `Insufficient stock for product: ${item.name}` });
+            }
+        }
+
 
         // 6️⃣ If Razorpay, create Razorpay Order
         let razorpayOrder = null;
@@ -175,13 +191,36 @@ const verifyPayment = async (req, res) => {
 
         order.isPaid = true;
         order.paidAt = Date.now();
+        order.orderStatus = "Pending"; // Move to regular pending after payment
         order.paymentResult = {
             id: razorpay_payment_id,
             status: "Success",
             update_time: new Date().toISOString(),
         };
 
+        order.tracking.push({
+            status: "Order Placed",
+            note: "Payment verified successfully"
+        });
+
+        // 🚀 DEDUCT STOCK ONLY ON SUCCESSFUL PAYMENT
+        for (const item of order.orderItems) {
+            const product = await Product.findById(item.product);
+            if (product) {
+              product.stock -= item.qty;
+              
+              if (item.variantId && product.variants) {
+                const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
+                if (variant) {
+                  variant.stock -= item.qty;
+                }
+              }
+              await product.save();
+            }
+        }
+
         await order.save();
+
 
         res.json({ success: true, message: "Payment verified successfully", order });
     } catch (error) {
