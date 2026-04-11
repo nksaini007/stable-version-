@@ -59,8 +59,8 @@ const MyQuotations = () => {
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Request ID: {q._id.slice(-8)}</span>
-                                    <h3 className="text-lg font-bold text-slate-800 mt-1">
                                     <h3 className="text-2xl font-black text-slate-900 mt-1 flex items-baseline gap-2">
+
                                         ₹{q.totalPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                         <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter">({q.items.length} Items)</span>
                                     </h3>
@@ -74,6 +74,7 @@ const MyQuotations = () => {
                                     {q.status}
                                 </div>
                             </div>
+
 
                             <div className="space-y-4 mb-8 bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
                                 {q.items.map((item, idx) => (
