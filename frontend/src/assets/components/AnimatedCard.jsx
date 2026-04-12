@@ -133,24 +133,90 @@ const AnimatedCard = () => {
               {loading && <div className="text-center py-20 uppercase font-black animate-pulse tracking-[0.5em]">Fetching_Data_Stream...</div>}
               
               {!loading && results.length > 0 && (
-                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                    {results.map((item, i) => {
-                       const pricing = item.itemType === 'product' ? getProductPricing(item) : { sellingPrice: item.price || item.estimatedCost || 0 };
-                       return (
-                        <motion.div
-                          key={item._id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          onClick={() => navigate(item.itemType === 'product' ? `/product/${item._id}` : (item.itemType === 'service' ? `/service/${item._id}` : `/project-plans/${item._id}`))}
-                          className="bg-white border-2 border-black p-4 cursor-pointer hover:shadow-[8px_8px_0px_#ff5c00] transition-all group"
-                        >
-                           <img src={item.images?.[0]?.url || item.images?.[0] || item.image || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500"} className="w-full h-32 object-cover border-b-2 border-black mb-4 group-hover:grayscale-0 grayscale transition-all" />
-                           <h4 className="text-[10px] font-black uppercase mb-1 truncate">{item.name || item.title}</h4>
-                           <p className="text-[12px] font-black text-[#ff5c00]">₹{pricing.sellingPrice.toLocaleString()}</p>
-                        </motion.div>
-                       );
-                    })}
-                 </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-8">
+                      {results.map((item, i) => {
+                        const isLastElement = i === results.length - 1;
+                        
+                        let tag = "PRD";
+                        let navPath = `/product/${item._id}`;
+                        let itemName = item.name || item.title;
+                        let itemPrice = item.price || 0;
+                        let sellingPrice = itemPrice;
+                        let hasDiscount = false;
+                        let discountPct = 0;
+                        
+                        let imgUrl = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500";
+                        
+                        if (item.itemType === 'product') {
+                          imgUrl = item.images?.[0]?.url ? `${item.images[0].url}` : item.image || imgUrl;
+                          const pricing = getProductPricing(item);
+                          sellingPrice = pricing.sellingPrice;
+                          hasDiscount = pricing.hasDiscount;
+                          discountPct = pricing.discountPct;
+                        } else if (item.itemType === 'service') {
+                          tag = "SVC";
+                          navPath = `/service/${item._id}`;
+                          imgUrl = item.images?.[0] ? `${item.images[0]}` : imgUrl;
+                        } else if (item.itemType === 'plan') {
+                          tag = "PLN";
+                          navPath = `/project-plans/${item._id}`;
+                          imgUrl = item.images?.[0] ? `${item.images[0]}` : imgUrl;
+                          itemPrice = item.estimatedCost || 0;
+                          sellingPrice = itemPrice;
+                        }
+
+                        return (
+                          <motion.div
+                            ref={isLastElement ? lastElementRef : null}
+                            key={`${item._id}-${i}`}
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: (i % 10) * 0.05, duration: 0.5 }}
+                            onClick={() => navigate(navPath)}
+                            className="bg-white rounded-2xl md:rounded-3xl border border-gray-100 shadow-sm hover:shadow-[15px_15px_0px_#ff5c00] transition-all duration-300 group flex flex-col overflow-hidden cursor-pointer"
+                          >
+                             <div className="h-40 md:h-48 bg-gray-50 relative overflow-hidden">
+                               <img
+                                 src={imgUrl}
+                                 alt={itemName}
+                                 className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                               />
+                               <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-gray-800 shadow-sm uppercase tracking-wider">
+                                 {item.itemType === 'product' ? 'PRODUCT' : item.itemType === 'service' ? 'SERVICE' : 'PLAN'}
+                               </div>
+                             </div>
+  
+                             <div className="p-4 md:p-5 flex-1 flex flex-col">
+                               <h3 className="font-bold text-gray-900 text-sm md:text-lg leading-tight line-clamp-2 mb-1 group-hover:text-[#ff5c00] transition-colors">
+                                 {itemName}
+                               </h3>
+                               <p className="text-gray-500 text-[10px] md:text-xs line-clamp-2">
+                                 {item.description || "View full details to learn more."}
+                               </p>
+                               
+                               <div className="mt-auto flex items-end justify-between pt-4">
+                                  <div>
+                                     <div className="text-[10px] text-gray-400 font-medium tracking-wider uppercase mb-0.5">
+                                        {item.itemType === 'plan' ? 'EST COST' : 'PRICE'}
+                                     </div>
+                                     <div className="flex items-baseline gap-2">
+                                        <span className="text-lg md:text-xl font-black text-gray-900 leading-none">
+                                          ₹{sellingPrice.toLocaleString()}
+                                        </span>
+                                        {hasDiscount && (
+                                          <span className="text-[10px] md:text-xs text-gray-400 line-through font-medium">₹{itemPrice.toLocaleString()}</span>
+                                        )}
+                                     </div>
+                                  </div>
+                                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-[#ff5c00] group-hover:text-white transition-all shadow-sm">
+                                    <FaArrowRight size={12} className="md:size-[14px]" />
+                                  </div>
+                               </div>
+                             </div>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
               )}
             </div>
           </div>
