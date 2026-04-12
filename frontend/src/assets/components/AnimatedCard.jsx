@@ -96,9 +96,35 @@ const AnimatedCard = () => {
     performGlobalSearch(cat);
   };
 
+  const observer = useRef();
   const lastElementRef = useCallback(node => {
-     // Infinite scroll logic (simplified)
-  }, [loading, hasMore]);
+    if (loading || loadingMore) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        loadMore();
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, loadingMore, hasMore]);
+
+  const loadMore = async () => {
+    if (loadingMore || !hasMore || (activeFilter !== 'all' && activeFilter !== 'product')) return;
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    try {
+      const response = await API.get(`/products/public?search=${encodeURIComponent(searchQuery)}&page=${nextPage}&limit=10`);
+      const data = response.data;
+      const newProducts = (data.products || []).map(p => ({ ...p, itemType: 'product' }));
+      setResults(prev => [...prev, ...newProducts]);
+      setPage(nextPage);
+      setHasMore(data.hasMore || false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const isPublicUser = role === 'guest' || role === 'customer' || role === 'architect' || role === 'seller';
 
