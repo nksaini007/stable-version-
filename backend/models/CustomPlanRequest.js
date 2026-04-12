@@ -2,17 +2,18 @@ const mongoose = require("mongoose");
 
 const customPlanRequestSchema = new mongoose.Schema(
     {
-        customer: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        customer: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
         basePlan: { type: mongoose.Schema.Types.ObjectId, ref: "ConstructionPlan", required: true },
         requirements: { type: String, required: true }, // End-user customization details
         attachments: [{ type: String }], // Optional reference docs or sketches
         
-        assignedArchitect: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Admin assigns this
+        assignedArchitect: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true }, // Admin assigns this
         
         status: {
             type: String,
             enum: ["Pending", "In Review", "Assigned", "Design Proofing", "Execution Requested", "Approved", "Completed"],
             default: "Pending",
+            index: true,
         },
         
         estimatedCost: { type: Number }, // Architect or Admin provides this after review
@@ -21,6 +22,7 @@ const customPlanRequestSchema = new mongoose.Schema(
 
         isVerifiedByStinchar: { type: Boolean, default: false }, // Final "Assure" check
         completedAt: { type: Date },
+        isArchived: { type: Boolean, default: false, index: true } // Soft delete
     },
     { timestamps: true }
 );

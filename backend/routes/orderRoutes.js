@@ -6,16 +6,31 @@ const { protect, authorize } = require("../middlewares/authMiddleware");
 // ------------------ CUSTOMER ROUTES ------------------
 
 // Create a new order
-router.post("/", protect, authorize("customer"), orderController.createOrder);
+router.post("/", protect, authorize("customer", "architect", "architectPartner"), orderController.createOrder);
 
 // Verify payment signature
-router.post("/verify-payment", protect, authorize("customer"), orderController.verifyPayment);
+router.post("/verify-payment", protect, authorize("customer", "architect", "architectPartner"), orderController.verifyPayment);
 
 // Get logged-in customer's orders
-router.get("/myorders", protect, authorize("customer"), orderController.getMyOrders);
+router.get("/myorders", protect, authorize("customer", "architect", "architectPartner"), orderController.getMyOrders);
 
 // Cancel order (customer)
-router.put("/cancel/:id", protect, authorize("customer"), orderController.cancelOrder);
+router.put("/cancel/:id", protect, authorize("customer", "architect", "architectPartner"), orderController.cancelOrder);
+
+// ------------------ RETURN MANAGEMENT ROUTES ------------------
+
+// Request a return (customer/architect)
+router.post("/return/request", protect, authorize("customer", "architect", "architectPartner"), orderController.requestReturn);
+
+// Process a return (approve/reject) (seller/admin)
+router.put("/return/process", protect, authorize("seller", "admin"), orderController.processReturn);
+
+// Delivery pickup for return
+router.put("/return/pickup", protect, authorize("delivery", "admin"), orderController.completeReturnPickup);
+
+// Complete return and refund
+router.put("/return/complete", protect, authorize("seller", "admin"), orderController.completeReturn);
+
 
 // ------------------ SELLER ROUTES ------------------
 

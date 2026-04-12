@@ -72,7 +72,7 @@ const UserManagement = () => {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await API.get("/users");
+      const res = await API.get("/users/all");
       setUsers(res.data.users || res.data || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }

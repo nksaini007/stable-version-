@@ -8,6 +8,9 @@ import logo from "../../../../logo.png";
 const menuItems = [
     { name: "Dashboard", path: "/architect", icon: <FaHome /> },
     { name: "My Catalog", path: "/architect/work", icon: <FaPalette /> },
+    { name: "Shop Components", path: "/categories", icon: <FaCubes /> },
+    { name: "My Orders", path: "/architect/orders", icon: <FaChartLine /> },
+    { name: "Quotations", path: "/architect/quotations", icon: <FaFileAlt /> },
     { name: "Custom Requests", path: "/architect/custom-requests", icon: <FaFileAlt /> },
     { name: "Labor", path: "/architect/labor", icon: <FaUsers /> },
     { name: "Workforce", path: "/architect/workforce", icon: <FaHardHat /> },

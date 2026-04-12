@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const CustomPlanRequest = require("../models/CustomPlanRequest");
 const ConstructionPlan = require("../models/ConstructionPlan");
 
@@ -7,6 +8,14 @@ const ConstructionPlan = require("../models/ConstructionPlan");
 const submitCustomRequest = async (req, res) => {
     try {
         const { basePlanId, requirements } = req.body;
+
+        if (!basePlanId || !requirements) {
+            return res.status(400).json({ success: false, message: "Missing required fields: basePlanId, requirements" });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(basePlanId)) {
+            return res.status(400).json({ success: false, message: "Invalid basePlanId format" });
+        }
 
         // Check if plan exists
         const plan = await ConstructionPlan.findById(basePlanId);
@@ -40,6 +49,14 @@ const submitCustomRequest = async (req, res) => {
 const assignArchitect = async (req, res) => {
     try {
         const { architectId, estimatedCost, adminNotes } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, message: "Invalid Request ID format" });
+        }
+        if (architectId && !mongoose.Types.ObjectId.isValid(architectId)) {
+            return res.status(400).json({ success: false, message: "Invalid Architect ID format" });
+        }
+
         const request = await CustomPlanRequest.findByIdAndUpdate(
             req.params.id,
             { 
@@ -67,15 +84,19 @@ const assignArchitect = async (req, res) => {
 const requestCompletion = async (req, res) => {
     try {
         const { architectNotes } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, message: "Invalid Request ID format" });
+        }
+
         const request = await CustomPlanRequest.findById(req.params.id);
 
         if (!request) {
             return res.status(404).json({ success: false, message: "Request not found" });
         }
 
-        // Verify if the architect is the one assigned
-        if (request.assignedArchitect.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ success: false, message: "Not authorized to update this request" });
+        // Verify if the architect is the one assigned. CRITICAL FIX: Ensure architect is assigned.
+        if (!request.assignedArchitect || request.assignedArchitect.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: "Not authorized to update this request. Assignment constraint failed." });
         }
 
         request.status = "Execution Requested";
@@ -93,6 +114,10 @@ const requestCompletion = async (req, res) => {
 // @access  Private/Admin
 const verifyCompletion = async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, message: "Invalid Request ID format" });
+        }
+
         const request = await CustomPlanRequest.findById(req.params.id);
 
         if (!request) {
@@ -115,7 +140,7 @@ const verifyCompletion = async (req, res) => {
 // @access  Private/Customer
 const getMyRequests = async (req, res) => {
     try {
-        const requests = await CustomPlanRequest.find({ customer: req.user._id })
+        const requests = await CustomPlanRequest.find({ customer: req.user._id, isArchived: false })
             .populate("basePlan", "title images")
             .populate("assignedArchitect", "name")
             .sort({ createdAt: -1 });
@@ -131,7 +156,7 @@ const getMyRequests = async (req, res) => {
 // @access  Private/Architect
 const getArchitectAssignments = async (req, res) => {
     try {
-        const requests = await CustomPlanRequest.find({ assignedArchitect: req.user._id })
+        const requests = await CustomPlanRequest.find({ assignedArchitect: req.user._id, isArchived: false })
             .populate("basePlan", "title images")
             .populate("customer", "name email phone")
             .sort({ createdAt: -1 });

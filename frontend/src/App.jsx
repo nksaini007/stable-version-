@@ -70,6 +70,8 @@ import ArchitectActiveProjectDetails from "./assets/components/dashboard/userdes
 import ArchitectWorkforce from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectWorkforce"; // ✅ Add Architect Workforce
 import ArchitectOffice from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectOffice";
 import ArchitectCustomRequests from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectCustomRequests";
+import ArchitectOrders from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectOrders";
+import ArchitectQuotations from "./assets/components/dashboard/userdeshboards/architect/pages/ArchitectQuotations";
 import ArchitectPartnerLayout from "./assets/components/dashboard/userdeshboards/architectPartner/ArchitectPartnerLayout";
 import PartnerDashboard from "./assets/components/dashboard/userdeshboards/architectPartner/PartnerDashboard";
 import CustomerLayout from "./assets/components/dashboard/userdeshboards/customer/CustomerLayout";
@@ -189,6 +191,8 @@ function App() {
             <Route path="support" element={<ArchitectSupport />} />
             <Route path="office" element={<ArchitectOffice />} />
             <Route path="custom-requests" element={<ArchitectCustomRequests />} />
+            <Route path="orders" element={<ArchitectOrders />} />
+            <Route path="quotations" element={<ArchitectQuotations />} />
           </Route>
 
           {/* =======================

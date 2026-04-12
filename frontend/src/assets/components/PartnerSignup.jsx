@@ -25,6 +25,7 @@ function PartnerSignup() {
     const [success, setSuccess] = useState(false);
 
     // Email OTP State
+    const [otpToken, setOtpToken] = useState(null);
     const [isEmailVerified, setIsEmailVerified] = useState(false);
     const [otpLoading, setOtpLoading] = useState(false);
     const [showOtp, setShowOtp] = useState(false);
@@ -64,7 +65,8 @@ function PartnerSignup() {
         const code = otp.join(""); if (code.length !== 6) { setOtpError("Enter all 6 digits"); return; }
         setOtpVerifying(true); setOtpError("");
         try {
-            await API.post("/users/verify-otp", { otp: code, type: "email", email: form.email });
+            const res = await API.post("/users/verify-otp", { otp: code, type: "email", email: form.email });
+            setOtpToken(res.data.otpToken);
             setOtpSuccess(true); setIsEmailVerified(true);
             setTimeout(() => { setShowOtp(false); setOtpSuccess(false); }, 1200);
         } catch (err) { setOtpError(err.response?.data?.message || "Invalid or expired OTP"); }
@@ -101,6 +103,7 @@ function PartnerSignup() {
         fd.append("phone", form.phone); fd.append("address", form.address); fd.append("pincode", form.pincode);
         fd.append("role", role); fd.append("aadhaarNumber", aadhaarNumber);
         if (profileImage) fd.append("profileImage", profileImage);
+        if (otpToken) fd.append("otpToken", otpToken);
 
         if (role === "seller") {
             Object.entries(sellerDetails).forEach(([k, v]) => { if (v) fd.append(k, v); });
@@ -111,7 +114,16 @@ function PartnerSignup() {
             Object.entries(providerDetails).forEach(([k, v]) => { if (v) fd.append(k, v); });
             verificationDocs.forEach(file => fd.append("verificationDocs", file));
         } else if (role === "architect") {
-            Object.entries(architectDetails).forEach(([k, v]) => { if (v) fd.append(k, k === "skills" ? v.split(",").map(s => s.trim()) : v); });
+            Object.entries(architectDetails).forEach(([k, v]) => { 
+                if (v) {
+                    if (k === "skills") {
+                        const skillsArray = v.split(",").map(s => s.trim()).filter(s => s);
+                        fd.append(k, JSON.stringify(skillsArray));
+                    } else {
+                        fd.append(k, v);
+                    }
+                }
+            });
         }
 
         try {

@@ -593,6 +593,192 @@ const updateDeliveryStatus = async (req, res) => {
   }
 };
 
+// ------------------ RETURN MANAGEMENT ------------------
+
+// @desc    Customer/Architect initiates a Return for an Item
+// @route   POST /api/orders/return/request
+// @access  Private (Customer/Architect)
+const requestReturn = async (req, res) => {
+  try {
+    const { orderId, productId, reason, customerNote } = req.body;
+    
+    if (!orderId || !productId || !reason) {
+      return res.status(400).json({ message: "Missing required return details" });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    // Ensure authorization
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to return this item" });
+    }
+
+    // Find Item
+    const item = order.orderItems.find(i => i.product.toString() === productId.toString());
+    if (!item) return res.status(404).json({ message: "Item not found in order" });
+
+    // Validate Status - can only return Delivered items
+    if (item.itemStatus !== "Delivered") {
+      return res.status(400).json({ message: "Only delivered items can be returned" });
+    }
+
+    // Update Status
+    item.itemStatus = "Return Requested";
+    item.returnDetails = {
+      isReturnRequested: true,
+      reason,
+      customerNote,
+      requestedAt: Date.now(),
+      status: "Requested",
+    };
+
+    order.tracking.push({
+      status: "Return Requested",
+      date: Date.now(),
+      note: `Return initiated for ${item.name}: ${reason}`,
+    });
+
+    order.notes.push({
+      message: `User requested return for ${item.name}`,
+      addedBy: "User",
+    });
+
+    await order.save();
+    res.json({ message: "Return requested successfully", order });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Seller/Admin approves or rejects a return
+// @route   PUT /api/orders/return/process
+// @access  Private (Seller/Admin)
+const processReturn = async (req, res) => {
+  try {
+    const { orderId, productId, status, sellerNote } = req.body; // status: "Approved" or "Rejected"
+    
+    if (!["Approved", "Rejected"].includes(status)) {
+      return res.status(400).json({ message: "Status must be Approved or Rejected" });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    const item = order.orderItems.find(i => i.product.toString() === productId.toString());
+    if (!item) return res.status(404).json({ message: "Item not found in order" });
+
+    // If Seller, must own the item. Admin can process any.
+    if (req.user.role === "seller" && item.seller._id.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: "Unauthorized: You don't own this item" });
+    }
+
+    item.itemStatus = status === "Approved" ? "Return Approved" : "Return Rejected";
+    item.returnDetails.status = status;
+    item.returnDetails.approvedAt = Date.now();
+    
+    if (sellerNote) {
+       item.returnDetails.sellerNote = sellerNote;
+    }
+
+    order.tracking.push({
+      status: "Return Requested", // Custom enum fallback or use standard tracking
+      date: Date.now(),
+      note: `Return request ${status.toLowerCase()} by ${req.user.role}`,
+    });
+
+    await order.save();
+    res.json({ message: `Return ${status}`, order });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Delivery assigns/picks up return (unified method)
+// @route   PUT /api/orders/return/pickup
+// @access  Private (Delivery/Admin)
+const completeReturnPickup = async (req, res) => {
+   try {
+    const { orderId, productId } = req.body;
+    
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    const item = order.orderItems.find(i => i.product.toString() === productId.toString());
+    if (!item) return res.status(404).json({ message: "Item not found in order" });
+
+    item.itemStatus = "Return Picked Up";
+    item.returnDetails.status = "Picked Up";
+    item.returnDetails.pickedUpAt = Date.now();
+
+    order.tracking.push({
+      status: "Return Picked Up",
+      date: Date.now(),
+      note: `Return item ${item.name} has been picked up`,
+    });
+
+    await order.save();
+    res.json({ message: "Return picked up successfully", order });
+   } catch(error) {
+    res.status(500).json({ message: error.message });
+   }
+};
+
+// @desc    Seller/Admin confirms return is complete and initiates refund via DB flag
+// @route   PUT /api/orders/return/complete
+// @access  Private (Seller/Admin)
+const completeReturn = async (req, res) => {
+   try {
+    const { orderId, productId, refundAmount } = req.body;
+    
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    const item = order.orderItems.find(i => i.product.toString() === productId.toString());
+    if (!item) return res.status(404).json({ message: "Item not found in order" });
+
+    // Authorization
+    if (req.user.role === "seller" && item.seller._id.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    item.itemStatus = "Refunded";
+    item.returnDetails.status = "Completed";
+    item.returnDetails.resolvedAt = Date.now();
+    item.returnDetails.refundAmount = refundAmount || item.price;
+
+    order.tracking.push({
+      status: "Refund Processed",
+      date: Date.now(),
+      note: `Refund processed for ${item.name}`,
+    });
+
+    await order.save();
+
+    // RESTOCK Logic
+    try {
+        const product = await Product.findById(item.product);
+        if (product) {
+          product.stock += item.qty;
+          if (item.variantId && product.variants) {
+            const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
+            if (variant) {
+              variant.stock += item.qty;
+            }
+          }
+          await product.save();
+        }
+    } catch (restockErr) {
+        console.error("Restock Error:", restockErr);
+    }
+
+    res.json({ message: "Return completed and refunded", order });
+   } catch(error) {
+     res.status(500).json({ message: error.message });
+   }
+};
+
 module.exports = {
   createOrder,
   getMyOrders,
@@ -612,5 +798,9 @@ module.exports = {
   getDeliveryPersons,
   cancelOrder,
   verifyPayment,
+  requestReturn,
+  processReturn,
+  completeReturnPickup,
+  completeReturn,
 };
 

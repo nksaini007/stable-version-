@@ -47,19 +47,28 @@ const createUser = async (req, res) => {
       storeDescription, supportPhone, supportEmail, businessType, socialLinks,
       vehicleType, licenseNumber, rcBookNumber, deliveryAreaPincode,
       serviceCategory, serviceDescription, experience,
-      adminAccessCode, bio, coaRegistration
+      adminAccessCode, bio, coaRegistration, otpToken
     } = req.body;
     const email = req.body.email?.toLowerCase();
 
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "Email already registered" });
 
-    // Check OTP verification status from Otp model (email only — phone OTP coming with MSG91 later)
-    const emailOTP = await Otp.findOne({ email, type: "email", isVerified: true });
-
-    if (!emailOTP) {
-        return res.status(403).json({ message: "Please verify your email via OTP before signing up." });
+    if (!otpToken) {
+        return res.status(403).json({ message: "Security Validation Failed: Missing OTP verification token." });
     }
+
+    try {
+        const decodedOtp = jwt.verify(otpToken, process.env.JWT_SECRET);
+        if (!decodedOtp.otpVerified || decodedOtp.email !== email || decodedOtp.type !== "email") {
+            return res.status(403).json({ message: "Security Validation Failed: OTP Data Mismatch. Token tampered or invalid." });
+        }
+    } catch (err) {
+        return res.status(401).json({ message: "Security Validation Failed: OTP Token expired or invalid. Please verify email again." });
+    }
+    
+    // Cleanup OTP document post-validation
+    await Otp.deleteOne({ email, type: "email" });
 
     const allowedRoles = ["customer", "seller", "delivery", "admin", "provider", "architect"];
     if (role && !allowedRoles.includes(role))
@@ -689,7 +698,14 @@ const verifyOTP = async (req, res) => {
         otpDoc.isVerified = true;
         await otpDoc.save();
 
-        res.json({ message: "Verification successful", isVerified: true });
+        // 🛡️ ENTERPRISE FIX: Generate stateless OTP JWT for anti-tamper security
+        const otpToken = jwt.sign(
+            { email: otpDoc.email, type: otpDoc.type, phone: otpDoc.phone, otpVerified: true },
+            process.env.JWT_SECRET,
+            { expiresIn: "30m" }
+        );
+
+        res.json({ message: "Verification successful", isVerified: true, otpToken });
     } catch (err) {
         console.error("verifyOTP Error:", err);
         res.status(500).json({ error: err.message });
@@ -702,12 +718,18 @@ const verifyOTP = async (req, res) => {
  */
 const resetPassword = async (req, res) => {
   try {
-    const { newPassword } = req.body;
+    const { newPassword, otpToken } = req.body;
     const email = req.body.email?.toLowerCase();
-    if (!email || !newPassword) return res.status(400).json({ message: "Email and new password required" });
+    if (!email || !newPassword || !otpToken) return res.status(400).json({ message: "Email, new password, and verification token required" });
     
-    const otpDoc = await Otp.findOne({ email, type: "email", isVerified: true });
-    if (!otpDoc) return res.status(403).json({ message: "Please verify OTP successfully before resetting password" });
+    try {
+        const decodedOtp = jwt.verify(otpToken, process.env.JWT_SECRET);
+        if (!decodedOtp.otpVerified || decodedOtp.email !== email || decodedOtp.type !== "email") {
+            return res.status(403).json({ message: "Security Validation Failed: OTP Data Mismatch. Token tampered or invalid." });
+        }
+    } catch (err) {
+        return res.status(401).json({ message: "Security Validation Failed: OTP Token expired or invalid. Please verify email again." });
+    }
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });

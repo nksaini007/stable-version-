@@ -48,11 +48,42 @@ const orderSchema = new mongoose.Schema(
             "Shipped",
             "Delivered",
             "Cancelled",
+            "Return Requested",
+            "Return Approved",
+            "Return Picked Up",
+            "Return Rejected",
             "Returned",
             "Refunded",
           ],
           default: "Pending",
         },
+
+        // 🔄 RETURN DETAILS
+        returnDetails: {
+          isReturnRequested: { type: Boolean, default: false },
+          reason: { type: String, default: "" },
+          customerNote: { type: String },
+          sellerNote: { type: String },
+          adminNote: { type: String },
+          requestedAt: { type: Date },
+          approvedAt: { type: Date },
+          pickedUpAt: { type: Date },
+          resolvedAt: { type: Date },
+          status: {
+            type: String,
+            enum: [
+              "",
+              "Requested",
+              "Approved",
+              "Rejected",
+              "Picked Up",
+              "Completed"
+            ],
+            default: "",
+          },
+          refundAmount: { type: Number, default: 0 }
+        },
+
 
       },
     ],
@@ -127,6 +158,9 @@ const orderSchema = new mongoose.Schema(
             "Out for Delivery",
             "Delivered",
             "Cancelled",
+            "Return Requested",
+            "Return Picked Up",
+            "Refund Processed",
           ],
           required: true,
         },

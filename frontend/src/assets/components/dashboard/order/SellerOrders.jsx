@@ -79,6 +79,27 @@ const SellerOrders = () => {
     }
   };
 
+  /* ---------------- PROCESS RETURN ---------------- */
+  const handleProcessReturn = async (orderId, productId, status, sellerNote = "") => {
+    try {
+      setUpdating(true);
+      const token = localStorage.getItem("token");
+
+      await API.put(
+        `/orders/return/process`,
+        { orderId, productId, status, sellerNote },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success(`Return ${status}`);
+      fetchSellerOrders();
+    } catch(err) {
+      toast.error(err.response?.data?.message || "Failed to process return");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   /* ---------------- SELLER TOTAL ---------------- */
   const getSellerOrderTotal = (order) => {
     return order.orderItems
@@ -205,12 +226,40 @@ const SellerOrders = () => {
                                 Qty {item.qty} × ₹{item.price}
                               </p>
 
+                              {item.returnDetails?.isReturnRequested && (
+                                <div className="mt-2 p-2 bg-orange-50 border border-orange-100 rounded-lg">
+                                  <p className="text-xs font-bold text-orange-600">Return Reason: {item.returnDetails.reason}</p>
+                                  {item.returnDetails.customerNote && <p className="text-[10px] text-gray-500 italic">"{item.returnDetails.customerNote}"</p>}
+                                  {item.itemStatus === "Return Requested" && (
+                                    <div className="flex gap-2 mt-2">
+                                      <button 
+                                        disabled={updating}
+                                        onClick={() => handleProcessReturn(order._id, item.product, 'Approved')}
+                                        className="text-[10px] px-3 py-1 bg-green-600 text-white rounded font-bold uppercase disabled:opacity-50"
+                                      >
+                                        Approve
+                                      </button>
+                                      <button 
+                                        disabled={updating}
+                                        onClick={() => handleProcessReturn(order._id, item.product, 'Rejected')}
+                                        className="text-[10px] px-3 py-1 bg-red-600 text-white rounded font-bold uppercase disabled:opacity-50"
+                                      >
+                                        Reject
+                                      </button>
+                                    </div>
+                                  )}
+                                  {item.itemStatus !== "Return Requested" && (
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase mt-1">Return Status: {item.returnDetails.status}</p>
+                                  )}
+                                </div>
+                              )}
+
                               <StatusBar status={item.itemStatus || "Pending"} />
                             </div>
 
                             <select
                               value={item.itemStatus || "Pending"}
-                              disabled={updating}
+                              disabled={updating || item.returnDetails?.isReturnRequested}
                               onChange={(e) =>
                                 handleItemStatusUpdate(
                                   order._id,
@@ -218,13 +267,22 @@ const SellerOrders = () => {
                                   e.target.value
                                 )
                               }
-                              className="border rounded px-2 py-1 text-sm"
+                              className="border rounded px-2 py-1 text-sm bg-white"
                             >
                               <option value="Pending">Pending</option>
                               <option value="Processing">Processing</option>
                               <option value="Shipped">Shipped</option>
                               <option value="Delivered">Delivered</option>
                               <option value="Cancelled">Cancelled</option>
+                              {item.returnDetails?.isReturnRequested && (
+                                 <>
+                                  <option value="Return Requested">Return Requested</option>
+                                  <option value="Return Approved">Return Approved</option>
+                                  <option value="Return Rejected">Return Rejected</option>
+                                  <option value="Return Picked Up">Return Picked Up</option>
+                                  <option value="Refunded">Refunded</option>
+                                 </>
+                              )}
                             </select>
                           </div>
                         </div>

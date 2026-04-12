@@ -12,8 +12,10 @@ import {
   FaChevronDown,
   FaMapMarkerAlt,
   FaCalendarAlt,
-  FaExclamationCircle
+  FaExclamationCircle,
+  FaUndoAlt
 } from "react-icons/fa";
+import ReturnRequestModal from "../order/ReturnRequestModal";
 
 const STATUS_CONFIG = {
   pending: { label: "Pending", color: "text-amber-600", bg: "bg-amber-50", icon: <FaClock /> },
@@ -24,7 +26,7 @@ const STATUS_CONFIG = {
   cancelled: { label: "Cancelled", color: "text-red-600", bg: "bg-red-50", icon: <FaTimesCircle /> },
 };
 
-const OrderRow = ({ order, isExpanded, onToggle, onCancel }) => {
+const OrderRow = ({ order, isExpanded, onToggle, onCancel, onRequestReturn }) => {
   const status = (order.orderStatus || "pending").toLowerCase();
   const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   const date = new Date(order.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' });
@@ -125,18 +127,38 @@ const OrderRow = ({ order, isExpanded, onToggle, onCancel }) => {
                   <div>
                     <h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Ordered Items</h5>
                     <div className="space-y-2">
-                       {order.orderItems?.map((item, i) => (
-                         <div key={i} className="bg-white p-3 rounded-xl border border-gray-50 flex items-center gap-4">
+                       {order.orderItems?.map((item, i) => {
+                         const itemStatus = (item.itemStatus || "pending").toLowerCase();
+                         const canReturn = itemStatus === "delivered";
+                         return (
+                         <div key={i} className="bg-white p-3 rounded-xl border border-gray-50 flex items-center gap-4 group">
                             <div className="w-10 h-10 bg-gray-50 rounded-lg overflow-hidden shrink-0">
                                {item.image && <img src={item.image} className="w-full h-full object-cover" />}
                             </div>
-                            <div className="flex-1 text-xs font-bold text-gray-800 truncate">{item.name}</div>
+                            <div className="flex-1 min-w-0">
+                               <div className="text-xs font-bold text-gray-800 truncate">{item.name}</div>
+                               {item.returnDetails?.isReturnRequested && (
+                                   <div className="text-[9px] text-orange-500 font-bold uppercase tracking-widest mt-1">
+                                      Return {item.returnDetails.status}
+                                   </div>
+                               )}
+                            </div>
                             <div className="text-right shrink-0">
                                <p className="text-[10px] text-gray-400 font-bold">{item.qty} × ₹{item.price}</p>
                                <p className="text-sm font-bold text-gray-900 leading-none">₹{(item.qty * item.price).toLocaleString()}</p>
                             </div>
+
+                            {canReturn && (
+                               <button 
+                                 onClick={(e) => { e.stopPropagation(); onRequestReturn(order, item); }}
+                                 className="ml-2 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-orange-500 hover:bg-orange-50 transition-colors opacity-0 group-hover:opacity-100"
+                                 title="Request Return"
+                               >
+                                 <FaUndoAlt size={12} />
+                               </button>
+                            )}
                          </div>
-                       ))}
+                       )})}
                     </div>
                   </div>
                </div>
@@ -170,6 +192,11 @@ const CustomerOrders = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [expandedId, setExpandedId] = useState(null);
 
+  // Return Modal State
+  const [returnModalOpen, setReturnModalOpen] = useState(false);
+  const [selectedOrderForReturn, setSelectedOrderForReturn] = useState(null);
+  const [selectedItemForReturn, setSelectedItemForReturn] = useState(null);
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -192,6 +219,16 @@ const CustomerOrders = () => {
     } catch (err) {
        alert("Could not cancel order.");
     }
+  };
+
+  const handleRequestReturn = (order, item) => {
+     setSelectedOrderForReturn(order);
+     setSelectedItemForReturn(item);
+     setReturnModalOpen(true);
+  };
+
+  const handleReturnSuccess = (updatedOrder) => {
+      setOrders(prev => prev.map(o => o._id === updatedOrder._id ? updatedOrder : o));
   };
 
   const filteredOrders = useMemo(() => {
@@ -257,6 +294,7 @@ const CustomerOrders = () => {
               isExpanded={expandedId === order._id}
               onToggle={() => setExpandedId(expandedId === order._id ? null : order._id)}
               onCancel={handleCancel}
+              onRequestReturn={handleRequestReturn}
             />
           ))
         )}
@@ -268,6 +306,14 @@ const CustomerOrders = () => {
             <div className="text-xs font-black text-gray-400 uppercase tracking-widest">End of History</div>
          </div>
       )}
+
+      <ReturnRequestModal 
+        isOpen={returnModalOpen}
+        onClose={() => { setReturnModalOpen(false); setSelectedOrderForReturn(null); setSelectedItemForReturn(null); }}
+        order={selectedOrderForReturn}
+        item={selectedItemForReturn}
+        onSuccess={handleReturnSuccess}
+      />
     </div>
   );
 };

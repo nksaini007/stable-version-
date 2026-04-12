@@ -18,7 +18,7 @@ router.put('/task/:taskId', controller.updateTaskStatus);
 // --- ATTENDANCE ---
 router.post('/attendance/checkin', controller.checkIn);
 router.post('/attendance/checkout', controller.checkOut);
-router.get('/attendance', controller.getAttendance); // Shared endpoint returning either logs for architect or partnet
+router.get('/attendance', controller.getAttendance); // Shared endpoint returning either logs for architect or partner
 
 // --- PAYMENTS ---
 router.post('/payment', controller.recordPayment);

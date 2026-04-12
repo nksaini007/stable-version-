@@ -15,6 +15,7 @@ function Signup() {
   const [success, setSuccess] = useState(false);
 
   // OTP State
+  const [otpToken, setOtpToken] = useState(null);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
@@ -77,7 +78,8 @@ function Signup() {
     if (code.length !== 6) { setOtpError("Enter all 6 digits"); return; }
     setOtpVerifying(true); setOtpError("");
     try {
-      await API.post("/users/verify-otp", { otp: code, type: "email", email: form.email });
+      const res = await API.post("/users/verify-otp", { otp: code, type: "email", email: form.email });
+      setOtpToken(res.data.otpToken);
       setOtpSuccess(true);
       setIsEmailVerified(true);
       setTimeout(() => { setShowOtp(false); setOtpSuccess(false); }, 1200);
@@ -114,6 +116,7 @@ function Signup() {
       if (form.address) fd.append("address", form.address);
       if (form.pincode) fd.append("pincode", form.pincode);
       if (profileImage) fd.append("profileImage", profileImage);
+      if (otpToken) fd.append("otpToken", otpToken);
       await API.post("/users/signup", fd, { headers: { "Content-Type": "multipart/form-data" } });
       setSuccess(true);
       setTimeout(() => navigate("/login"), 2000);
