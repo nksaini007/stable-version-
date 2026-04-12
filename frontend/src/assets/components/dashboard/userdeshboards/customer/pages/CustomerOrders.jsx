@@ -15,7 +15,7 @@ import {
   FaExclamationCircle,
   FaUndoAlt
 } from "react-icons/fa";
-import ReturnRequestModal from "../order/ReturnRequestModal";
+import ReturnRequestModal from "../../../order/ReturnRequestModal";
 
 const STATUS_CONFIG = {
   pending: { label: "Pending", color: "text-amber-600", bg: "bg-amber-50", icon: <FaClock /> },
