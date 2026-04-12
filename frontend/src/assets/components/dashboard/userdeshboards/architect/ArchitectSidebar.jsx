@@ -33,11 +33,11 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
     return (
         <aside
             className={`${collapsed ? "w-[80px]" : "w-72"
-                } min-h-screen bg-[#0C0C0C] flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white-[0.03] relative z-50`}
+                } min-h-screen bg-[#0a0a0b] flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white-[0.03] relative z-50`}
         >
             <button
                 onClick={() => setCollapsed(!collapsed)}
-                className="absolute -right-3 top-10 w-6 h-6 bg-[#1A1A1C] border border-white/5 rounded-full flex items-center justify-center text-gray-500 hover:text-white transition-all z-50 shadow-2xl"
+                className="absolute -right-3 top-10 w-6 h-6 bg-[#080808] border border-white/5 rounded-full flex items-center justify-center text-gray-500 hover:text-[#ff5c00] transition-all z-50 shadow-2xl"
             >
                 <FaChevronLeft
                     className={`text-[9px] transition-transform duration-500 ${collapsed ? "rotate-180" : ""
@@ -55,8 +55,8 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
                             <div className="absolute inset-0 rounded-2xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         </div>
                         <div className="overflow-hidden">
-                            <h2 className="text-[14px] font-bold text-white tracking-[0.1em] uppercase whitespace-nowrap">Architect</h2>
-                            <p className="text-[9px] text-gray-500 font-medium uppercase tracking-[0.2em] mt-0.5">Stinchar Studio</p>
+                            <h2 className="text-[14px] font-black text-white tracking-[0.2em] uppercase whitespace-nowrap">Studio</h2>
+                            <p className="mono-label !text-[8px] !text-[#ff5c00] mt-0.5">Architect Module</p>
                         </div>
                     </div>
                 )}
@@ -72,7 +72,7 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
                         className={({ isActive }) =>
                             `group flex items-center ${collapsed ? "justify-center" : ""
                             } gap-4 px-4 py-3.5 rounded-2xl text-[13px] font-medium transition-all duration-500 ${isActive
-                                ? "bg-[#1A1A1C] text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] border border-white/[0.05]"
+                                ? "bg-[#1A1A1C] text-[#ff5c00] shadow-[0_4px_20px_rgba(255,92,0,0.05)] border border-[#ff5c00]/20"
                                 : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.02]"
                             }`
                         }
@@ -111,8 +111,8 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
                             <span>{user.name?.charAt(0)}</span>
                         </div>
                         <div className="overflow-hidden">
-                            <p className="text-[12px] font-semibold text-white truncate lowercase ">{user.name}</p>
-                            <p className="text-[9px] text-gray-600 truncate uppercase tracking-tighter">{user.email}</p>
+                            <p className="text-[12px] font-black text-white truncate lowercase ">{user.name}</p>
+                            <p className="mono-label !text-[8px] truncate">{user.email}</p>
                         </div>
                     </div>
                 )}

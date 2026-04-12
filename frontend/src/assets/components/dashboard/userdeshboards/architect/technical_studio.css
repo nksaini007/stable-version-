@@ -1,0 +1,76 @@
+/* Technical Studio Aesthetic for Architect Portal */
+.architect-studio-root {
+    --studio-bg: #080808;
+    --studio-card: #0c0c0e;
+    --studio-border: rgba(255, 255, 255, 0.03);
+    --studio-accent: #ff5c00;
+    --studio-text-gray: #6b7280;
+    --studio-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    background-color: var(--studio-bg);
+    color: white;
+}
+
+.architect-grid-bg {
+    background-image: 
+        linear-gradient(var(--studio-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--studio-border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+}
+
+.technical-search-input {
+    background: transparent;
+    border: 1px solid var(--studio-border);
+    border-radius: 8px;
+    padding: 8px 16px 8px 36px;
+    font-family: var(--studio-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.technical-search-input:focus {
+    border-color: var(--studio-accent);
+    box-shadow: 0 0 15px rgba(255, 92, 0, 0.1);
+    outline: none;
+    width: 250px;
+}
+
+.studio-header {
+    background: rgba(12, 12, 14, 0.7);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--studio-border);
+    z-index: 40;
+}
+
+.mono-label {
+    font-family: var(--studio-mono);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--studio-text-gray);
+}
+
+.mono-value {
+    font-family: var(--studio-mono);
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+}
+
+/* Custom Scrollbar for Architect Technical Look */
+.architect-studio-root ::-webkit-scrollbar {
+    width: 4px;
+}
+.architect-studio-root ::-webkit-scrollbar-track {
+    background: transparent;
+}
+.architect-studio-root ::-webkit-scrollbar-thumb {
+    background: var(--studio-border);
+    border-radius: 10px;
+}
+.architect-studio-root ::-webkit-scrollbar-thumb:hover {
+    background: var(--studio-accent);
+}
