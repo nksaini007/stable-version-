@@ -212,49 +212,6 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 <h1 className="text-6xl md:text-8xl font-heading text-white leading-none tracking-tighter opacity-10 group-hover/f1:opacity-40 transition-opacity duration-1000">ESTABLISHED<br />21st MARCH 2026</h1>
               </div>
 
-              {/* Central Radar HUD */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-[500px] h-[500px] border border-white/5 rounded-full opacity-10"></div>
-                <div className="absolute w-[300px] h-[300px] border border-[#ff5c00]/10 rounded-full animate-ping opacity-20"></div>
-              </div>
-
-              {/* 🛡️ NEW: COMMAND DECK SEARCH (FLOATING) */}
-              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[90%] md:w-[600px] z-50">
-                  <motion.div 
-                    initial={{ y: 50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 1.5, duration: 0.8 }}
-                    className="bg-black/40 backdrop-blur-xl border border-white/10 p-1 rounded-2xl shadow-2xl overflow-hidden hover:border-[#ff5c00]/40 transition-all group/search"
-                  >
-                    <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5">
-                        <div className="flex gap-1">
-                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
-                            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                        </div>
-                        <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.3em]">System_Master_Query_v2.0</span>
-                    </div>
-                    <div className="flex">
-                        <div className="flex-1 flex items-center bg-transparent px-4">
-                            <FaSearch className="text-[#ff5c00] text-sm group-focus-within/search:scale-110 transition-transform" />
-                            <input
-                                type="text"
-                                placeholder="Search products, architects, services..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && onSearch()}
-                                className="w-full bg-transparent border-none outline-none py-4 px-3 text-xs font-bold text-white placeholder:text-white/20 uppercase tracking-widest"
-                            />
-                        </div>
-                        <button 
-                            onClick={onSearch}
-                            className="bg-[#ff5c00] text-black px-6 font-black text-[10px] uppercase tracking-widest hover:bg-white transition-colors flex items-center gap-2"
-                        >
-                            Execute <FaArrowRight size={10} />
-                        </button>
-                    </div>
-                  </motion.div>
-              </div>
             </motion.div>
           </div>
         </div>
