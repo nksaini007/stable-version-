@@ -217,6 +217,44 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 <div className="w-[500px] h-[500px] border border-white/5 rounded-full opacity-10"></div>
                 <div className="absolute w-[300px] h-[300px] border border-[#ff5c00]/10 rounded-full animate-ping opacity-20"></div>
               </div>
+
+              {/* 🛡️ NEW: COMMAND DECK SEARCH (FLOATING) */}
+              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[90%] md:w-[600px] z-50">
+                  <motion.div 
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 1.5, duration: 0.8 }}
+                    className="bg-black/40 backdrop-blur-xl border border-white/10 p-1 rounded-2xl shadow-2xl overflow-hidden hover:border-[#ff5c00]/40 transition-all group/search"
+                  >
+                    <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5">
+                        <div className="flex gap-1">
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                        </div>
+                        <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.3em]">System_Master_Query_v2.0</span>
+                    </div>
+                    <div className="flex">
+                        <div className="flex-1 flex items-center bg-transparent px-4">
+                            <FaSearch className="text-[#ff5c00] text-sm group-focus-within/search:scale-110 transition-transform" />
+                            <input
+                                type="text"
+                                placeholder="Search products, architects, services..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && onSearch()}
+                                className="w-full bg-transparent border-none outline-none py-4 px-3 text-xs font-bold text-white placeholder:text-white/20 uppercase tracking-widest"
+                            />
+                        </div>
+                        <button 
+                            onClick={onSearch}
+                            className="bg-[#ff5c00] text-black px-6 font-black text-[10px] uppercase tracking-widest hover:bg-white transition-colors flex items-center gap-2"
+                        >
+                            Execute <FaArrowRight size={10} />
+                        </button>
+                    </div>
+                  </motion.div>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -285,50 +323,18 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           </div>
         </div>
 
-        {/* REFINED SEARCH COMMAND CENTER (Bottom Full Width) */}
-        <div id="search-initialize" className="md:col-span-12 border-t-2 border-black/10 bg-white p-12 md:p-20 flex flex-col items-center justify-center relative overflow-hidden group/search-area">
-
-          {/* Subtle Background Art for Search Area */}
-          <div className="absolute inset-0 blueprint-lines opacity-[0.05] pointer-events-none"></div>
-
-          <div className="w-full max-w-4xl mx-auto z-10">
-            <div className="flex items-center gap-4 mb-8">
-              <span className="bg-[#ff5c00] text-black px-4 py-1.5 text-[10px] font-black uppercase tracking-widest">INITIALIZE_MASTER_QUERY</span>
-              <div className="flex-1 h-[1px] bg-black/10"></div>
-            </div>
-
-            <motion.div
-              whileHover={{ y: -5 }}
-              className="relative flex border-4 border-black shadow-[15px_15px_0px_rgba(0,0,0,0.1)] focus-within:shadow-[20px_20px_0px_#ff5c00] transition-all duration-500"
-            >
-              <div className="p-6 md:p-8 bg-black text-white flex items-center justify-center">
-                <FaSearch className="text-2xl md:text-3xl" />
-              </div>
-              <input
-                type="text"
-                placeholder="FIND_MATERIALS_OR_SERVICE..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && onSearch()}
-                className="flex-1 bg-white px-6 md:px-10 text-xl md:text-3xl font-black placeholder-black/10 focus:outline-none uppercase min-w-0"
-              />
-              <button
-                onClick={onSearch}
-                className="hidden md:flex items-center gap-4 px-10 bg-black text-white hover:bg-[#ff5c00] hover:text-black transition-all font-black text-xs tracking-widest"
-              >
-                EXECUTE_SEARCH
-                <FaArrowRight size={14} />
-              </button>
-            </motion.div>
-
-            <div className="flex gap-3 md:gap-5 mt-10 flex-wrap justify-center">
+        {/* LEGACY SEARCH AREA (Streamlined for navigation) */}
+        <div id="search-initialize" className="md:col-span-12 border-t-2 border-black/10 bg-white p-12 md:p-16 flex flex-col items-center justify-center relative overflow-hidden">
+          <div className="absolute inset-0 blueprint-lines opacity-[0.03] pointer-events-none"></div>
+          <div className="w-full max-w-4xl mx-auto z-10 text-center">
+            <h3 className="text-xs font-black text-black/40 uppercase tracking-[0.4em] mb-8">System_Discovery_Nodes</h3>
+            <div className="flex gap-3 md:gap-5 flex-wrap justify-center">
               {["RAW_MATERIALS", "ARCHITECTS", "CONSTRUCTION", "LOGISTICS"].map((cat, i) => (
                 <button
                   key={i}
                   onClick={() => onCategoryClick(cat)}
-                  className="px-5 md:px-8 py-2 md:py-3 border-2 border-black font-black text-[9px] md:text-[11px] hover:bg-black hover:text-white transition-all uppercase tracking-widest flex items-center gap-3 group/cat"
+                  className="px-6 md:px-10 py-3 md:py-4 border-2 border-black font-black text-[10px] md:text-[12px] hover:bg-[#ff5c00] hover:text-black transition-all uppercase tracking-widest flex items-center gap-3 group/cat"
                 >
-                  <span className="w-1.5 h-1.5 bg-black group-hover/cat:bg-white transition-colors"></span>
                   {cat}
                 </button>
               ))}
