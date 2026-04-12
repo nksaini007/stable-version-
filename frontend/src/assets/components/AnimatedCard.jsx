@@ -149,7 +149,6 @@ const AnimatedCard = () => {
         {(hasSearched || loading || error) && (
           <div ref={resultsRef} className="flex-1 w-full bg-[#e5e5e5] text-black pb-32 border-t-8 border-black z-10 min-h-screen">
             <div className="max-w-[1600px] mx-auto w-full px-8 py-20">
-              {/* Filter Tabs */}
               <div className="flex gap-4 mb-10 overflow-x-auto pb-4">
                   {['all', 'product', 'service', 'plan'].map(f => (
                     <button key={f} onClick={() => { setActiveFilter(f); performGlobalSearch(searchQuery, f); }} className={`px-6 py-2 text-[10px] font-black tracking-widest uppercase border-2 transition-all ${activeFilter === f ? 'bg-black text-white border-black' : 'border-black/10 hover:border-black'}`}>{f}</button>
@@ -249,14 +248,14 @@ const AnimatedCard = () => {
         )}
 
         {/* 🚀 FIXED BOTTOM COMMAND BAR 🚀 */}
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-[450px]">
+        <div className="fixed bottom-28 md:bottom-12 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-[450px]">
            <motion.div 
              initial={{ y: 50, opacity: 0 }}
              animate={{ y: 0, opacity: 1 }}
-             className="bg-black text-white rounded-full h-14 flex items-center px-1 border border-white/10 shadow-[20px_20px_60px_rgba(0,0,0,0.5)]"
+             className="bg-black/90 backdrop-blur-2xl border border-white/10 rounded-full h-14 flex items-center px-1 shadow-[0_20px_50px_rgba(0,0,0,0.6)] group focus-within:border-emerald-500/50 transition-all"
            >
               <div className="pl-5 pr-2">
-                 <FaSearch className="text-[#ff5c00] text-sm" />
+                 <FaSearch className="text-emerald-500 opacity-60 group-focus-within:opacity-100 transition-opacity" />
               </div>
               <input 
                 type="text" 
@@ -264,11 +263,11 @@ const AnimatedCard = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="flex-1 bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-[0.2em] placeholder:text-white/20"
+                className="flex-1 bg-transparent border-none outline-none text-white text-[10px] font-black uppercase tracking-[0.2em] placeholder:text-white/20"
               />
               <button 
                 onClick={handleSearch}
-                className="bg-[#ff5c00] text-black h-12 w-12 rounded-full flex items-center justify-center hover:bg-white transition-colors"
+                className="bg-emerald-500 text-black h-12 w-12 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
               >
                 <FaArrowRight size={14} />
               </button>
