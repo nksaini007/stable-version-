@@ -8,6 +8,7 @@ import Nev from "./Nev";
 import { FaChevronLeft } from "react-icons/fa";
 
 const ServiceSearch = () => {
+    const { user } = useContext(AuthContext);
     const { categoryId, subCategoryId } = useParams();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,7 +29,6 @@ const ServiceSearch = () => {
     // My Bookings State
     const [myBookings, setMyBookings] = useState([]);
     const [fetchingBookings, setFetchingBookings] = useState(false);
-    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const fetchServices = async () => {

@@ -83,13 +83,12 @@ import CustomerSupportPage from "./assets/components/dashboard/userdeshboards/cu
 import MyQuotations from "./assets/components/dashboard/userdeshboards/customer/pages/MyQuotations";
 const CustomerServices = React.lazy(() => import("./assets/components/dashboard/userdeshboards/customer/pages/CustomerServices"));
 
-// Services UI
-import ServiceCategories from "./assets/components/ServiceCategories";
-import ServiceSubCategories from "./assets/components/ServiceSubCategories";
-import ServiceSearch from "./assets/components/ServiceSearch";
-
-// Architect Public Profile
 import PublicArchitectProfile from "./assets/components/PublicArchitectProfile";
+
+const ServiceCategories = React.lazy(() => import("./assets/components/ServiceCategories"));
+const ServiceSubCategories = React.lazy(() => import("./assets/components/ServiceSubCategories"));
+const ServiceSearch = React.lazy(() => import("./assets/components/ServiceSearch"));
+const ServiceDetails = React.lazy(() => import("./assets/components/ServiceDetails"));
 
 function App() {
   return (
