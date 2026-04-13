@@ -97,7 +97,7 @@ const ServiceSubCategories = () => {
                                 variants={itemVariants}
                                 className="bg-white border border-slate-100 rounded-none overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all duration-300"
                             >
-                                <Link to={`/services/search/${categoryId}/${sub._id}`} className="block group">
+                                <Link to={`/services/${categoryId}/${sub._id}`} className="block group">
                                     <div className="h-44 overflow-hidden relative">
                                         <img
                                             src={sub.image || "https://images.unsplash.com/photo-1581094794329-c8112a4e5190?w=600"}

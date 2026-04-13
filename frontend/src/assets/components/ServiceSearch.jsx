@@ -205,21 +205,24 @@ const ServiceSearch = () => {
                                 animate={{ opacity: 1 }}
                                 className="bg-white border border-slate-100 hover:border-slate-300 transition-all duration-300 group flex flex-col"
                             >
-                                <div className="h-44 bg-slate-50 relative overflow-hidden">
-                                    {svc.images?.length > 0 ? (
-                                        <img src={`${svc.images[0]}`} alt={svc.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-slate-200 uppercase font-black tracking-widest text-[10px]">No Visual</div>
-                                    )}
-                                    <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur px-3 py-1 text-[8px] font-bold text-white uppercase tracking-widest">
-                                        {svc.category}
+                                <Link to={`/service/${svc._id}`} className="block flex-1 flex flex-col">
+                                    <div className="h-44 bg-slate-50 relative overflow-hidden">
+                                        {svc.images?.length > 0 ? (
+                                            <img src={`${svc.images[0]}`} alt={svc.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-slate-200 uppercase font-black tracking-widest text-[10px]">No Visual</div>
+                                        )}
+                                        <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur px-3 py-1 text-[8px] font-bold text-white uppercase tracking-widest">
+                                            {svc.category}
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="p-5 flex-1 flex flex-col">
-                                    <h3 className="font-bold text-slate-800 text-sm mb-2 uppercase tracking-tight group-hover:text-slate-900 transition-colors line-clamp-1">{svc.title}</h3>
-                                    <p className="text-slate-400 text-xs font-medium leading-relaxed mb-6 flex-1 line-clamp-2">{svc.description}</p>
-                                           
+                                    <div className="p-5 flex-1 flex flex-col">
+                                        <h3 className="font-bold text-slate-800 text-sm mb-2 uppercase tracking-tight group-hover:text-slate-900 transition-colors line-clamp-1">{svc.title}</h3>
+                                        <p className="text-slate-400 text-xs font-medium leading-relaxed mb-6 flex-1 line-clamp-2">{svc.description}</p>
+                                    </div>
+                                </Link>
+                                <div className="px-5 pb-5 pt-0">
                                     <div className="flex items-center justify-between pt-4 border-t border-slate-50">
                                         <div className="text-sm font-bold text-slate-900">₹{svc.price}</div>
                                         <button 
