@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaUserCircle, FaShoppingCart, FaSignOutAlt, FaTachometerAlt, FaMap, FaEnvelope, FaHeadset } from "react-icons/fa";
+import { FaUserCircle, FaShoppingCart, FaSignOutAlt, FaTachometerAlt, FaMap, FaEnvelope, FaHeadset, FaShieldAlt } from "react-icons/fa";
 import img from "../img/admin.jpg";
 
 const ProfileDropdown = ({ user, logout, mobile }) => {
