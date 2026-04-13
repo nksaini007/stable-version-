@@ -60,13 +60,10 @@ const ServiceDetails = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+            <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
                 <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 relative">
-                        <div className="absolute inset-0 border-4 border-orange-100 rounded-full"></div>
-                        <div className="absolute inset-0 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                    <span className="mt-6 text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase">Synchronizing Data...</span>
+                    <div className="w-8 h-8 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
+                    <span className="mt-4 text-[10px] font-bold tracking-widest text-slate-400 uppercase">Processing...</span>
                 </div>
             </div>
         );
@@ -74,15 +71,12 @@ const ServiceDetails = () => {
 
     if (error || !service) {
         return (
-            <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-8">
-                <div className="max-w-xl bg-white rounded-[3rem] p-16 shadow-[0_30px_60px_rgba(0,0,0,0.04)] text-center">
-                    <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
-                        <span className="text-4xl">!</span>
-                    </div>
-                    <h2 className="text-3xl font-black text-slate-900 tracking-tight">SERVICE UNAVAILABLE</h2>
-                    <p className="mt-4 text-slate-400 font-light text-lg mb-10">{error || "The requested service parameters could not be retrieved."}</p>
-                    <button onClick={() => navigate(-1)} className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all shadow-xl shadow-slate-200">
-                        Return to Catalog
+            <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-8">
+                <div className="max-w-md bg-white border border-slate-100 p-12 text-center">
+                    <h2 className="text-xl font-bold text-slate-900 tracking-tight uppercase">Data Error</h2>
+                    <p className="mt-2 text-slate-400 font-medium text-xs mb-8 uppercase tracking-widest">{error || "Retrieval failed"}</p>
+                    <button onClick={() => navigate(-1)} className="px-8 py-3 bg-slate-900 text-white font-bold uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-colors">
+                        Return
                     </button>
                 </div>
             </div>
@@ -92,35 +86,35 @@ const ServiceDetails = () => {
     const mainImage = service.images?.[0] || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800";
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 relative flex flex-col pt-24 pb-20">
+        <div className="min-h-screen bg-[#FDFDFD] text-slate-900 flex flex-col pt-24 pb-20">
             <Nev />
-            <div className="flex-1 w-full max-w-7xl mx-auto px-6 py-12 flex flex-col lg:flex-row gap-16 items-start">
+            <div className="flex-1 w-full max-w-6xl mx-auto px-6 py-12 flex flex-col lg:flex-row gap-12 items-start">
                 
                 {/* Visual Data Module */}
                 <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="w-full lg:w-1/2 flex flex-col gap-8 sticky top-32"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="w-full lg:w-3/5 flex flex-col gap-6"
                 >
-                    <button onClick={() => navigate(-1)} className="self-start group flex items-center gap-3 text-[10px] font-black tracking-[0.2em] uppercase text-slate-400 hover:text-orange-600 transition-colors">
-                        <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Back to Search results
+                    <button onClick={() => navigate(-1)} className="self-start flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-slate-900 transition-colors">
+                        <FaArrowLeft size={8} /> Service Directory
                     </button>
 
-                    <div className="bg-white rounded-[3.5rem] p-4 shadow-[0_40px_100px_rgba(0,0,0,0.06)] relative overflow-hidden group">
-                        <div className="absolute top-8 right-8 bg-white/10 backdrop-blur-xl border border-white/20 text-white px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] z-10 rounded-2xl shadow-xl">
-                            ID: {service._id.slice(-6).toUpperCase()}
+                    <div className="bg-white border border-slate-100 p-2 shadow-sm relative overflow-hidden group">
+                        <div className="absolute top-6 right-6 bg-slate-900/90 backdrop-blur px-4 py-1.5 text-[9px] font-bold text-white uppercase tracking-widest z-10">
+                            REF: {service._id.slice(-6).toUpperCase()}
                         </div>
                         <img 
                             src={mainImage} 
                             alt={service.title} 
-                            className="w-full h-[500px] md:h-[650px] object-cover rounded-[2.8rem] transition-transform duration-1000 group-hover:scale-105" 
+                            className="w-full h-[450px] md:h-[550px] object-cover transition-transform duration-700 group-hover:scale-105" 
                         />
                     </div>
 
                     {service.images?.length > 1 && (
-                        <div className="grid grid-cols-4 gap-4 px-2">
+                        <div className="grid grid-cols-4 gap-4">
                             {service.images.slice(1, 5).map((img, idx) => (
-                                <div key={idx} className="rounded-2xl overflow-hidden shadow-sm group cursor-pointer aspect-square">
+                                <div key={idx} className="border border-slate-100 overflow-hidden group cursor-pointer aspect-square">
                                     <img src={img} alt={`service-${idx}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 </div>
                             ))}
@@ -130,59 +124,57 @@ const ServiceDetails = () => {
 
                 {/* Operations Module */}
                 <motion.div 
-                    initial={{ opacity: 0, x: 40 }}
+                    initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="w-full lg:w-1/2 flex flex-col"
+                    className="w-full lg:w-2/5 flex flex-col"
                 >
-                    <div className="bg-white rounded-[4rem] shadow-[0_50px_100px_rgba(0,0,0,0.04)] p-10 md:p-16 h-full flex flex-col relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/5 rounded-full blur-[80px]"></div>
-                        
-                        <div className="inline-flex items-center gap-2 mb-8 bg-orange-50 text-orange-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest w-fit">
-                            <FaShieldAlt /> {service.category}
+                    <div className="bg-white border border-slate-100 p-8 md:p-10 h-full flex flex-col">
+                        <div className="inline-flex items-center gap-2 mb-6 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                            <FaShieldAlt size={10} /> {service.category}
                         </div>
                         
-                        <h1 className="text-5xl md:text-7xl font-[900] leading-[1.1] tracking-tight text-slate-900 mb-8 uppercase">
+                        <h1 className="text-3xl font-bold leading-tight tracking-tight text-slate-900 mb-6 uppercase">
                             {service.title}
                         </h1>
 
-                        <div className="text-slate-500 text-lg font-light leading-relaxed mb-10 italic border-l-2 border-orange-200 pl-8">
-                            "{service.description}"
-                        </div>
+                        <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8 border-l-2 border-slate-100 pl-6 italic">
+                            {service.description}
+                        </p>
 
-                        <div className="mb-12">
-                            <div className="text-sm font-black text-slate-300 uppercase tracking-[0.3em] mb-2">Estimated Investment</div>
-                            <div className="text-5xl md:text-6xl font-[900] text-slate-900">
+                        <div className="mb-10">
+                            <div className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mb-1">Fee parameters</div>
+                            <div className="text-4xl font-bold text-slate-900">
                                 ₹{service.price.toLocaleString()}
                             </div>
                         </div>
 
                         {/* Booking Form Interface */}
-                        <form onSubmit={handleBooking} className="flex flex-col gap-10 mt-auto pt-10 border-t border-slate-50">
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-900">Configure Appointment</h3>
-                                <p className="text-slate-400 text-sm font-light">Select your preferred window for service execution.</p>
+                        <form onSubmit={handleBooking} className="flex flex-col gap-8 mt-auto pt-8 border-t border-slate-50">
+                            <div className="space-y-1">
+                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Appointment Request</h3>
+                                <p className="text-slate-400 text-[11px] font-medium">Select target window for personnel deployment.</p>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-4">Execution Date</label>
+                            <div className="grid grid-cols-1 gap-6">
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Target Date</label>
                                     <input 
                                         type="date" 
                                         required 
                                         min={new Date().toISOString().split('T')[0]} 
                                         value={bookingDate} 
                                         onChange={e => setBookingDate(e.target.value)}
-                                        className="w-full bg-slate-50 px-6 py-5 rounded-[1.8rem] focus:ring-8 focus:ring-orange-50 outline-none transition-all font-bold text-slate-700 border-none"
+                                        className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900"
                                     />
                                 </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-4">Commencement Time</label>
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Commencement</label>
                                     <input 
                                         type="time" 
                                         required 
                                         value={bookingTime} 
                                         onChange={e => setBookingTime(e.target.value)}
-                                        className="w-full bg-slate-50 px-6 py-5 rounded-[1.8rem] focus:ring-8 focus:ring-orange-50 outline-none transition-all font-bold text-slate-700 border-none"
+                                        className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900"
                                     />
                                 </div>
                             </div>
@@ -190,13 +182,9 @@ const ServiceDetails = () => {
                             <button 
                                 type="submit" 
                                 disabled={submitting}
-                                className="group w-full bg-slate-900 text-white font-[900] uppercase tracking-[0.3em] py-6 rounded-[2rem] shadow-2xl hover:bg-orange-600 hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 active:scale-95 flex items-center justify-center gap-4 text-xs"
+                                className="w-full bg-slate-900 text-white font-bold uppercase tracking-widest py-5 text-[10px] hover:bg-slate-800 transition-colors disabled:opacity-50"
                             >
-                                {submitting ? "SECURING_SLOT..." : (
-                                    <>
-                                        Authorize Booking <FaCalendarAlt className="group-hover:rotate-12 transition-transform" />
-                                    </>
-                                )}
+                                {submitting ? "Processing..." : "Secure Appointment"}
                             </button>
                         </form>
                     </div>

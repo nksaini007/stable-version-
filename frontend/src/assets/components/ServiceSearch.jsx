@@ -100,85 +100,83 @@ const ServiceSearch = () => {
 
     return (<>
      <Nev/>
-        <div className="bg-[#F8FAFC] min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-12">
-            <div className="max-w-7xl mx-auto space-y-16">
+        <div className="bg-[#FCFCFC] min-h-screen pt-24 pb-12 px-6">
+            <div className="max-w-7xl mx-auto space-y-12">
                 {/* Header & Search */}
-                <div className="text-center space-y-8 relative">
-                    <div className="flex justify-center mb-6">
-                        <Link to={`/services/${categoryId}`} className="group flex items-center gap-2 text-slate-400 font-black text-[10px] tracking-[0.2em] uppercase hover:text-orange-600 transition-colors">
-                            <FaChevronLeft size={8} className="group-hover:-translate-x-1 transition-transform" /> Back to Specialties
+                <div className="border-l-4 border-slate-900 pl-6 space-y-4">
+                    <div className="flex items-center gap-2">
+                        <Link to={`/services/${categoryId}`} className="group flex items-center gap-2 text-slate-400 font-bold text-[10px] tracking-widest uppercase hover:text-slate-900 transition-colors">
+                            <FaChevronLeft size={8} className="group-hover:-translate-x-1 transition-transform" /> Directory
                         </Link>
                     </div>
                     <motion.h1 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="text-5xl md:text-7xl font-[900] text-slate-900 tracking-tight leading-tight"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-3xl font-bold text-slate-900 tracking-tight"
                     >
-                        {categoryName || "Premium"} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-500">Service Suite</span>
+                        {categoryName || "Professional"} Service Suite
                     </motion.h1>
-                    <p className="text-slate-500 text-xl font-light max-w-2xl mx-auto leading-relaxed">Secure elite professionals for your {categoryName?.toLowerCase() || 'specialized'} needs with deterministic booking.</p>
+                    <p className="text-slate-500 text-sm max-w-xl font-medium">Verify credentials and secure expert personnel for deterministic service delivery.</p>
 
-                    <div className="max-w-2xl mx-auto relative mt-12 group">
+                    <div className="max-w-md relative mt-6 group">
                         <input
                             type="text"
-                            placeholder="Find specific professional services..."
+                            placeholder="Search active directory..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-8 pr-20 py-6 rounded-[2.5rem] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.04)] focus:shadow-[0_40px_100px_rgba(0,0,0,0.08)] focus:ring-8 focus:ring-orange-50 outline-none text-xl transition-all border-none text-slate-700 placeholder:text-slate-300"
+                            className="w-full pl-6 pr-14 py-4 rounded-none bg-white border border-slate-200 outline-none text-sm transition-all focus:border-slate-900"
                         />
-                        <button className="absolute right-3 top-1/2 -translate-y-1/2 w-14 h-14 bg-orange-600 text-white rounded-[1.5rem] flex items-center justify-center shadow-xl shadow-orange-200 hover:bg-orange-700 hover:scale-105 transition-all">
-                            <FaSearch size={20} />
+                        <button className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 transition-colors">
+                            <FaSearch size={14} />
                         </button>
                     </div>
                 </div>
 
-                {/* My Bookings Section - Refined UI */}
+                {/* My Bookings Section - Compact UI */}
                 {user && user.role === "customer" && (
-                    <div className="max-w-6xl mx-auto">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="w-1.5 h-6 bg-orange-600 rounded-full"></div>
-                            <h2 className="text-sm font-black text-slate-900 uppercase tracking-[0.2em]">Active Appointments</h2>
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex items-center gap-2 mb-6">
+                            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Appointments</h2>
                         </div>
                         
                         {fetchingBookings ? (
-                            <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide">
+                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                                 {[1, 2, 3].map(i => (
-                                    <div key={i} className="min-w-[320px] h-32 bg-white rounded-[2.5rem] shadow-sm animate-pulse" />
+                                    <div key={i} className="min-w-[280px] h-24 bg-white border border-slate-100 animate-pulse" />
                                 ))}
                             </div>
                         ) : myBookings.length === 0 ? (
-                            <div className="bg-white p-10 rounded-[3rem] shadow-[0_10px_30px_rgba(0,0,0,0.02)] text-center border-none">
-                                <p className="text-slate-400 text-lg font-light italic">No pending appointments yet. Explore our network below.</p>
+                            <div className="bg-white p-6 border border-slate-50 text-center">
+                                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest italic">Inventory empty</p>
                             </div>
                         ) : (
-                            <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x">
+                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
                                 {myBookings.map(b => (
                                     <motion.div 
                                         key={b._id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="min-w-[340px] bg-white p-6 rounded-[2.5rem] shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-all snap-start flex flex-col justify-between"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        className="min-w-[300px] bg-white p-5 border border-slate-100 transition-all snap-start flex flex-col justify-between"
                                     >
                                         <div className="flex justify-between items-start gap-4">
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-black text-slate-900 text-base truncate mb-1">{b.serviceId?.title || "Specialized Service"}</h4>
-                                                <div className="flex items-center gap-3 text-xs text-slate-400 font-medium">
-                                                    <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-lg"><FaCalendarAlt size={10} /> {b.date}</span>
-                                                    <span className="bg-slate-50 px-3 py-1 rounded-lg">{b.time}</span>
+                                                <h4 className="font-bold text-slate-800 text-xs truncate mb-1 uppercase tracking-tight">{b.serviceId?.title || "Professional Service"}</h4>
+                                                <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase">
+                                                    <FaCalendarAlt size={8} /> {b.date} • {b.time}
                                                 </div>
                                             </div>
-                                            <span className={`shrink-0 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-wider
-                                                ${b.status === 'Pending' ? 'bg-amber-50 text-amber-600' : ''}
-                                                ${b.status === 'Confirmed' ? 'bg-indigo-50 text-indigo-600' : ''}
-                                                ${b.status === 'Completed' ? 'bg-emerald-50 text-emerald-700' : ''}
-                                                ${b.status === 'Cancelled' ? 'bg-slate-50 text-slate-400' : ''}
+                                            <span className={`shrink-0 px-2 py-0.5 text-[8px] font-black uppercase tracking-tighter border
+                                                ${b.status === 'Pending' ? 'bg-amber-50 text-amber-600 border-amber-100' : ''}
+                                                ${b.status === 'Confirmed' ? 'bg-slate-900 text-white border-slate-900' : ''}
+                                                ${b.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : ''}
+                                                ${b.status === 'Cancelled' ? 'bg-slate-50 text-slate-300 border-slate-100' : ''}
                                             `}>
                                                 {b.status}
                                             </span>
                                         </div>
-                                        <div className="mt-6 pt-6 border-t border-slate-50 flex justify-between items-center">
-                                            <span className="text-slate-300 font-mono text-[10px]">#BK-{b._id.slice(-6).toUpperCase()}</span>
-                                            <span className="text-slate-900 font-black text-lg">₹{b.amount}</span>
+                                        <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                                            <span className="text-slate-300 font-mono text-[9px]">ID: {b._id.slice(-6).toUpperCase()}</span>
+                                            <span className="text-slate-900 font-bold text-sm">₹{b.amount}</span>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -190,54 +188,45 @@ const ServiceSearch = () => {
 
                 {/* Results Grid */}
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center py-32 space-y-6">
-                        <div className="w-12 h-12 border-4 border-slate-100 border-t-orange-600 rounded-full animate-spin"></div>
-                        <p className="text-slate-400 font-medium tracking-widest uppercase text-[10px]">Syncing Network...</p>
+                    <div className="flex flex-col items-center justify-center py-24 space-y-4">
+                        <div className="w-6 h-6 border-2 border-slate-100 border-t-slate-900 rounded-full animate-spin"></div>
+                        <p className="text-slate-400 font-bold tracking-widest uppercase text-[8px]">Processing query...</p>
                     </div>
                 ) : services.length === 0 ? (
-                    <div className="text-center py-32 bg-white rounded-[4rem] shadow-[0_20px_60px_rgba(0,0,0,0.02)] border-none">
-                        <div className="w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
-                            <FaStore className="text-4xl text-slate-200" />
-                        </div>
-                        <h3 className="text-3xl font-black text-slate-800">No Professionals Found</h3>
-                        <p className="mt-4 text-slate-400 text-lg font-light">Your specific requirement is currently being matched with our off-market experts.</p>
+                    <div className="text-center py-20 bg-white border border-slate-100">
+                        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">No matching personnel found</h3>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {services.map(svc => (
                             <motion.div 
                                 key={svc._id} 
-                                initial={{ opacity: 0, y: 40 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5 }}
-                                className="bg-white rounded-[3rem] overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="bg-white border border-slate-100 hover:border-slate-300 transition-all duration-300 group flex flex-col"
                             >
-                                <div className="h-64 bg-slate-50 relative overflow-hidden m-3 rounded-[2.5rem]">
+                                <div className="h-44 bg-slate-50 relative overflow-hidden">
                                     {svc.images?.length > 0 ? (
-                                        <img src={`${svc.images[0]}`} alt={svc.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                                        <img src={`${svc.images[0]}`} alt={svc.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-slate-200 uppercase font-black tracking-widest text-xs">No Visual Data</div>
+                                        <div className="w-full h-full flex items-center justify-center text-slate-200 uppercase font-black tracking-widest text-[10px]">No Visual</div>
                                     )}
-                                    <div className="absolute top-5 left-5 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-2xl text-[10px] font-black text-white shadow-xl uppercase tracking-widest">
+                                    <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur px-3 py-1 text-[8px] font-bold text-white uppercase tracking-widest">
                                         {svc.category}
                                     </div>
                                 </div>
 
-                                <div className="p-8 flex-1 flex flex-col">
-                                    <div className="flex justify-between items-start gap-4 mb-3">
-                                        <h3 className="font-black text-slate-800 text-2xl leading-tight group-hover:text-orange-600 transition-colors uppercase tracking-tight">{svc.title}</h3>
-                                    </div>
-
-                                    <p className="text-slate-400 text-sm font-light leading-relaxed mb-8 flex-1 italic truncate-3-lines">{svc.description}</p>
+                                <div className="p-5 flex-1 flex flex-col">
+                                    <h3 className="font-bold text-slate-800 text-sm mb-2 uppercase tracking-tight group-hover:text-slate-900 transition-colors line-clamp-1">{svc.title}</h3>
+                                    <p className="text-slate-400 text-xs font-medium leading-relaxed mb-6 flex-1 line-clamp-2">{svc.description}</p>
                                            
-                                    <div className="flex items-center justify-between pt-6 border-t border-slate-50">
-                                        <div className="text-2xl font-black text-slate-900">₹{svc.price}</div>
+                                    <div className="flex items-center justify-between pt-4 border-t border-slate-50">
+                                        <div className="text-sm font-bold text-slate-900">₹{svc.price}</div>
                                         <button 
                                             onClick={() => setBookingService(svc)} 
-                                            className="bg-slate-900 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-[0.1em] shadow-lg hover:shadow-orange-200 transition-all active:scale-95"
+                                            className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-colors"
                                         >
-                                            Secure Slot
+                                            Book Item
                                         </button>
                                     </div>
                                 </div>
@@ -248,51 +237,50 @@ const ServiceSearch = () => {
 
                 {/* Booking Modal Redesign */}
                 {bookingService && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-xl p-4">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4">
                         <motion.div 
-                            initial={{ opacity: 0, scale: 0.9, y: 40 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            className="bg-white rounded-[3.5rem] w-full max-w-lg overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.3)]"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-white border border-slate-200 w-full max-w-md shadow-2xl"
                         >
-                            <div className="p-10 relative">
-                                <button onClick={() => setBookingService(null)} className="absolute top-8 right-8 text-slate-300 hover:text-red-500 transition-colors w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center"><FaTimes /></button>
+                            <div className="p-8 relative">
+                                <button onClick={() => setBookingService(null)} className="absolute top-6 right-6 text-slate-300 hover:text-slate-900 transition-colors"><FaTimes /></button>
                                 
-                                <div className="mb-10">
-                                    <div className="w-16 h-1 w-1 bg-orange-600 rounded-full mb-6"></div>
-                                    <h3 className="font-[900] text-3xl text-slate-900 leading-none">Schedule Service</h3>
-                                    <p className="text-slate-400 font-light mt-3 uppercase tracking-[0.2em] text-[10px]">Professional Authorization Token Required</p>
+                                <div className="mb-8">
+                                    <h3 className="font-bold text-xl text-slate-900 uppercase tracking-tight">Booking Authorization</h3>
+                                    <p className="text-slate-400 font-medium uppercase tracking-widest text-[9px] mt-1">Personnel Assignment Protocol</p>
                                 </div>
 
-                                <div className="flex gap-6 mb-10 p-5 bg-slate-50 rounded-[2.5rem]">
-                                    <div className="w-20 h-20 rounded-[1.5rem] bg-white overflow-hidden shadow-sm flex-shrink-0">
+                                <div className="flex gap-4 mb-8 p-4 bg-slate-50 border border-slate-100">
+                                    <div className="w-16 h-16 bg-white border border-slate-100 overflow-hidden flex-shrink-0">
                                         {bookingService.images?.length > 0 ? (
                                             <img src={`${bookingService.images[0]}`} className="w-full h-full object-cover" alt="" />
                                         ) : (
-                                            <div className="w-full h-full bg-slate-100 p-6 flex items-center justify-center text-slate-200"><FaStore /></div>
+                                            <div className="w-full h-full bg-slate-100 p-4 flex items-center justify-center text-slate-200"><FaStore /></div>
                                         )}
                                     </div>
                                     <div className="flex flex-col justify-center">
-                                        <h4 className="font-black text-slate-800 leading-tight uppercase tracking-tight">{bookingService.title}</h4>
-                                        <p className="text-xl font-black text-orange-600 mt-1">₹{bookingService.price}</p>
+                                        <h4 className="font-bold text-slate-800 text-xs uppercase tracking-tight mb-1">{bookingService.title}</h4>
+                                        <p className="text-sm font-bold text-slate-900">₹{bookingService.price}</p>
                                     </div>
                                 </div>
 
                                 <form onSubmit={handleBook} className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-4">Target Date</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Target Date</label>
                                             <input type="date" required min={new Date().toISOString().split('T')[0]} value={bookingDate} onChange={e => setBookingDate(e.target.value)}
-                                                className="w-full bg-slate-50 px-6 py-5 rounded-[1.8rem] focus:ring-4 focus:ring-orange-50 outline-none transition-all font-bold text-slate-700 border-none" />
+                                                className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-4">Target Time</label>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Target Time</label>
                                             <input type="time" required value={bookingTime} onChange={e => setBookingTime(e.target.value)}
-                                                className="w-full bg-slate-50 px-6 py-5 rounded-[1.8rem] focus:ring-4 focus:ring-orange-50 outline-none transition-all font-bold text-slate-700 border-none" />
+                                                className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
                                         </div>
                                     </div>
 
-                                    <button type="submit" className="w-full mt-6 bg-slate-900 text-white py-6 rounded-[1.8rem] font-[900] text-sm uppercase tracking-[0.3em] shadow-2xl hover:bg-orange-600 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
-                                        Authorize Appointment
+                                    <button type="submit" className="w-full mt-4 bg-slate-900 text-white py-4 font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-colors">
+                                        Confirm Personnel Secure
                                     </button>
                                 </form>
                             </div>
