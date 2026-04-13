@@ -35,7 +35,7 @@ import CategoryPage from "./assets/components/CategoryPage";
 import ItemPage from "./assets/components/ItemPage";
 import ItemList from "./assets/components/ItemList";
 import ProductPage from "./assets/components/ProductPage";
-import ServiceDetails from "./assets/components/ServiceDetails";
+// Product Page import already handled or not needed here
 // Dashboards
 import Dashboardloader from "./assets/components/dashboard/Dashboardloader";
 import SellerOrders from "./assets/components/dashboard/order/SellerOrders";
