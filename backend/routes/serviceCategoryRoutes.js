@@ -10,11 +10,13 @@ const {
   deleteServiceSubcategory,
   updateServiceCategory,
   updateServiceSubcategory,
+  getServiceCategoryById,
 } = require("../controllers/serviceCategoryController");
 
 // ✅ CATEGORY ROUTES
 router.post("/", protect, adminOnly, upload.fields([{ name: "categoryImage", maxCount: 1 }]), createServiceCategory);
 router.get("/", getServiceCategories);
+router.get("/:id", getServiceCategoryById);
 router.put("/:id", protect, adminOnly, upload.fields([{ name: "categoryImage", maxCount: 1 }]), updateServiceCategory);
 router.delete("/:id", protect, adminOnly, deleteServiceCategory);
 
