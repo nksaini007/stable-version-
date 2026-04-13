@@ -119,29 +119,43 @@ const BookingManagement = () => {
                         {/* Technical Data Section */}
                         <div className="lg:col-span-2 space-y-8">
                             <section>
-                                <h3 className="text-[10px] font-bold text-[#8E929C] uppercase tracking-[0.3em] mb-4 border-l-2 border-orange-500 pl-3">Deployment Target</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/20 p-6 rounded-2xl border border-[#2A2B2F]">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-[#2A2B2F] rounded-xl flex items-center justify-center text-orange-400"><FaUserShield /></div>
-                                            <div>
-                                                <p className="text-[9px] text-[#8E929C] font-bold uppercase">Customer Lead</p>
-                                                <p className="font-bold text-white">{booking.customerId?.name}</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <h3 className="text-[10px] font-bold text-[#8E929C] uppercase tracking-[0.3em] mb-4 border-l-2 border-orange-500 pl-3">Deployment Target</h3>
+                                        <div className="bg-black/20 p-6 rounded-2xl border border-[#2A2B2F] space-y-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-[#2A2B2F] rounded-xl flex items-center justify-center text-blue-400"><FaPhone /></div>
+                                                <div>
+                                                    <p className="text-[9px] text-[#8E929C] font-bold uppercase">Deployment Contact</p>
+                                                    <p className="font-bold text-white">{booking.contactPhone}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-[#2A2B2F] rounded-xl flex items-center justify-center text-blue-400"><FaPhone /></div>
-                                            <div>
-                                                <p className="text-[9px] text-[#8E929C] font-bold uppercase">Contact Vector</p>
-                                                <p className="font-bold text-white">{booking.contactPhone || booking.customerId?.phone}</p>
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-10 h-10 bg-[#2A2B2F] rounded-xl flex items-center justify-center text-emerald-400"><FaMapMarkerAlt /></div>
+                                                <div>
+                                                    <p className="text-[9px] text-[#8E929C] font-bold uppercase">Target Location</p>
+                                                    <p className="font-bold text-white leading-tight">{booking.serviceAddress}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 bg-[#2A2B2F] rounded-xl flex items-center justify-center text-emerald-400"><FaMapMarkerAlt /></div>
-                                        <div>
-                                            <p className="text-[9px] text-[#8E929C] font-bold uppercase">Target Location</p>
-                                            <p className="font-bold text-white leading-tight">{booking.serviceAddress || booking.customerId?.address}</p>
+                                    <div>
+                                        <h3 className="text-[10px] font-bold text-[#8E929C] uppercase tracking-[0.3em] mb-4 border-l-2 border-blue-500 pl-3">Identity Profile</h3>
+                                        <div className="bg-black/20 p-6 rounded-2xl border border-[#2A2B2F] space-y-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-[#2A2B2F] rounded-xl flex items-center justify-center text-gray-400"><FaEnvelope /></div>
+                                                <div>
+                                                    <p className="text-[9px] text-[#8E929C] font-bold uppercase">Account Email</p>
+                                                    <p className="font-bold text-white break-all">{booking.customerId?.email}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-[#2A2B2F] rounded-xl flex items-center justify-center text-gray-400"><FaUserShield /></div>
+                                                <div>
+                                                    <p className="text-[9px] text-[#8E929C] font-bold uppercase">Master Profile Phone</p>
+                                                    <p className="font-bold text-white">{booking.customerId?.phone}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -288,7 +302,8 @@ const BookingManagement = () => {
                                                 <div className="w-8 h-8 rounded-xl bg-[#2A2B2F] flex items-center justify-center text-white font-bold text-xs">{b.customerId?.name?.charAt(0)}</div>
                                                 <div>
                                                     <p className="text-xs font-bold text-white line-clamp-1">{b.customerId?.name}</p>
-                                                    <p className="text-[10px] text-[#8E929C]">{b.contactPhone || b.customerId?.phone}</p>
+                                                    <p className="text-[9px] text-[#8E929C] truncate max-w-[120px]">{b.customerId?.email}</p>
+                                                    <p className="text-[9px] text-blue-500 font-bold uppercase tracking-tighter mt-1">LOGISTICS: {b.contactPhone}</p>
                                                 </div>
                                             </div>
                                         </div>
