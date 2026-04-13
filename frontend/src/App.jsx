@@ -81,7 +81,7 @@ import CustomerProfile from "./assets/components/dashboard/userdeshboards/custom
 import CustomerWishlist from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerWishlist";
 import CustomerSupportPage from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerSupport";
 import MyQuotations from "./assets/components/dashboard/userdeshboards/customer/pages/MyQuotations";
-import CustomerServices from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerServices";
+const CustomerServices = React.lazy(() => import("./assets/components/dashboard/userdeshboards/customer/pages/CustomerServices"));
 
 // Services UI
 import ServiceCategories from "./assets/components/ServiceCategories";
@@ -97,7 +97,8 @@ function App() {
       <CartProvider>
         <ScrollToTop />
 
-        <Routes>
+        <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="w-8 h-8 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div></div>}>
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/architect/:id" element={<PublicArchitectProfile />} />
@@ -215,6 +216,7 @@ function App() {
           {/* 404 */}
           <Route path="*" element={<NotFound404 />} />
         </Routes>
+        </React.Suspense>
 
         <ToastContainer
           position="top-right"
