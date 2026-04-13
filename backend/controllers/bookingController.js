@@ -6,24 +6,33 @@ const Service = require("../models/Service");
 // @access  Private (Customer)
 const createBooking = async (req, res) => {
     try {
-        const { serviceId, date, time } = req.body;
+        const { serviceId, date, time, requirements, quantity, isFlexibleDate, serviceAddress, contactPhone } = req.body;
 
-        // Verify service exists and get price
+        // Verify service exists
         const service = await Service.findById(serviceId);
         if (!service) return res.status(404).json({ message: "Service not found" });
+
+        // Security: Calculate amount server-side based on database price and quantity
+        const validatedQuantity = Math.max(1, parseInt(quantity) || 1);
+        const totalAmount = service.price * validatedQuantity;
 
         const newBooking = new Booking({
             customerId: req.user._id,
             serviceId,
-            date,
-            time,
-            amount: service.price, // Lock in the price at time of booking
+            date: isFlexibleDate ? "Flexible" : date,
+            time: isFlexibleDate ? "Flexible" : time,
+            requirements: requirements?.trim().slice(0, 1000), // Basic sanitization/limit
+            quantity: validatedQuantity,
+            isFlexibleDate,
+            serviceAddress: serviceAddress?.trim(),
+            contactPhone: contactPhone?.trim(),
+            amount: totalAmount, // Lock in the validated price
             status: "Pending",
             paymentStatus: "Pending"
         });
 
         await newBooking.save();
-        res.status(201).json({ message: "Booking created successfully", booking: newBooking });
+        res.status(201).json({ message: "Service protocol initiated successfully", booking: newBooking });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }

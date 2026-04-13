@@ -81,6 +81,7 @@ import CustomerProfile from "./assets/components/dashboard/userdeshboards/custom
 import CustomerWishlist from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerWishlist";
 import CustomerSupportPage from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerSupport";
 import MyQuotations from "./assets/components/dashboard/userdeshboards/customer/pages/MyQuotations";
+import CustomerServices from "./assets/components/dashboard/userdeshboards/customer/pages/CustomerServices";
 
 // Services UI
 import ServiceCategories from "./assets/components/ServiceCategories";
@@ -158,6 +159,7 @@ function App() {
             <Route path="wishlist" element={<CustomerWishlist />} />
             <Route path="support" element={<CustomerSupportPage />} />
             <Route path="quotations" element={<MyQuotations />} />
+            <Route path="services" element={<CustomerServices />} />
           </Route>
 
           {/* Seller Dashboard Routes */}

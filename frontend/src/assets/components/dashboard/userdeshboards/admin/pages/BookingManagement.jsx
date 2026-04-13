@@ -88,8 +88,17 @@ const BookingManagement = () => {
                                 bookings.map(b => (
                                     <tr key={b._id} className="hover:bg-[#121212]/50 transition border-b border-gray-50">
                                         <td className="px-6 py-4">
-                                            <p className="font-bold text-white">{b.serviceId?.title || 'Unknown Service'}</p>
-                                            <p className="text-xs text-blue-500 font-medium">{b.serviceId?.category}</p>
+                                            <p className="font-bold text-white flex items-center gap-2">
+                                                {b.serviceId?.title || 'Unknown Service'}
+                                                {b.quantity > 1 && <span className="bg-slate-800 text-[8px] px-1.5 py-0.5 rounded">x{b.quantity}</span>}
+                                            </p>
+                                            <p className="text-xs text-blue-500 font-medium mb-1">{b.serviceId?.category}</p>
+                                            {b.requirements && (
+                                                <div className="flex items-start gap-1.5 text-[9px] text-slate-400 bg-black/20 p-2 border border-slate-800 rounded mt-2 whitespace-normal group/req relative">
+                                                    <span className="shrink-0 text-amber-500 font-black">REQ:</span>
+                                                    <span className="line-clamp-2 italic">"{b.requirements}"</span>
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 hidden lg:table-cell">
                                             <div className="space-y-1">
@@ -99,15 +108,11 @@ const BookingManagement = () => {
                                                 </div>
                                                 <div className="flex items-center gap-2 text-[#8E929C] text-xs">
                                                     <FaPhone className="text-gray-300 size-3" />
-                                                    <span>{b.customerId?.phone || 'No Phone'}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-[#8E929C] text-xs">
-                                                    <FaEnvelope className="text-gray-300 size-3" />
-                                                    <span>{b.customerId?.email}</span>
+                                                    <span>{b.contactPhone || b.customerId?.phone || 'No Phone'}</span>
                                                 </div>
                                                 <div className="flex items-start gap-2 text-[#8E929C] text-[10px] leading-tight max-w-[200px] whitespace-normal">
                                                     <FaMapMarkerAlt className="text-gray-300 size-3 mt-0.5 flex-shrink-0" />
-                                                    <span>{b.customerId?.address}{b.customerId?.pincode ? `, ${b.customerId.pincode}` : ''}</span>
+                                                    <span>{b.serviceAddress || b.customerId?.address}{b.customerId?.pincode && !b.serviceAddress ? `, ${b.customerId.pincode}` : ''}</span>
                                                 </div>
                                             </div>
                                         </td>

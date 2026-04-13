@@ -15,6 +15,11 @@ const ServiceDetails = () => {
     const [loading, setLoading] = useState(true);
     const [bookingDate, setBookingDate] = useState("");
     const [bookingTime, setBookingTime] = useState("");
+    const [bookingQuantity, setBookingQuantity] = useState(1);
+    const [bookingRequirements, setBookingRequirements] = useState("");
+    const [isFlexible, setIsFlexible] = useState(false);
+    const [bookingAddress, setBookingAddress] = useState(user?.address || "");
+    const [bookingPhone, setBookingPhone] = useState(user?.phone || "");
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
 
@@ -45,14 +50,19 @@ const ServiceDetails = () => {
             setSubmitting(true);
             await API.post("/bookings", {
                 serviceId: service._id,
-                date: bookingDate,
-                time: bookingTime
+                date: isFlexible ? "Flexible" : bookingDate,
+                time: isFlexible ? "Flexible" : bookingTime,
+                requirements: bookingRequirements,
+                quantity: bookingQuantity,
+                isFlexibleDate: isFlexible,
+                serviceAddress: bookingAddress,
+                contactPhone: bookingPhone
             });
-            alert("Booking Confirmed Successfully. Navigate to dashboard to view.");
-            navigate("/services");
+            alert("Service Protocol Initialized Successfully");
+            navigate("/dashboard/customer/services");
         } catch (err) {
             console.error(err);
-            alert("System Error: Failed to secure booking.");
+            alert("Critical Failure: Protocol rejection.");
         } finally {
             setSubmitting(false);
         }
@@ -149,42 +159,67 @@ const ServiceDetails = () => {
                         </div>
 
                         {/* Booking Form Interface */}
-                        <form onSubmit={handleBooking} className="flex flex-col gap-8 mt-auto pt-8 border-t border-slate-50">
+                        <form onSubmit={handleBooking} className="flex flex-col gap-6 mt-auto pt-8 border-t border-slate-50 overflow-y-auto max-h-[500px] pr-2 scrollbar-thin">
                             <div className="space-y-1">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Appointment Request</h3>
-                                <p className="text-slate-400 text-[11px] font-medium">Select target window for personnel deployment.</p>
+                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-2">Protocol Parameters</h3>
                             </div>
 
-                            <div className="grid grid-cols-1 gap-6">
-                                <div className="space-y-1.5">
-                                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Target Date</label>
-                                    <input 
-                                        type="date" 
-                                        required 
-                                        min={new Date().toISOString().split('T')[0]} 
-                                        value={bookingDate} 
-                                        onChange={e => setBookingDate(e.target.value)}
-                                        className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900"
-                                    />
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Quantity</label>
+                                        <input type="number" min="1" required value={bookingQuantity} onChange={e => setBookingQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                            className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                    </div>
+                                    <div className="flex flex-col justify-end pb-2">
+                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                            <input type="checkbox" checked={isFlexible} onChange={e => setIsFlexible(e.target.checked)} className="accent-slate-900 w-3 h-3 cursor-pointer" />
+                                            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-900">Flexible Timeline</span>
+                                        </label>
+                                    </div>
                                 </div>
+
+                                {!isFlexible && (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Target Date</label>
+                                            <input type="date" required min={new Date().toISOString().split('T')[0]} value={bookingDate} onChange={e => setBookingDate(e.target.value)}
+                                                className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Target Time</label>
+                                            <input type="time" required value={bookingTime} onChange={e => setBookingTime(e.target.value)}
+                                                className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Commencement</label>
-                                    <input 
-                                        type="time" 
-                                        required 
-                                        value={bookingTime} 
-                                        onChange={e => setBookingTime(e.target.value)}
-                                        className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900"
-                                    />
+                                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Requirements</label>
+                                    <textarea rows="2" placeholder="Describe parameters..." value={bookingRequirements} onChange={e => setBookingRequirements(e.target.value)}
+                                        className="w-full bg-white border border-slate-200 p-3 outline-none transition-all font-medium text-xs text-slate-700 focus:border-slate-900 resize-none" />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Direct Contact</label>
+                                        <input type="tel" required value={bookingPhone} onChange={e => setBookingPhone(e.target.value)}
+                                            className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400 pl-1">Service Address</label>
+                                        <input type="text" required value={bookingAddress} onChange={e => setBookingAddress(e.target.value)}
+                                            className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                    </div>
                                 </div>
                             </div>
 
                             <button 
                                 type="submit" 
                                 disabled={submitting}
-                                className="w-full bg-slate-900 text-white font-bold uppercase tracking-widest py-5 text-[10px] hover:bg-slate-800 transition-colors disabled:opacity-50"
+                                className="w-full bg-slate-900 text-white font-bold uppercase tracking-[0.2em] py-5 text-[10px] hover:bg-slate-800 transition-all disabled:opacity-50"
                             >
-                                {submitting ? "Processing..." : "Secure Appointment"}
+                                {submitting ? "Transmitting..." : "Initialize Protocol"}
                             </button>
                         </form>
                     </div>

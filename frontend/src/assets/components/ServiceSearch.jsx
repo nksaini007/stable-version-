@@ -18,6 +18,12 @@ const ServiceSearch = () => {
     const [bookingService, setBookingService] = useState(null);
     const [bookingDate, setBookingDate] = useState("");
     const [bookingTime, setBookingTime] = useState("");
+    const [bookingQuantity, setBookingQuantity] = useState(1);
+    const [bookingRequirements, setBookingRequirements] = useState("");
+    const [isFlexible, setIsFlexible] = useState(false);
+    const [bookingAddress, setBookingAddress] = useState(user?.address || "");
+    const [bookingPhone, setBookingPhone] = useState(user?.phone || "");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     
     // My Bookings State
     const [myBookings, setMyBookings] = useState([]);
@@ -74,25 +80,36 @@ const ServiceSearch = () => {
     const handleBook = async (e) => {
         e.preventDefault();
         if (!user) {
-            alert("Please login to book a service");
+            alert("Security Breach: Unauthorized. Please login to initiate protocol.");
             navigate("/login");
             return;
         }
 
         try {
+            setIsSubmitting(true);
             await API.post("/bookings", {
                 serviceId: bookingService._id,
-                date: bookingDate,
-                time: bookingTime
+                date: isFlexible ? "Flexible" : bookingDate,
+                time: isFlexible ? "Flexible" : bookingTime,
+                requirements: bookingRequirements,
+                quantity: bookingQuantity,
+                isFlexibleDate: isFlexible,
+                serviceAddress: bookingAddress,
+                contactPhone: bookingPhone
             });
-            alert("Booking successful!");
+            alert("Service Protocol Initialized Successfully");
             setBookingService(null);
             setBookingDate("");
             setBookingTime("");
+            setBookingRequirements("");
+            setBookingQuantity(1);
+            setIsFlexible(false);
             fetchMyBookings(); // Refresh the list
         } catch (err) {
             console.error(err);
-            alert("Failed to create booking");
+            alert("Critical Failure: Data transmission interrupted.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -135,8 +152,9 @@ const ServiceSearch = () => {
                 {/* My Bookings Section - Compact UI */}
                 {user && user.role === "customer" && (
                     <div className="max-w-7xl mx-auto">
-                        <div className="flex items-center gap-2 mb-6">
-                            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Appointments</h2>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Operations</h2>
+                            <Link to="/dashboard/customer/services" className="text-[10px] font-bold text-slate-900 uppercase tracking-widest hover:underline decoration-2">Management Panel &rarr;</Link>
                         </div>
                         
                         {fetchingBookings ? (
@@ -162,16 +180,16 @@ const ServiceSearch = () => {
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-bold text-slate-800 text-xs truncate mb-1 uppercase tracking-tight">{b.serviceId?.title || "Professional Service"}</h4>
                                                 <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase">
-                                                    <FaCalendarAlt size={8} /> {b.date} • {b.time}
+                                                    <FaCalendarAlt size={8} /> {b.date === 'Flexible' ? 'Timeline Flexible' : `${b.date} • ${b.time}`}
                                                 </div>
                                             </div>
                                             <span className={`shrink-0 px-2 py-0.5 text-[8px] font-black uppercase tracking-tighter border
-                                                ${b.status === 'Pending' ? 'bg-amber-50 text-amber-600 border-amber-100' : ''}
+                                                ${b.status === 'Pending' ? 'bg-slate-50 text-slate-600 border-slate-200' : ''}
                                                 ${b.status === 'Confirmed' ? 'bg-slate-900 text-white border-slate-900' : ''}
                                                 ${b.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : ''}
                                                 ${b.status === 'Cancelled' ? 'bg-slate-50 text-slate-300 border-slate-100' : ''}
                                             `}>
-                                                {b.status}
+                                                {b.status === 'Pending' ? 'Protocol Initiated' : b.status}
                                             </span>
                                         </div>
                                         <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
@@ -240,22 +258,22 @@ const ServiceSearch = () => {
 
                 {/* Booking Modal Redesign */}
                 {bookingService && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 overflow-y-auto">
                         <motion.div 
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white border border-slate-200 w-full max-w-md shadow-2xl"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="bg-white border border-slate-200 w-full max-w-lg my-8 shadow-2xl overflow-hidden"
                         >
                             <div className="p-8 relative">
-                                <button onClick={() => setBookingService(null)} className="absolute top-6 right-6 text-slate-300 hover:text-slate-900 transition-colors"><FaTimes /></button>
+                                <button onClick={() => setBookingService(null)} className="absolute top-8 right-8 text-slate-300 hover:text-slate-900 transition-colors z-10"><FaTimes /></button>
                                 
                                 <div className="mb-8">
-                                    <h3 className="font-bold text-xl text-slate-900 uppercase tracking-tight">Booking Authorization</h3>
-                                    <p className="text-slate-400 font-medium uppercase tracking-widest text-[9px] mt-1">Personnel Assignment Protocol</p>
+                                    <h3 className="font-bold text-2xl text-slate-900 uppercase tracking-tight">Service Protocol Initialization</h3>
+                                    <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-2">Personnel Assignment Authorization Required</p>
                                 </div>
 
-                                <div className="flex gap-4 mb-8 p-4 bg-slate-50 border border-slate-100">
-                                    <div className="w-16 h-16 bg-white border border-slate-100 overflow-hidden flex-shrink-0">
+                                <div className="flex gap-6 mb-8 p-5 bg-slate-50 border border-slate-100">
+                                    <div className="w-20 h-20 bg-white border border-slate-100 overflow-hidden flex-shrink-0">
                                         {bookingService.images?.length > 0 ? (
                                             <img src={`${bookingService.images[0]}`} className="w-full h-full object-cover" alt="" />
                                         ) : (
@@ -263,33 +281,90 @@ const ServiceSearch = () => {
                                         )}
                                     </div>
                                     <div className="flex flex-col justify-center">
-                                        <h4 className="font-bold text-slate-800 text-xs uppercase tracking-tight mb-1">{bookingService.title}</h4>
-                                        <p className="text-sm font-bold text-slate-900">₹{bookingService.price}</p>
+                                        <h4 className="font-bold text-slate-800 text-sm uppercase tracking-tight mb-1">{bookingService.title}</h4>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-xl font-bold text-slate-900">₹{bookingService.price * bookingQuantity}</span>
+                                            {bookingQuantity > 1 && <span className="text-[10px] text-slate-400 font-bold truncate">(₹{bookingService.price} x {bookingQuantity})</span>}
+                                        </div>
                                     </div>
                                 </div>
 
                                 <form onSubmit={handleBook} className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Target Date</label>
-                                            <input type="date" required min={new Date().toISOString().split('T')[0]} value={bookingDate} onChange={e => setBookingDate(e.target.value)}
-                                                className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-3 gap-6">
+                                            <div className="col-span-1 space-y-1.5">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] pl-1">Quantity</label>
+                                                <input type="number" min="1" required value={bookingQuantity} onChange={e => setBookingQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                                    className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                            </div>
+                                            <div className="col-span-2 space-y-1.5 flex flex-col justify-end">
+                                               <label className="flex items-center gap-3 cursor-pointer group mb-2">
+                                                    <input type="checkbox" checked={isFlexible} onChange={e => setIsFlexible(e.target.checked)} className="accent-slate-900 w-4 h-4 cursor-pointer" />
+                                                    <span className="text-[10px] font-bold text-slate-800 uppercase tracking-widest group-hover:text-slate-900 transition-colors">My timeline is flexible</span>
+                                               </label>
+                                            </div>
                                         </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Target Time</label>
-                                            <input type="time" required value={bookingTime} onChange={e => setBookingTime(e.target.value)}
-                                                className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+
+                                        {!isFlexible && (
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div className="space-y-1.5">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] pl-1">Target Date</label>
+                                                    <input type="date" required min={new Date().toISOString().split('T')[0]} value={bookingDate} onChange={e => setBookingDate(e.target.value)}
+                                                        className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] pl-1">Target Time</label>
+                                                    <input type="time" required value={bookingTime} onChange={e => setBookingTime(e.target.value)}
+                                                        className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="space-y-1.5 text-right">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] pr-1">Detailed Requirements</label>
+                                            <textarea 
+                                                rows="3" 
+                                                placeholder="Describe specific project parameters or special instructions..."
+                                                value={bookingRequirements}
+                                                onChange={e => setBookingRequirements(e.target.value)}
+                                                className="w-full bg-white border border-slate-200 p-4 outline-none transition-all font-medium text-xs text-slate-700 focus:border-slate-900 resize-none"
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-6 pt-2 border-t border-slate-100">
+                                            <div className="space-y-1.5">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] pl-1">Contact Phone</label>
+                                                <input type="tel" required value={bookingPhone} onChange={e => setBookingPhone(e.target.value)} placeholder="Personnel Direct Contact"
+                                                    className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] pl-1">Service Address</label>
+                                                <input type="text" required value={bookingAddress} onChange={e => setBookingAddress(e.target.value)} placeholder="Deployment Location"
+                                                    className="w-full bg-white border border-slate-200 px-4 py-3 outline-none transition-all font-bold text-xs text-slate-700 focus:border-slate-900" />
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <button type="submit" className="w-full mt-4 bg-slate-900 text-white py-4 font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-colors">
-                                        Confirm Personnel Secure
+                                    <button 
+                                        type="submit" 
+                                        disabled={isSubmitting}
+                                        className="w-full bg-slate-900 text-white py-5 font-bold text-xs uppercase tracking-[0.3em] hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                                    >
+                                        {isSubmitting ? (
+                                            <div className="w-5 h-5 border-2 border-slate-500 border-t-white rounded-full animate-spin"></div>
+                                        ) : "Confirm Protocol Security"}
                                     </button>
                                 </form>
                             </div>
                         </motion.div>
                     </div>
                 )}
+
+            </div>
+        </div>
+        </>
+    );
+};
 
             </div>
         </div>

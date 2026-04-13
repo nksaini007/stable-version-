@@ -24,6 +24,30 @@ const bookingSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    requirements: {
+        type: String,
+        trim: true,
+    },
+    quantity: {
+        type: Number,
+        default: 1,
+    },
+    isFlexibleDate: {
+        type: Boolean,
+        default: false,
+    },
+    serviceAddress: {
+        type: String,
+        trim: true,
+    },
+    contactPhone: {
+        type: String,
+        trim: true,
+    },
+    notes: {
+        type: String,
+        trim: true,
+    },
     status: {
         type: String,
         enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
