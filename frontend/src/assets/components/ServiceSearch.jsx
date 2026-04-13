@@ -100,83 +100,85 @@ const ServiceSearch = () => {
 
     return (<>
      <Nev/>
-        <div className="bg-slate-50 min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-           
-            <div className="max-w-7xl mx-auto space-y-8">
+        <div className="bg-[#F8FAFC] min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-12">
+            <div className="max-w-7xl mx-auto space-y-16">
                 {/* Header & Search */}
-                <div className="text-center space-y-4">
-                    <div className="flex justify-center mb-4">
-                        <Link to={`/services/${categoryId}`} className="text-orange-600 font-bold flex items-center gap-2 text-sm hover:-translate-x-1 transition">
-                            <FaChevronLeft size={10} /> BACK TO SUB-CATEGORIES
+                <div className="text-center space-y-8 relative">
+                    <div className="flex justify-center mb-6">
+                        <Link to={`/services/${categoryId}`} className="group flex items-center gap-2 text-slate-400 font-black text-[10px] tracking-[0.2em] uppercase hover:text-orange-600 transition-colors">
+                            <FaChevronLeft size={8} className="group-hover:-translate-x-1 transition-transform" /> Back to Specialties
                         </Link>
                     </div>
-                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
-                        {categoryName || "Expert"} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">Services</span>
-                    </h1>
-                    <p className="text-gray-500 max-w-2xl mx-auto">Book expert professionals for your {categoryName?.toLowerCase() || 'home'} requirements instantly.</p>
+                    <motion.h1 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="text-5xl md:text-7xl font-[900] text-slate-900 tracking-tight leading-tight"
+                    >
+                        {categoryName || "Premium"} <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-500">Service Suite</span>
+                    </motion.h1>
+                    <p className="text-slate-500 text-xl font-light max-w-2xl mx-auto leading-relaxed">Secure elite professionals for your {categoryName?.toLowerCase() || 'specialized'} needs with deterministic booking.</p>
 
-                    <div className="max-w-xl mx-auto relative mt-8">
+                    <div className="max-w-2xl mx-auto relative mt-12 group">
                         <input
                             type="text"
-                            placeholder="Search for services..."
+                            placeholder="Find specific professional services..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-6 pr-14 py-4 rounded-full border-2 border-gray-100 shadow-sm focus:border-orange-400 focus:ring-4 focus:ring-orange-100 outline-none text-lg transition"
+                            className="w-full pl-8 pr-20 py-6 rounded-[2.5rem] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.04)] focus:shadow-[0_40px_100px_rgba(0,0,0,0.08)] focus:ring-8 focus:ring-orange-50 outline-none text-xl transition-all border-none text-slate-700 placeholder:text-slate-300"
                         />
-                        <button className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-orange-600 transition">
-                            <FaSearch />
+                        <button className="absolute right-3 top-1/2 -translate-y-1/2 w-14 h-14 bg-orange-600 text-white rounded-[1.5rem] flex items-center justify-center shadow-xl shadow-orange-200 hover:bg-orange-700 hover:scale-105 transition-all">
+                            <FaSearch size={20} />
                         </button>
                     </div>
                 </div>
 
-                {/* My Bookings Section - Compact UI */}
+                {/* My Bookings Section - Refined UI */}
                 {user && user.role === "customer" && (
-                    <div className="max-w-5xl mx-auto">
-                        <div className="flex items-center gap-2 mb-4">
-                            <FaClipboardList className="text-orange-500" />
-                            <h2 className="text-lg font-bold text-gray-800 uppercase tracking-tight">My Recent Bookings</h2>
+                    <div className="max-w-6xl mx-auto">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="w-1.5 h-6 bg-orange-600 rounded-full"></div>
+                            <h2 className="text-sm font-black text-slate-900 uppercase tracking-[0.2em]">Active Appointments</h2>
                         </div>
                         
                         {fetchingBookings ? (
-                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                                {[1, 2].map(i => (
-                                    <div key={i} className="min-w-[280px] h-24 bg-gray-100 rounded-2xl animate-pulse" />
+                            <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="min-w-[320px] h-32 bg-white rounded-[2.5rem] shadow-sm animate-pulse" />
                                 ))}
                             </div>
                         ) : myBookings.length === 0 ? (
-                            <div className="bg-white p-6 rounded-2xl border border-dashed border-gray-200 text-center">
-                                <p className="text-sm text-gray-400 font-medium">No active bookings. Start exploring below!</p>
+                            <div className="bg-white p-10 rounded-[3rem] shadow-[0_10px_30px_rgba(0,0,0,0.02)] text-center border-none">
+                                <p className="text-slate-400 text-lg font-light italic">No pending appointments yet. Explore our network below.</p>
                             </div>
                         ) : (
-                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                            <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x">
                                 {myBookings.map(b => (
                                     <motion.div 
                                         key={b._id}
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="min-w-[300px] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all snap-start flex flex-col justify-between"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="min-w-[340px] bg-white p-6 rounded-[2.5rem] shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-all snap-start flex flex-col justify-between"
                                     >
-                                        <div className="flex justify-between items-start gap-3">
+                                        <div className="flex justify-between items-start gap-4">
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-gray-900 text-sm truncate">{b.serviceId?.title || "Service"}</h4>
-                                                <div className="flex items-center gap-2 mt-1 text-[11px] text-gray-500 font-medium">
-                                                    <span className="flex items-center gap-1"><FaCalendarAlt className="text-[10px]" /> {b.date}</span>
-                                                    <span>•</span>
-                                                    <span>{b.time}</span>
+                                                <h4 className="font-black text-slate-900 text-base truncate mb-1">{b.serviceId?.title || "Specialized Service"}</h4>
+                                                <div className="flex items-center gap-3 text-xs text-slate-400 font-medium">
+                                                    <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-lg"><FaCalendarAlt size={10} /> {b.date}</span>
+                                                    <span className="bg-slate-50 px-3 py-1 rounded-lg">{b.time}</span>
                                                 </div>
                                             </div>
-                                            <span className={`shrink-0 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border
-                                                ${b.status === 'Pending' ? 'bg-amber-50 text-amber-600 border-amber-100' : ''}
-                                                ${b.status === 'Confirmed' ? 'bg-blue-50 text-blue-600 border-blue-100' : ''}
-                                                ${b.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : ''}
-                                                ${b.status === 'Cancelled' ? 'bg-red-50 text-red-600 border-red-100' : ''}
+                                            <span className={`shrink-0 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-wider
+                                                ${b.status === 'Pending' ? 'bg-amber-50 text-amber-600' : ''}
+                                                ${b.status === 'Confirmed' ? 'bg-indigo-50 text-indigo-600' : ''}
+                                                ${b.status === 'Completed' ? 'bg-emerald-50 text-emerald-700' : ''}
+                                                ${b.status === 'Cancelled' ? 'bg-slate-50 text-slate-400' : ''}
                                             `}>
                                                 {b.status}
                                             </span>
                                         </div>
-                                        <div className="mt-3 pt-3 border-t border-gray-50 flex justify-between items-center text-[11px]">
-                                            <span className="text-gray-400 font-medium">ID: #{b._id.slice(-6).toUpperCase()}</span>
-                                            <span className="text-gray-900 font-black">₹{b.amount}</span>
+                                        <div className="mt-6 pt-6 border-t border-slate-50 flex justify-between items-center">
+                                            <span className="text-slate-300 font-mono text-[10px]">#BK-{b._id.slice(-6).toUpperCase()}</span>
+                                            <span className="text-slate-900 font-black text-lg">₹{b.amount}</span>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -186,90 +188,115 @@ const ServiceSearch = () => {
                 )}
 
 
-                {/* Results */}
+                {/* Results Grid */}
                 {loading ? (
-                    <div className="text-center py-20 text-gray-500">Loading services...</div>
+                    <div className="flex flex-col items-center justify-center py-32 space-y-6">
+                        <div className="w-12 h-12 border-4 border-slate-100 border-t-orange-600 rounded-full animate-spin"></div>
+                        <p className="text-slate-400 font-medium tracking-widest uppercase text-[10px]">Syncing Network...</p>
+                    </div>
                 ) : services.length === 0 ? (
-                    <div className="text-center py-20 text-gray-500 bg-white rounded-3xl border border-gray-100 shadow-sm">
-                        <FaStore className="text-5xl mx-auto text-gray-300 mb-4" />
-                        <h3 className="text-xl font-bold text-gray-700">No Services Found</h3>
-                        <p className="mt-2">Try adjusting your search or category filter.</p>
+                    <div className="text-center py-32 bg-white rounded-[4rem] shadow-[0_20px_60px_rgba(0,0,0,0.02)] border-none">
+                        <div className="w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
+                            <FaStore className="text-4xl text-slate-200" />
+                        </div>
+                        <h3 className="text-3xl font-black text-slate-800">No Professionals Found</h3>
+                        <p className="mt-4 text-slate-400 text-lg font-light">Your specific requirement is currently being matched with our off-market experts.</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 xl:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
                         {services.map(svc => (
-                            <div key={svc._id} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col">
-                                <div className="h-35 bg-gray-100 relative overflow-hidden">
+                            <motion.div 
+                                key={svc._id} 
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5 }}
+                                className="bg-white rounded-[3rem] overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] transition-all duration-500 group flex flex-col"
+                            >
+                                <div className="h-64 bg-slate-50 relative overflow-hidden m-3 rounded-[2.5rem]">
                                     {svc.images?.length > 0 ? (
-                                        <img src={`${svc.images[0]}`} alt={svc.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                                        <img src={`${svc.images[0]}`} alt={svc.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">No Image</div>
+                                        <div className="w-full h-full flex items-center justify-center text-slate-200 uppercase font-black tracking-widest text-xs">No Visual Data</div>
                                     )}
-                                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-orange-600 shadow-sm">
+                                    <div className="absolute top-5 left-5 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-2xl text-[10px] font-black text-white shadow-xl uppercase tracking-widest">
                                         {svc.category}
                                     </div>
                                 </div>
 
-                                <div className="p-5 flex-1 flex flex-col">
-                                    <div className="flex justify-between items-start gap-2 mb-2">
-                                        <h3 className="font-bold text-gray-900 text-lg leading-tight line-clamp-2">{svc.title}</h3>
+                                <div className="p-8 flex-1 flex flex-col">
+                                    <div className="flex justify-between items-start gap-4 mb-3">
+                                        <h3 className="font-black text-slate-800 text-2xl leading-tight group-hover:text-orange-600 transition-colors uppercase tracking-tight">{svc.title}</h3>
                                     </div>
 
-                                    <p className="text-gray-500 text-sm line-clamp-2 mb-1">{svc.description}</p>
+                                    <p className="text-slate-400 text-sm font-light leading-relaxed mb-8 flex-1 italic truncate-3-lines">{svc.description}</p>
                                            
-                                    <div className=" items-center justify-between pt-1">
-                                        <div className="text-1xl font-black text-gray-900">₹{svc.price}</div> <br/>
-                                        <button onClick={() => setBookingService(svc)} className="bg-gray-800 right-[12px] hover:bg-orange-500 text-white px-2 py-2 rounded-xl text-sm font-bold shadow-md hover:shadow-orange-500/30 transition-all">
-                                            Book Now
+                                    <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+                                        <div className="text-2xl font-black text-slate-900">₹{svc.price}</div>
+                                        <button 
+                                            onClick={() => setBookingService(svc)} 
+                                            className="bg-slate-900 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-[0.1em] shadow-lg hover:shadow-orange-200 transition-all active:scale-95"
+                                        >
+                                            Secure Slot
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 )}
 
-                {/* Booking Modal */}
+                {/* Booking Modal Redesign */}
                 {bookingService && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
-                        <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-                            <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                                <h3 className="font-bold text-lg text-gray-900">Book Service</h3>
-                                <button onClick={() => setBookingService(null)} className="text-gray-400 hover:text-red-500 transition p-1"><FaTimes /></button>
-                            </div>
-                            <div className="p-6">
-                                <div className="flex gap-4 mb-6 pb-6 border-b border-gray-100">
-                                    <div className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-xl p-4">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            className="bg-white rounded-[3.5rem] w-full max-w-lg overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.3)]"
+                        >
+                            <div className="p-10 relative">
+                                <button onClick={() => setBookingService(null)} className="absolute top-8 right-8 text-slate-300 hover:text-red-500 transition-colors w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center"><FaTimes /></button>
+                                
+                                <div className="mb-10">
+                                    <div className="w-16 h-1 w-1 bg-orange-600 rounded-full mb-6"></div>
+                                    <h3 className="font-[900] text-3xl text-slate-900 leading-none">Schedule Service</h3>
+                                    <p className="text-slate-400 font-light mt-3 uppercase tracking-[0.2em] text-[10px]">Professional Authorization Token Required</p>
+                                </div>
+
+                                <div className="flex gap-6 mb-10 p-5 bg-slate-50 rounded-[2.5rem]">
+                                    <div className="w-20 h-20 rounded-[1.5rem] bg-white overflow-hidden shadow-sm flex-shrink-0">
                                         {bookingService.images?.length > 0 ? (
                                             <img src={`${bookingService.images[0]}`} className="w-full h-full object-cover" alt="" />
                                         ) : (
-                                            <FaStore className="w-full h-full p-4 text-gray-300" />
+                                            <div className="w-full h-full bg-slate-100 p-6 flex items-center justify-center text-slate-200"><FaStore /></div>
                                         )}
                                     </div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-800 line-clamp-1">{bookingService.title}</h4>
-                                        <p className="text-lg font-black text-orange-500 mt-1">₹{bookingService.price}</p>
+                                    <div className="flex flex-col justify-center">
+                                        <h4 className="font-black text-slate-800 leading-tight uppercase tracking-tight">{bookingService.title}</h4>
+                                        <p className="text-xl font-black text-orange-600 mt-1">₹{bookingService.price}</p>
                                     </div>
                                 </div>
 
-                                <form onSubmit={handleBook} className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Date</label>
-                                        <input type="date" required min={new Date().toISOString().split('T')[0]} value={bookingDate} onChange={e => setBookingDate(e.target.value)}
-                                            className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-orange-400 focus:ring-0 outline-none transition" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Time</label>
-                                        <input type="time" required value={bookingTime} onChange={e => setBookingTime(e.target.value)}
-                                            className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-orange-400 focus:ring-0 outline-none transition" />
+                                <form onSubmit={handleBook} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-4">Target Date</label>
+                                            <input type="date" required min={new Date().toISOString().split('T')[0]} value={bookingDate} onChange={e => setBookingDate(e.target.value)}
+                                                className="w-full bg-slate-50 px-6 py-5 rounded-[1.8rem] focus:ring-4 focus:ring-orange-50 outline-none transition-all font-bold text-slate-700 border-none" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-4">Target Time</label>
+                                            <input type="time" required value={bookingTime} onChange={e => setBookingTime(e.target.value)}
+                                                className="w-full bg-slate-50 px-6 py-5 rounded-[1.8rem] focus:ring-4 focus:ring-orange-50 outline-none transition-all font-bold text-slate-700 border-none" />
+                                        </div>
                                     </div>
 
-                                    <button type="submit" className="w-full mt-6 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-                                        <FaCalendarAlt /> Confirm Booking
+                                    <button type="submit" className="w-full mt-6 bg-slate-900 text-white py-6 rounded-[1.8rem] font-[900] text-sm uppercase tracking-[0.3em] shadow-2xl hover:bg-orange-600 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
+                                        Authorize Appointment
                                     </button>
                                 </form>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 )}
 

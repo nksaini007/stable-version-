@@ -51,33 +51,33 @@ const ServiceSubCategories = () => {
   return (
     <>
       <Nev />
-      <div className="min-h-screen bg-[#fafbfc] pt-24 pb-16 px-6">
+      <div className="min-h-screen bg-[#F8FAFC] pt-32 pb-24 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div className="space-y-4">
+          {/* Header Section */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-20 gap-10">
+            <div className="space-y-6">
               <Link
                 to="/services"
-                className="inline-flex items-center gap-2 text-orange-600 font-bold hover:translate-x-1 transition-transform"
+                className="group inline-flex items-center gap-2 text-slate-400 font-black text-[10px] tracking-[0.2em] uppercase hover:text-orange-600 transition-colors"
               >
-                <FaChevronLeft size={12} /> ALL CATEGORIES
+                <FaChevronLeft size={8} className="group-hover:-translate-x-1 transition-transform" /> Back to Categories
               </Link>
-              <h1 className="text-5xl font-extrabold text-gray-900 capitalize">
+              <h1 className="text-6xl md:text-7xl font-[900] text-slate-900 tracking-tight capitalize leading-[1.1]">
                 {category.name}
               </h1>
-              <p className="text-gray-500 text-lg max-w-xl">
-                Choose a specific service area to see available professionals and
-                pricing details.
+              <p className="text-slate-500 text-xl md:text-2xl max-w-2xl font-light leading-relaxed">
+                Precision services for {category.name.toLowerCase()} projects. 
+                Select a specialty to begin.
               </p>
             </div>
             
-            <div className="flex gap-4">
-                 <div className="relative">
-                     <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <div className="w-full lg:w-auto">
+                 <div className="relative group">
+                     <FaSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors" />
                      <input 
                         type="text" 
-                        placeholder="Search within category..." 
-                        className="pl-12 pr-6 py-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-orange-400 outline-none w-full md:w-64 shadow-sm bg-white"
+                        placeholder="Search specialties..." 
+                        className="pl-14 pr-8 py-5 rounded-[2rem] bg-white shadow-[0_10px_30px_rgba(0,0,0,0.03)] focus:shadow-[0_20px_50px_rgba(0,0,0,0.06)] focus:ring-4 focus:ring-orange-50 outline-none w-full lg:w-80 transition-all border-none text-slate-700"
                      />
                  </div>
             </div>
@@ -87,47 +87,47 @@ const ServiceSubCategories = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
           >
             {category.subcategories.map((sub, idx) => (
               <motion.div
                 key={sub._id}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.05 }}
-                whileHover={{ y: -8 }}
-                className="group relative bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-lg shadow-gray-200/50 flex flex-col"
+                whileHover={{ y: -10 }}
+                className="group relative bg-white rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] transition-all duration-500 overflow-hidden"
               >
                 <Link to={`/services/${category._id}/${sub._id}`} className="flex flex-col h-full">
                   {/* Thumbnail */}
-                  <div className="h-48 overflow-hidden relative">
+                  <div className="h-56 overflow-hidden relative m-3 rounded-[2rem]">
                     {sub.image ? (
                         <img 
                             src={sub.image} 
                             alt={sub.name} 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                         />
                     ) : (
-                        <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                        <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200">
                              <FaImage size={40} />
                         </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   </div>
 
-                  {/* Title & Stats */}
-                  <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold text-gray-800 group-hover:text-orange-600 transition mb-2">
+                  {/* Content */}
+                  <div className="px-8 pb-8 pt-2 flex flex-col flex-1">
+                    <h3 className="text-2xl font-black text-slate-800 group-hover:text-orange-600 transition-colors mb-2">
                         {sub.name}
                     </h3>
-                    <p className="text-gray-500 text-sm mb-6 flex-1">
-                        Professional services for your {sub.name.toLowerCase()} needs.
+                    <p className="text-slate-400 text-sm font-light leading-relaxed mb-8 flex-1">
+                        High-performance {sub.name.toLowerCase()} solutions for enterprise and residential needs.
                     </p>
                     
-                    <div className="footer mt-auto flex justify-between items-center pt-4 border-t border-gray-50">
-                        <span className="text-orange-600 text-sm font-bold tracking-tight">VIEW DEALS</span>
-                        <div className="w-8 h-8 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center shadow-sm group-hover:bg-orange-600 group-hover:text-white transition group-hover:scale-110">
-                            <FaArrowRight size={12} />
+                    <div className="flex justify-between items-center pt-6 border-t border-slate-50">
+                        <span className="text-orange-600 text-[10px] font-black tracking-[0.2em] uppercase">Browse Deals</span>
+                        <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all duration-500 group-hover:rotate-12">
+                            <FaArrowRight size={14} />
                         </div>
                     </div>
                   </div>
@@ -136,39 +136,43 @@ const ServiceSubCategories = () => {
             ))}
 
             {category.subcategories.length === 0 && (
-              <div className="col-span-full py-20 text-center bg-gray-50 rounded-[3rem] border border-dashed border-gray-300">
-                <p className="text-gray-500 text-xl italic font-medium">
-                  We're currently expanding this category. Please check back soon!
+              <div className="col-span-full py-32 text-center bg-white rounded-[4rem] shadow-[0_10px_40px_rgba(0,0,0,0.02)]">
+                <p className="text-slate-400 text-2xl font-light mb-8 italic">
+                  Curating premium specialties...
                 </p>
                 <button 
                   onClick={() => navigate("/services")}
-                  className="mt-6 bg-orange-600 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-orange-200/50"
+                  className="bg-slate-900 text-white px-12 py-5 rounded-3xl font-black hover:scale-105 transition-all shadow-xl shadow-slate-200"
                 >
-                  Explore Other Categories
+                  Explore Other Realms
                 </button>
               </div>
             )}
           </motion.div>
 
-          {/* Quick Support Section */}
-          <div className="mt-20 flex flex-col lg:flex-row items-center gap-12 p-10 bg-white rounded-[3.5rem] shadow-xl border border-gray-100">
-             <div className="relative w-full lg:w-1/2 rounded-[2.5rem] overflow-hidden group">
+          {/* Luxury Support Section */}
+          <div className="mt-40 flex flex-col lg:flex-row items-center gap-20 p-16 bg-white rounded-[4rem] shadow-[0_50px_100px_rgba(0,0,0,0.04)] relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/5 rounded-full blur-[80px]"></div>
+             
+             <div className="relative w-full lg:w-1/2 rounded-[3rem] overflow-hidden group shadow-2xl">
                  <img 
                     src="https://images.unsplash.com/photo-1521791136064-7986c29596ba?auto=format&fit=crop&q=80&w=800" 
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-700" 
+                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-1000" 
                     alt="Support"
                  />
-                 <div className="absolute inset-0 bg-orange-600/10 transition-colors group-hover:bg-orange-600/0"></div>
+                 <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition-colors"></div>
              </div>
-             <div className="lg:w-1/2 space-y-4">
-                 <h2 className="text-3xl font-extrabold text-gray-900 leading-tight">Need expert advice for {category.name}?</h2>
-                 <p className="text-gray-500 text-lg">Our dedicated team of advisors can help you choose the right service and professional for your specific requirements.</p>
-                 <div className="flex flex-wrap gap-4 pt-4">
-                    <button className="bg-orange-600 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-orange-200 hover:scale-105 transition active:scale-95">
-                        Chat with Support
+             
+             <div className="lg:w-1/2 space-y-8">
+                 <div className="w-16 h-1 w-1 bg-orange-600 rounded-full"></div>
+                 <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight tracking-tight">Expert Consulting <br/> for {category.name}</h2>
+                 <p className="text-slate-500 text-xl font-light leading-relaxed">Our strategists are ready to help you navigate complex requirements and secure the ideal service professional.</p>
+                 <div className="flex flex-wrap gap-6 pt-4">
+                    <button className="bg-orange-600 text-white px-10 py-5 rounded-3xl font-black shadow-[0_20px_40px_rgba(234,88,12,0.2)] hover:scale-105 transition active:scale-95">
+                        Consult with Expert
                     </button>
-                    <button className="bg-white border-2 border-gray-200 text-gray-700 px-8 py-3 rounded-full font-bold hover:border-orange-200 transition">
-                        How it works
+                    <button className="bg-slate-50 text-slate-600 px-10 py-5 rounded-3xl font-black hover:bg-slate-100 transition">
+                        Methodology
                     </button>
                  </div>
              </div>
