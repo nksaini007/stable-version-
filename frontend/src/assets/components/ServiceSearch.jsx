@@ -366,10 +366,4 @@ const ServiceSearch = () => {
     );
 };
 
-            </div>
-        </div>
-        </>
-    );
-};
-
 export default ServiceSearch;
