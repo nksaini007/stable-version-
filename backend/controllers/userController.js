@@ -616,24 +616,27 @@ const getArchitectPublicProfile = async (req, res) => {
 const getProviderPublicProfile = async (req, res) => {
   try {
     const providerId = req.params.id;
-    const provider = await User.findById(providerId)
-      .select("name bio profileImage serviceCategory experience skills contactInfo location role isActive followers following createdAt offeredServices phone");
 
-    if (!provider) return res.status(404).json({ message: "Service Node Not Found." });
+    // 1. Validate ObjectID to prevent 500 CastError
+    const mongoose = require("mongoose");
+    if (!mongoose.Types.ObjectId.isValid(providerId)) {
+      return res.status(400).json({ message: "Invalid Source ID: The scanned node identity is malformed." });
+    }
+
+    const provider = await User.findById(providerId)
+      .select("name bio profileImage serviceCategory experience skills contactInfo location role isActive followers following createdAt offeredServices phone email");
+
+    if (!provider) return res.status(404).json({ message: "Service Node Not Found: The specified node does not exist in our registry." });
     
     // Check if it's actually a provider
     if (provider.role !== "provider") {
-      return res.status(403).json({ message: "Access Denied: Specified node is not a service provider." });
+      return res.status(403).json({ message: "Access Denied: Specified node identity is not registered as a service provider." });
     }
-
-    // We allow viewing the profile even if not toggled "isActive" by admin,
-    // as long as they are a provider. This ensures QR sharing works during onboarding.
 
     // Fetch details of offered services
     const Service = require("../models/Service");
     const services = await Service.find({
-      _id: { $in: provider.offeredServices }
-      // Removed isActive: true here to show all services the provider has added to their portfolio
+      _id: { $in: provider.offeredServices || [] }
     });
 
     const providerData = provider.toObject();
@@ -645,8 +648,8 @@ const getProviderPublicProfile = async (req, res) => {
 
     res.json({ provider: providerData, services });
   } catch (err) {
-    console.error("getProviderPublicProfile Error:", err);
-    res.status(500).json({ error: "System Core Error: Failed to retrieve profile data." });
+    console.error("CRITICAL_ERR::getProviderPublicProfile:", err);
+    res.status(500).json({ message: "System Failure: An internal logic error occurred while assembling the profile manifest." });
   }
 };
 

@@ -28,7 +28,9 @@ const PublicServiceProfile = () => {
                 setProvider(data.provider);
                 setServices(data.services);
             } catch (err) {
-                setError(err.response?.data?.message || "Failed to load provider profile");
+                console.error("Profile_Fetch_Error:", err);
+                const msg = err.response?.data?.message || err.response?.data?.error || "Failed to load provider profile manifest.";
+                setError(msg);
             } finally {
                 setLoading(false);
             }
