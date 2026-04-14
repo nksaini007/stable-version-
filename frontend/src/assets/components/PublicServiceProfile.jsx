@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     FaChevronLeft, FaShareAlt, FaSpinner, FaTools, 
     FaCheckCircle, FaStar, FaPhone, FaHome, FaSearch, 
-    FaCalendarCheck, FaUser, FaRegBookmark
+    FaCalendarCheck, FaUser, FaUserPlus, FaUserCheck
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 
@@ -14,10 +14,17 @@ const PublicServiceProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    
+    // Core Data
     const [provider, setProvider] = useState(null);
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    // Social State
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followersCount, setFollowersCount] = useState(0);
+    const [followLoading, setFollowLoading] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -25,6 +32,15 @@ const PublicServiceProfile = () => {
                 const { data } = await API.get(`/users/provider/${id}`);
                 setProvider(data.provider);
                 setServices(data.services);
+                setFollowersCount(data.provider.followersCount || 0);
+
+                // Check Follow Status if logged in
+                if (user) {
+                    try {
+                        const statusRes = await API.get(`/follow/${id}/status`);
+                        setIsFollowing(statusRes.data.isFollowing);
+                    } catch (e) { /* silent fail for status check */ }
+                }
             } catch (err) {
                 console.error("Profile_Fetch_Error:", err);
                 const msg = err.response?.data?.message || err.response?.data?.error || "Failed to load provider profile manifest.";
@@ -34,7 +50,32 @@ const PublicServiceProfile = () => {
             }
         };
         fetchProfile();
-    }, [id]);
+    }, [id, user]);
+
+    const handleFollow = async () => {
+        if (!user) {
+            toast.info("Please login to follow providers");
+            return navigate("/login");
+        }
+        setFollowLoading(true);
+        try {
+            if (isFollowing) {
+                const res = await API.delete(`/follow/${id}`);
+                setIsFollowing(false);
+                setFollowersCount(res.data.followersCount);
+                toast.success("Unfollowed Node");
+            } else {
+                const res = await API.post(`/follow/${id}`);
+                setIsFollowing(true);
+                setFollowersCount(res.data.followersCount);
+                toast.success("Following Node");
+            }
+        } catch (err) {
+            toast.error("Social Synchronization Failure");
+        } finally {
+            setFollowLoading(false);
+        }
+    };
 
     const handleShare = () => {
         if (navigator.share) {
@@ -133,13 +174,30 @@ const PublicServiceProfile = () => {
                     </p>
                 </div>
 
-                {/* Action Button */}
-                <div className="w-full max-w-[200px] mb-12">
+                {/* Action Hub - DUAL BUTTONS */}
+                <div className="w-full max-w-[360px] flex gap-3 mb-12">
                      <button 
                         onClick={() => window.open(`tel:${provider.phone}`)}
-                        className="w-full py-3.5 bg-[#1a1a1a] text-white rounded-full text-[13px] font-bold hover:bg-[#2a2a2a] transition-all"
+                        className="flex-1 py-3.5 bg-white text-black rounded-full text-[13px] font-bold hover:bg-white/90 transition-all flex items-center justify-center gap-2"
                     >
-                        Connect Now
+                        <FaPhone className="text-[10px]" /> Connect
+                    </button>
+                    <button 
+                        onClick={handleFollow}
+                        disabled={followLoading}
+                        className={`flex-1 py-3.5 rounded-full text-[13px] font-bold transition-all flex items-center justify-center gap-2 border ${
+                            isFollowing 
+                            ? "bg-transparent border-white/20 text-white/60 hover:border-white/40" 
+                            : "bg-[#1a1a1a] border-white/5 text-white hover:bg-[#2a2a2a]"
+                        }`}
+                    >
+                        {followLoading ? (
+                            <FaSpinner className="animate-spin" />
+                        ) : isFollowing ? (
+                            <><FaUserCheck size={14} className="text-white" /> Following</>
+                        ) : (
+                            <><FaUserPlus size={14} /> Follow</>
+                        )}
                     </button>
                 </div>
 
@@ -158,12 +216,12 @@ const PublicServiceProfile = () => {
                         <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Following</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-xl font-bold text-white">{provider.followersCount || 0}</p>
+                        <p className="text-xl font-bold text-white">{followersCount}</p>
                         <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Followers</p>
                     </div>
                 </div>
 
-                {/* Services Masonry Grid */}
+                {/* Services Grid */}
                 <div className="w-full">
                     <div className="grid grid-cols-2 gap-3 pb-20">
                         {services.map((svc, idx) => (
@@ -192,9 +250,6 @@ const PublicServiceProfile = () => {
                                         <h3 className="text-[11px] font-bold text-white uppercase tracking-widest">{svc.title}</h3>
                                         <p className="text-[10px] text-white/40 font-bold mt-1">₹{svc.price.toLocaleString()}</p>
                                     </div>
-                                    <div className="absolute bottom-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <FaChevronLeft className="text-white text-[10px] rotate-180" />
-                                    </div>
                                 </Link>
                             </motion.div>
                         ))}
@@ -214,9 +269,8 @@ const PublicServiceProfile = () => {
                     <button className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all border border-white/5">
                         <span className="text-xl">+</span>
                     </button>
-                    <Link to="/dashboard" className="text-white/40 hover:text-white transition-colors relative">
+                    <Link to="/dashboard" className="text-white/40 hover:text-white transition-colors">
                         <FaCalendarCheck size={16} />
-                        <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                     </Link>
                     <Link to="/profile" className="text-white/40 hover:text-white transition-colors">
                         <div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
