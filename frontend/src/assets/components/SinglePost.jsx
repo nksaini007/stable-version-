@@ -4,7 +4,7 @@ import API from '../api/api';
 import { AuthContext } from '../context/AuthContext';
 import {
     FaCommentDots, FaShareAlt, FaPaperPlane, FaTrash,
-    FaArrowLeft, FaCrosshairs, FaExternalLinkAlt, FaLock, FaRedoAlt
+    FaArrowLeft, FaCrosshairs, FaExternalLinkAlt
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
@@ -203,65 +203,29 @@ const SinglePost = () => {
                         </div>
                     </div>
 
-                    {/* ── BROWSER WINDOW (Premium iframe wrapper) ── */}
-                    <div className="flex-1 bg-[#0d0d0d] px-4 md:px-10 lg:px-16 pt-8 pb-0">
+                    {/* ── IFRAME SECTION ── */}
+                    <div className="flex-1 bg-[#0d0d0d] px-4 md:px-8 pt-6 pb-0">
                         <motion.div
-                            initial={{ opacity: 0, y: 24 }}
+                            initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2, duration: 0.5 }}
-                            className="w-full max-w-7xl mx-auto rounded-t-2xl overflow-hidden shadow-[0_-8px_80px_rgba(0,0,0,0.8)]"
-                            style={{ height: '80vh', minHeight: '520px', display: 'flex', flexDirection: 'column' }}
+                            className="w-full max-w-7xl mx-auto rounded-2xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.7)] border border-white/[0.06]"
+                            style={{ height: '80vh', minHeight: '520px', position: 'relative' }}
                         >
-                            {/* Browser chrome bar */}
-                            <div className="bg-[#252525] flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-white/[0.08]">
-                                {/* Mac-style window dots */}
-                                <div className="flex items-center gap-1.5 flex-shrink-0">
-                                    <div className="w-3 h-3 rounded-full bg-[#FF5F57] shadow-[0_0_4px_#FF5F5780]"></div>
-                                    <div className="w-3 h-3 rounded-full bg-[#FEBC2E] shadow-[0_0_4px_#FEBC2E80]"></div>
-                                    <div className="w-3 h-3 rounded-full bg-[#28C840] shadow-[0_0_4px_#28C84080]"></div>
+                            {iframeLoading && (
+                                <div className="absolute inset-0 bg-[#161616] flex flex-col items-center justify-center gap-3 z-10">
+                                    <div className="w-8 h-8 border-2 border-white/10 border-t-violet-400 rounded-full animate-spin"></div>
+                                    <p className="text-xs text-white/20 font-medium tracking-wider">Loading...</p>
                                 </div>
-
-                                {/* Spacer */}
-                                <div className="flex-1 flex items-center gap-2 min-w-0">
-                                    {/* Address bar */}
-                                    <div className="flex-1 bg-[#1a1a1a] border border-white/[0.08] rounded-md px-3 py-1.5 flex items-center gap-2 min-w-0">
-                                        <FaLock size={8} className="text-green-400/70 flex-shrink-0" />
-                                        <span className="text-[#8a8a8a] text-[11px] font-mono truncate">{displayUrl}</span>
-                                    </div>
-                                </div>
-
-                                {/* Reload + Open */}
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                    <button
-                                        onClick={() => { setIframeLoading(true); document.getElementById('blog-iframe').src += ''; }}
-                                        className="text-white/20 hover:text-white/60 transition-colors p-1"
-                                    >
-                                        <FaRedoAlt size={11} />
-                                    </button>
-                                    <a href={post.blogUrl} target="_blank" rel="noopener noreferrer" className="text-white/20 hover:text-white/60 transition-colors p-1">
-                                        <FaExternalLinkAlt size={11} />
-                                    </a>
-                                </div>
-                            </div>
-
-                            {/* iframe */}
-                            <div className="relative flex-1 bg-white overflow-hidden">
-                                {/* Loading overlay */}
-                                {iframeLoading && (
-                                    <div className="absolute inset-0 bg-[#f5f5f5] flex flex-col items-center justify-center gap-3 z-10">
-                                        <div className="w-8 h-8 border-2 border-gray-200 border-t-violet-500 rounded-full animate-spin"></div>
-                                        <p className="text-xs text-gray-400 font-medium">Loading page...</p>
-                                    </div>
-                                )}
-                                <iframe
-                                    id="blog-iframe"
-                                    src={post.blogUrl}
-                                    title={post.title}
-                                    className="w-full h-full border-none"
-                                    sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-                                    onLoad={() => setIframeLoading(false)}
-                                />
-                            </div>
+                            )}
+                            <iframe
+                                id="blog-iframe"
+                                src={post.blogUrl}
+                                title={post.title}
+                                className="w-full h-full border-none"
+                                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                                onLoad={() => setIframeLoading(false)}
+                            />
                         </motion.div>
                     </div>
 
@@ -425,34 +389,21 @@ const SinglePost = () => {
                     </div>
                 </div>
 
-                {/* ── CONTENT CARD ── */}
-                <div className="flex-1 bg-[#0d0d0d] px-4 md:px-10 lg:px-16 pt-8 pb-12">
+                {/* ── CONTENT SECTION ── */}
+                <div className="flex-1 bg-[#0d0d0d] py-12 px-5 md:px-10 lg:px-16">
                     <motion.div
-                        initial={{ opacity: 0, y: 24 }}
+                        initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
-                        className="w-full max-w-4xl mx-auto"
+                        className="w-full max-w-3xl mx-auto"
                     >
-                        {/* Content label bar */}
-                        <div className="bg-[#1e1e1e] border border-white/[0.07] rounded-t-2xl flex items-center gap-3 px-5 py-3">
-                            <div className="flex items-center gap-1.5">
-                                <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] shadow-[0_0_4px_#FF5F5780]"></div>
-                                <div className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E] shadow-[0_0_4px_#FEBC2E80]"></div>
-                                <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] shadow-[0_0_4px_#28C84080]"></div>
-                            </div>
-                            <span className="text-white/20 text-[11px] font-mono ml-2">post_content.txt</span>
-                        </div>
-
-                        {/* Content body */}
-                        <div className="bg-[#161616] border border-t-0 border-white/[0.07] rounded-b-2xl p-8 md:p-12 shadow-[0_8px_60px_rgba(0,0,0,0.6)]">
-                            {post.content ? (
-                                <p className="text-white/70 text-base md:text-lg leading-[1.9] font-normal whitespace-pre-line">
-                                    {renderTextWithLinks(post.content)}
-                                </p>
-                            ) : (
-                                <p className="text-white/20 italic text-sm">No content provided.</p>
-                            )}
-                        </div>
+                        {post.content ? (
+                            <p className="text-white/75 text-base md:text-[17px] leading-[1.95] font-normal whitespace-pre-line">
+                                {renderTextWithLinks(post.content)}
+                            </p>
+                        ) : (
+                            <p className="text-white/20 italic text-sm">No content provided.</p>
+                        )}
                     </motion.div>
                 </div>
 
