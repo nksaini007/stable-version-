@@ -17,7 +17,7 @@ const uploadPostImage = multer({ storage }).single("image");
 // ==============================
 const createPost = async (req, res) => {
     try {
-        const { title, content } = req.body;
+        const { title, content, isBlog, blogUrl } = req.body;
         let image = null;
 
         if (req.file) {
@@ -26,8 +26,10 @@ const createPost = async (req, res) => {
 
         const newPost = new Post({
             title,
-            content,
+            content: isBlog === "true" || isBlog === true ? (content || "Blog Post") : content,
             image,
+            isBlog: isBlog === "true" || isBlog === true,
+            blogUrl,
             author: req.user._id, // Assumes auth middleware sets req.user
         });
 

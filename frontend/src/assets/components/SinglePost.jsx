@@ -239,9 +239,20 @@ const SinglePost = () => {
                                     <h1 className="text-xl lg:text-3xl font-heading font-black text-black uppercase tracking-tighter leading-tight italic">{post.title}</h1>
                                 </div>
                                 
-                                <div className="text-black/80 text-xs lg:text-sm font-bold uppercase leading-loose tracking-wide whitespace-pre-line border-l-4 border-black/10 pl-5 py-2">
-                                    {renderTextWithLinks(post.content)}
-                                </div>
+                                {post.isBlog ? (
+                                    <div className="w-full h-[600px] border-2 border-black/10 rounded-xl overflow-hidden shadow-inner bg-white">
+                                        <iframe
+                                            src={post.blogUrl}
+                                            title={post.title}
+                                            className="w-full h-full border-none"
+                                            sandbox="allow-scripts allow-same-origin allow-popups"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="text-black/80 text-xs lg:text-sm font-bold uppercase leading-loose tracking-wide whitespace-pre-line border-l-4 border-black/10 pl-5 py-2">
+                                        {renderTextWithLinks(post.content)}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Interaction Hub (Optimized spacing for mobile) */}

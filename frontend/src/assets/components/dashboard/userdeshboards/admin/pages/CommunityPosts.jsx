@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 const CommunityPosts = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [form, setForm] = useState({ title: "", content: "", image: null });
+    const [form, setForm] = useState({ title: "", content: "", image: null, isBlog: false, blogUrl: "" });
     const [preview, setPreview] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
@@ -27,7 +27,10 @@ const CommunityPosts = () => {
         fetchPosts();
     }, []);
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+    };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -41,7 +44,11 @@ const CommunityPosts = () => {
         try {
             const formData = new FormData();
             formData.append("title", form.title);
-            formData.append("content", form.content);
+            formData.append("content", form.content || (form.isBlog ? "Blog Post" : ""));
+            formData.append("isBlog", form.isBlog);
+            if (form.isBlog) {
+                formData.append("blogUrl", form.blogUrl);
+            }
             if (form.image) formData.append("image", form.image);
 
             await API.post("/posts", formData, {
@@ -49,7 +56,7 @@ const CommunityPosts = () => {
             });
 
             toast.success("Post created successfully!");
-            setForm({ title: "", content: "", image: null });
+            setForm({ title: "", content: "", image: null, isBlog: false, blogUrl: "" });
             setPreview(null);
             fetchPosts();
         } catch (error) {
@@ -103,17 +110,49 @@ const CommunityPosts = () => {
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-[#8E929C] uppercase mb-1">Content</label>
-                            <textarea
-                                name="content"
-                                required
-                                value={form.content}
-                                onChange={handleChange}
-                                rows="5"
-                                placeholder="What do you want to share with the community?"
-                                className="w-full border border-[#2A2B2F] focus:border-white focus:ring-1 focus:ring-0 rounded-lg p-3 outline-none transition resize-none"
-                            />
+                            <label className="block text-xs font-semibold text-[#8E929C] uppercase mb-2">Post Mode</label>
+                            <div className="flex items-center gap-4 mb-4">
+                                <label className="flex items-center gap-2 cursor-pointer group">
+                                    <input
+                                        type="checkbox"
+                                        name="isBlog"
+                                        checked={form.isBlog}
+                                        onChange={handleChange}
+                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="text-sm text-white group-hover:text-blue-400 transition">Blog Link Mode</span>
+                                </label>
+                            </div>
                         </div>
+
+                        {form.isBlog ? (
+                            <div>
+                                <label className="block text-xs font-semibold text-[#8E929C] uppercase mb-1">Blog URL</label>
+                                <input
+                                    type="url"
+                                    name="blogUrl"
+                                    required
+                                    value={form.blogUrl}
+                                    onChange={handleChange}
+                                    placeholder="https://example.com/my-blog-page"
+                                    className="w-full border border-[#2A2B2F] focus:border-white focus:ring-1 focus:ring-0 rounded-lg p-3 outline-none transition"
+                                />
+                                <p className="text-[10px] text-[#8E929C] mt-1">Users will see this page when they open the post.</p>
+                            </div>
+                        ) : (
+                            <div>
+                                <label className="block text-xs font-semibold text-[#8E929C] uppercase mb-1">Content</label>
+                                <textarea
+                                    name="content"
+                                    required
+                                    value={form.content}
+                                    onChange={handleChange}
+                                    rows="5"
+                                    placeholder="What do you want to share with the community?"
+                                    className="w-full border border-[#2A2B2F] focus:border-white focus:ring-1 focus:ring-0 rounded-lg p-3 outline-none transition resize-none"
+                                />
+                            </div>
+                        )}
 
                         <div>
                             <label className="block text-xs font-semibold text-[#8E929C] uppercase mb-1">Image (Optional)</label>
@@ -165,7 +204,10 @@ const CommunityPosts = () => {
                                 )}
                                 <div className="p-6">
                                     <div className="flex justify-between items-start gap-4 mb-3">
-                                        <h3 className="text-xl font-bold text-white leading-tight">{post.title}</h3>
+                                        <div className="flex flex-col gap-1">
+                                            {post.isBlog && <span className="text-[10px] font-bold bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full w-fit">BLOG LINK</span>}
+                                            <h3 className="text-xl font-bold text-white leading-tight">{post.title}</h3>
+                                        </div>
                                         <button
                                             onClick={() => handleDelete(post._id)}
                                             className="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition flex-shrink-0"

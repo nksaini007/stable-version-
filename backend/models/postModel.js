@@ -41,6 +41,14 @@ const postSchema = new mongoose.Schema(
             },
         ],
         comments: [commentSchema],
+        isBlog: {
+            type: Boolean,
+            default: false,
+        },
+        blogUrl: {
+            type: String,
+            default: null,
+        },
     },
     { timestamps: true }
 );

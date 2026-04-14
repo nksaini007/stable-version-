@@ -208,24 +208,38 @@ const CommunityFeed = () => {
                                             )}
 
                                             {/* Title & Body */}
-                                            <div className="px-6 md:px-5 py-6 space-y-3">
-                                                <h3 className="text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter line-clamp-2">{post.title}</h3>
-                                                <div className="text-black/60 text-[9px] font-bold leading-relaxed uppercase">
-                                                    <p className={`${!isExpanded ? 'line-clamp-3' : ''}`}>
-                                                        {renderTextWithLinks(post.content)}
-                                                    </p>
-                                                    {isLongText && (
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setExpandedPostId(isExpanded ? null : post._id);
-                                                            }}
-                                                            className="text-[#ff5c00] hover:text-black font-black mt-2 text-[8px] border-b-2 border-[#ff5c00]/20 pb-0.5 tracking-widest"
-                                                        >
-                                                            {isExpanded ? "[ CLOSE_LOG ]" : "[ EXPAND_LOG ]"}
-                                                        </button>
+                                             <div className="px-6 md:px-5 py-6 space-y-3">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    {post.isBlog && (
+                                                        <span className="text-[7px] font-black bg-purple-100 text-purple-600 px-2 py-0.5 tracking-widest uppercase rounded-full">BLOG</span>
                                                     )}
                                                 </div>
+                                                <h3 className="text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter line-clamp-2">{post.title}</h3>
+                                                {post.isBlog ? (
+                                                    <button
+                                                        onClick={() => navigate(`/community/post/${post._id}`)}
+                                                        className="flex items-center gap-2 text-[8px] font-black text-[#ff5c00] uppercase tracking-widest border-b border-[#ff5c00]/40 pb-0.5 hover:text-black transition-colors"
+                                                    >
+                                                        READ_FULL_BLOG →
+                                                    </button>
+                                                ) : (
+                                                    <div className="text-black/60 text-[9px] font-bold leading-relaxed uppercase">
+                                                        <p className={`${!isExpanded ? 'line-clamp-3' : ''}`}>
+                                                            {renderTextWithLinks(post.content)}
+                                                        </p>
+                                                        {isLongText && (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setExpandedPostId(isExpanded ? null : post._id);
+                                                                }}
+                                                                className="text-[#ff5c00] hover:text-black font-black mt-2 text-[8px] border-b-2 border-[#ff5c00]/20 pb-0.5 tracking-widest"
+                                                            >
+                                                                {isExpanded ? "[ CLOSE_LOG ]" : "[ EXPAND_LOG ]"}
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 
