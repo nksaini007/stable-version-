@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import API from "../../../api/api";
-import Nev from "../Nev";
-import { AuthContext } from "../../../../context/AuthContext";
+import API from "../api/api";
+import Nev from "./Nev";
+import { AuthContext } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     FaMapMarkerAlt, FaEnvelope, FaChevronLeft, FaShareAlt,
