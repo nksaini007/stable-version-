@@ -251,7 +251,7 @@ const AnimatedCard = () => {
         <div className="fixed bottom-28 md:bottom-12 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-[500px] group">
           {/* The Soft Warm Backlight (Peaking from behind) */}
           <div className="absolute inset-x-12 inset-y-7 search-backlight-core rounded-full z-0 opacity-60"></div>
-          <div className="absolute -inset-1 blur-xl bg-yellow-500/100 rounded-full z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+          <div className="absolute -inset-1 blur-xl bg-black rounded-full z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
 
           <motion.div
             initial={{ y: 30, opacity: 0 }}
