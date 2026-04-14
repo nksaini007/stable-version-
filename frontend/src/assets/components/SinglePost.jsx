@@ -4,14 +4,15 @@ import API from '../api/api';
 import { AuthContext } from '../context/AuthContext';
 import {
     FaCommentDots, FaShareAlt, FaPaperPlane, FaTrash,
-    FaArrowLeft, FaCrosshairs, FaExternalLinkAlt, FaCalendarAlt, FaHeart
+    FaArrowLeft, FaCrosshairs, FaExternalLinkAlt, FaHeart
 } from 'react-icons/fa';
+import { HiOutlineBookOpen } from 'react-icons/hi';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import Nev from './Nev';
 import Footer from './Footer';
 
-// --- Pixel Heart Icon ---
+// Pixel Heart
 const PixelHeart = ({ filled }) => (
     <svg width="16" height="16" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M1 1H2V2H1V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
@@ -52,25 +53,20 @@ const SinglePost = () => {
         });
     };
 
-    useEffect(() => {
-        fetchPost();
-        window.scrollTo(0, 0);
-    }, [id]);
+    useEffect(() => { fetchPost(); window.scrollTo(0, 0); }, [id]);
 
     const fetchPost = async () => {
         try {
             const { data } = await API.get(`/posts/${id}`);
             setPost(data);
-        } catch (error) {
+        } catch {
             toast.error("Post Not Found.");
             navigate('/community');
-        } finally {
-            setLoading(false);
-        }
+        } finally { setLoading(false); }
     };
 
     const handleLike = async () => {
-        if (!user) return toast.info("Please login to like this post.");
+        if (!user) return toast.info("Please login to like.");
         try {
             const isLiked = post.likes.includes(user._id);
             setPost({ ...post, likes: isLiked ? post.likes.filter(i => i !== user._id) : [...post.likes, user._id] });
@@ -87,15 +83,15 @@ const SinglePost = () => {
             setPost({ ...post, comments: updatedComments });
             setCommentText("");
             toast.success("Comment posted!");
-        } catch { toast.error("Failed to post comment."); }
+        } catch { toast.error("Failed to post."); }
     };
 
     const handleDeleteComment = async (commentId) => {
         if (!window.confirm("Delete this comment?")) return;
         try {
-            const { data: updatedComments } = await API.delete(`/posts/${post._id}/comment/${commentId}`);
-            setPost({ ...post, comments: updatedComments });
-        } catch { toast.error("Delete failed."); }
+            const { data: updated } = await API.delete(`/posts/${post._id}/comment/${commentId}`);
+            setPost({ ...post, comments: updated });
+        } catch { toast.error("Failed."); }
     };
 
     const handleShare = () => {
@@ -104,230 +100,208 @@ const SinglePost = () => {
             .catch(() => toast.error("Failed to copy."));
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-white flex flex-col justify-center items-center gap-4">
-                <div className="w-10 h-10 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
-                <p className="text-gray-400 text-sm font-medium tracking-widest uppercase">Loading...</p>
-            </div>
-        );
-    }
+    if (loading) return (
+        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-white/10 border-t-white rounded-full animate-spin"></div>
+        </div>
+    );
 
     if (!post) return null;
 
     const isLikedByMe = user && post.likes.includes(user._id);
 
-    // ==============================
-    //   BLOG POST — Premium Layout
-    // ==============================
+    // ========================================
+    //  BLOG POST — Premium Article Page
+    // ========================================
     if (post.isBlog) {
         return (
-            <div className="min-h-screen flex flex-col bg-white">
+            <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
                 <Nev />
 
-                {/* TOP NAV BAR */}
-                <div className="border-b border-gray-100 bg-white sticky top-0 z-50 shadow-sm">
-                    <div className="max-w-screen-xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between gap-4">
-                        <button
-                            onClick={() => navigate('/community')}
-                            className="flex items-center gap-2 text-gray-400 hover:text-black transition-colors text-sm font-medium group"
-                        >
-                            <FaArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
-                            Community
-                        </button>
+                {/* ── FULL-SCREEN HERO ── */}
+                <div className="relative w-full flex-shrink-0" style={{ height: '100vh', minHeight: '600px' }}>
 
-                        <div className="flex items-center gap-2">
-                            {/* Like */}
-                            <button
-                                onClick={handleLike}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${isLikedByMe ? 'border-orange-400 text-orange-500 bg-orange-50' : 'border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600'}`}
-                            >
-                                <PixelHeart filled={isLikedByMe} />
-                                {post.likes.length}
-                            </button>
-                            {/* Comments scroll */}
-                            <button
-                                onClick={() => document.getElementById('blog-comments')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600 transition-all"
-                            >
-                                <FaCommentDots size={12} />
-                                {post.comments.length}
-                            </button>
-                            {/* Share */}
-                            <button
-                                onClick={handleShare}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600 transition-all"
-                            >
-                                <FaShareAlt size={11} />
-                                Share
-                            </button>
-                            {/* Open external */}
+                    {/* Background image */}
+                    {post.image ? (
+                        <img
+                            src={post.image}
+                            alt={post.title}
+                            className="absolute inset-0 w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-violet-900 via-slate-900 to-black" />
+                    )}
+
+                    {/* Dark gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/60 via-transparent to-[#0a0a0a]/20" />
+
+                    {/* Back button — top left */}
+                    <motion.button
+                        initial={{ opacity: 0, x: -16 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 }}
+                        onClick={() => navigate('/community')}
+                        className="absolute top-6 left-6 md:top-10 md:left-10 flex items-center gap-2 text-white/60 hover:text-white text-xs font-semibold uppercase tracking-widest transition-colors group z-10"
+                    >
+                        <FaArrowLeft size={11} className="group-hover:-translate-x-0.5 transition-transform" />
+                        Community
+                    </motion.button>
+
+                    {/* Blog badge — top right */}
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 }}
+                        className="absolute top-6 right-6 md:top-10 md:right-10 z-10"
+                    >
+                        <span className="flex items-center gap-2 bg-violet-500/20 border border-violet-400/30 text-violet-300 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 backdrop-blur-sm">
+                            <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-pulse"></span>
+                            Blog
+                        </span>
+                    </motion.div>
+
+                    {/* Bottom content — Title + Meta + CTA */}
+                    <div className="absolute bottom-0 left-0 right-0 px-6 md:px-16 pb-14 md:pb-20 z-10">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2, duration: 0.6 }}
+                            className="max-w-4xl"
+                        >
+                            {/* Title */}
+                            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-none tracking-tight mb-6 uppercase">
+                                {post.title}
+                            </h1>
+
+                            {/* Meta row */}
+                            <div className="flex flex-wrap items-center gap-4 mb-10">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 overflow-hidden flex-shrink-0">
+                                        {post.author?.profileImage
+                                            ? <img src={post.author.profileImage} alt="author" className="w-full h-full object-cover" />
+                                            : <div className="w-full h-full flex items-center justify-center text-white/60 text-xs font-black">{post.author?.name?.charAt(0).toUpperCase() || 'A'}</div>
+                                        }
+                                    </div>
+                                    <div>
+                                        <p className="text-white text-xs font-bold leading-none">{post.author?.name || 'Admin'}</p>
+                                        <p className="text-white/40 text-[10px] mt-0.5">{new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                                    </div>
+                                </div>
+
+                                <div className="h-3 w-px bg-white/20 hidden sm:block" />
+
+                                <button onClick={handleLike} className="flex items-center gap-1.5 text-xs font-semibold text-white/50 hover:text-white transition-colors">
+                                    <PixelHeart filled={isLikedByMe} />
+                                    <span className={isLikedByMe ? 'text-[#ff5c00]' : ''}>{post.likes.length} likes</span>
+                                </button>
+
+                                <div className="h-3 w-px bg-white/20 hidden sm:block" />
+
+                                <button onClick={handleShare} className="flex items-center gap-1.5 text-xs font-semibold text-white/50 hover:text-white transition-colors">
+                                    <FaShareAlt size={11} />
+                                    Share
+                                </button>
+                            </div>
+
+                            {/* CTA Button — the main action */}
                             <a
                                 href={post.blogUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-xs font-bold hover:bg-[#ff5c00] transition-colors"
+                                className="group inline-flex items-center gap-3 bg-white text-black px-8 py-4 text-sm font-black uppercase tracking-widest hover:bg-[#ff5c00] hover:text-white transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(255,92,0,0.3)]"
                             >
-                                <FaExternalLinkAlt size={10} />
-                                Open Page
+                                <HiOutlineBookOpen size={18} />
+                                Read Full Article
+                                <FaExternalLinkAlt size={11} className="opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                             </a>
+                        </motion.div>
+                    </div>
+
+                    {/* Scroll hint */}
+                    <div className="absolute bottom-6 right-8 text-white/20 text-[9px] font-bold uppercase tracking-widest hidden md:flex items-center gap-2">
+                        <span>Scroll for comments</span>
+                        <div className="flex flex-col gap-0.5">
+                            <div className="w-px h-3 bg-white/20 mx-auto" />
+                            <div className="w-1 h-1 bg-white/20 rounded-full mx-auto" />
                         </div>
                     </div>
                 </div>
 
-                {/* HERO IMAGE — Full width, 40vh, clean */}
-                {post.image && (
-                    <div className="w-full bg-gray-100 overflow-hidden" style={{ height: '42vh', minHeight: '260px' }}>
-                        <img
-                            src={post.image}
-                            alt={post.title}
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                )}
+                {/* ── COMMENTS SECTION ── */}
+                <div id="blog-comments" className="bg-[#0f0f0f] border-t border-white/5">
+                    <div className="max-w-2xl mx-auto px-5 md:px-8 py-16">
 
-                {/* TITLE + META — Clean card below image */}
-                <div className="border-b border-gray-100 bg-white">
-                    <div className="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                            <div className="flex-1 space-y-4">
-                                {/* Badge */}
-                                <span className="inline-flex items-center gap-2 bg-violet-100 text-violet-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                                    <span className="w-1.5 h-1.5 bg-violet-500 rounded-full"></span>
-                                    Blog Article
-                                </span>
-                                {/* Title */}
-                                <h1 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight tracking-tight max-w-3xl">
-                                    {post.title}
-                                </h1>
-                                {/* Meta row */}
-                                <div className="flex items-center gap-4 flex-wrap">
-                                    {/* Author */}
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
-                                            {post.author?.profileImage
-                                                ? <img src={post.author.profileImage} alt="author" className="w-full h-full object-cover" />
-                                                : <div className="w-full h-full flex items-center justify-center text-xs font-black text-gray-500">{post.author?.name?.charAt(0).toUpperCase() || 'A'}</div>
-                                            }
-                                        </div>
-                                        <span className="text-sm font-semibold text-gray-700">{post.author?.name || 'Admin'}</span>
-                                    </div>
-                                    <div className="w-px h-4 bg-gray-200"></div>
-                                    <div className="flex items-center gap-1.5 text-gray-400">
-                                        <FaCalendarAlt size={11} />
-                                        <span className="text-sm">{new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                                    </div>
-                                    <div className="w-px h-4 bg-gray-200"></div>
-                                    <div className="flex items-center gap-1.5 text-gray-400">
-                                        <FaHeart size={11} className={isLikedByMe ? 'text-orange-400' : ''} />
-                                        <span className="text-sm">{post.likes.length} likes</span>
-                                    </div>
-                                </div>
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-10">
+                            <div className="flex items-center gap-3">
+                                <FaCommentDots size={16} className="text-white/20" />
+                                <h2 className="text-sm font-black text-white uppercase tracking-widest">Comments</h2>
+                                <span className="text-xs font-bold text-white/20 bg-white/5 px-2 py-0.5 rounded-full">{post.comments.length}</span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* IFRAME SECTION — Main Blog Content */}
-                <div className="flex-1 bg-gray-50 py-0">
-                    <div
-                        className="w-full bg-white shadow-[0_4px_40px_rgba(0,0,0,0.08)]"
-                        style={{ height: 'calc(100vh - 56px)', minHeight: '600px' }}
-                    >
-                        <iframe
-                            src={post.blogUrl}
-                            title={post.title}
-                            className="w-full h-full border-none"
-                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-                        />
-                    </div>
-                </div>
-
-                {/* DIVIDER */}
-                <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-
-                {/* COMMENTS SECTION */}
-                <div id="blog-comments" className="bg-gray-50">
-                    <div className="max-w-2xl mx-auto px-4 md:px-8 py-16">
-
-                        {/* Section Header */}
-                        <div className="flex items-center gap-3 mb-10">
-                            <h2 className="text-lg font-black text-gray-900">Comments</h2>
-                            <span className="bg-gray-100 text-gray-400 text-xs font-bold px-2 py-0.5 rounded-full">{post.comments.length}</span>
                         </div>
 
                         {/* Comment Input */}
-                        <form onSubmit={handleCommentSubmit} className="mb-12">
-                            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden focus-within:border-black focus-within:shadow-md transition-all">
+                        <form onSubmit={handleCommentSubmit} className="mb-12 group">
+                            <div className="border border-white/10 bg-white/5 rounded-xl overflow-hidden focus-within:border-white/30 transition-colors">
                                 <textarea
-                                    placeholder="Share your thoughts..."
+                                    placeholder="Leave a comment..."
                                     value={commentText}
                                     onChange={(e) => setCommentText(e.target.value)}
                                     rows={3}
-                                    className="w-full px-5 py-4 text-sm text-gray-700 outline-none resize-none placeholder:text-gray-300 bg-transparent"
+                                    className="w-full px-5 py-4 text-sm text-white/80 bg-transparent outline-none resize-none placeholder:text-white/20"
                                 />
-                                <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/50">
-                                    <span className="text-xs text-gray-300">{commentText.length > 0 ? `${commentText.length} characters` : 'Be kind and constructive'}</span>
+                                <div className="flex items-center justify-end px-4 py-3 border-t border-white/5">
                                     <button
                                         type="submit"
                                         disabled={!commentText.trim()}
-                                        className="flex items-center gap-2 px-5 py-2 bg-black text-white text-xs font-bold rounded-full hover:bg-[#ff5c00] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="flex items-center gap-2 px-5 py-2 bg-white text-black text-xs font-black uppercase tracking-wider rounded-full hover:bg-[#ff5c00] hover:text-white transition-all disabled:opacity-20 disabled:cursor-not-allowed"
                                     >
-                                        <FaPaperPlane size={11} />
+                                        <FaPaperPlane size={10} />
                                         Post
                                     </button>
                                 </div>
                             </div>
                         </form>
 
-                        {/* Comments List */}
+                        {/* Comments */}
                         {post.comments.length === 0 ? (
-                            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200">
-                                <FaCrosshairs className="text-gray-200 mx-auto mb-4" size={32} />
-                                <p className="text-sm font-semibold text-gray-300">No comments yet</p>
-                                <p className="text-xs text-gray-200 mt-1">Start the conversation!</p>
+                            <div className="text-center py-20 border border-dashed border-white/10 rounded-2xl">
+                                <FaCrosshairs className="text-white/10 mx-auto mb-4" size={28} />
+                                <p className="text-sm font-semibold text-white/20">No comments yet</p>
+                                <p className="text-xs text-white/10 mt-1">Be the first to comment!</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 {post.comments.map((comment, i) => (
                                     <motion.div
                                         key={comment._id}
-                                        initial={{ opacity: 0, y: 12 }}
+                                        initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: i * 0.04 }}
-                                        className="group bg-white rounded-2xl border border-gray-100 p-5 hover:border-gray-200 hover:shadow-sm transition-all"
+                                        transition={{ delay: i * 0.05 }}
+                                        className="group bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 hover:bg-white/[0.05] hover:border-white/10 transition-all"
                                     >
                                         <div className="flex items-start gap-3">
-                                            {/* Avatar */}
-                                            <div className="w-9 h-9 rounded-full bg-gray-100 border border-gray-200 overflow-hidden shrink-0">
+                                            <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 overflow-hidden flex-shrink-0">
                                                 {comment.user?.profileImage
                                                     ? <img src={comment.user.profileImage} alt="" className="w-full h-full object-cover" />
-                                                    : <div className="w-full h-full flex items-center justify-center text-xs font-black text-gray-400">{comment.user?.name?.charAt(0).toUpperCase() || 'U'}</div>
+                                                    : <div className="w-full h-full flex items-center justify-center text-xs font-black text-white/30">{comment.user?.name?.charAt(0).toUpperCase() || 'U'}</div>
                                                 }
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                {/* Name + badge + delete */}
-                                                <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center justify-between mb-2.5">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-sm font-bold text-gray-900">{comment.user?.name || 'User'}</span>
-                                                        {comment.user?.role === 'admin' && (
-                                                            <span className="bg-[#ff5c00] text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide">Admin</span>
-                                                        )}
-                                                        <span className="text-xs text-gray-300 hidden sm:block">
-                                                            • {new Date(comment.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
-                                                        </span>
+                                                        <span className="text-sm font-bold text-white/90">{comment.user?.name || 'User'}</span>
+                                                        {comment.user?.role === 'admin' && <span className="bg-[#ff5c00] text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide">Admin</span>}
+                                                        <span className="text-[10px] text-white/20">{new Date(comment.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}</span>
                                                     </div>
                                                     {user?.role === 'admin' && (
-                                                        <button
-                                                            onClick={() => handleDeleteComment(comment._id)}
-                                                            className="text-gray-200 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-1 rounded"
-                                                        >
+                                                        <button onClick={() => handleDeleteComment(comment._id)} className="text-white/10 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all">
                                                             <FaTrash size={11} />
                                                         </button>
                                                     )}
                                                 </div>
-                                                {/* Text */}
-                                                <p className="text-sm text-gray-600 leading-relaxed">{renderTextWithLinks(comment.text)}</p>
+                                                <p className="text-sm text-white/50 leading-relaxed">{renderTextWithLinks(comment.text)}</p>
                                             </div>
                                         </div>
                                     </motion.div>
@@ -342,9 +316,9 @@ const SinglePost = () => {
         );
     }
 
-    // ==============================
-    //   REGULAR POST — Original Layout
-    // ==============================
+    // ========================================
+    //  REGULAR POST — Original Layout (unchanged)
+    // ========================================
     return (
         <div className="bg-[#e5e5e5] min-h-screen flex flex-col font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative overflow-hidden">
             <Nev />
@@ -354,9 +328,7 @@ const SinglePost = () => {
 
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-8 hidden lg:block">
                     <button onClick={() => navigate('/community')} className="flex items-center gap-3 text-black/40 hover:text-[#ff5c00] font-black text-[10px] uppercase tracking-widest transition-all group">
-                        <div className="w-8 h-8 border-2 border-black/10 flex items-center justify-center group-hover:border-[#ff5c00] transition-colors">
-                            <FaArrowLeft />
-                        </div>
+                        <div className="w-8 h-8 border-2 border-black/10 flex items-center justify-center group-hover:border-[#ff5c00] transition-colors"><FaArrowLeft /></div>
                         RETURN TO FEED
                     </button>
                 </motion.div>
@@ -390,14 +362,10 @@ const SinglePost = () => {
 
                     <div className={`w-full flex flex-col ${post.image ? 'lg:w-[40%]' : 'w-full'} bg-white relative`}>
                         <div className="flex-1 overflow-y-auto scrollbar-tech pb-32 lg:pb-24">
-
                             <div className="px-6 lg:px-8 py-6 border-b-2 border-black/5 bg-white/90 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 lg:w-12 lg:h-12 border-2 border-black flex items-center justify-center font-heading text-lg lg:text-xl bg-black text-white shrink-0 overflow-hidden">
-                                        {post.author?.profileImage
-                                            ? <img src={post.author.profileImage} alt="author" className="w-full h-full object-cover" />
-                                            : post.author?.name?.charAt(0).toUpperCase() || "S"
-                                        }
+                                        {post.author?.profileImage ? <img src={post.author.profileImage} alt="author" className="w-full h-full object-cover" /> : post.author?.name?.charAt(0).toUpperCase() || "S"}
                                     </div>
                                     <div className="flex flex-col">
                                         <h4 className="font-black text-black text-[9px] lg:text-[10px] uppercase tracking-tighter leading-none">{post.author?.name || "SYS_OPERATOR"}</h4>
@@ -448,8 +416,7 @@ const SinglePost = () => {
                             <div className="px-6 lg:px-8 py-10 space-y-10">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-[9px] font-black text-black/40 uppercase tracking-[0.4em] flex items-center gap-3 italic">
-                                        <div className="w-2 h-2 bg-[#ff5c00] rotate-45"></div>
-                                        COMM_LOG_ENTRIES
+                                        <div className="w-2 h-2 bg-[#ff5c00] rotate-45"></div>COMM_LOG_ENTRIES
                                     </h3>
                                     <div className="h-[2px] flex-1 mx-6 bg-black/5"></div>
                                 </div>
@@ -461,7 +428,7 @@ const SinglePost = () => {
                                         </div>
                                     ) : (
                                         post.comments.map(comment => (
-                                            <div key={comment._id} className="relative group/comment flex gap-4 lg:gap-6 animate-in slide-in-from-left duration-500">
+                                            <div key={comment._id} className="relative group/comment flex gap-4 lg:gap-6">
                                                 <div className="w-10 h-10 border-2 border-black/10 flex items-center justify-center font-black text-xs text-black/30 bg-black/[0.03] shrink-0 overflow-hidden">
                                                     {comment.user?.profileImage ? <img src={comment.user.profileImage} alt="user" className="w-full h-full object-cover" /> : comment.user?.name?.charAt(0).toUpperCase() || "U"}
                                                 </div>
@@ -469,9 +436,7 @@ const SinglePost = () => {
                                                     <div className="flex justify-between items-center">
                                                         <div className="flex items-center gap-3">
                                                             <p className="text-[10px] font-black text-black uppercase tracking-tight leading-none">{comment.user?.name || "User"}</p>
-                                                            {comment.user?.role === 'admin' && (
-                                                                <span className="bg-[#ff5c00] text-black text-[6px] font-black px-1.5 py-0.5 rounded tracking-widest uppercase shadow-[2px_2px_0px_rgba(0,0,0,1)]">ADMIN</span>
-                                                            )}
+                                                            {comment.user?.role === 'admin' && <span className="bg-[#ff5c00] text-black text-[6px] font-black px-1.5 py-0.5 rounded tracking-widest uppercase shadow-[2px_2px_0px_rgba(0,0,0,1)]">ADMIN</span>}
                                                         </div>
                                                         {user?.role === 'admin' && (
                                                             <button onClick={() => handleDeleteComment(comment._id)} className="text-black/10 hover:text-red-500 opacity-0 group-hover/comment:opacity-100 transition-all p-1.5 hover:bg-red-50 rounded-lg">
@@ -494,13 +459,7 @@ const SinglePost = () => {
                         <div className="fixed lg:absolute bottom-0 inset-x-0 p-4 lg:p-8 bg-white/95 backdrop-blur-xl border-t-2 border-black z-40 lg:z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none">
                             <form onSubmit={handleCommentSubmit} className="flex items-center gap-4 max-w-5xl mx-auto">
                                 <div className="flex-1 relative group">
-                                    <input
-                                        type="text"
-                                        placeholder="Write a comment..."
-                                        value={commentText}
-                                        onChange={(e) => setCommentText(e.target.value)}
-                                        className="w-full bg-black/5 border-2 border-black/10 px-6 py-4 text-[10px] lg:text-[11px] font-black outline-none focus:border-black focus:bg-white transition-all uppercase placeholder:text-black/20"
-                                    />
+                                    <input type="text" placeholder="Write a comment..." value={commentText} onChange={(e) => setCommentText(e.target.value)} className="w-full bg-black/5 border-2 border-black/10 px-6 py-4 text-[10px] lg:text-[11px] font-black outline-none focus:border-black focus:bg-white transition-all uppercase placeholder:text-black/20" />
                                     <div className="absolute top-0 right-0 w-12 h-[3px] bg-[#ff5c00] opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
                                 </div>
                                 <button type="submit" disabled={!commentText.trim()} className="w-14 h-14 bg-black text-white flex items-center justify-center hover:bg-[#ff5c00] transition-all disabled:opacity-20 translate-y-[-2px] shadow-[6px_6px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
@@ -512,9 +471,7 @@ const SinglePost = () => {
                 </motion.div>
             </div>
 
-            <div className="mt-20 lg:mt-0">
-                <Footer />
-            </div>
+            <div className="mt-20 lg:mt-0"><Footer /></div>
         </div>
     );
 };
