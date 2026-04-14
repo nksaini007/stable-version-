@@ -212,9 +212,10 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 </h1>
               </div>
 
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
+      </div>
 
         {/* HUD SIDE PANEL - Refined "Intelligence Stream" */}
         <div className="md:col-span-4 border-l border-black/10 bg-[#0f0f0f] flex flex-col relative">
