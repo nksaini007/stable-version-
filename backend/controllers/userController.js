@@ -611,6 +611,41 @@ const getArchitectPublicProfile = async (req, res) => {
 };
 
 /**
+ * GET /api/users/provider/:id — Public provider profile for the sharing
+ */
+const getProviderPublicProfile = async (req, res) => {
+  try {
+    const providerId = req.params.id;
+    const provider = await User.findById(providerId)
+      .select("name bio profileImage serviceCategory experience skills contactInfo location role isActive followers following createdAt offeredServices phone");
+
+    if (!provider) return res.status(404).json({ message: "Provider not found" });
+    if (provider.role !== "provider" || !provider.isActive) {
+      return res.status(403).json({ message: "This account is not an active service provider." });
+    }
+
+    // Fetch details of offered services
+    const Service = require("../models/Service");
+    const services = await Service.find({
+      _id: { $in: provider.offeredServices },
+      isActive: true
+    });
+
+    const providerData = provider.toObject();
+    providerData.followersCount = provider.followers?.length || 0;
+    providerData.followingCount = provider.following?.length || 0;
+    providerData.serviceCount = services.length;
+    delete providerData.followers;
+    delete providerData.following;
+
+    res.json({ provider: providerData, services });
+  } catch (err) {
+    console.error("getProviderPublicProfile Error:", err);
+    res.status(500).json({ error: "Failed to load provider profile" });
+  }
+};
+
+/**
  * POST /api/users/send-otp
  * Body: { email, phone, type } where type is 'email' or 'phone'
  */
@@ -785,6 +820,7 @@ module.exports = {
   uploadProfile,
   getSellerPublicProfile,
   getArchitectPublicProfile,
+  getProviderPublicProfile,
   sendOTP,
   verifyOTP,
   resetPassword,

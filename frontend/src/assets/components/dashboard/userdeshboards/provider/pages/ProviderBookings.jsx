@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from "react";
 import API from "../../../../../api/api";
-import { FaCheckCircle, FaTimesCircle, FaCheck, FaBan, FaCalendarAlt } from "react-icons/fa";
+import { 
+    FaCheck, FaBan, FaCalendarAlt, FaUser, FaTools, 
+    FaMapMarkerAlt, FaPhone, FaArrowRight, FaSpinner,
+    FaRegClock
+} from "react-icons/fa";
+import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ProviderBookings = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState("All");
 
     const fetchBookings = async () => {
         try {
             setLoading(true);
             const res = await API.get("/bookings/provider-bookings");
-            setBookings(res.data);
+            setBookings(res.data || []);
         } catch (err) {
             console.error(err);
+            toast.error("Failed to sync booking data");
         } finally {
             setLoading(false);
         }
@@ -23,88 +31,140 @@ const ProviderBookings = () => {
     }, []);
 
     const handleUpdateStatus = async (id, status) => {
-        if (!window.confirm(`Mark booking as ${status}?`)) return;
         try {
             await API.put(`/bookings/${id}/status`, { status });
+            toast.success(`Node_Status -> ${status.toUpperCase()}`);
             fetchBookings();
         } catch (err) {
-            console.error(err);
-            alert("Failed to update status");
+            toast.error("Status Sync Failure");
         }
     };
 
+    const filteredBookings = bookings.filter(b => {
+        if (filter === "All") return true;
+        if (filter === "Active") return ["Confirmed", "Arrived", "WorkStarted", "PaymentPending"].includes(b.status);
+        if (filter === "Pending") return b.status === "Pending";
+        if (filter === "Completed") return b.status === "Completed";
+        return b.status === filter;
+    });
+
+    const getStatusStyle = (status) => {
+        switch(status) {
+            case 'Pending': return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
+            case 'Confirmed': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+            case 'Completed': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+            case 'Cancelled': return 'bg-red-500/10 text-red-500 border-red-500/20';
+            default: return 'bg-white/5 text-white/40 border-white/10';
+        }
+    };
+
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center py-32 space-y-4">
+            <FaSpinner className="text-4xl text-orange-500 animate-spin" />
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">Syncing_Booking_Manifest...</span>
+        </div>
+    );
+
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold text-gray-800">Booking Requests</h1>
-                <p className="text-gray-500 text-sm mt-1">Manage all your customer bookings.</p>
+        <div className="space-y-10 animate-in fade-in duration-700 font-mono">
+            {/* 🚀 Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div className="space-y-2">
+                    <h1 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase italic">Booking_Logs</h1>
+                    <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] flex items-center gap-2">
+                         Status: Node_Connected // Total_Records: {bookings.length}
+                    </p>
+                </div>
+                
+                <div className="flex bg-white/5 p-1.5 rounded-[1.5rem] border border-white/5">
+                    {["All", "Active", "Pending", "Completed"].map(f => (
+                        <button
+                            key={f}
+                            onClick={() => setFilter(f)}
+                            className={`px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-orange-500 text-black' : 'text-white/40 hover:text-white'}`}
+                        >
+                            {f}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {loading ? (
-                <p>Loading...</p>
-            ) : bookings.length === 0 ? (
-                <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
-                    <p className="text-gray-500">No bookings yet.</p>
-                </div>
-            ) : (
-                <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                                <th className="p-4 font-semibold">Customer</th>
-                                <th className="p-4 font-semibold">Service</th>
-                                <th className="p-4 font-semibold">Date & Time</th>
-                                <th className="p-4 font-semibold">Price</th>
-                                <th className="p-4 font-semibold">Status</th>
-                                <th className="p-4 font-semibold text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {bookings.map((b) => (
-                                <tr key={b._id} className="hover:bg-gray-50 transition">
-                                    <td className="p-4">
-                                        <div className="font-semibold text-gray-800">{b.customerId?.name}</div>
-                                        <div className="text-xs text-gray-500">{b.customerId?.phone || "No phone"}</div>
-                                        <div className="text-xs text-gray-400 mt-1 max-w-[150px] truncate">{b.customerId?.address}</div>
-                                    </td>
-                                    <td className="p-4">
-                                        <div className="text-sm text-gray-800 font-medium">{b.serviceId?.title}</div>
-                                        <div className="text-xs text-orange-600 bg-orange-50 inline-block px-2 py-0.5 rounded mt-1">{b.serviceId?.category}</div>
-                                    </td>
-                                    <td className="p-4">
-                                        <div className="flex items-center gap-2 text-sm text-gray-700">
-                                            <FaCalendarAlt className="text-blue-500" />
-                                            {b.date} at {b.time}
+            {/* 🚀 Records List */}
+            <div className="grid grid-cols-1 gap-4">
+                {filteredBookings.length === 0 ? (
+                    <div className="py-32 text-center border-2 border-dashed border-white/5 rounded-[3rem]">
+                        <FaCalendarAlt className="text-5xl text-white/10 mx-auto mb-6" />
+                        <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">No matching records in current sequence</p>
+                    </div>
+                ) : (
+                    filteredBookings.map(b => (
+                        <motion.div 
+                            layout
+                            key={b._id}
+                            className="bg-[#1e293b] border border-white/5 p-6 rounded-[2.5rem] shadow-2xl group hover:border-white/10 transition-all"
+                        >
+                            <div className="flex flex-col md:flex-row gap-8">
+                                {/* Left Section: Customer & Info */}
+                                <div className="flex-1 space-y-6">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex gap-4">
+                                            <div className="w-12 h-12 rounded-2xl bg-[#0f172a] border border-white/5 flex items-center justify-center text-white/40 text-xl">
+                                                <FaUser />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-sm font-black text-white uppercase italic">{b.customerId?.name}</h3>
+                                                <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">{b.serviceId?.title}</p>
+                                            </div>
                                         </div>
-                                    </td>
-                                    <td className="p-4 font-bold text-gray-700">₹{b.amount}</td>
-                                    <td className="p-4">
-                                        <span className={`px-3 py-1 text-xs font-bold rounded-full 
-                      ${b.status === 'Pending' ? 'bg-orange-100 text-orange-700' : ''}
-                      ${b.status === 'Confirmed' ? 'bg-blue-100 text-blue-700' : ''}
-                      ${b.status === 'Completed' ? 'bg-green-100 text-green-700' : ''}
-                      ${b.status === 'Cancelled' ? 'bg-red-100 text-red-700' : ''}
-                    `}>
+                                        <div className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full border ${getStatusStyle(b.status)}`}>
                                             {b.status}
-                                        </span>
-                                    </td>
-                                    <td className="p-4 text-right space-x-2">
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="flex items-center gap-3 bg-[#0f172a] p-4 rounded-2xl border border-white/5">
+                                            <FaMapMarkerAlt className="text-orange-500 text-xs" />
+                                            <p className="text-[10px] font-black text-white/60 truncate uppercase">{b.serviceAddress}</p>
+                                        </div>
+                                        <div className="flex items-center gap-3 bg-[#0f172a] p-4 rounded-2xl border border-white/5">
+                                            <FaRegClock className="text-orange-500 text-xs" />
+                                            <p className="text-[10px] font-black text-white/60 uppercase">{b.date} @ {b.time}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right Section: Controls & Pricing */}
+                                <div className="md:w-64 border-t md:border-t-0 md:border-l border-white/5 pt-6 md:pt-0 md:pl-8 flex flex-col justify-between items-end gap-6 text-right">
+                                    <div>
+                                        <p className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] mb-1">Contract_Value</p>
+                                        <p className="text-2xl font-black text-white italic">₹{b.amount.toLocaleString()}</p>
+                                    </div>
+
+                                    <div className="w-full flex md:flex-col gap-2">
                                         {b.status === 'Pending' && (
                                             <>
-                                                <button onClick={() => handleUpdateStatus(b._id, 'Confirmed')} className="text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition">Accept</button>
-                                                <button onClick={() => handleUpdateStatus(b._id, 'Cancelled')} className="text-red-600 hover:text-red-800 bg-red-50 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition">Reject</button>
+                                                <button onClick={() => handleUpdateStatus(b._id, 'Confirmed')} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-black text-[9px] font-black uppercase py-2.5 rounded-xl transition-all">Accept</button>
+                                                <button onClick={() => handleUpdateStatus(b._id, 'Cancelled')} className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 text-[9px] font-black uppercase py-2.5 rounded-xl transition-all">Reject</button>
                                             </>
                                         )}
-                                        {b.status === 'Confirmed' && (
-                                            <button onClick={() => handleUpdateStatus(b._id, 'Completed')} className="text-green-600 hover:text-green-800 bg-green-50 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition">Mark Completed</button>
+                                        {['Confirmed', 'Arrived', 'WorkStarted', 'PaymentPending'].includes(b.status) && (
+                                            <>
+                                                 <button onClick={() => window.open(`tel:${b.customerId?.phone}`)} className="flex-1 bg-white text-black text-[9px] font-black uppercase py-2.5 rounded-xl flex items-center justify-center gap-2"><FaPhone size={10} /> Call</button>
+                                                 <button onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.serviceAddress)}`)} className="flex-1 bg-white/5 text-white/60 text-[9px] font-black uppercase py-2.5 rounded-xl border border-white/5 flex items-center justify-center gap-2"><FaArrowRight className="rotate-[-45deg]" size={10} /> Maps</button>
+                                            </>
                                         )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                                        {b.status === 'Completed' && (
+                                            <div className="flex-1 flex items-center justify-end gap-2 text-emerald-500 text-[9px] font-black uppercase tracking-widest">
+                                                <FaCheck /> Deployment_Closed
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))
+                )}
+            </div>
         </div>
     );
 };

@@ -58,6 +58,7 @@ import ProviderLayout from "./assets/components/dashboard/userdeshboards/provide
 import ProviderHome from "./assets/components/dashboard/userdeshboards/provider/pages/ProviderHome";
 import ProviderServices from "./assets/components/dashboard/userdeshboards/provider/pages/ProviderServices";
 import ProviderBookings from "./assets/components/dashboard/userdeshboards/provider/pages/ProviderBookings";
+import ProviderEarnings from "./assets/components/dashboard/userdeshboards/provider/pages/ProviderEarnings";
 
 // Architect
 import ArchitectLayout from "./assets/components/dashboard/userdeshboards/architect/ArchitectLayout";
@@ -84,6 +85,7 @@ import MyQuotations from "./assets/components/dashboard/userdeshboards/customer/
 const CustomerServices = React.lazy(() => import("./assets/components/dashboard/userdeshboards/customer/pages/CustomerServices"));
 
 import PublicArchitectProfile from "./assets/components/PublicArchitectProfile";
+import PublicServiceProfile from "./assets/components/PublicServiceProfile";
 
 const ServiceCategories = React.lazy(() => import("./assets/components/ServiceCategories"));
 const ServiceSubCategories = React.lazy(() => import("./assets/components/ServiceSubCategories"));
@@ -101,6 +103,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/architect/:id" element={<PublicArchitectProfile />} />
+          <Route path="/service-profile/:id" element={<PublicServiceProfile />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -176,6 +179,7 @@ function App() {
             <Route index element={<ProviderHome />} />
             <Route path="services" element={<ProviderServices />} />
             <Route path="bookings" element={<ProviderBookings />} />
+            <Route path="earnings" element={<ProviderEarnings />} />
           </Route>
 
           {/* Architect Panel Routes */}

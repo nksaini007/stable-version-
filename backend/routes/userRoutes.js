@@ -16,8 +16,8 @@ const {
    approveUser,
    changeUserRole,
    uploadProfile,
-   getSellerPublicProfile,
    getArchitectPublicProfile,
+   getProviderPublicProfile,
    sendOTP,
    verifyOTP,
    resetPassword,
@@ -38,6 +38,7 @@ router.post("/verify-otp", verifyOTP);
 router.post("/reset-password", resetPassword);
 router.get("/shop/:id", getSellerPublicProfile);
 router.get("/architect/:id", getArchitectPublicProfile);
+router.get("/provider/:id", getProviderPublicProfile);
 // Diagnostic route - check email config status
 router.get("/test-email-config", verifyEmailConfig);
 // Hidden admin gate — not linked in any UI or docs

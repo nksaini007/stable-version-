@@ -2,10 +2,31 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../api/api';
 import { AuthContext } from '../context/AuthContext';
-import { FaHeart, FaRegHeart, FaCommentDots, FaShareAlt, FaPaperPlane, FaTrash, FaArrowLeft } from 'react-icons/fa';
+import { FaCommentDots, FaShareAlt, FaPaperPlane, FaTrash, FaArrowLeft, FaCrosshairs, FaRegClock, FaGlobe } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
 import Nev from './Nev';
 import Footer from './Footer';
+
+// --- Pixel Heart Icon (Matching Feed) ---
+const PixelHeart = ({ filled }) => (
+    <svg width="18" height="18" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all transform hover:scale-110">
+        <path d="M1 1H2V2H1V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M3 1H4V2H3V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M2 1H3V2H2V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M5 1H6V2H5V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M6 1H7V2H6V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M7 1H8V2H7V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M0 2H1V5H0V2Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M1 5H2V6H1V5Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M2 6H3V7H2V6Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M3 7H5V8H3V7Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M5 6H6V7H5V6Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M6 5H7V6H6V5Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M7 2H8V5H7V2Z" fill={filled ? "#ff5c00" : "currentColor"} />
+        <path d="M4 2H5V3H4V2Z" fill={filled ? "#ff5c00" : "currentColor"} />
+    </svg>
+);
 
 const SinglePost = () => {
     const { id } = useParams();
@@ -15,7 +36,6 @@ const SinglePost = () => {
     const { user } = useContext(AuthContext);
     const [commentText, setCommentText] = useState("");
 
-    // --- Dynamic Text Parser ---
     const renderTextWithLinks = (text) => {
         if (!text) return text;
         const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
@@ -30,7 +50,7 @@ const SinglePost = () => {
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-700 underline transition-colors break-all"
+                        className="text-[#ff5c00] hover:underline transition-colors break-all"
                     >
                         {part}
                     </a>
@@ -42,6 +62,7 @@ const SinglePost = () => {
 
     useEffect(() => {
         fetchPost();
+        window.scrollTo(0, 0);
     }, [id]);
 
     const fetchPost = async () => {
@@ -50,7 +71,7 @@ const SinglePost = () => {
             setPost(data);
         } catch (error) {
             console.error("Error loading post", error);
-            toast.error("Post not found.");
+            toast.error("Packet Loss: Post Not Found.");
             navigate('/community');
         } finally {
             setLoading(false);
@@ -58,71 +79,58 @@ const SinglePost = () => {
     };
 
     const handleLike = async () => {
-        if (!user) return toast.info("Please login to like this post!");
-
+        if (!user) return toast.info("LOGON_REQUIRED::SCTR_AUTH");
         try {
-            // Optimistic update
             const isLiked = post.likes.includes(user._id);
             setPost({
                 ...post,
-                likes: isLiked
-                    ? post.likes.filter(userId => userId !== user._id)
-                    : [...post.likes, user._id]
+                likes: isLiked ? post.likes.filter(id => id !== user._id) : [...post.likes, user._id]
             });
-
             await API.put(`/posts/${post._id}/like`);
         } catch (error) {
-            console.error("Error liking post", error);
-            fetchPost(); // revert on fail
+            fetchPost();
         }
     };
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        if (!user) return toast.info("Please login to comment!");
+        if (!user) return toast.info("LOGON_REQUIRED::SCTR_AUTH");
         if (!commentText.trim()) return;
 
         try {
             const { data: updatedComments } = await API.post(`/posts/${post._id}/comment`, { text: commentText });
             setPost({ ...post, comments: updatedComments });
             setCommentText("");
-            toast.success("Comment added!");
+            toast.success("Entry Sequenced.");
         } catch (error) {
-            console.error("Error adding comment", error);
-            toast.error("Failed to add comment.");
+            toast.error("Transmission Error.");
         }
     };
 
     const handleDeleteComment = async (commentId) => {
-        if (!window.confirm("Are you sure you want to delete this comment?")) return;
+        if (!window.confirm("PURGE_ENTRY::ARE_YOU_SURE?")) return;
         try {
             const { data: updatedComments } = await API.delete(`/posts/${post._id}/comment/${commentId}`);
             setPost({ ...post, comments: updatedComments });
-            toast.success("Comment deleted!");
+            toast.success("Log Entry Purged.");
         } catch (error) {
-            console.error("Error deleting comment", error);
-            toast.error(error.response?.data?.message || "Failed to delete comment");
+            toast.error("Purge Error.");
         }
     };
 
     const handleShare = () => {
         const url = window.location.href;
         navigator.clipboard.writeText(url).then(() => {
-            toast.success("Post link copied to clipboard!");
-        }).catch(err => {
-            console.error('Failed to copy text: ', err);
-            toast.error("Failed to copy link.");
-        });
+            toast.success("Link Cached to Clipboard.");
+        }).catch(() => toast.error("Cache Error."));
     };
 
     if (loading) {
         return (
-            <div className="bg-gray-50 min-h-screen flex flex-col">
-                <Nev />
-                <div className="flex-1 flex justify-center items-center py-20">
-                    <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-                <Footer />
+            <div className="min-h-screen bg-[#e5e5e5] flex flex-col justify-center items-center gap-4 font-mono tech-grid relative overflow-hidden">
+                <div className="scanline"></div>
+                <div className="w-12 h-12 border-4 border-black/5 border-t-black rounded-full animate-spin"></div>
+                <p className="text-black font-black uppercase text-[10px] tracking-widest mt-2">ACCESSING_DATA_STREAM...</p>
             </div>
         );
     }
@@ -132,145 +140,168 @@ const SinglePost = () => {
     const isLikedByMe = user && post.likes.includes(user._id);
 
     return (
-        <div className="bg-gray-50 min-h-screen flex flex-col">
+        <div className="bg-[#e5e5e5] min-h-screen flex flex-col font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative overflow-hidden">
             <Nev />
+            <div className="scanline"></div>
 
-            <div className="flex-1 max-w-4xl mx-auto py-12 px-4 sm:px-6 w-full">
-
-                {/* Back Navigation Bar */}
-                <div className="mb-6">
+            <div className="flex-1 max-w-6xl mx-auto py-12 md:py-24 px-4 sm:px-6 w-full relative z-10">
+                
+                {/* Back Control */}
+                <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="mb-8"
+                >
                     <button
                         onClick={() => navigate('/community')}
-                        className="flex items-center gap-2 text-gray-500 hover:text-blue-600 font-semibold transition-colors bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 hover:shadow-md w-max"
+                        className="flex items-center gap-3 text-black/40 hover:text-[#ff5c00] font-black text-[10px] uppercase tracking-widest transition-all group"
                     >
-                        <FaArrowLeft className="text-sm" />
-                        Back to Community
+                        <div className="w-8 h-8 border-2 border-black/10 flex items-center justify-center group-hover:border-[#ff5c00] transition-colors">
+                            <FaArrowLeft />
+                        </div>
+                        RETURN_TO_MAIN_FED
                     </button>
-                </div>
+                </motion.div>
 
-                <div className={`bg-white rounded-3xl border border-gray-100 shadow-[0_12px_40px_rgb(0,0,0,0.06)] overflow-hidden flex flex-col ${post.image ? 'md:flex-row md:h-[85vh]' : 'max-w-3xl mx-auto'}`}>
+                <motion.div 
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`bg-white border-2 border-black shadow-[15px_15px_0px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col min-h-[70vh] relative ${post.image ? 'lg:flex-row' : 'max-w-4xl mx-auto'}`}
+                >
+                    {/* Industrial Decals */}
+                    <div className="corner-decal decal-tl border-black"></div>
+                    <div className="corner-decal decal-tr border-black"></div>
+                    <div className="corner-decal decal-bl border-black"></div>
+                    <div className="corner-decal decal-br border-black opacity-30"></div>
 
-                    {/* Left Column: Image (Only if image exists) */}
+                    {/* Left Column: Visual Manifest */}
                     {post.image && (
-                        <div className="w-full md:w-3/5 bg-gray-900 border-r border-gray-100 flex items-center justify-center h-72 md:h-full flex-shrink-0 relative group">
+                        <div className="w-full lg:w-[60%] bg-[#0f172a] border-b-2 lg:border-b-0 lg:border-r-2 border-black flex items-center justify-center relative group min-h-[400px]">
                             <img
                                 src={`${post.image}`}
                                 alt={post.title}
-                                className="w-full h-full object-contain"
+                                className="w-full h-full object-contain p-4 group-hover:scale-[1.02] transition-transform duration-700"
                             />
+                            <div className="absolute top-4 left-4 text-[7px] font-black text-white/20 uppercase tracking-[0.4em]">IMG_SCTR::00{post._id.slice(-4)}</div>
+                            <div className="absolute bottom-4 right-4 flex gap-1">
+                                {[...Array(4)].map((_, i) => <div key={i} className="w-1 h-3 bg-white/10"></div>)}
+                            </div>
                         </div>
                     )}
 
-                    {/* Right Column (or Full Container if no image): Content, Actions, Comments */}
-                    <div className={`w-full flex-col flex ${post.image ? 'md:w-2/5' : 'w-full'} h-full`}>
-                        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 hide-scrollbar-on-mobile flex flex-col">
-
-                            {/* Header */}
-                            <div className="px-6 py-5 border-b border-gray-50 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-sm z-10 flex-shrink-0">
+                    {/* Right Column: Information Stream */}
+                    <div className={`w-full flex flex-col ${post.image ? 'lg:w-[40%]' : 'w-full'} bg-white relative`}>
+                        <div className="flex-1 overflow-y-auto scrollbar-tech pb-24">
+                            
+                            {/* Author Node */}
+                            <div className="px-8 py-6 border-b-2 border-black/5 bg-white/80 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
+                                    <div className="w-12 h-12 border-2 border-black flex items-center justify-center font-heading text-xl bg-black text-white">
                                         {post.author?.profileImage ? (
                                             <img src={`${post.author.profileImage}`} alt="author" className="w-full h-full object-cover" />
                                         ) : (
-                                            post.author?.name ? post.author.name.charAt(0).toUpperCase() : "S"
+                                            post.author?.name?.charAt(0).toUpperCase() || "S"
                                         )}
                                     </div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-900 text-base">{post.author?.name || "Stinchar Team"}</h4>
-                                        <p className="text-[11px] text-gray-400 font-medium">
-                                            {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                        </p>
+                                    <div className="flex flex-col">
+                                        <h4 className="font-black text-black text-[10px] uppercase tracking-tighter leading-none">{post.author?.name || "SYS_OPERATOR"}</h4>
+                                        <div className="flex items-center gap-2 mt-1 opacity-40">
+                                            <FaRegClock size={8} />
+                                            <span className="text-[7px] font-black uppercase tracking-wider">{new Date(post.createdAt).toLocaleDateString()} // {new Date(post.createdAt).toLocaleTimeString()}</span>
+                                        </div>
                                     </div>
+                                </div>
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                            </div>
+
+                            {/* Main Content Payload */}
+                            <div className="px-8 py-10 space-y-8">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 text-[8px] font-black text-[#ff5c00] opacity-50 uppercase tracking-[0.3em]">
+                                        <FaGlobe /> Data_Payload_00{post._id.slice(-2)}
+                                    </div>
+                                    <h1 className="text-2xl md:text-4xl font-heading font-black text-black uppercase tracking-tighter leading-tight italic">{post.title}</h1>
+                                </div>
+                                
+                                <div className="text-black/70 text-xs md:text-sm font-bold uppercase leading-relaxed tracking-wide whitespace-pre-line border-l-4 border-black/5 pl-6 py-2">
+                                    {renderTextWithLinks(post.content)}
                                 </div>
                             </div>
 
-                            {/* Content Section */}
-                            <div className="px-6 py-6 flex-shrink-0">
-                                <h1 className="text-xl md:text-2xl font-extrabold text-gray-900 mb-4 leading-snug">{post.title}</h1>
-                                <p className="text-gray-700 text-sm md:text-base leading-relaxed whitespace-pre-line tracking-wide">
-                                    {renderTextWithLinks(post.content)}
-                                </p>
-                            </div>
-
-                            {/* Action Bar */}
-                            <div className="px-6 py-4 flex items-center justify-between border-y border-gray-100 bg-gray-50/50 flex-shrink-0">
-                                <div className="flex items-center gap-6">
+                            {/* Interaction Hub */}
+                            <div className="px-8 py-6 flex items-center justify-between border-y-2 border-black/5 bg-[#f8f8f8]">
+                                <div className="flex items-center gap-8">
                                     <button
                                         onClick={handleLike}
-                                        className="flex items-center gap-2 group transition"
+                                        className="flex items-center gap-3 group/hub"
                                     >
-                                        <div className={`p-2 rounded-full transition-all shadow-sm ${isLikedByMe ? "bg-rose-100 text-rose-500" : "bg-white border border-gray-200 text-gray-500 group-hover:border-rose-200 group-hover:bg-rose-50 group-hover:text-rose-400"}`}>
-                                            {isLikedByMe ? <FaHeart className="text-lg scale-110 drop-shadow-sm transition-transform" /> : <FaRegHeart className="text-lg" />}
+                                        <div className={`transition-all ${isLikedByMe ? "text-[#ff5c00]" : "text-black opacity-20 group-hover/hub:opacity-100"}`}>
+                                            <PixelHeart filled={isLikedByMe} />
                                         </div>
-                                        <span className={`font-bold text-sm ${isLikedByMe ? "text-rose-600" : "text-gray-600"}`}>{post.likes.length} Likes</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-[7px] font-black text-black/20 uppercase tracking-widest">ENDORSE</span>
+                                            <span className={`text-[10px] font-black leading-none ${isLikedByMe ? "text-[#ff5c00]" : "text-black"}`}>{post.likes.length}._</span>
+                                        </div>
                                     </button>
 
-                                    <div className="flex items-center gap-2">
-                                        <div className="p-2 rounded-full bg-white border border-gray-200 text-blue-500 shadow-sm">
-                                            <FaCommentDots className="text-lg" />
+                                    <div className="flex items-center gap-3">
+                                        <div className="text-black opacity-20"><FaCommentDots size={18} /></div>
+                                        <div className="flex flex-col">
+                                            <span className="text-[7px] font-black text-black/20 uppercase tracking-widest">TRAFFIC</span>
+                                            <span className="text-[10px] font-black text-black leading-none">{post.comments.length}._</span>
                                         </div>
-                                        <span className="font-bold text-sm text-gray-600">{post.comments.length} Comments</span>
                                     </div>
                                 </div>
 
-                                <button
-                                    onClick={handleShare}
-                                    className="flex items-center gap-2 px-3 py-1.5 font-bold text-sm text-gray-500 hover:text-blue-600 transition-colors bg-white hover:bg-blue-50 shadow-sm border border-gray-200 rounded-full"
-                                >
-                                    <FaShareAlt className="text-md" />
-                                    <span className="hidden sm:inline">Share</span>
+                                <button onClick={handleShare} className="w-10 h-10 border-2 border-black/5 flex items-center justify-center text-black/20 hover:text-[#ff5c00] hover:border-[#ff5c00] transition-all">
+                                    <FaShareAlt size={14} />
                                 </button>
                             </div>
 
-                            {/* Expanded Comments Thread */}
-                            <div className="px-6 py-6 pb-20 flex-1 bg-gray-50/30">
-                                <h3 className="font-extrabold text-base text-gray-900 mb-5 flex items-center gap-2">
-                                    Discussion Thread
-                                    <span className="bg-blue-100 text-blue-700 py-0.5 px-2 rounded-full text-[10px]">{post.comments.length}</span>
+                            {/* Discussion Ledger */}
+                            <div className="px-8 py-10 space-y-8">
+                                <h3 className="text-[10px] font-black text-black/30 uppercase tracking-[0.4em] flex items-center gap-3 italic">
+                                    <div className="w-1.5 h-1.5 bg-black/20 rounded-full"></div>
+                                    COMM_LOG_BUFFER
                                 </h3>
 
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     {post.comments.length === 0 ? (
-                                        <div className="text-center py-8 bg-white rounded-xl border border-gray-200 border-dashed">
-                                            <h4 className="text-gray-400 font-bold mb-1 text-sm">It's quiet in here...</h4>
-                                            <p className="text-gray-400 text-xs">Be the first to share your thoughts!</p>
+                                        <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-black/5 rounded-2xl">
+                                            <FaCrosshairs className="text-black/5 mb-4" size={30} />
+                                            <p className="text-[8px] font-black text-black/20 uppercase tracking-[0.4em]">Waiting_for_Connection_Init...</p>
                                         </div>
                                     ) : (
                                         post.comments.map(comment => (
-                                            <div key={comment._id} className="flex gap-3 group/comment bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100">
-                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex-shrink-0 overflow-hidden shadow-inner">
+                                            <div key={comment._id} className="relative group/comment flex gap-5 animate-in slide-in-from-left duration-500">
+                                                <div className="w-10 h-10 border-2 border-black/5 flex items-center justify-center font-black text-xs text-black/20 bg-black/5 shrink-0 overflow-hidden">
                                                     {comment.user?.profileImage ? (
                                                         <img src={`${comment.user.profileImage}`} alt="user" className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs font-bold uppercase">{comment.user?.name?.charAt(0) || "U"}</div>
+                                                        comment.user?.name?.charAt(0).toUpperCase() || "U"
                                                     )}
                                                 </div>
-                                                <div className="flex-1">
-                                                    <div className="flex justify-between items-center mb-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <p className="text-xs font-bold text-gray-900">{comment.user?.name || "User"}</p>
-
+                                                <div className="flex-1 space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="flex items-center gap-3">
+                                                            <p className="text-[9px] font-black text-black uppercase tracking-tight">{comment.user?.name || "LOG_USER"}</p>
                                                             {comment.user?.role === 'admin' && (
-                                                                <span className="bg-blue-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Admin</span>
+                                                                <span className="bg-[#ff5c00] text-black text-[6px] font-black px-1 py-0.5 rounded tracking-widest uppercase">SYS_ADMIN</span>
                                                             )}
                                                         </div>
-
                                                         {user?.role === 'admin' && (
-                                                            <button
+                                                            <button 
                                                                 onClick={() => handleDeleteComment(comment._id)}
-                                                                title="Delete Comment"
-                                                                className="text-gray-300 hover:text-red-500 opacity-0 group-hover/comment:opacity-100 transition-opacity p-1.5 hover:bg-red-50 rounded-full"
+                                                                className="text-black/10 hover:text-red-500 opacity-0 group-hover/comment:opacity-100 transition-all p-1"
                                                             >
-                                                                <FaTrash className="text-[10px]" />
+                                                                <FaTrash size={10} />
                                                             </button>
                                                         )}
                                                     </div>
-                                                    <p className="text-[10px] text-gray-400 mb-1.5">
-                                                        {new Date(comment.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                                    </p>
-                                                    <p className="text-xs text-gray-700 leading-relaxed break-words whitespace-pre-line">
+                                                    <p className="text-[10px] font-bold text-black/60 leading-relaxed uppercase bg-black/5 p-3 border-l-2 border-black/10">
                                                         {renderTextWithLinks(comment.text)}
                                                     </p>
+                                                    <p className="text-[6px] font-black text-black/20 uppercase tracking-widest">{new Date(comment.createdAt).toLocaleDateString()} @ {new Date(comment.createdAt).toLocaleTimeString()}</p>
                                                 </div>
                                             </div>
                                         ))
@@ -279,32 +310,30 @@ const SinglePost = () => {
                             </div>
                         </div>
 
-                        {/* Add Comment Input - Fixed to Bottom of Right Column */}
-                        <div className="p-4 bg-white border-t border-gray-100 flex-shrink-0">
-                            <form onSubmit={handleCommentSubmit} className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex-shrink-0 flex items-center justify-center text-white font-bold shadow-md text-xs">
-                                    {user?.name?.charAt(0).toUpperCase() || "U"}
-                                </div>
-                                <div className="flex-1 relative">
+                        {/* Connection Input Hub */}
+                        <div className="absolute bottom-0 inset-x-0 p-8 bg-white border-t-2 border-black z-30">
+                            <form onSubmit={handleCommentSubmit} className="flex items-center gap-4">
+                                <div className="flex-1 relative group">
                                     <input
                                         type="text"
-                                        placeholder="Add a comment..."
+                                        placeholder="INITIATE_DATA_ENCRYPTION..."
                                         value={commentText}
                                         onChange={(e) => setCommentText(e.target.value)}
-                                        className="w-full bg-gray-50 border border-gray-200 rounded-full py-2 pl-4 pr-12 text-sm outline-none focus:border-blue-500 focus:bg-white transition-colors shadow-inner"
+                                        className="w-full bg-black/5 border-2 border-black/5 px-6 py-4 text-[10px] font-black outline-none focus:border-black transition-all uppercase placeholder:text-black/10"
                                     />
-                                    <button
-                                        type="submit"
-                                        disabled={!commentText.trim()}
-                                        className="absolute right-1 top-1 bottom-1 px-3 flex items-center justify-center bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded-full transition-colors"
-                                    >
-                                        <FaPaperPlane className="text-xs" />
-                                    </button>
+                                    <div className="absolute top-0 right-0 w-8 h-[2px] bg-black opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
                                 </div>
+                                <button
+                                    type="submit"
+                                    disabled={!commentText.trim()}
+                                    className="w-14 h-14 bg-black text-white flex items-center justify-center hover:bg-[#ff5c00] transition-all disabled:opacity-20 translate-y-[-1px] shadow-[4px_4px_0px_rgba(0,0,0,0.2)] active:shadow-none active:translate-y-[2px]"
+                                >
+                                    <FaPaperPlane size={18} />
+                                </button>
                             </form>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
             <Footer />
         </div>
