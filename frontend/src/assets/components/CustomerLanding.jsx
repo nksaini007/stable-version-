@@ -265,8 +265,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                   <FaArrowRight size={10} className="text-[#ff5c00]" />
                 </div>
               </motion.div>
-            ))}
-          </div>       </div>
+          </div>
 
           {/* Quick Access Stats at Bottom */}
           <div className="p-8 bg-black/40 border-t border-white/5">
