@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import API from "../api/api";
-import Nev from "./Nev";
 import { AuthContext } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    FaMapMarkerAlt, FaEnvelope, FaChevronLeft, FaShareAlt,
-    FaSpinner, FaTools, FaCheckCircle, FaStar, FaPhone,
-    FaRegCalendarAlt, FaShieldAlt
+    FaChevronLeft, FaShareAlt, FaSpinner, FaTools, 
+    FaCheckCircle, FaStar, FaPhone, FaHome, FaSearch, 
+    FaCalendarCheck, FaUser, FaRegBookmark
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 
@@ -19,7 +18,6 @@ const PublicServiceProfile = () => {
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [activeTab, setActiveTab] = useState("services");
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -49,17 +47,16 @@ const PublicServiceProfile = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#0f172a] flex flex-col items-center justify-center space-y-4">
-                <FaSpinner className="text-4xl text-orange-500 animate-spin" />
-                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">Accessing_Provider_Node...</span>
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center space-y-4">
+                <FaSpinner className="text-4xl text-white/20 animate-spin" />
+                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/40">Initialising_Elite_Node...</span>
             </div>
         );
     }
 
     if (error || !provider) {
         return (
-            <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center p-8 text-white font-mono tech-grid relative overflow-hidden">
-                <div className="scanline"></div>
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-white font-mono relative overflow-hidden">
                 <div className="relative z-10 flex flex-col items-center max-w-md text-center">
                     <div className="w-20 h-20 border-2 border-red-500/20 flex items-center justify-center rounded-full mb-8 relative group">
                         <div className="absolute inset-0 bg-red-500/5 rounded-full animate-pulse group-hover:bg-red-500/10 transition-colors"></div>
@@ -71,215 +68,165 @@ const PublicServiceProfile = () => {
                     <div className="bg-white/5 border border-white/10 p-6 rounded-2xl mb-10 w-full">
                         <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 leading-none">Diagnostic_Output:</p>
                         <p className="text-sm font-bold text-white/70 leading-relaxed uppercase">
-                            {error || "Unknown system failure: Specified service node is unreachable in the current environment."}
+                            {error || "Unknown system failure: Specified service node is unreachable."}
                         </p>
                     </div>
 
                     <button 
                         onClick={() => navigate('/')} 
-                        className="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] hover:bg-orange-500 hover:text-black transition-all shadow-[8px_8px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                        className="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] hover:bg-orange-500 transition-all shadow-[8px_8px_0px_rgba(255,255,255,0.1)]"
                     >
                         Return_to_Central_Hub
                     </button>
-                    
-                    <div className="mt-12 opacity-10 flex gap-2">
-                        {[...Array(5)].map((_, i) => <div key={i} className="w-1 h-3 bg-white"></div>)}
-                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#0f172a] text-slate-200 font-mono pb-32">
-            <Nev />
-
-            {/* Header Mobile Control */}
-            <div className="md:hidden fixed top-4 left-4 z-50">
-                <button onClick={() => navigate(-1)} className="w-10 h-10 bg-[#1e293b]/80 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/10">
-                    <FaChevronLeft size={14} />
+        <div className="min-h-screen bg-[#000000] text-slate-100 font-sans pb-32 overflow-x-hidden selection:bg-white selection:text-black">
+            {/* Top Navigation Bar */}
+            <nav className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
+                <button 
+                    onClick={() => navigate(-1)} 
+                    className="w-10 h-10 flex items-center justify-center rounded-full text-white/60 hover:text-white transition-colors"
+                >
+                    <FaChevronLeft size={20} />
                 </button>
-            </div>
+                <div className="flex gap-4">
+                    <button 
+                        onClick={handleShare}
+                        className="w-10 h-10 flex items-center justify-center rounded-full text-white/60 hover:text-white transition-colors"
+                    >
+                        <FaShareAlt size={18} />
+                    </button>
+                </div>
+            </nav>
 
-            {/* Hero Section */}
-            <div className="pt-24 md:pt-32 px-4 md:px-8">
-                <div className="max-w-5xl mx-auto">
-                    <div className="bg-[#1e293b] rounded-[3rem] p-8 md:p-12 border border-white/5 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-                            <FaShieldAlt className="text-9xl" />
-                        </div>
-
-                        <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
-                            {/* Profile Image */}
-                            <div className="relative group">
-                                <div className="w-32 h-32 md:w-44 md:h-44 rounded-[2.5rem] overflow-hidden border-4 border-white/5 shadow-2xl bg-[#0f172a]">
-                                    {provider.profileImage ? (
-                                        <img src={provider.profileImage} alt={provider.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-5xl font-black text-white/10 italic">
-                                            {provider.name?.charAt(0).toUpperCase()}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center border-4 border-[#1e293b] text-black">
-                                    <FaCheckCircle />
-                                </div>
+            {/* Profile Content */}
+            <div className="pt-24 px-6 md:px-12 max-w-4xl mx-auto flex flex-col items-center">
+                {/* Profile Image Centered */}
+                <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="relative mb-8"
+                >
+                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-[6px] border-[#1a1a1a] shadow-2xl bg-slate-900">
+                        {provider.profileImage ? (
+                            <img src={provider.profileImage} alt={provider.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-4xl font-black text-white/10 uppercase">
+                                {provider.name?.charAt(0)}
                             </div>
-
-                            {/* Info */}
-                            <div className="flex-1 text-center md:text-left space-y-4">
-                                <div>
-                                    <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-2">
-                                        <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-white uppercase italic">{provider.name}</h1>
-                                        <span className="inline-flex px-3 py-1 bg-orange-500/10 text-orange-500 text-[10px] font-black uppercase tracking-widest rounded-full border border-orange-500/20 w-max mx-auto md:mx-0">
-                                            Verified_Pro
-                                        </span>
-                                    </div>
-                                    <p className="text-white/40 text-[11px] font-black uppercase tracking-[0.3em]">
-                                        Expert {provider.serviceCategory} • {provider.experience || '3+'} Years Exp.
-                                    </p>
-                                </div>
-
-                                <p className="text-white/60 text-xs md:text-sm leading-relaxed max-w-2xl mx-auto md:mx-0">
-                                    {provider.bio || `Professional ${provider.serviceCategory} expert providing high-quality solutions across the Stinchar ecosystem.`}
-                                </p>
-
-                                <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 pt-4">
-                                   <div className="flex items-center gap-2">
-                                       <FaStar className="text-orange-500 text-sm" />
-                                       <span className="text-sm font-black text-white">4.9 <span className="text-white/20 text-[10px] ml-1">(120+ Reviews)</span></span>
-                                   </div>
-                                   <div className="w-1.5 h-1.5 bg-white/10 rounded-full"></div>
-                                   <div className="flex items-center gap-2">
-                                       <FaCheckCircle className="text-emerald-500 text-sm" />
-                                       <span className="text-sm font-black text-white">500+ <span className="text-white/20 text-[10px] ml-1">Jobs Done</span></span>
-                                   </div>
-                                </div>
-                                
-                                <div className="flex flex-col sm:flex-row gap-3 pt-6">
-                                    <button onClick={() => window.open(`tel:${provider.phone}`)} className="flex-1 md:flex-none px-10 py-4 bg-white text-black rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 transition-colors flex items-center justify-center gap-3">
-                                        <FaPhone /> Contact_Direct
-                                    </button>
-                                    <button onClick={handleShare} className="flex-1 md:flex-none px-10 py-4 bg-white/5 border border-white/10 text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors flex items-center justify-center gap-3">
-                                        <FaShareAlt /> Share_Node
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        )}
                     </div>
+                </motion.div>
 
-                    {/* Tabs */}
-                    <div className="mt-12 flex border-b border-white/5">
-                        {['services', 'biography'].map(tab => (
-                            <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={`px-12 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${
-                                    activeTab === tab ? "text-orange-500" : "text-white/20"
-                                }`}
+                {/* Identity Block */}
+                <div className="text-center space-y-2 mb-10">
+                    <div className="flex items-center justify-center gap-2">
+                        <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white">{provider.name}</h1>
+                        <FaCheckCircle className="text-blue-500 text-xl md:text-2xl mt-1" />
+                    </div>
+                    <p className="text-white/40 text-[13px] font-medium tracking-wide lowercase">
+                        @{provider.name?.replace(/\s+/g, '').toLowerCase()} • <span className="opacity-60">{provider.serviceCategory || "Verified Provider"}</span>
+                    </p>
+                </div>
+
+                {/* Action Button */}
+                <div className="w-full max-w-[200px] mb-12">
+                     <button 
+                        onClick={() => window.open(`tel:${provider.phone}`)}
+                        className="w-full py-3.5 bg-[#1a1a1a] text-white rounded-full text-[13px] font-bold hover:bg-[#2a2a2a] transition-all"
+                    >
+                        Connect Now
+                    </button>
+                </div>
+
+                {/* Stats Row */}
+                <div className="w-full grid grid-cols-4 gap-2 border-y border-white/5 py-8 mb-12">
+                    <div className="text-center">
+                        <p className="text-xl font-bold text-white">500+</p>
+                        <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Jobs Done</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-xl font-bold text-white">{services.length}</p>
+                        <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Services</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-xl font-bold text-white">{provider.followersCount || 274}</p>
+                        <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Following</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-xl font-bold text-white">{provider.followersCount || 120}</p>
+                        <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Followers</p>
+                    </div>
+                </div>
+
+                {/* Services Masonry Grid */}
+                <div className="w-full">
+                    <div className="grid grid-cols-2 gap-3 pb-20">
+                        {services.map((svc, idx) => (
+                            <motion.div 
+                                key={svc._id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.1 }}
+                                className={`relative rounded-3xl overflow-hidden group ${idx % 3 === 0 ? 'row-span-2' : ''}`}
                             >
-                                {tab}
-                                {activeTab === tab && (
-                                    <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-1 bg-orange-500 rounded-full" />
-                                )}
-                            </button>
+                                <Link to={`/service/${svc._id}`} className="block h-full w-full">
+                                    <div className={`w-full ${idx % 3 === 0 ? 'h-[400px]' : 'h-[200px]'} bg-neutral-900`}>
+                                        {svc.images?.[0] ? (
+                                            <img 
+                                                src={svc.images[0]} 
+                                                alt={svc.title} 
+                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" 
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-white/5 uppercase font-black text-2xl">
+                                                {svc.title?.charAt(0)}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
+                                        <h3 className="text-[11px] font-bold text-white uppercase tracking-widest">{svc.title}</h3>
+                                        <p className="text-[10px] text-white/40 font-bold mt-1">₹{svc.price.toLocaleString()}</p>
+                                    </div>
+                                    <div className="absolute bottom-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <FaChevronLeft className="text-white text-[10px] rotate-180" />
+                                    </div>
+                                </Link>
+                            </motion.div>
                         ))}
                     </div>
+                </div>
+            </div>
 
-                    {/* Tab Content */}
-                    <div className="py-12">
-                        <AnimatePresence mode="wait">
-                            {activeTab === 'services' && (
-                                <motion.div 
-                                    key="services"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                                >
-                                    {services.map(svc => (
-                                        <Link to={`/service/${svc._id}`} key={svc._id} className="bg-[#1e293b] border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-orange-500/50 transition-all duration-500 shadow-2xl">
-                                            <div className="h-44 bg-slate-800 relative overflow-hidden">
-                                                {svc.images?.[0] ? (
-                                                    <img src={svc.images[0]} alt={svc.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition duration-700" />
-                                                ) : (
-                                                   <div className="w-full h-full flex items-center justify-center text-white/5"><FaTools size={40} /></div>
-                                                )}
-                                                <div className="absolute bottom-4 left-4 px-3 py-1 bg-black/60 backdrop-blur-xl rounded-full text-[8px] font-black text-orange-500 uppercase border border-white/5">
-                                                    {svc.category}
-                                                </div>
-                                            </div>
-                                            <div className="p-6 space-y-4">
-                                                <h3 className="text-sm font-black text-white group-hover:text-orange-500 transition-colors uppercase italic leading-tight">{svc.title}</h3>
-                                                <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                                                    <span className="text-xs font-black text-white">₹{svc.price.toLocaleString()}</span>
-                                                    <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest flex items-center gap-1.5 group-hover:gap-3 transition-all">
-                                                        Hire_Now <FaRegCalendarAlt />
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </motion.div>
+            {/* Floating Navigation Dock */}
+            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] px-4 w-full max-w-xs">
+                <div className="bg-[#1a1a1a]/80 backdrop-blur-2xl border border-white/10 py-3 px-6 rounded-full flex justify-between items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                    <Link to="/" className="text-white/40 hover:text-white transition-colors">
+                        <FaHome size={18} />
+                    </Link>
+                    <Link to="/services" className="text-white/40 hover:text-white transition-colors">
+                        <FaSearch size={18} />
+                    </Link>
+                    <button className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all border border-white/5">
+                        <span className="text-xl">+</span>
+                    </button>
+                    <Link to="/dashboard" className="text-white/40 hover:text-white transition-colors relative">
+                        <FaCalendarCheck size={16} />
+                        <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                    </Link>
+                    <Link to="/profile" className="text-white/40 hover:text-white transition-colors">
+                        <div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
+                            {user?.profileImage ? (
+                                <img src={user.profileImage} className="w-full h-full object-cover" />
+                            ) : (
+                                <FaUser size={10} className="m-auto mt-1" />
                             )}
-
-                            {activeTab === 'biography' && (
-                                <motion.div 
-                                    key="bio"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="bg-[#1e293b] border border-white/5 rounded-[3rem] p-10 space-y-12"
-                                >
-                                    <div>
-                                        <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-6">Introduction_Stream</h4>
-                                        <p className="text-white/60 leading-[1.8] text-sm md:text-base font-mono">
-                                            {provider.bio || `${provider.name} is a certified Stinchar professional with extensive experience in the ${provider.serviceCategory} sector. Known for precision, reliability, and technical excellence.`}
-                                        </p>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-6">
-                                            <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Node_Logistics</h4>
-                                            <div className="space-y-4">
-                                                <div className="flex items-center gap-4 bg-[#0f172a] p-5 rounded-2xl border border-white/5">
-                                                    <FaMapMarkerAlt className="text-orange-500" />
-                                                    <div>
-                                                        <p className="text-[9px] text-white/20 font-black uppercase tracking-widest">Base_Loc</p>
-                                                        <p className="text-xs font-black text-white">{provider.location?.city || "Available Pan India"}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-4 bg-[#0f172a] p-5 rounded-2xl border border-white/5">
-                                                    <FaEnvelope className="text-orange-500" />
-                                                    <div>
-                                                        <p className="text-[9px] text-white/20 font-black uppercase tracking-widest">Network_Access</p>
-                                                        <p className="text-xs font-black text-white truncate max-w-[150px]">{provider.email}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-6">
-                                            <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Skills_Manifest</h4>
-                                            <div className="flex flex-wrap gap-2">
-                                                {provider.skills?.length > 0 ? provider.skills.map(skill => (
-                                                    <span key={skill} className="px-5 py-2.5 bg-white/5 border border-white/5 rounded-xl text-[10px] font-black uppercase text-white/40">
-                                                        {skill}
-                                                    </span>
-                                                )) : (
-                                                    ['Precision', 'Industrial Scale', 'Expert Solutions'].map(s => (
-                                                        <span key={s} className="px-5 py-2.5 bg-white/5 border border-white/5 rounded-xl text-[10px] font-black uppercase text-white/40">
-                                                            {s}
-                                                        </span>
-                                                    ))
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                        </div>
+                    </Link>
                 </div>
             </div>
         </div>
