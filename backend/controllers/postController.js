@@ -24,13 +24,16 @@ const createPost = async (req, res) => {
             image = req.file.path;
         }
 
+        // FormData sends booleans as strings — parse correctly
+        const isBlogBool = isBlog === "true" || isBlog === true;
+
         const newPost = new Post({
             title,
-            content: isBlog === "true" || isBlog === true ? (content || "Blog Post") : content,
+            content: isBlogBool ? (content || "") : content,
             image,
-            isBlog: isBlog === "true" || isBlog === true,
-            blogUrl,
-            author: req.user._id, // Assumes auth middleware sets req.user
+            isBlog: isBlogBool,
+            blogUrl: isBlogBool ? (blogUrl || null) : null,
+            author: req.user._id,
         });
 
         const savedPost = await newPost.save();

@@ -240,13 +240,29 @@ const SinglePost = () => {
                                 </div>
                                 
                                 {post.isBlog ? (
-                                    <div className="w-full h-[600px] border-2 border-black/10 rounded-xl overflow-hidden shadow-inner bg-white">
-                                        <iframe
-                                            src={post.blogUrl}
-                                            title={post.title}
-                                            className="w-full h-full border-none"
-                                            sandbox="allow-scripts allow-same-origin allow-popups"
-                                        />
+                                    <div className="w-full flex flex-col gap-4">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[8px] font-black text-purple-600 uppercase tracking-widest bg-purple-50 px-3 py-1.5 rounded-full border border-purple-200">
+                                                BLOG LINK
+                                            </span>
+                                            <a
+                                                href={post.blogUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[8px] font-black text-black/40 hover:text-[#ff5c00] uppercase tracking-widest flex items-center gap-2 border border-black/10 px-3 py-1.5 hover:border-[#ff5c00] transition-all"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                OPEN IN NEW TAB ↗
+                                            </a>
+                                        </div>
+                                        <div className="w-full rounded-xl overflow-hidden border-2 border-black/10 bg-black/5" style={{ height: '65vh', minHeight: '400px' }}>
+                                            <iframe
+                                                src={post.blogUrl}
+                                                title={post.title}
+                                                className="w-full h-full border-none"
+                                                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                                            />
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="text-black/80 text-xs lg:text-sm font-bold uppercase leading-loose tracking-wide whitespace-pre-line border-l-4 border-black/10 pl-5 py-2">
