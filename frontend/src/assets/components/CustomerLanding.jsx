@@ -201,15 +201,15 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-10 right-10 w-20 h-20 border-t border-r border-[#ff5c00]/20"></div>
                 <div className="absolute bottom-40 left-10 w-20 h-20 border-b border-l border-[#ff5c00]/20"></div>
-              </div>
-
-              {/* Brand Floating Label */}
+                         {/* Brand Floating Label */}
               <div className="absolute top-12 left-12 flex flex-col pointer-events-none">
                 <motion.span
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-                  className="text-[10px] font-black text-[#ff5c00] tracking-[0.6em] mb-2 drop-shadow-lg"
-                >STINCHAR_PRIME</motion.span>
-                <h1 className="text-6xl md:text-8xl font-heading text-white leading-none tracking-tighter opacity-10 group-hover/f1:opacity-40 transition-opacity duration-1000">ESTABLISHED<br />21st MARCH 2026</h1>
+                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
+                   className="text-[10px] font-black text-[#ff5c00] tracking-[0.6em] mb-2 drop-shadow-lg"
+                 >STINCHAR_INFRASTRUCTURE</motion.span>
+                <h1 className="text-6xl md:text-8xl font-heading text-white leading-none tracking-tighter opacity-10 group-hover/f1:opacity-40 transition-opacity duration-1000">
+                  COMPLETE<br />CONSTRUCTION &<br />INFRASTRUCTURE
+                </h1>
               </div>
 
             </motion.div>
@@ -223,13 +223,22 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           <div className="p-8 border-b border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-[#ff5c00] rounded-full animate-ping"></div>
-              <span className="text-[10px] font-black text-white/80 tracking-widest uppercase">INTEL_STREAM</span>
+              <span className="text-[10px] font-black text-white/80 tracking-widest uppercase">STINCHAR_FOUNDER_VISION</span>
             </div>
-            <span className="text-[8px] font-mono text-white/30 tracking-[0.3em]">REF_CODE: STN_324A</span>
+          </div>
+
+          <div className="px-8 py-4 border-b border-white/5 bg-white/5">
+             <p className="text-[11px] font-bold text-white/90 leading-relaxed uppercase tracking-tighter">
+               "Empowering the building industry through a unified ecosystem of construction and infrastructure excellence."
+             </p>
+             <p className="text-[9px] font-black text-[#ff5c00] mt-2 tracking-widest">— NEERAJ KUMAR SAINI, FOUNDER</p>
           </div>
 
           {/* Stream Content */}
           <div className="flex-1 overflow-y-auto scrollbar-tech p-8 space-y-6">
+            <div className="flex items-center gap-2 mb-4">
+               <span className="text-[10px] font-black text-white/30 tracking-widest uppercase">INTELLIGENCE_STREAM</span>
+            </div>
             {loadingUpdates ? (
               Array(3).fill(0).map((_, i) => (
                 <div key={i} className="h-24 bg-white/5 border border-white/5 animate-pulse"></div>
@@ -256,7 +265,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 </div>
               </motion.div>
             ))}
-          </div>
+          </div>       </div>
 
           {/* Quick Access Stats at Bottom */}
           <div className="p-8 bg-black/40 border-t border-white/5">

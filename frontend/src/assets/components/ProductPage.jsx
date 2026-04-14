@@ -46,33 +46,44 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const { data } = await API.get(`/products/${productId}`);
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                setLoading(true);
+                const { data } = await API.get(`/products/${productId}`);
 
-        const normalizedImages = (data.images || []).map((img) =>
-          img.url?.startsWith("http") ? img.url : `${img.url}`
-        );
+                const normalizedImages = (data.images || []).map((img) =>
+                    img.url?.startsWith("http") ? img.url : `${img.url}`
+                );
 
-        setSelectedImage(getOptimizedImage(normalizedImages[0]));
-        if (data.arModelUrl) setShowAR(true); // Default to AR
-        if (data.variants && data.variants.length > 0) setSelectedVariant(data.variants[0]);
-        setProductInfo({
-          ...data,
-          images: normalizedImages.map(url => getOptimizedImage(url))
-        });
-      } catch (err) {
-        console.error(err);
-        setError("Failed to fetch product records from central server.");
-      } finally {
-        setLoading(false);
-      }
-    };
+                setSelectedImage(getOptimizedImage(normalizedImages[0]));
+                if (data.arModelUrl) setShowAR(true); // Default to AR
+                if (data.variants && data.variants.length > 0) setSelectedVariant(data.variants[0]);
+                
+                setProductInfo({
+                    ...data,
+                    images: normalizedImages.map(url => getOptimizedImage(url))
+                });
 
-    fetchProduct();
-  }, [productId]);
+                // Set Dynamic Title
+                if (data?.name) {
+                    document.title = `${data.name} | Stinchar Building Store`;
+                }
+            } catch (err) {
+                console.error(err);
+                setError("Failed to fetch product records from central server.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+
+        // Cleanup: Reset title when leaving page
+        return () => {
+            document.title = "Stinchar | Building, Construction & Infrastructure Ecosystem";
+        };
+    }, [productId]);
 
   const handleAddToCart = () => {
     const token = localStorage.getItem("token");

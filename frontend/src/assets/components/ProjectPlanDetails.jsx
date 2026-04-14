@@ -28,7 +28,12 @@ const ProjectPlanDetails = () => {
         const fetchPlan = async () => {
             try {
                 const res = await API.get(`/construction-plans/${id}`);
-                setPlan(res.data.plan);
+                const fetchedPlan = res.data.plan;
+                setPlan(fetchedPlan);
+                // Set Dynamic Title
+                if (fetchedPlan?.title) {
+                    document.title = `${fetchedPlan.title} | Stinchar Construction & Infrastructure`;
+                }
             } catch (error) {
                 console.error("Failed to fetch plan details", error);
                 toast.error("Error loading plan details");
@@ -37,7 +42,18 @@ const ProjectPlanDetails = () => {
             }
         };
         fetchPlan();
+
+        // Cleanup: Reset title when leaving page
+        return () => {
+            document.title = "Stinchar | Building, Construction & Infrastructure Ecosystem";
+        };
     }, [id]);
+
+    const handleWhatsAppConnect = () => {
+        const message = `Hello Neeraj! I am interested in the Project Plan: ${plan.title}. Please provide more details regarding its customization and cost.`;
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/916377011413?text=${encodedMessage}`, '_blank');
+    };
 
     const handleSubmitRequirement = async (e) => {
         e.preventDefault();
@@ -180,8 +196,14 @@ const ProjectPlanDetails = () => {
                                 >
                                     <FaPlusCircle className="text-[#C5A059] group-hover:text-white transition-colors" /> Request Alterations
                                 </button>
+                                <button 
+                                    onClick={handleWhatsAppConnect}
+                                    className="w-full bg-[#25D366] text-white border border-[#128C7E] h-14 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#128C7E] transition-all flex items-center justify-center gap-3 shadow-lg shadow-green-500/20"
+                                >
+                                    <FaComments className="text-white" /> Query on WhatsApp
+                                </button>
                                 <button className="w-full bg-white text-[#1A1B1E] border border-gray-100 h-14 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-gray-50 transition-all flex items-center justify-center gap-3 shadow-sm">
-                                    <FaComments className="text-gray-300" /> Consult Architects
+                                    <FaDraftingCompass className="text-gray-300" /> Consult Architects
                                 </button>
                             </div>
                         </div>

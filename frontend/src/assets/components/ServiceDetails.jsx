@@ -28,7 +28,13 @@ const ServiceDetails = () => {
             try {
                 setLoading(true);
                 const res = await API.get(`/services/${id}`);
-                setService(res.data);
+                const fetchedService = res.data;
+                setService(fetchedService);
+                
+                // Set Dynamic Title
+                if (fetchedService?.title) {
+                    document.title = `${fetchedService.title} | Stinchar Professional Services`;
+                }
             } catch (err) {
                 console.error(err);
                 setError("Unable to load service parameters.");
@@ -37,6 +43,11 @@ const ServiceDetails = () => {
             }
         };
         fetchService();
+
+        // Cleanup: Reset title when leaving page
+        return () => {
+            document.title = "Stinchar | Building, Construction & Infrastructure Ecosystem";
+        };
     }, [id]);
 
     const handleBooking = async (e) => {

@@ -22,22 +22,23 @@ const Nev = () => {
   const links = [
     "Home",
     "Community",
-    "project-plans",
+    "Project-Plans",
     "Services",
     "Construction",
     "Contact",
   ];
 
-  const adminlinks = ["users", "payments", "ordertraking", "query"];
+  const adminlinks = ["Users", "Payments", "OrderTracking", "Query"];
 
   const isAdmin = user?.role === "admin";
   const navLinks = isAdmin ? adminlinks : links;
 
   const getPath = (link) => {
     if (link === "Construction") return "/my-construction";
+    if (link === "Project-Plans") return "/project-plans";
     if (isAdmin) {
-      if (link === "ordertraking") return "/admin/orders";
-      if (link === "query") return "/admin/support";
+      if (link === "OrderTracking") return "/admin/orders";
+      if (link === "Query") return "/admin/support";
       return `/admin/${link.toLowerCase()}`;
     }
     return `/${link.toLowerCase()}`;
@@ -69,7 +70,7 @@ const Nev = () => {
                      }`
                    }
                  >
-                   {link}
+                   {link.replace("-", " ")}
                  </NavLink>
                );
              })}
@@ -87,7 +88,7 @@ const Nev = () => {
                  to="/login"
                  className="flex items-center px-10 bg-[#ff5c00] text-black font-black text-sm uppercase hover:bg-black hover:text-white transition-all"
                >
-                 _AUTH_INITIALIZE
+                 _LOGIN_PORTAL
                </Link>
             ) : (
                <div className="flex items-center px-6">
@@ -147,7 +148,7 @@ const Nev = () => {
                   `block px-6 py-5 border-4 border-black font-black uppercase text-sm tracking-widest transition-all ${isActive ? "bg-black text-white translate-x-2" : "hover:bg-[#ff5c00]"}`
                 }
               >
-                {link}._
+                {link.replace("-", " ")}
               </NavLink>
             );
           })}
@@ -165,10 +166,10 @@ const Nev = () => {
           <div className="flex justify-between items-stretch">
 
             {[
-              { to: "/", icon: Home, label: "INIT" },
-              { to: "/project-plans", icon: Store, label: "PLAN" },
+              { to: "/", icon: Home, label: "HOME" },
+              { to: "/project-plans", icon: Store, label: "PLANS" },
               { to: "/community", icon: Users, label: "COMM" },
-              { to: "/my-construction", icon: HardHat, label: "HARD" },
+              { to: "/my-construction", icon: HardHat, label: "CONST" },
             ].map(({ to, icon: Icon, label }, i) => (
               <NavLink
                 key={i}
@@ -192,7 +193,7 @@ const Nev = () => {
                   className="flex flex-col items-center justify-center w-full h-full bg-[#ff5c00] text-black border-l-2 border-black"
                 >
                   <LogIn size={20} />
-                  <span className="text-[8px] font-black mt-1">AUTH</span>
+                  <span className="text-[8px] font-black mt-1">LOGIN</span>
                 </NavLink>
                )}
             </div>
