@@ -134,3 +134,26 @@ html, body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* 🚀 PREMIUM SOFT BACKLIGHT EFFECTS (IMAGE-MATCHED) */
+@keyframes backlight-breathe {
+  0%, 100% { opacity: 0.5; filter: blur(35px); }
+  50% { opacity: 0.9; filter: blur(50px); }
+}
+
+.search-backlight-core {
+  background: radial-gradient(circle at center, #ff8c42 0%, #ff5c00 100%);
+  animation: backlight-breathe 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.search-premium-chassis {
+  background: #ffffff;
+  box-shadow: 
+    0 15px 45px rgba(0, 0, 0, 0.08),
+    10px 10px 30px rgba(0, 0, 0, 0.12); /* Mimicking directional depth */
+}
+
+.glow-heavy-red {
+  display: none; /* Replaced by soft backlight */
+}

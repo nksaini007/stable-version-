@@ -67,13 +67,13 @@ const Categories = () => {
       <div className="max-w-[1600px] mx-auto pt-24 pb-10 px-6 md:px-10 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-black/10 pb-6 gap-4">
           <div className="space-y-1">
-            <span className="text-[#ff5c00] font-black text-[8px] tracking-[0.4em] mb-1 uppercase select-none opacity-60">//_CATALOG_ACCESS</span>
+
             <h1 className="text-3xl md:text-5xl font-heading font-black tracking-tight leading-none uppercase">
-                BROWSE<span className="text-black/10">_SECTORS</span>
+              BROWSE<span className="text-black/10">SECTORS</span>
             </h1>
           </div>
           <div className="hidden md:block">
-             <p className="text-[9px] font-black opacity-30 uppercase tracking-[0.2em]">NODES_FOUND: {categories.length} //_V4.1</p>
+            <p className="text-[9px] font-black opacity-30 uppercase tracking-[0.2em]">NODES_FOUND: {categories.length} //_V4.1</p>
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@ const Categories = () => {
       {/* ---------------- Main Content ---------------- */}
       <div className="max-w-[1600px] mx-auto px-6 md:px-10 pb-24 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
+
           {/* ---------------- Sidebar: Operations Modules ---------------- */}
           <aside className="lg:col-span-3 space-y-6 order-2 lg:order-1">
             {/* Search Module */}
@@ -143,8 +143,8 @@ const Categories = () => {
                         className="block bg-white border border-black/10 group-hover:border-black p-3 relative overflow-hidden transition-all shadow-[5px_5px_0px_rgba(0,0,0,0.02)] group-hover:shadow-[8px_8px_0px_rgba(0,0,0,0.05)]"
                       >
                         <div className="corner-decal decal-tl !border-black/20 group-hover:!border-black !w-2 !h-2"></div>
-                        <div className="absolute top-1 right-1.5 text-[6px] font-black opacity-10 uppercase tracking-widest">CAT_IDX_{idx+1}</div>
-                        
+                        <div className="absolute top-1 right-1.5 text-[6px] font-black opacity-10 uppercase tracking-widest">CAT_IDX_{idx + 1}</div>
+
                         {/* Image: Aspect Square Style like Trending */}
                         <div className="relative aspect-square bg-black/5 border border-black/5 mb-3 overflow-hidden">
                           {imageUrl ? (
@@ -163,15 +163,15 @@ const Categories = () => {
 
                         {/* Content: Minimal Technical Meta */}
                         <div className="space-y-1">
-                          <span className="text-[7px] font-black text-[#ff5c00] uppercase tracking-widest">SECTOR_{idx+1}</span>
+                          <span className="text-[7px] font-black text-[#ff5c00] uppercase tracking-widest">SECTOR_{idx + 1}</span>
                           <h3 className="text-[10px] font-black uppercase text-black leading-tight line-clamp-1 group-hover:text-[#ff5c00] transition-colors">
                             {category.name}
                           </h3>
-                          
+
                           <div className="flex flex-wrap gap-1 pt-2">
                             {subs.slice(0, 2).map((sub, i) => (
                               <span key={i} className="text-[6px] font-black bg-black/5 text-black/40 px-1 py-0.5 uppercase tracking-tighter">
-                                {sub.name?.slice(0,10)}
+                                {sub.name?.slice(0, 10)}
                               </span>
                             ))}
                             {overflow > 0 && (
