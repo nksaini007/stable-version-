@@ -18,6 +18,7 @@ const {
    uploadProfile,
    getArchitectPublicProfile,
    getProviderPublicProfile,
+   getSellerPublicProfile,
    sendOTP,
    verifyOTP,
    resetPassword,
