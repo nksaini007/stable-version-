@@ -146,7 +146,7 @@ const PublicServiceProfile = () => {
                 {/* Stats Row */}
                 <div className="w-full grid grid-cols-4 gap-2 border-y border-white/5 py-8 mb-12">
                     <div className="text-center">
-                        <p className="text-xl font-bold text-white">500+</p>
+                        <p className="text-xl font-bold text-white">{provider.jobsDone || 0}</p>
                         <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Jobs Done</p>
                     </div>
                     <div className="text-center">
@@ -154,11 +154,11 @@ const PublicServiceProfile = () => {
                         <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Services</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-xl font-bold text-white">{provider.followersCount || 274}</p>
+                        <p className="text-xl font-bold text-white">{provider.followingCount || 0}</p>
                         <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Following</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-xl font-bold text-white">{provider.followersCount || 120}</p>
+                        <p className="text-xl font-bold text-white">{provider.followersCount || 0}</p>
                         <p className="text-[10px] text-white/30 uppercase tracking-[0.1em] font-bold mt-1">Followers</p>
                     </div>
                 </div>

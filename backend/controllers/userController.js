@@ -639,10 +639,19 @@ const getProviderPublicProfile = async (req, res) => {
       _id: { $in: provider.offeredServices || [] }
     });
 
+    // --- REAL STATS CALCULATION ---
+    const Booking = require("../models/Booking");
+    const jobsDone = await Booking.countDocuments({ 
+        providerId: providerId, 
+        status: "Completed" 
+    });
+
     const providerData = provider.toObject();
     providerData.followersCount = provider.followers?.length || 0;
     providerData.followingCount = provider.following?.length || 0;
     providerData.serviceCount = services.length;
+    providerData.jobsDone = jobsDone; // Add real count
+    
     delete providerData.followers;
     delete providerData.following;
 
