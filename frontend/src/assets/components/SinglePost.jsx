@@ -2,7 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../api/api';
 import { AuthContext } from '../context/AuthContext';
-import { FaCommentDots, FaShareAlt, FaPaperPlane, FaTrash, FaArrowLeft, FaCrosshairs, FaRegClock, FaExternalLinkAlt } from 'react-icons/fa';
+import {
+    FaCommentDots, FaShareAlt, FaPaperPlane, FaTrash,
+    FaArrowLeft, FaCrosshairs, FaExternalLinkAlt, FaCalendarAlt, FaHeart
+} from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import Nev from './Nev';
@@ -10,7 +13,7 @@ import Footer from './Footer';
 
 // --- Pixel Heart Icon ---
 const PixelHeart = ({ filled }) => (
-    <svg width="18" height="18" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all transform hover:scale-110">
+    <svg width="16" height="16" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M1 1H2V2H1V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
         <path d="M3 1H4V2H3V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
         <path d="M2 1H3V2H2V1Z" fill={filled ? "#ff5c00" : "currentColor"} />
@@ -43,12 +46,7 @@ const SinglePost = () => {
         return parts.map((part, index) => {
             if (part && part.match(urlRegex)) {
                 const href = part.startsWith('http') ? part : `https://${part}`;
-                return (
-                    <a key={index} href={href} target="_blank" rel="noopener noreferrer"
-                        className="text-[#ff5c00] hover:underline transition-colors break-all">
-                        {part}
-                    </a>
-                );
+                return <a key={index} href={href} target="_blank" rel="noopener noreferrer" className="text-[#ff5c00] hover:underline break-all">{part}</a>;
             }
             return part;
         });
@@ -64,7 +62,6 @@ const SinglePost = () => {
             const { data } = await API.get(`/posts/${id}`);
             setPost(data);
         } catch (error) {
-            console.error("Error loading post", error);
             toast.error("Post Not Found.");
             navigate('/community');
         } finally {
@@ -78,7 +75,7 @@ const SinglePost = () => {
             const isLiked = post.likes.includes(user._id);
             setPost({ ...post, likes: isLiked ? post.likes.filter(i => i !== user._id) : [...post.likes, user._id] });
             await API.put(`/posts/${post._id}/like`);
-        } catch (error) { fetchPost(); }
+        } catch { fetchPost(); }
     };
 
     const handleCommentSubmit = async (e) => {
@@ -90,7 +87,7 @@ const SinglePost = () => {
             setPost({ ...post, comments: updatedComments });
             setCommentText("");
             toast.success("Comment posted!");
-        } catch (error) { toast.error("Failed to post comment."); }
+        } catch { toast.error("Failed to post comment."); }
     };
 
     const handleDeleteComment = async (commentId) => {
@@ -98,22 +95,20 @@ const SinglePost = () => {
         try {
             const { data: updatedComments } = await API.delete(`/posts/${post._id}/comment/${commentId}`);
             setPost({ ...post, comments: updatedComments });
-            toast.success("Comment deleted.");
-        } catch (error) { toast.error("Delete failed."); }
+        } catch { toast.error("Delete failed."); }
     };
 
     const handleShare = () => {
         navigator.clipboard.writeText(window.location.href)
-            .then(() => toast.success("Link copied to clipboard!"))
+            .then(() => toast.success("Link copied!"))
             .catch(() => toast.error("Failed to copy."));
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#e5e5e5] flex flex-col justify-center items-center gap-4 font-mono tech-grid">
-                <div className="scanline"></div>
-                <div className="w-12 h-12 border-4 border-black/5 border-t-black rounded-full animate-spin"></div>
-                <p className="text-black font-black uppercase text-[10px] tracking-widest mt-2">LOADING...</p>
+            <div className="min-h-screen bg-white flex flex-col justify-center items-center gap-4">
+                <div className="w-10 h-10 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
+                <p className="text-gray-400 text-sm font-medium tracking-widest uppercase">Loading...</p>
             </div>
         );
     }
@@ -122,197 +117,223 @@ const SinglePost = () => {
 
     const isLikedByMe = user && post.likes.includes(user._id);
 
-    // ===========================
-    // BLOG POST — Full Page Layout
-    // ===========================
+    // ==============================
+    //   BLOG POST — Premium Layout
+    // ==============================
     if (post.isBlog) {
         return (
-            <div className="bg-[#f0f0f0] min-h-screen flex flex-col font-mono selection:bg-[#ff5c00] selection:text-black">
+            <div className="min-h-screen flex flex-col bg-white">
                 <Nev />
 
-                {/* === HERO SECTION: Full-width Image === */}
-                {post.image && (
-                    <div className="w-full relative overflow-hidden bg-black" style={{ height: '55vh', minHeight: '320px' }}>
-                        <img
-                            src={post.image}
-                            alt={post.title}
-                            className="w-full h-full object-cover opacity-80"
-                        />
-                        {/* Dark overlay gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                        {/* Back Button on image */}
+                {/* TOP NAV BAR */}
+                <div className="border-b border-gray-100 bg-white sticky top-0 z-50 shadow-sm">
+                    <div className="max-w-screen-xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between gap-4">
                         <button
                             onClick={() => navigate('/community')}
-                            className="absolute top-6 left-6 flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+                            className="flex items-center gap-2 text-gray-400 hover:text-black transition-colors text-sm font-medium group"
                         >
-                            <FaArrowLeft size={10} />
-                            Back to Community
+                            <FaArrowLeft size={12} className="group-hover:-translate-x-1 transition-transform" />
+                            Community
                         </button>
 
-                        {/* Title overlaid on image bottom */}
-                        <div className="absolute bottom-0 left-0 right-0 px-6 md:px-16 py-10">
-                            <span className="inline-block bg-[#7c3aed] text-white text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1.5 mb-4">
-                                BLOG
-                            </span>
-                            <h1 className="text-2xl md:text-5xl font-black text-white uppercase tracking-tight leading-none max-w-4xl">
-                                {post.title}
-                            </h1>
-                            <div className="flex items-center gap-4 mt-4">
-                                <div className="w-8 h-8 bg-white/10 border border-white/20 overflow-hidden flex items-center justify-center text-white text-[10px] font-black">
-                                    {post.author?.profileImage
-                                        ? <img src={post.author.profileImage} alt="author" className="w-full h-full object-cover" />
-                                        : post.author?.name?.charAt(0).toUpperCase() || "A"
-                                    }
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-white/90 text-[10px] font-black uppercase tracking-wider">{post.author?.name || "Admin"}</span>
-                                    <span className="text-white/50 text-[8px] font-bold uppercase tracking-wider">{new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* === META BAR: Actions + Open Link === */}
-                <div className="bg-white border-b border-black/10 sticky top-0 z-40 shadow-sm">
-                    <div className="max-w-7xl mx-auto px-6 md:px-16 py-3 flex items-center justify-between gap-4">
-                        {/* If no image, show back + title here */}
-                        {!post.image && (
-                            <div className="flex items-center gap-4 flex-1 min-w-0">
-                                <button
-                                    onClick={() => navigate('/community')}
-                                    className="flex items-center gap-2 text-black/40 hover:text-black text-[10px] font-black uppercase tracking-widest transition-all shrink-0"
-                                >
-                                    <FaArrowLeft size={12} /> Back
-                                </button>
-                                <div className="h-4 w-px bg-black/10" />
-                                <span className="text-[11px] font-black text-black uppercase tracking-tight truncate">{post.title}</span>
-                            </div>
-                        )}
-                        {post.image && (
-                            <div className="flex items-center gap-2">
-                                <span className="text-[9px] font-black text-black/30 uppercase tracking-widest hidden md:block">BLOG POST</span>
-                            </div>
-                        )}
-
-                        <div className="flex items-center gap-3 ml-auto">
+                        <div className="flex items-center gap-2">
                             {/* Like */}
-                            <button onClick={handleLike} className={`flex items-center gap-2 px-3 py-1.5 border text-[9px] font-black uppercase tracking-widest transition-all ${isLikedByMe ? 'border-[#ff5c00] text-[#ff5c00] bg-orange-50' : 'border-black/10 text-black/40 hover:border-black/30'}`}>
+                            <button
+                                onClick={handleLike}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${isLikedByMe ? 'border-orange-400 text-orange-500 bg-orange-50' : 'border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600'}`}
+                            >
                                 <PixelHeart filled={isLikedByMe} />
                                 {post.likes.length}
                             </button>
-                            {/* Comments count */}
-                            <button onClick={() => document.getElementById('blog-comments').scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 px-3 py-1.5 border border-black/10 text-black/40 hover:border-black/30 text-[9px] font-black uppercase tracking-widest transition-all">
+                            {/* Comments scroll */}
+                            <button
+                                onClick={() => document.getElementById('blog-comments')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600 transition-all"
+                            >
                                 <FaCommentDots size={12} />
                                 {post.comments.length}
                             </button>
                             {/* Share */}
-                            <button onClick={handleShare} className="flex items-center gap-2 px-3 py-1.5 border border-black/10 text-black/40 hover:border-black/30 text-[9px] font-black uppercase tracking-widest transition-all">
-                                <FaShareAlt size={12} />
+                            <button
+                                onClick={handleShare}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600 transition-all"
+                            >
+                                <FaShareAlt size={11} />
+                                Share
                             </button>
-                            {/* Open in new tab */}
+                            {/* Open external */}
                             <a
                                 href={post.blogUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 px-4 py-1.5 bg-black text-white text-[9px] font-black uppercase tracking-widest hover:bg-[#ff5c00] transition-all"
+                                className="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-xs font-bold hover:bg-[#ff5c00] transition-colors"
                             >
                                 <FaExternalLinkAlt size={10} />
-                                Open in New Tab
+                                Open Page
                             </a>
                         </div>
                     </div>
                 </div>
 
-                {/* === MAIN BLOG IFRAME: Full Width, Tall === */}
-                <div className="w-full bg-white border-b border-black/10" style={{ height: 'calc(100vh - 56px)', minHeight: '600px' }}>
-                    <iframe
-                        src={post.blogUrl}
-                        title={post.title}
-                        className="w-full h-full border-none"
-                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-                    />
+                {/* HERO IMAGE — Full width, 40vh, clean */}
+                {post.image && (
+                    <div className="w-full bg-gray-100 overflow-hidden" style={{ height: '42vh', minHeight: '260px' }}>
+                        <img
+                            src={post.image}
+                            alt={post.title}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                )}
+
+                {/* TITLE + META — Clean card below image */}
+                <div className="border-b border-gray-100 bg-white">
+                    <div className="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                            <div className="flex-1 space-y-4">
+                                {/* Badge */}
+                                <span className="inline-flex items-center gap-2 bg-violet-100 text-violet-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                    <span className="w-1.5 h-1.5 bg-violet-500 rounded-full"></span>
+                                    Blog Article
+                                </span>
+                                {/* Title */}
+                                <h1 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight tracking-tight max-w-3xl">
+                                    {post.title}
+                                </h1>
+                                {/* Meta row */}
+                                <div className="flex items-center gap-4 flex-wrap">
+                                    {/* Author */}
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
+                                            {post.author?.profileImage
+                                                ? <img src={post.author.profileImage} alt="author" className="w-full h-full object-cover" />
+                                                : <div className="w-full h-full flex items-center justify-center text-xs font-black text-gray-500">{post.author?.name?.charAt(0).toUpperCase() || 'A'}</div>
+                                            }
+                                        </div>
+                                        <span className="text-sm font-semibold text-gray-700">{post.author?.name || 'Admin'}</span>
+                                    </div>
+                                    <div className="w-px h-4 bg-gray-200"></div>
+                                    <div className="flex items-center gap-1.5 text-gray-400">
+                                        <FaCalendarAlt size={11} />
+                                        <span className="text-sm">{new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                                    </div>
+                                    <div className="w-px h-4 bg-gray-200"></div>
+                                    <div className="flex items-center gap-1.5 text-gray-400">
+                                        <FaHeart size={11} className={isLikedByMe ? 'text-orange-400' : ''} />
+                                        <span className="text-sm">{post.likes.length} likes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* === COMMENTS SECTION === */}
-                <div id="blog-comments" className="bg-[#f0f0f0] w-full">
-                    <div className="max-w-3xl mx-auto px-6 md:px-8 py-16 space-y-10">
+                {/* IFRAME SECTION — Main Blog Content */}
+                <div className="flex-1 bg-gray-50 py-0">
+                    <div
+                        className="w-full bg-white shadow-[0_4px_40px_rgba(0,0,0,0.08)]"
+                        style={{ height: 'calc(100vh - 56px)', minHeight: '600px' }}
+                    >
+                        <iframe
+                            src={post.blogUrl}
+                            title={post.title}
+                            className="w-full h-full border-none"
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                        />
+                    </div>
+                </div>
 
-                        {/* Comments Header */}
-                        <div className="flex items-center gap-4">
-                            <h2 className="text-[11px] font-black text-black/30 uppercase tracking-[0.4em]">COMMENTS</h2>
-                            <div className="flex-1 h-px bg-black/10"></div>
-                            <span className="text-[10px] font-black text-black/20">{post.comments.length} entries</span>
+                {/* DIVIDER */}
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+
+                {/* COMMENTS SECTION */}
+                <div id="blog-comments" className="bg-gray-50">
+                    <div className="max-w-2xl mx-auto px-4 md:px-8 py-16">
+
+                        {/* Section Header */}
+                        <div className="flex items-center gap-3 mb-10">
+                            <h2 className="text-lg font-black text-gray-900">Comments</h2>
+                            <span className="bg-gray-100 text-gray-400 text-xs font-bold px-2 py-0.5 rounded-full">{post.comments.length}</span>
                         </div>
 
                         {/* Comment Input */}
-                        <form onSubmit={handleCommentSubmit} className="flex gap-3">
-                            <div className="flex-1 relative">
-                                <input
-                                    type="text"
-                                    placeholder="Write a comment..."
+                        <form onSubmit={handleCommentSubmit} className="mb-12">
+                            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden focus-within:border-black focus-within:shadow-md transition-all">
+                                <textarea
+                                    placeholder="Share your thoughts..."
                                     value={commentText}
                                     onChange={(e) => setCommentText(e.target.value)}
-                                    className="w-full bg-white border-2 border-black/10 px-5 py-4 text-[11px] font-bold outline-none focus:border-black transition-all placeholder:text-black/20"
+                                    rows={3}
+                                    className="w-full px-5 py-4 text-sm text-gray-700 outline-none resize-none placeholder:text-gray-300 bg-transparent"
                                 />
+                                <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/50">
+                                    <span className="text-xs text-gray-300">{commentText.length > 0 ? `${commentText.length} characters` : 'Be kind and constructive'}</span>
+                                    <button
+                                        type="submit"
+                                        disabled={!commentText.trim()}
+                                        className="flex items-center gap-2 px-5 py-2 bg-black text-white text-xs font-bold rounded-full hover:bg-[#ff5c00] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        <FaPaperPlane size={11} />
+                                        Post
+                                    </button>
+                                </div>
                             </div>
-                            <button
-                                type="submit"
-                                disabled={!commentText.trim()}
-                                className="w-14 h-14 bg-black text-white flex items-center justify-center hover:bg-[#ff5c00] transition-all disabled:opacity-20"
-                            >
-                                <FaPaperPlane size={16} />
-                            </button>
                         </form>
 
                         {/* Comments List */}
-                        <div className="space-y-6">
-                            {post.comments.length === 0 ? (
-                                <div className="py-16 flex flex-col items-center justify-center border-2 border-dashed border-black/10 bg-white/50">
-                                    <FaCrosshairs className="text-black/10 mb-4" size={28} />
-                                    <p className="text-[10px] font-black text-black/20 uppercase tracking-[0.3em]">No comments yet. Be the first!</p>
-                                </div>
-                            ) : (
-                                post.comments.map(comment => (
+                        {post.comments.length === 0 ? (
+                            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200">
+                                <FaCrosshairs className="text-gray-200 mx-auto mb-4" size={32} />
+                                <p className="text-sm font-semibold text-gray-300">No comments yet</p>
+                                <p className="text-xs text-gray-200 mt-1">Start the conversation!</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {post.comments.map((comment, i) => (
                                     <motion.div
                                         key={comment._id}
-                                        initial={{ opacity: 0, y: 10 }}
+                                        initial={{ opacity: 0, y: 12 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="group flex gap-4 bg-white p-5 border border-black/5 hover:border-black/15 transition-all"
+                                        transition={{ delay: i * 0.04 }}
+                                        className="group bg-white rounded-2xl border border-gray-100 p-5 hover:border-gray-200 hover:shadow-sm transition-all"
                                     >
-                                        <div className="w-9 h-9 bg-black/5 border border-black/10 flex items-center justify-center text-[10px] font-black text-black/30 shrink-0 overflow-hidden">
-                                            {comment.user?.profileImage
-                                                ? <img src={comment.user.profileImage} alt="user" className="w-full h-full object-cover" />
-                                                : comment.user?.name?.charAt(0).toUpperCase() || "U"
-                                            }
-                                        </div>
-                                        <div className="flex-1 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <p className="text-[10px] font-black text-black uppercase tracking-tight">{comment.user?.name || "User"}</p>
-                                                    {comment.user?.role === 'admin' && (
-                                                        <span className="bg-[#ff5c00] text-white text-[6px] font-black px-1.5 py-0.5 uppercase tracking-widest">ADMIN</span>
+                                        <div className="flex items-start gap-3">
+                                            {/* Avatar */}
+                                            <div className="w-9 h-9 rounded-full bg-gray-100 border border-gray-200 overflow-hidden shrink-0">
+                                                {comment.user?.profileImage
+                                                    ? <img src={comment.user.profileImage} alt="" className="w-full h-full object-cover" />
+                                                    : <div className="w-full h-full flex items-center justify-center text-xs font-black text-gray-400">{comment.user?.name?.charAt(0).toUpperCase() || 'U'}</div>
+                                                }
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                {/* Name + badge + delete */}
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-sm font-bold text-gray-900">{comment.user?.name || 'User'}</span>
+                                                        {comment.user?.role === 'admin' && (
+                                                            <span className="bg-[#ff5c00] text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide">Admin</span>
+                                                        )}
+                                                        <span className="text-xs text-gray-300 hidden sm:block">
+                                                            • {new Date(comment.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                                                        </span>
+                                                    </div>
+                                                    {user?.role === 'admin' && (
+                                                        <button
+                                                            onClick={() => handleDeleteComment(comment._id)}
+                                                            className="text-gray-200 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-1 rounded"
+                                                        >
+                                                            <FaTrash size={11} />
+                                                        </button>
                                                     )}
                                                 </div>
-                                                {user?.role === 'admin' && (
-                                                    <button
-                                                        onClick={() => handleDeleteComment(comment._id)}
-                                                        className="text-black/10 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1"
-                                                    >
-                                                        <FaTrash size={11} />
-                                                    </button>
-                                                )}
+                                                {/* Text */}
+                                                <p className="text-sm text-gray-600 leading-relaxed">{renderTextWithLinks(comment.text)}</p>
                                             </div>
-                                            <p className="text-[12px] text-black/70 leading-relaxed">{renderTextWithLinks(comment.text)}</p>
-                                            <p className="text-[8px] font-bold text-black/20 uppercase tracking-wider">
-                                                {new Date(comment.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                            </p>
                                         </div>
                                     </motion.div>
-                                ))
-                            )}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -321,9 +342,9 @@ const SinglePost = () => {
         );
     }
 
-    // ===========================
-    // REGULAR POST — Original Layout
-    // ===========================
+    // ==============================
+    //   REGULAR POST — Original Layout
+    // ==============================
     return (
         <div className="bg-[#e5e5e5] min-h-screen flex flex-col font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative overflow-hidden">
             <Nev />
@@ -380,10 +401,7 @@ const SinglePost = () => {
                                     </div>
                                     <div className="flex flex-col">
                                         <h4 className="font-black text-black text-[9px] lg:text-[10px] uppercase tracking-tighter leading-none">{post.author?.name || "SYS_OPERATOR"}</h4>
-                                        <div className="flex items-center gap-2 mt-1 opacity-40">
-                                            <FaRegClock size={8} />
-                                            <span className="text-[7px] font-black uppercase tracking-wider">{new Date(post.createdAt).toLocaleDateString()}</span>
-                                        </div>
+                                        <span className="text-[7px] font-black text-black/40 uppercase tracking-wider mt-1">{new Date(post.createdAt).toLocaleDateString()}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -408,9 +426,7 @@ const SinglePost = () => {
                             <div className="px-6 lg:px-8 py-6 flex items-center justify-between border-y-2 border-black/5 bg-[#fbfbfb]">
                                 <div className="flex items-center gap-6 lg:gap-8">
                                     <button onClick={handleLike} className="flex items-center gap-3 group/hub">
-                                        <div className={`transition-all ${isLikedByMe ? "text-[#ff5c00]" : "text-black opacity-20 group-hover/hub:opacity-100"}`}>
-                                            <PixelHeart filled={isLikedByMe} />
-                                        </div>
+                                        <div className={`transition-all ${isLikedByMe ? "text-[#ff5c00]" : "text-black opacity-20 group-hover/hub:opacity-100"}`}><PixelHeart filled={isLikedByMe} /></div>
                                         <div className="flex flex-col">
                                             <span className="text-[7px] font-black text-black/30 uppercase tracking-widest leading-none mb-1">ENDORSE</span>
                                             <span className={`text-[11px] lg:text-[12px] font-black leading-none ${isLikedByMe ? "text-[#ff5c00]" : "text-black"}`}>{post.likes.length}</span>
@@ -424,7 +440,7 @@ const SinglePost = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={handleShare} className="w-10 h-10 border-2 border-black/10 flex items-center justify-center text-black/30 hover:text-[#ff5c00] hover:border-[#ff5c00] transition-all hover:bg-black hover:scale-105 active:scale-95">
+                                <button onClick={handleShare} className="w-10 h-10 border-2 border-black/10 flex items-center justify-center text-black/30 hover:text-[#ff5c00] hover:border-[#ff5c00] transition-all hover:scale-105 active:scale-95">
                                     <FaShareAlt size={14} />
                                 </button>
                             </div>
@@ -447,10 +463,7 @@ const SinglePost = () => {
                                         post.comments.map(comment => (
                                             <div key={comment._id} className="relative group/comment flex gap-4 lg:gap-6 animate-in slide-in-from-left duration-500">
                                                 <div className="w-10 h-10 border-2 border-black/10 flex items-center justify-center font-black text-xs text-black/30 bg-black/[0.03] shrink-0 overflow-hidden">
-                                                    {comment.user?.profileImage
-                                                        ? <img src={comment.user.profileImage} alt="user" className="w-full h-full object-cover" />
-                                                        : comment.user?.name?.charAt(0).toUpperCase() || "U"
-                                                    }
+                                                    {comment.user?.profileImage ? <img src={comment.user.profileImage} alt="user" className="w-full h-full object-cover" /> : comment.user?.name?.charAt(0).toUpperCase() || "U"}
                                                 </div>
                                                 <div className="flex-1 space-y-3">
                                                     <div className="flex justify-between items-center">
