@@ -619,16 +619,21 @@ const getProviderPublicProfile = async (req, res) => {
     const provider = await User.findById(providerId)
       .select("name bio profileImage serviceCategory experience skills contactInfo location role isActive followers following createdAt offeredServices phone");
 
-    if (!provider) return res.status(404).json({ message: "Provider not found" });
-    if (provider.role !== "provider" || !provider.isActive) {
-      return res.status(403).json({ message: "This account is not an active service provider." });
+    if (!provider) return res.status(404).json({ message: "Service Node Not Found." });
+    
+    // Check if it's actually a provider
+    if (provider.role !== "provider") {
+      return res.status(403).json({ message: "Access Denied: Specified node is not a service provider." });
     }
+
+    // We allow viewing the profile even if not toggled "isActive" by admin,
+    // as long as they are a provider. This ensures QR sharing works during onboarding.
 
     // Fetch details of offered services
     const Service = require("../models/Service");
     const services = await Service.find({
-      _id: { $in: provider.offeredServices },
-      isActive: true
+      _id: { $in: provider.offeredServices }
+      // Removed isActive: true here to show all services the provider has added to their portfolio
     });
 
     const providerData = provider.toObject();
@@ -641,7 +646,7 @@ const getProviderPublicProfile = async (req, res) => {
     res.json({ provider: providerData, services });
   } catch (err) {
     console.error("getProviderPublicProfile Error:", err);
-    res.status(500).json({ error: "Failed to load provider profile" });
+    res.status(500).json({ error: "System Core Error: Failed to retrieve profile data." });
   }
 };
 

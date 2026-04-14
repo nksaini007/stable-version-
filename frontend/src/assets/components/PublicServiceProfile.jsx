@@ -56,11 +56,34 @@ const PublicServiceProfile = () => {
 
     if (error || !provider) {
         return (
-            <div className="min-h-screen bg-[#0f172a] flex flex-col items-center justify-center text-white p-8">
-                <FaTools className="text-5xl text-white/10 mb-6" />
-                <h2 className="text-2xl font-black mb-2 uppercase italic">Offline_Node</h2>
-                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest text-center max-w-md mb-8">{error || "This service node is currently inactive or unreachable."}</p>
-                <button onClick={() => navigate("/")} className="px-8 py-3 bg-orange-500 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest">Return_Home</button>
+            <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center p-8 text-white font-mono tech-grid relative overflow-hidden">
+                <div className="scanline"></div>
+                <div className="relative z-10 flex flex-col items-center max-w-md text-center">
+                    <div className="w-20 h-20 border-2 border-red-500/20 flex items-center justify-center rounded-full mb-8 relative group">
+                        <div className="absolute inset-0 bg-red-500/5 rounded-full animate-pulse group-hover:bg-red-500/10 transition-colors"></div>
+                        <FaTools className="text-3xl text-red-500/40 group-hover:text-red-500/60 transition-all" />
+                    </div>
+                    
+                    <h2 className="text-2xl font-black mb-4 uppercase italic tracking-tighter text-red-500/80">Offline_Link_Error</h2>
+                    
+                    <div className="bg-white/5 border border-white/10 p-6 rounded-2xl mb-10 w-full">
+                        <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 leading-none">Diagnostic_Output:</p>
+                        <p className="text-sm font-bold text-white/70 leading-relaxed uppercase">
+                            {error || "Unknown system failure: Specified service node is unreachable in the current environment."}
+                        </p>
+                    </div>
+
+                    <button 
+                        onClick={() => navigate('/')} 
+                        className="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] hover:bg-orange-500 hover:text-black transition-all shadow-[8px_8px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                    >
+                        Return_to_Central_Hub
+                    </button>
+                    
+                    <div className="mt-12 opacity-10 flex gap-2">
+                        {[...Array(5)].map((_, i) => <div key={i} className="w-1 h-3 bg-white"></div>)}
+                    </div>
+                </div>
             </div>
         );
     }
