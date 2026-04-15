@@ -440,7 +440,7 @@ const SinglePost = () => {
 
 
     // ============================================================
-    //  REGULAR POST — Same style as Blog Post
+    //  REGULAR POST — Magazine Style Layout
     // ============================================================
     return (
         <div style={{ minHeight: '100vh', background: '#0e0e0e', display: 'flex', flexDirection: 'column' }}>
@@ -460,7 +460,6 @@ const SinglePost = () => {
                 zIndex: 50,
                 backdropFilter: 'blur(20px)',
             }}>
-                {/* Back */}
                 <button
                     onClick={() => navigate('/community')}
                     style={{
@@ -477,7 +476,6 @@ const SinglePost = () => {
                     <FaArrowLeft size={9} /> Back
                 </button>
 
-                {/* POST Badge */}
                 <span style={{
                     display: 'flex', alignItems: 'center', gap: '6px',
                     background: 'rgba(255,92,0,0.18)', border: '1px solid rgba(255,92,0,0.35)',
@@ -489,7 +487,6 @@ const SinglePost = () => {
                     Post
                 </span>
 
-                {/* Title */}
                 <h1 style={{
                     flex: 1, fontSize: '15px', fontWeight: 800,
                     color: 'rgba(255,255,255,0.88)', margin: 0,
@@ -500,30 +497,109 @@ const SinglePost = () => {
                 </h1>
             </div>
 
-            {/* ── POST IMAGE (if exists) ── */}
+            {/* ── IMAGE SECTION — Full image visible with blurred BG ── */}
             {post.image && (
-                <div style={{ width: '100%', maxHeight: '480px', overflow: 'hidden', flexShrink: 0 }}>
-                    <img
+                <div style={{
+                    position: 'relative',
+                    width: '100%',
+                    minHeight: '420px',
+                    maxHeight: '560px',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#000',
+                }}>
+                    {/* Blurred background */}
+                    <div style={{
+                        position: 'absolute', inset: 0,
+                        backgroundImage: `url(${post.image})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        filter: 'blur(28px) brightness(0.35)',
+                        transform: 'scale(1.1)',
+                    }} />
+                    {/* Actual image — full visible, not cropped */}
+                    <motion.img
                         src={post.image}
                         alt={post.title}
-                        style={{ width: '100%', height: '100%', maxHeight: '480px', objectFit: 'cover', display: 'block' }}
+                        initial={{ opacity: 0, scale: 0.97 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                        style={{
+                            position: 'relative',
+                            zIndex: 1,
+                            maxWidth: '100%',
+                            maxHeight: '560px',
+                            width: 'auto',
+                            height: 'auto',
+                            objectFit: 'contain',
+                            display: 'block',
+                            borderRadius: '4px',
+                        }}
                     />
                 </div>
             )}
 
-            {/* ── POST CONTENT ── */}
-            <div style={{ flex: 1, background: '#111', padding: '32px 24px' }}>
+            {/* ── ARTICLE CONTENT SECTION ── */}
+            <div style={{
+                flex: 1,
+                background: '#111',
+                borderTop: post.image ? '1px solid rgba(255,255,255,0.06)' : 'none',
+            }}>
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15, duration: 0.45 }}
-                    style={{ maxWidth: '860px', margin: '0 auto' }}
+                    transition={{ delay: 0.1, duration: 0.45 }}
+                    style={{ maxWidth: '720px', margin: '0 auto', padding: '40px 24px' }}
                 >
+                    {/* Big title inside content */}
+                    <h2 style={{
+                        fontSize: '28px', fontWeight: 900,
+                        color: 'rgba(255,255,255,0.92)', margin: '0 0 20px 0',
+                        lineHeight: '1.3', letterSpacing: '-0.02em',
+                    }}>
+                        {post.title}
+                    </h2>
+
+                    {/* Author + Date */}
+                    <div style={{
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        marginBottom: '32px',
+                        paddingBottom: '24px',
+                        borderBottom: '1px solid rgba(255,255,255,0.07)',
+                    }}>
+                        <div style={{
+                            width: 34, height: 34, borderRadius: '50%',
+                            background: 'rgba(255,255,255,0.08)',
+                            border: '1px solid rgba(255,255,255,0.12)',
+                            overflow: 'hidden', flexShrink: 0,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                            {post.author?.profileImage
+                                ? <img src={post.author.profileImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                : <span style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)' }}>{post.author?.name?.charAt(0) || 'A'}</span>
+                            }
+                        </div>
+                        <div>
+                            <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: 'rgba(255,255,255,0.75)' }}>{post.author?.name || 'Admin'}</p>
+                            <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.28)', marginTop: '1px' }}>
+                                {new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Post Body */}
                     {post.content ? (
                         <p style={{
-                            color: 'rgba(255,255,255,0.72)', fontSize: '16px',
-                            lineHeight: '1.95', fontWeight: 400,
-                            whiteSpace: 'pre-line', margin: 0,
+                            color: 'rgba(255,255,255,0.68)',
+                            fontSize: '16.5px',
+                            lineHeight: '2',
+                            fontWeight: 400,
+                            whiteSpace: 'pre-line',
+                            margin: 0,
+                            letterSpacing: '0.01em',
                         }}>
                             {renderTextWithLinks(post.content)}
                         </p>
@@ -533,109 +609,83 @@ const SinglePost = () => {
                 </motion.div>
             </div>
 
-            {/* ── POST INFO + LIKE / SHARE / COMMENT ACTIONS ── */}
+            {/* ── ACTION BUTTONS — Like / Comment / Share ── */}
             <div style={{
                 background: '#141414',
                 borderTop: '1px solid rgba(255,255,255,0.07)',
-                padding: '20px 24px',
+                padding: '18px 24px',
             }}>
-                <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+                <div style={{
+                    maxWidth: '720px', margin: '0 auto',
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                    padding: '12px 16px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '14px',
+                }}>
+                    {/* Like */}
+                    <button
+                        onClick={handleLike}
+                        style={{
+                            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                            padding: '10px 0',
+                            background: isLikedByMe ? 'rgba(255,92,0,0.15)' : 'transparent',
+                            border: isLikedByMe ? '1px solid rgba(255,92,0,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                            borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s',
+                            color: isLikedByMe ? '#ff5c00' : 'rgba(255,255,255,0.45)',
+                            fontSize: '13px', fontWeight: 700,
+                        }}
+                    >
+                        <PixelHeart filled={isLikedByMe} />
+                        <span>{post.likes.length} Like{post.likes.length !== 1 ? 's' : ''}</span>
+                    </button>
 
-                    {/* Author + Date row */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px' }}>
-                        <div style={{
-                            width: 38, height: 38, borderRadius: '50%',
-                            background: 'rgba(255,255,255,0.08)',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                            overflow: 'hidden', flexShrink: 0,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                            {post.author?.profileImage
-                                ? <img src={post.author.profileImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                : <span style={{ fontSize: '13px', fontWeight: 900, color: 'rgba(255,255,255,0.4)' }}>{post.author?.name?.charAt(0) || 'A'}</span>
-                            }
-                        </div>
-                        <div>
-                            <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>{post.author?.name || 'Admin'}</p>
-                            <p style={{ margin: 0, fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>
-                                {new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
-                            </p>
-                        </div>
-                    </div>
+                    {/* Comment */}
+                    <button
+                        onClick={() => document.getElementById('post-comments')?.scrollIntoView({ behavior: 'smooth' })}
+                        style={{
+                            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                            padding: '10px 0',
+                            background: 'transparent',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s',
+                            color: 'rgba(255,255,255,0.45)', fontSize: '13px', fontWeight: 700,
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = '#fff'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; }}
+                    >
+                        <FaCommentDots size={13} />
+                        <span>{post.comments.length} Comment{post.comments.length !== 1 ? 's' : ''}</span>
+                    </button>
 
-                    {/* Action buttons — Like, Comment, Share */}
-                    <div style={{
-                        display: 'flex', alignItems: 'center', gap: '10px',
-                        padding: '14px 18px',
-                        background: 'rgba(255,255,255,0.03)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        borderRadius: '14px',
-                    }}>
-                        {/* Like */}
-                        <button
-                            onClick={handleLike}
-                            style={{
-                                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                                padding: '10px 0',
-                                background: isLikedByMe ? 'rgba(255,92,0,0.15)' : 'transparent',
-                                border: isLikedByMe ? '1px solid rgba(255,92,0,0.4)' : '1px solid rgba(255,255,255,0.08)',
-                                borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s',
-                                color: isLikedByMe ? '#ff5c00' : 'rgba(255,255,255,0.45)',
-                                fontSize: '13px', fontWeight: 700,
-                            }}
-                        >
-                            <PixelHeart filled={isLikedByMe} />
-                            <span>{post.likes.length} Like{post.likes.length !== 1 ? 's' : ''}</span>
-                        </button>
-
-                        {/* Comment */}
-                        <button
-                            onClick={() => document.getElementById('post-comments')?.scrollIntoView({ behavior: 'smooth' })}
-                            style={{
-                                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                                padding: '10px 0',
-                                background: 'transparent',
-                                border: '1px solid rgba(255,255,255,0.08)',
-                                borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s',
-                                color: 'rgba(255,255,255,0.45)', fontSize: '13px', fontWeight: 700,
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = '#fff'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; }}
-                        >
-                            <FaCommentDots size={13} />
-                            <span>{post.comments.length} Comment{post.comments.length !== 1 ? 's' : ''}</span>
-                        </button>
-
-                        {/* Share */}
-                        <button
-                            onClick={handleShare}
-                            style={{
-                                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                                padding: '10px 0',
-                                background: 'transparent',
-                                border: '1px solid rgba(255,255,255,0.08)',
-                                borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s',
-                                color: 'rgba(255,255,255,0.45)', fontSize: '13px', fontWeight: 700,
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = '#fff'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; }}
-                        >
-                            <FaShareAlt size={13} />
-                            <span>Share</span>
-                        </button>
-                    </div>
+                    {/* Share */}
+                    <button
+                        onClick={handleShare}
+                        style={{
+                            flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                            padding: '10px 0',
+                            background: 'transparent',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s',
+                            color: 'rgba(255,255,255,0.45)', fontSize: '13px', fontWeight: 700,
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = '#fff'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; }}
+                    >
+                        <FaShareAlt size={13} />
+                        <span>Share</span>
+                    </button>
                 </div>
             </div>
 
-            {/* ── COMPACT COMMENT SECTION ── */}
+            {/* ── COMMENT SECTION ── */}
             <div id="post-comments" style={{
                 background: '#0e0e0e',
                 borderTop: '1px solid rgba(255,255,255,0.06)',
                 padding: '24px',
             }}>
-                <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+                <div style={{ maxWidth: '720px', margin: '0 auto' }}>
 
-                    {/* Header */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                         <FaCommentDots size={13} style={{ color: 'rgba(255,255,255,0.2)' }} />
                         <span style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Comments</span>
@@ -645,7 +695,6 @@ const SinglePost = () => {
                         }}>{post.comments.length}</span>
                     </div>
 
-                    {/* Comment Input */}
                     <form onSubmit={handleCommentSubmit} style={{ marginBottom: '20px' }}>
                         <div style={{
                             border: '1px solid rgba(255,255,255,0.1)',
@@ -665,10 +714,7 @@ const SinglePost = () => {
                                     fontFamily: 'inherit',
                                 }}
                             />
-                            <div style={{
-                                display: 'flex', justifyContent: 'flex-end',
-                                padding: '8px 12px', borderTop: '1px solid rgba(255,255,255,0.05)',
-                            }}>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 12px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                                 <button
                                     type="submit"
                                     disabled={!commentText.trim()}
@@ -687,7 +733,6 @@ const SinglePost = () => {
                         </div>
                     </form>
 
-                    {/* Comment List */}
                     {post.comments.length === 0 ? (
                         <div style={{
                             textAlign: 'center', padding: '28px 0',
@@ -759,3 +804,4 @@ const SinglePost = () => {
 };
 
 export default SinglePost;
+
