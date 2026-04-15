@@ -148,17 +148,17 @@ const AnimatedCard = () => {
         {/* SEARCH RESULTS */}
         {(hasSearched || loading || error) && (
           <div ref={resultsRef} className="flex-1 w-full bg-[#e5e5e5] text-black pb-32  border-black z-10 min-h-screen">
-            <div className="max-w-[1600px] mx-auto w-full px-8 py-20">
-              <div className="flex gap-4 mb-10 overflow-x-auto pb-4">
+            <div className="max-w-[1600px] mx-auto w-full px-4 md:px-8 py-10 md:py-20">
+              <div className="flex gap-3 md:gap-4 mb-8 md:mb-10 overflow-x-auto pb-2 md:pb-4 no-scrollbar">
                 {['all', 'product', 'service', 'plan'].map(f => (
-                  <button key={f} onClick={() => { setActiveFilter(f); performGlobalSearch(searchQuery, f); }} className={`px-6 py-2 text-[10px] font-black tracking-widest uppercase border-2 transition-all ${activeFilter === f ? 'bg-black text-white border-black' : 'border-black/10 hover:border-black'}`}>{f}</button>
+                  <button key={f} onClick={() => { setActiveFilter(f); performGlobalSearch(searchQuery, f); }} className={`px-4 md:px-6 py-2 text-[10px] font-black tracking-widest uppercase border-2 transition-all whitespace-nowrap ${activeFilter === f ? 'bg-black text-white border-black' : 'border-black/10 hover:border-black'}`}>{f}</button>
                 ))}
               </div>
 
               {loading && <div className="text-center py-20 uppercase font-black animate-pulse tracking-[0.5em]">Fetching_Data_Stream...</div>}
 
               {!loading && results.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-8">
                   {results.map((item, i) => {
                     const isLastElement = i === results.length - 1;
 
