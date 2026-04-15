@@ -147,7 +147,7 @@ const AnimatedCard = () => {
 
         {/* SEARCH RESULTS */}
         {(hasSearched || loading || error) && (
-          <div ref={resultsRef} className="flex-1 w-full bg-[#e5e5e5] text-black pb-32 border-t-8 border-black z-10 min-h-screen">
+          <div ref={resultsRef} className="flex-1 w-full bg-[#e5e5e5] text-black pb-32  border-black z-10 min-h-screen">
             <div className="max-w-[1600px] mx-auto w-full px-8 py-20">
               <div className="flex gap-4 mb-10 overflow-x-auto pb-4">
                 {['all', 'product', 'service', 'plan'].map(f => (
@@ -262,7 +262,7 @@ const AnimatedCard = () => {
             <div className="flex-1 flex items-center">
               <input
                 type="text"
-                placeholder="Search Infrastructure..."
+                placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -274,7 +274,7 @@ const AnimatedCard = () => {
               onClick={handleSearch}
               className="ml-2 text-gray-900 transition-all hover:scale-110 active:scale-95 p-1"
             >
-              <FaSearch size={20} className="stroke-[1.5]" />
+              <FaSearch size={15} className="stroke-[1.5]" />
             </button>
           </motion.div>
         </div>
@@ -284,7 +284,7 @@ const AnimatedCard = () => {
 
   return (
     <div className="min-h-screen bg-[#e5e5e5] flex items-center justify-center font-mono p-12">
-      <div className="border-4 border-black p-10 bg-white shadow-[20px_20px_0px_#000]">
+      <div className=" p-10 bg-white shadow-[20px_20px_0px_#000]">
         <h2 className="text-4xl font-black uppercase mb-4">Dashboard_Redirect</h2>
         <button onClick={() => navigate(`/${role}`)} className="bg-black text-white px-8 py-4 font-black hover:bg-[#ff5c00] transition-colors">ENTER_SYSTEM</button>
       </div>
