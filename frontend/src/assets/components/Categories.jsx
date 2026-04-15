@@ -80,46 +80,21 @@ const Categories = () => {
       <div className="max-w-[1600px] mx-auto px-6 md:px-10 pb-6 md:pb-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-10">
 
-          {/* ---------------- Sidebar: Operations Modules ---------------- */}
-          <aside className="lg:col-span-3 space-y-6 order-2 lg:order-1">
-            {/* Search Module */}
-            <div className="bg-white border border-black/10 p-5 relative">
-              <div className="absolute -top-2.5 left-4 bg-black text-white text-[7px] font-black px-2 py-0.5 tracking-widest uppercase">CAT_SEARCH</div>
-              <div className="relative mt-2">
-                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/20 text-[10px]" />
-                <input
-                  value={term}
-                  onChange={(e) => setTerm(e.target.value)}
-                  placeholder="FILTER_NODES..."
-                  className="w-full pl-9 pr-4 py-2 text-[9px] font-black bg-black/5 border border-black/5 focus:border-black outline-none transition-all uppercase placeholder:text-black/20"
-                />
-              </div>
+          {/* ---------------- Mobile Search (hidden on desktop) ---------------- */}
+          <div className="lg:hidden mb-4">
+            <div className="relative">
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30 text-[11px]" />
+              <input
+                value={term}
+                onChange={(e) => setTerm(e.target.value)}
+                placeholder="Search categories..."
+                className="w-full pl-9 pr-4 py-2.5 text-[11px] font-bold bg-white border border-black/10 outline-none uppercase placeholder:text-black/20"
+              />
             </div>
-
-            {/* Popular Sectors Module */}
-            <div className="bg-white border border-black/10 p-5 relative">
-              <div className="absolute -top-2.5 left-4 bg-black text-white text-[7px] font-black px-2 py-0.5 tracking-widest uppercase">POPULAR_FLUX</div>
-              <div className="space-y-1.5 mt-2">
-                {popular.map((cat, i) => (
-                  <Link
-                    key={cat._id || i}
-                    to={`/category/${encodeURIComponent(cat.name)}`}
-                    className="flex items-center justify-between px-2 py-1.5 border border-transparent hover:border-black/10 hover:bg-black/5 transition-all group"
-                  >
-                    <span className="text-[8px] font-black uppercase text-black/40 group-hover:text-black">
-                      {cat.name}
-                    </span>
-                    <span className="text-[7px] font-black text-black/20 group-hover:text-[#ff5c00]">
-                      {cat.subcategories?.length || 0}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </aside>
+          </div>
 
           {/* ---------------- Grid: Compact Data Packets ---------------- */}
-          <main className="lg:col-span-9 order-1 lg:order-2">
+          <main className="col-span-1 lg:col-span-9 order-1 lg:order-2">
             {loading ? (
               <SkeletonCards />
             ) : filtered.length === 0 ? (
@@ -186,6 +161,40 @@ const Categories = () => {
               </div>
             )}
           </main>
+
+          {/* ---------------- Sidebar: Desktop Only ---------------- */}
+          <aside className="hidden lg:block lg:col-span-3 space-y-6 order-2 lg:order-1">
+            {/* Search Module */}
+            <div className="bg-white border border-black/10 p-5 relative">
+              <div className="absolute -top-2.5 left-4 bg-black text-white text-[7px] font-black px-2 py-0.5 tracking-widest uppercase">CAT_SEARCH</div>
+              <div className="relative mt-2">
+                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/20 text-[10px]" />
+                <input
+                  value={term}
+                  onChange={(e) => setTerm(e.target.value)}
+                  placeholder="FILTER_NODES..."
+                  className="w-full pl-9 pr-4 py-2 text-[9px] font-black bg-black/5 border border-black/5 focus:border-black outline-none transition-all uppercase placeholder:text-black/20"
+                />
+              </div>
+            </div>
+            {/* Popular Sectors Module */}
+            <div className="bg-white border border-black/10 p-5 relative">
+              <div className="absolute -top-2.5 left-4 bg-black text-white text-[7px] font-black px-2 py-0.5 tracking-widest uppercase">POPULAR_FLUX</div>
+              <div className="space-y-1.5 mt-2">
+                {popular.map((cat, i) => (
+                  <Link
+                    key={cat._id || i}
+                    to={`/category/${encodeURIComponent(cat.name)}`}
+                    className="flex items-center justify-between px-2 py-1.5 border border-transparent hover:border-black/10 hover:bg-black/5 transition-all group"
+                  >
+                    <span className="text-[8px] font-black uppercase text-black/40 group-hover:text-black">{cat.name}</span>
+                    <span className="text-[7px] font-black text-black/20 group-hover:text-[#ff5c00]">{cat.subcategories?.length || 0}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </aside>
+
         </div>
       </div>
     </div>
