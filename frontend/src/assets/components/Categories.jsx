@@ -66,8 +66,8 @@ const Categories = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-black/10 pb-6 gap-4">
           <div className="space-y-1">
 
-            <h1 className="text-3xl md:text-5xl font-heading font-black tracking-tight leading-none uppercase">
-              BROWSE<span className="text-black/10">SECTORS</span>
+            <h1 className="text-3xl md:text-2xl font-heading font-black tracking-tight leading-none uppercase">
+              BROWSE <span className="text-black/10"> Categories</span>
             </h1>
           </div>
           <div className="hidden md:block">

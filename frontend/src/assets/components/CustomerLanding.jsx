@@ -218,7 +218,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
         </div>
 
         {/* HUD SIDE PANEL - Refined "Intelligence Stream" */}
-        <div className="md:col-span-4 border-l border-black/10 bg-gray-800 flex flex-col relative">
+        <div className="md:col-span-4 border-l border-black/10 bg-gray-900 flex flex-col relative">
 
           {/* Panel Header */}
           <div className="p-8 border-b border-white/5 flex items-center justify-between">
