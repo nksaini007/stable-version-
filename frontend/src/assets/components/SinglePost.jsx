@@ -9,7 +9,7 @@ import {
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import Nev from './Nev';
-import Footer from './Footer';
+
 
 const PixelHeart = ({ filled }) => (
     <svg width="16" height="16" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -428,7 +428,18 @@ const SinglePost = () => {
                     </div>
                 </div>
 
-                <Footer />
+                {/* ── MINI FOOTER ── */}
+                <div style={{
+                    background: '#0a0a0a',
+                    borderTop: '1px solid rgba(255,255,255,0.05)',
+                    padding: '14px 24px',
+                    textAlign: 'center',
+                    flexShrink: 0,
+                }}>
+                    <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', fontWeight: 500, letterSpacing: '0.06em' }}>
+                        © {new Date().getFullYear()} Stinchar · All Rights Reserved
+                    </span>
+                </div>
 
                 <style>{`
                     @keyframes spin { to { transform: rotate(360deg); } }
@@ -793,7 +804,18 @@ const SinglePost = () => {
                 </div>
             </div>
 
-            <Footer />
+            {/* ── MINI FOOTER ── */}
+            <div style={{
+                background: '#0a0a0a',
+                borderTop: '1px solid rgba(255,255,255,0.05)',
+                padding: '14px 24px',
+                textAlign: 'center',
+                flexShrink: 0,
+            }}>
+                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', fontWeight: 500, letterSpacing: '0.06em' }}>
+                    © {new Date().getFullYear()} Stinchar · All Rights Reserved
+                </span>
+            </div>
 
             <style>{`
                 @keyframes spin { to { transform: rotate(360deg); } }
