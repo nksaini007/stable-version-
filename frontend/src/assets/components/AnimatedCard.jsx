@@ -198,7 +198,7 @@ const AnimatedCard = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: (i % 10) * 0.05, duration: 0.5 }}
                         onClick={() => navigate(navPath)}
-                        className="bg-white rounded-2xl md:rounded-3xl border border-gray-100 shadow-sm hover:shadow-[15px_15px_0px_#ff5c00] transition-all duration-300 group flex flex-col overflow-hidden cursor-pointer"
+                        className="bg-white rounded-2xl md:rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col overflow-hidden cursor-pointer"
                       >
                         <div className="h-40 md:h-48 bg-gray-50 relative overflow-hidden">
                           <img
