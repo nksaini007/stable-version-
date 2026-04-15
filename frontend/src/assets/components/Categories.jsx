@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import API from "../api/api";
 import { FaBoxes, FaSearch, FaChevronRight } from "react-icons/fa";
 import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
-import Nev from "./Nev";
-import Footer from "./Footer";
+
 
 /* ------------------- Industrial Skeleton ------------------- */
 const SkeletonCards = ({ count = 12 }) => (
@@ -59,8 +58,7 @@ const Categories = () => {
   }, [categories]);
 
   return (
-    <div className="min-h-screen bg-[#e5e5e5] font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative">
-      <Nev />
+    <div className="bg-[#e5e5e5] font-mono selection:bg-[#ff5c00] selection:text-black tech-grid relative">
       <div className="scanline"></div>
 
       {/* ---------------- Industrial Header (Compact) ---------------- */}
@@ -190,7 +188,6 @@ const Categories = () => {
           </main>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
