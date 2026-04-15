@@ -40,7 +40,7 @@ const ProfileDropdown = ({ user, logout, mobile }) => {
 
   menuItems.push({ label: "Project Plans", icon: <FaMap className="text-gray-400" />, to: "/project-plans" });
   menuItems.push({ label: "Messages", icon: <FaEnvelope className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/my-inquiries" : "/dashboard/customer/orders" });
-  menuItems.push({ label: "Support Tickets", icon: <FaHeadset className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/dashboard/customer/support" : "/support" });
+  menuItems.push({ label: "Support Tickets", icon: <FaHeadset className="text-gray-400" />, to: user?.role === "customer" || user?.role === "user" ? "/support" : "/support" });
 
   return (
     <div className="relative md:ml-4" ref={dropdownRef}>
