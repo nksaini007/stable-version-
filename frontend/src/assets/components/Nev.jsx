@@ -48,11 +48,11 @@ const Nev = () => {
   return (
     <>
       {/* ================= DESKTOP NAVBAR ================= */}
-      <nav className="fixed top-0 w-full z-50 bg-[#e5e5e5] border-b-4 border-black hidden md:block">
+      <nav className="fixed top-0 w-full z-50 bg-[#e5e5e5]  hidden md:block">
         <div className="relative max-w-[1600px] mx-auto flex items-stretch h-[72px]">
 
           {/* LOGO BOX */}
-          <Link to="/" className="flex items-center px-8 border-r-4 border-black bg-black text-white hover:bg-[#ff5c00] transition-colors group">
+          <Link to="/" className="flex items-center px-8  bg-black text-white hover:bg-[#ff5c00] transition-colors group">
             <span className="text-3xl font-heading tracking-tighter">STN.</span>
           </Link>
 
@@ -65,8 +65,8 @@ const Nev = () => {
                   key={i}
                   to={path}
                   className={({ isActive }) =>
-                    `flex items-center px-6 xl:px-8 border-r-4 border-black text-[12px] font-black uppercase tracking-widest transition-all ${isActive
-                      ? "bg-black text-white"
+                    `flex items-center px-6 xl:px-8   text-[12px] font-black uppercase tracking-widest transition-all ${isActive
+                      ? "bg-blue-200 text-white"
                       : "hover:bg-black/5 text-black"
                     }`
                   }
@@ -78,8 +78,8 @@ const Nev = () => {
           </div>
 
           {/* RIGHT ACTIONS */}
-          <div className="flex items-stretch border-l-4 border-black ml-auto">
-            <Link to="/cart" className="flex items-center px-8 border-r-4 border-black hover:bg-black hover:text-white transition-all group relative">
+          <div className="flex items-stretch  ml-auto">
+            <Link to="/cart" className="flex items-center px-8  hover:bg-black hover:text-white transition-all group relative">
               <ShoppingCart size={22} />
               <span className="absolute top-2 right-4 text-[10px] font-bold">🛒</span>
             </Link>
@@ -87,7 +87,7 @@ const Nev = () => {
             {!user ? (
               <Link
                 to="/login"
-                className="flex items-center px-10 bg-[#ff5c00] text-black font-black text-sm uppercase hover:bg-black hover:text-white transition-all"
+                className="flex items-center px-10 bg-orange-400 text-orange-200 font-black text-sm uppercase hover:bg-black hover:text-white transition-all"
               >
                 _LOGIN_PORTAL
               </Link>
