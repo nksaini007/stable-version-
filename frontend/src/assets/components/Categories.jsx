@@ -62,7 +62,7 @@ const Categories = () => {
       <div className="scanline"></div>
 
       {/* ---------------- Industrial Header (Compact) ---------------- */}
-      <div className="max-w-[1600px] mx-auto pt-24 pb-10 px-6 md:px-10 relative z-10">
+      <div className="max-w-[1600px] mx-auto pt-4 pb-4 px-6 md:px-10 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-black/10 pb-6 gap-4">
           <div className="space-y-1">
 
@@ -77,8 +77,8 @@ const Categories = () => {
       </div>
 
       {/* ---------------- Main Content ---------------- */}
-      <div className="max-w-[1600px] mx-auto px-6 md:px-10 pb-24 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="max-w-[1600px] mx-auto px-6 md:px-10 pb-6 md:pb-12 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-10">
 
           {/* ---------------- Sidebar: Operations Modules ---------------- */}
           <aside className="lg:col-span-3 space-y-6 order-2 lg:order-1">
