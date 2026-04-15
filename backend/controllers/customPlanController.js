@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const CustomPlanRequest = require("../models/CustomPlanRequest");
 const ConstructionPlan = require("../models/ConstructionPlan");
+const Message = require("../models/Message");
 
 // @desc    User submits a custom requirement for a plan
 // @route   POST /api/custom-plans
@@ -29,6 +30,7 @@ const submitCustomRequest = async (req, res) => {
             attachmentUrls = req.files.map((file) => file.path);
         }
 
+        // 1. Create the Custom Plan Request (for architect workflow)
         const newRequest = new CustomPlanRequest({
             customer: req.user._id,
             basePlan: basePlanId,
@@ -37,8 +39,27 @@ const submitCustomRequest = async (req, res) => {
         });
 
         await newRequest.save();
+
+        // 2. Dual Entry: Create a Message thread (for central Admin Inquiry visibility)
+        const newMessage = new Message({
+            customer: req.user._id,
+            plan: basePlanId,
+            subject: `[Plan Request] ${plan.title}`,
+            status: "Open",
+            thread: [
+                {
+                    sender: req.user._id,
+                    senderRole: req.user.role || "customer",
+                    text: `NEW CUSTOMIZATION REQUEST for "${plan.title}". \n\nRequirements: ${requirements}`
+                }
+            ]
+        });
+
+        await newMessage.save();
+
         res.status(201).json({ success: true, message: "Custom request submitted successfully", request: newRequest });
     } catch (error) {
+        console.error("submitCustomRequest error:", error);
         res.status(500).json({ success: false, message: "Error submitting request", error: error.message });
     }
 };

@@ -19,9 +19,15 @@ const ProjectPlanDetails = () => {
     const [loading, setLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(0);
 
-    // Custom Requirement Modal State
+    // Custom Requirement Modal State (Alterations)
     const [showCustomModal, setShowCustomModal] = useState(false);
     const [requirementText, setRequirementText] = useState("");
+    
+    // General Inquiry Modal State (Consultation)
+    const [showInquiryModal, setShowInquiryModal] = useState(false);
+    const [inquirySubject, setInquirySubject] = useState("");
+    const [inquiryText, setInquiryText] = useState("");
+    
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
@@ -72,11 +78,40 @@ const ProjectPlanDetails = () => {
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            toast.success("Requirements submitted! Our team will assign an architect shortly.");
+            toast.success("Requirements submitted! Our team will notify you via Inquiries shortly.");
             setShowCustomModal(false);
             setRequirementText("");
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to submit requirement");
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleSubmitInquiry = async (e) => {
+        e.preventDefault();
+        if (!token) {
+            toast.error("Please log in to consult architects.");
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            await API.post(
+                "/messages",
+                {
+                    planId: id,
+                    subject: inquirySubject || `Inquiry: ${plan.title}`,
+                    text: inquiryText,
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            toast.success("Inquiry sent! Our architects will reply in your dashboard inquiries section.");
+            setShowInquiryModal(false);
+            setInquiryText("");
+            setInquirySubject("");
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to send inquiry");
         } finally {
             setSubmitting(false);
         }
@@ -202,7 +237,13 @@ const ProjectPlanDetails = () => {
                                 >
                                     <FaComments className="text-white" /> Query on WhatsApp
                                 </button>
-                                <button className="w-full bg-white text-[#1A1B1E] border border-gray-100 h-14 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-gray-50 transition-all flex items-center justify-center gap-3 shadow-sm">
+                                <button 
+                                    onClick={() => {
+                                        setInquirySubject(`Consultation for ${plan.title}`);
+                                        setShowInquiryModal(true);
+                                    }}
+                                    className="w-full bg-white text-[#1A1B1E] border border-gray-100 h-14 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-gray-50 transition-all flex items-center justify-center gap-3 shadow-sm"
+                                >
                                     <FaDraftingCompass className="text-gray-300" /> Consult Architects
                                 </button>
                             </div>
@@ -457,6 +498,78 @@ const ProjectPlanDetails = () => {
                                             className="h-16 flex-1 rounded-[1.5rem] bg-[#1A1B1E] text-white text-[11px] font-black uppercase tracking-widest shadow-xl shadow-[#1A1B1E]/10 hover:bg-[#C5A059] transition-all flex items-center justify-center gap-3"
                                         >
                                             {submitting ? "Processing..." : "Submit Proposal"}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {/* GENERAL INQUIRY MODAL */}
+                {showInquiryModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <motion.div 
+                            initial={{ opacity: 0 }} 
+                            animate={{ opacity: 1 }} 
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowInquiryModal(false)}
+                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
+                        />
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl relative z-10 overflow-hidden"
+                        >
+                            <div className="p-10">
+                                <div className="flex justify-between items-center mb-10">
+                                    <div>
+                                        <h2 className="text-3xl font-black text-[#1A1B1E] tracking-tighter lowercase">consult.<span className="text-[#C5A059]">architect</span></h2>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Direct query regarding {plan.title}</p>
+                                    </div>
+                                    <button onClick={() => setShowInquiryModal(false)} className="w-12 h-12 rounded-2xl bg-[#FAF9F6] border border-gray-50 flex items-center justify-center text-gray-400 hover:text-[#1A1B1E] transition-colors">
+                                        <FaTimes />
+                                    </button>
+                                </div>
+
+                                <form onSubmit={handleSubmitInquiry} className="space-y-6">
+                                    <div>
+                                        <label className="block text-[10px] font-black text-[#1A1B1E] uppercase tracking-widest mb-3">Topic / Subject</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={inquirySubject}
+                                            onChange={(e) => setInquirySubject(e.target.value)}
+                                            className="w-full bg-[#FAF9F6] border border-gray-100 rounded-2xl px-6 py-4 outline-none focus:ring-4 focus:ring-[#C5A059]/5 focus:border-[#C5A059]/30 text-sm font-bold text-[#1A1B1E]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-[#1A1B1E] uppercase tracking-widest mb-3">Your Message</label>
+                                        <textarea
+                                            required
+                                            rows="5"
+                                            value={inquiryText}
+                                            onChange={(e) => setInquiryText(e.target.value)}
+                                            className="w-full bg-[#FAF9F6] border border-gray-100 rounded-[1.5rem] px-6 py-5 outline-none focus:ring-4 focus:ring-[#C5A059]/5 focus:border-[#C5A059]/30 resize-none text-sm text-[#1A1B1E] leading-relaxed font-medium transition-all"
+                                            placeholder="Ask about materials, cost estimations, or timeline..."
+                                        ></textarea>
+                                    </div>
+
+                                    <div className="flex gap-4 pt-4">
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setShowInquiryModal(false)} 
+                                            className="h-14 flex-1 rounded-xl bg-white border border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:bg-[#FAF9F6] transition-all"
+                                        >
+                                            Discard
+                                        </button>
+                                        <button 
+                                            type="submit" 
+                                            disabled={submitting} 
+                                            className="h-14 flex-1 rounded-xl bg-[#C5A059] text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#C5A059]/20 hover:bg-[#1A1B1E] transition-all flex items-center justify-center gap-3"
+                                        >
+                                            {submitting ? "Transmitting..." : "Send Message"}
                                         </button>
                                     </div>
                                 </form>
