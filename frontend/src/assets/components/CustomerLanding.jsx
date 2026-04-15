@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaSearch, FaArrowRight, FaPlus, FaBox, FaTerminal, FaCodeBranch, FaCrosshairs, FaGlobe, FaShieldAlt, FaComments, FaFileContract, FaHardHat } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import heroImg from "../hero_vibe.jpg";
+import heroImg from "../villa.jpg";
 import API from "../api/api";
 
 const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClick }) => {
@@ -25,7 +25,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
             id: `post_${p._id || i}`,
             type: "POST",
             tag: "LOG",
-            icon: <FaComments className="text-[#ff5c00] mt-0.5" />,
+            icon: <FaComments className="text-[#BE5683] mt-0.5" />,
             title: p.user?.name || "ANON",
             detail: p.title || "NEW_UPDATE",
             date: new Date(p.createdAt),
@@ -130,14 +130,14 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
         <div className="md:col-span-8 flex flex-col min-h-[400px] md:min-h-[400px]">
 
           {/* Top Integrated Progress Bar */}
-          <div className="h-10 bg-black flex items-center px-6 justify-between border-b border-white/10">
+          <div className="h-10 bg-pink-800 flex items-center px-6 justify-between border-b border-white/10">
             <div className="flex gap-1 h-full items-center">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className={`w-8 h-1/2 -skew-x-[25deg] ${i < 3 ? 'bg-[#ff5c00]' : 'bg-white/10'}`}></div>
+                <div key={i} className={`w-8 h-1/2 -skew-x-[25deg] ${i < 3 ? 'bg-[#BE5683]' : 'bg-white/10'}`}></div>
               ))}
             </div>
             <div className="text-white text-[9px] font-black tracking-[0.4em] flex items-center gap-2">
-              <FaCrosshairs size={10} className="text-[#ff5c00]" />
+              <FaCrosshairs size={10} className="text-[#BE5683]" />
               SECURE_DATA_FRAGMENT_01
             </div>
           </div>
@@ -163,14 +163,14 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
 
               {/* Data Overlay */}
               <div className="absolute top-6 left-6 flex flex-col gap-1 pointer-events-none">
-                <span className="text-[8px] font-black text-[#ff5c00] tracking-[0.4em] opacity-50">NODE_ACCESS_POINT</span>
+                <span className="text-[8px] font-black text-[#BE5683] tracking-[0.4em] opacity-50">NODE_ACCESS_POINT</span>
                 <span className="text-4xl font-heading text-white/10 uppercase tracking-tighter">OS_VERSION_2.0</span>
               </div>
 
               {/* HUD 002 (Minimalist) */}
-              <div className="absolute bottom-8 left-8 right-8 bg-black/40 backdrop-blur-md p-5 border border-white/5 group-hover/f2:border-[#ff5c00]/30 transition-colors">
+              <div className="absolute bottom-8 left-8 right-8 bg-black/40 backdrop-blur-md p-5 border border-white/5 group-hover/f2:border-[#BE5683]/30 transition-colors">
                 <div className="flex justify-between items-center text-[7px] text-white/40 mb-3 font-mono">
-                  <span className="flex items-center gap-1.5"><div className="w-1 h-1 bg-[#ff5c00] rounded-full animate-pulse"></div> INTEL_FETCH_SUCCESS</span>
+                  <span className="flex items-center gap-1.5"><div className="w-1 h-1 bg-[#BE5683] rounded-full animate-pulse"></div> INTEL_FETCH_SUCCESS</span>
                   <span>REF: STN_32</span>
                 </div>
                 <div className="h-[1px] w-full bg-white/5">
@@ -178,7 +178,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                     initial={{ width: 0 }}
                     animate={{ width: "75%" }}
                     transition={{ duration: 2, delay: 0.5 }}
-                    className="h-full bg-[#ff5c00]"
+                    className="h-full bg-[#BE5683]"
                   ></motion.div>
                 </div>
               </div>
@@ -199,23 +199,23 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
 
               {/* Floating Blueprint Markers */}
               <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-10 right-10 w-20 h-20 border-t border-r border-[#ff5c00]/20"></div>
-                <div className="absolute bottom-40 left-10 w-20 h-20 border-b border-l border-[#ff5c00]/20"></div>
-                         {/* Brand Floating Label */}
-              <div className="absolute top-12 left-12 flex flex-col pointer-events-none">
-                <motion.span
-                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-                   className="text-[10px] font-black text-[#ff5c00] tracking-[0.6em] mb-2 drop-shadow-lg"
-                 >STINCHAR_INFRASTRUCTURE</motion.span>
-                <h1 className="text-6xl md:text-8xl font-heading text-white leading-none tracking-tighter opacity-10 group-hover/f1:opacity-40 transition-opacity duration-1000">
-                  COMPLETE<br />CONSTRUCTION &<br />INFRASTRUCTURE
-                </h1>
-              </div>
+                <div className="absolute top-10 right-10 w-20 h-20 border-t border-r border-[#BE5683]/20"></div>
+                <div className="absolute bottom-40 left-10 w-20 h-20 border-b border-l border-[#BE5683]/20"></div>
+                {/* Brand Floating Label */}
+                <div className="absolute top-12 left-12 flex flex-col pointer-events-none">
+                  <motion.span
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
+                    className="text-[10px] font-black text-[#BE5683] tracking-[0.6em] mb-2 drop-shadow-lg"
+                  >STINCHAR_INFRASTRUCTURE</motion.span>
+                  <h1 className="text-6xl md:text-5xl font-heading text-white leading-none tracking-tighter opacity-10 group-hover/f1:opacity-40 transition-opacity duration-1000">
+                    COMPLETE<br />CONSTRUCTION &<br />INFRASTRUCTURE
+                  </h1>
+                </div>
 
-            </div>
-          </motion.div>
+              </div>
+            </motion.div>
+          </div>
         </div>
-      </div>
 
         {/* HUD SIDE PANEL - Refined "Intelligence Stream" */}
         <div className="md:col-span-4 border-l border-black/10 bg-[#0f0f0f] flex flex-col relative">
@@ -223,22 +223,22 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
           {/* Panel Header */}
           <div className="p-8 border-b border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-[#ff5c00] rounded-full animate-ping"></div>
+              <div className="w-1.5 h-1.5 bg-[#BE5683] rounded-full animate-ping"></div>
               <span className="text-[10px] font-black text-white/80 tracking-widest uppercase">STINCHAR_FOUNDER_VISION</span>
             </div>
           </div>
 
           <div className="px-8 py-4 border-b border-white/5 bg-white/5">
-             <p className="text-[11px] font-bold text-white/90 leading-relaxed uppercase tracking-tighter">
-               "Empowering the building industry through a unified ecosystem of construction and infrastructure excellence."
-             </p>
-             <p className="text-[9px] font-black text-[#ff5c00] mt-2 tracking-widest">— NEERAJ KUMAR SAINI, FOUNDER</p>
+            <p className="text-[11px] font-bold text-white/90 leading-relaxed uppercase tracking-tighter">
+              "Empowering the building industry through a unified ecosystem of construction and infrastructure excellence."
+            </p>
+            <p className="text-[9px] font-black text-[#BE5683] mt-2 tracking-widest">— NEERAJ KUMAR SAINI, FOUNDER</p>
           </div>
 
           {/* Stream Content */}
           <div className="flex-1 overflow-y-auto scrollbar-tech p-8 space-y-6">
             <div className="flex items-center gap-2 mb-4">
-               <span className="text-[10px] font-black text-white/30 tracking-widest uppercase">INTELLIGENCE_STREAM</span>
+              <span className="text-[10px] font-black text-white/30 tracking-widest uppercase">INTELLIGENCE_STREAM</span>
             </div>
             {loadingUpdates ? (
               Array(3).fill(0).map((_, i) => (
@@ -253,7 +253,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 className="group cursor-pointer border-b border-white/5 pb-6 hover:translate-x-1 transition-transform"
                 onClick={() => navigate(update.link)}
               >
-                <div className="flex justify-between items-center text-[7px] font-black text-[#ff5c00]/60 mb-2">
+                <div className="flex justify-between items-center text-[7px] font-black text-[#BE5683]/60 mb-2">
                   <span>{update.tag}_FRAGMENT_0{index + 1}</span>
                   <span>{update.date.toLocaleDateString()}</span>
                 </div>
@@ -262,7 +262,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="flex-1 h-[1px] bg-white/10"></div>
                   <span className="text-[8px] font-black text-white">ACCESS_DATA</span>
-                  <FaArrowRight size={10} className="text-[#ff5c00]" />
+                  <FaArrowRight size={10} className="text-[#BE5683]" />
                 </div>
               </motion.div>
             ))}
@@ -277,12 +277,12 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">Node_Status</span>
-                <span className="text-[12px] font-black text-[#ff5c00] animate-pulse">OPTIMIZED</span>
+                <span className="text-[12px] font-black text-[#BE5683] animate-pulse">OPTIMIZED</span>
               </div>
             </div>
             <button
               onClick={() => navigate('/dashboard')}
-              className="mt-6 w-full py-4 bg-white text-black font-black text-[10px] tracking-[0.3em] hover:bg-[#ff5c00] transition-colors flex items-center justify-center gap-3 group"
+              className="mt-6 w-full py-4 bg-white text-black font-black text-[10px] tracking-[0.3em] hover:bg-[#BE5683] transition-colors flex items-center justify-center gap-3 group"
             >
               ACCESS_FULL_SYSTEM
               <FaShieldAlt size={12} className="group-hover:rotate-12 transition-transform" />
@@ -300,7 +300,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
                 <button
                   key={i}
                   onClick={() => onCategoryClick(cat)}
-                  className="px-6 md:px-10 py-3 md:py-4 border-2 border-black font-black text-[10px] md:text-[12px] hover:bg-[#ff5c00] hover:text-black transition-all uppercase tracking-widest flex items-center gap-3 group/cat"
+                  className="px-6 md:px-10 py-3 md:py-4 border-2 border-black font-black text-[10px] md:text-[12px] hover:bg-[#BE5683] hover:text-black transition-all uppercase tracking-widest flex items-center gap-3 group/cat"
                 >
                   {cat}
                 </button>
