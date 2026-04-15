@@ -144,7 +144,7 @@ const CommunityFeed = () => {
                         </h1>
                     </div>
                 </div>
-              
+
                 {posts.length === 0 ? (
                     <div className="text-center py-40 border-y-4 md:border-4 border-black/5 bg-white/50 backdrop-blur-md mx-6 md:mx-0">
                         <FaCrosshairs size={40} className="mx-auto mb-6 text-black/10 animate-pulse" />
@@ -161,24 +161,23 @@ const CommunityFeed = () => {
                             return (
                                 <div key={post._id} className="relative group">
                                     <div
-                                        className={`bg-white border-y-2 md:border-2 border-black shadow-none md:shadow-[10px_10px_0px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-500 relative flex flex-col mb-4 md:mb-0 ${
-                                            post.isBlog 
-                                                ? 'h-auto cursor-pointer' 
-                                                : isExpanded ? 'z-30 h-auto pb-[60px]' : 'h-auto md:h-[500px]'
-                                        }`}
+                                        className={`bg-white md:shadow-none md:shadow-[10px_10px_0px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-500 relative flex flex-col mb-4 md:mb-0 border border-black/5 ${post.isBlog
+                                            ? 'h-auto cursor-pointer'
+                                            : isExpanded ? 'z-30 h-auto pb-[60px]' : 'h-auto md:h-[500px]'
+                                            }`}
                                         onClick={post.isBlog ? () => navigate(`/community/post/${post._id}`) : undefined}
                                     >
-                                        <div className="hidden md:block corner-decal decal-tl border-black"></div>
-                                        <div className="hidden md:block corner-decal decal-br border-black opacity-30 group-hover:opacity-100 transition-opacity"></div>
+                                        <div className="hidden md:block corner-decal decal-tl "></div>
+                                        <div className="hidden md:block corner-decal decal-br  opacity-30 group-hover:opacity-100 transition-opacity"></div>
 
                                         {/* Header */}
                                         <div
-                                            className="px-6 md:px-5 py-4 flex items-center justify-between border-b-2 border-black/5 bg-white cursor-pointer group/header relative"
+                                            className="px-6 md:px-5 py-4 flex items-center justify-between  bg-white cursor-pointer group/header relative"
                                             onClick={() => navigate(`/community/post/${post._id}`)}
                                         >
-                                           <div className="absolute top-1 right-2 text-[6px] font-black opacity-10 uppercase tracking-widest">POST_P_00{post._id.slice(-4)}</div>
+                                            <div className="absolute top-1 right-2 text-[6px] font-black opacity-10 uppercase tracking-widest">POST_P_00{post._id.slice(-4)}</div>
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 border-2 border-black flex items-center justify-center font-heading text-xl bg-black text-white shrink-0">
+                                                <div className="w-10 h-10  flex items-center justify-center font-heading text-xl bg-black text-white shrink-0 overflow-hidden">
                                                     {post.author?.profileImage ? (
                                                         <img src={`${post.author.profileImage}`} alt="author" className="w-full h-full object-cover" />
                                                     ) : (
@@ -192,7 +191,7 @@ const CommunityFeed = () => {
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className={`w-2 h-2 rounded-full border-2 border-black ${isLikedByMe ? 'bg-[#ff5c00] animate-pulse' : 'bg-transparent'}`}></div>
+                                            <div className={`w-2 h-2 rounded-full  ${isLikedByMe ? 'bg-[#ff5c00] animate-pulse' : 'bg-transparent'}`}></div>
                                         </div>
 
                                         {/* Content Wrapper */}
@@ -200,7 +199,7 @@ const CommunityFeed = () => {
                                             {/* Image */}
                                             {post.image && (
                                                 <div
-                                                    className="w-full bg-black/5 border-b-2 border-black relative overflow-hidden flex items-center justify-center shrink-0 cursor-pointer group/img"
+                                                    className="w-full bg-black/5  relative overflow-hidden flex items-center justify-center shrink-0 cursor-pointer group/img"
                                                     onClick={() => navigate(`/community/post/${post._id}`)}
                                                 >
                                                     <img
@@ -208,12 +207,12 @@ const CommunityFeed = () => {
                                                         alt={post.title}
                                                         className={`w-full object-cover transition-all duration-700 group-hover/img:scale-105 h-auto md:h-56`}
                                                     />
-                                                    <div className="hidden md:block absolute inset-0 border-[12px] border-white/5 pointer-events-none"></div>
+                                                    <div className="hidden md:block absolute inset-0  border-white/5 pointer-events-none"></div>
                                                 </div>
                                             )}
 
                                             {/* Title & Body */}
-                                             <div className="px-6 md:px-5 py-6 space-y-3">
+                                            <div className="px-6 md:px-5 py-6 space-y-3">
                                                 {post.isBlog ? (
                                                     <>
                                                         <div className="flex items-center gap-2">
@@ -249,7 +248,7 @@ const CommunityFeed = () => {
                                         </div>
 
                                         {/* Actions Bar */}
-                                        <div className={`px-5 py-4 flex items-center justify-between border-t-2 border-black bg-white z-20 ${isExpanded ? 'absolute bottom-0 inset-x-0' : 'mt-auto'}`}>
+                                        <div className={`px-5 py-4 flex items-center justify-between border-t border-black/5 bg-white z-20 ${isExpanded ? 'absolute bottom-0 inset-x-0' : 'mt-auto'}`}>
                                             <div className="flex items-center gap-6">
                                                 <button
                                                     onClick={() => handleLike(post._id)}
@@ -281,7 +280,7 @@ const CommunityFeed = () => {
                                         {showComments && (
                                             <div className="absolute inset-x-0 top-[76px] bottom-[62px] bg-white z-10 flex flex-col p-6 animate-in slide-in-from-bottom duration-300">
                                                 <div className="flex items-center gap-2 mb-6 border-b-2 border-black/5 pb-2">
-                                                   <span className="text-[9px] font-black opacity-20 uppercase tracking-[0.2em]">SCTR::PUBLIC_CONN::LOG</span>
+                                                    <span className="text-[9px] font-black opacity-20 uppercase tracking-[0.2em]">SCTR::PUBLIC_CONN::LOG</span>
                                                 </div>
                                                 <div className="flex-1 overflow-y-auto space-y-4 pr-1 scrollbar-tech">
                                                     {post.comments.length === 0 ? (
@@ -307,13 +306,13 @@ const CommunityFeed = () => {
                                                     )}
                                                 </div>
 
-                                                <form onSubmit={(e) => handleCommentSubmit(e, post._id)} className="flex items-center gap-3 mt-4 border-t-2 border-black pt-4">
+                                                <form onSubmit={(e) => handleCommentSubmit(e, post._id)} className="flex items-center gap-3 mt-4 border-t border-black/5 pt-4">
                                                     <input
                                                         type="text"
                                                         placeholder="INIT_ENTRY..."
                                                         value={commentText}
                                                         onChange={(e) => setCommentText(e.target.value)}
-                                                        className="flex-1 bg-black/5 border-2 border-black/5 px-4 py-3 text-[9px] font-black outline-none focus:border-black transition-colors uppercase placeholder:text-black/20"
+                                                        className="flex-1 bg-black/5 border border-black/5 px-4 py-3 text-[9px] font-black outline-none focus:border-[#ff5c00]/30 transition-colors uppercase placeholder:text-black/20"
                                                     />
                                                     <button
                                                         type="submit"
