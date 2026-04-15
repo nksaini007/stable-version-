@@ -167,11 +167,29 @@ const getArchitectAssignments = async (req, res) => {
     }
 };
 
+// @desc    Get all custom requests (Admin)
+// @route   GET /api/custom-plans/all
+// @access  Private/Admin
+const getAllCustomRequests = async (req, res) => {
+    try {
+        const requests = await CustomPlanRequest.find({ isArchived: false })
+            .populate("basePlan", "title images")
+            .populate("customer", "name email phone")
+            .populate("assignedArchitect", "name")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ success: true, count: requests.length, requests });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching all requests", error: error.message });
+    }
+};
+
 module.exports = {
     submitCustomRequest,
     assignArchitect,
     requestCompletion,
     verifyCompletion,
     getMyRequests,
-    getArchitectAssignments
+    getArchitectAssignments,
+    getAllCustomRequests
 };

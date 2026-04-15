@@ -10,7 +10,7 @@ delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
 // Role colors
@@ -110,7 +110,7 @@ const AdminUserMap = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const res = await API.get("/users");
+                const res = await API.get("/users/all");
                 const allUsers = res.data.users || res.data || [];
                 setUsers(allUsers);
             } catch (err) {

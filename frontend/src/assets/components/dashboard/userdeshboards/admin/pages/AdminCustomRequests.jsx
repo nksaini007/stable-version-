@@ -48,7 +48,7 @@ const AdminCustomRequests = () => {
     const handleVerify = async (id) => {
         if (!window.confirm("Assure completion of this project? This will finalize the design protocol.")) return;
         try {
-            await API.patch(`/custom-plans/${id}/verify`);
+            await API.patch(`/custom-plans/${id}/verify-completion`);
             toast.success("Project finalized and assured");
             fetchData();
         } catch (error) {
@@ -58,10 +58,10 @@ const AdminCustomRequests = () => {
 
     const getStatusStyle = (status) => {
         switch (status) {
-            case "pending": return "bg-amber-500/10 text-amber-500 border-amber-500/20";
-            case "assigned": return "bg-blue-500/10 text-blue-500 border-blue-500/20";
-            case "completion_requested": return "bg-purple-500/10 text-purple-500 border-purple-500/20";
-            case "verified": return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+            case "Pending": return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+            case "Assigned": return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+            case "Execution Requested": return "bg-purple-500/10 text-purple-500 border-purple-500/20";
+            case "Completed": return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
             default: return "bg-slate-500/10 text-slate-500 border-slate-500/20";
         }
     };
@@ -100,12 +100,12 @@ const AdminCustomRequests = () => {
                                         {req.status.replace("_", " ")}
                                     </span>
                                     <h3 className="text-white font-bold mt-3 tracking-tight group-hover:text-[#66FCF1] transition-colors uppercase">
-                                        {req.planId?.title || "SYSTEM PLAN"}
+                                        {req.basePlan?.title || "SYSTEM PLAN"}
                                     </h3>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[8px] font-bold text-[#45A29E] uppercase tracking-widest leading-none mb-1">Requester</p>
-                                    <p className="text-[10px] text-white font-medium">{req.userId?.name || "ANONYMOUS"}</p>
+                                    <p className="text-[10px] text-white font-medium">{req.customer?.name || "ANONYMOUS"}</p>
                                 </div>
                             </div>
 
@@ -119,13 +119,13 @@ const AdminCustomRequests = () => {
                                     "{req.requirements || "No specific modifications stated."}"
                                 </p>
 
-                                {req.architectId && (
+                                {req.assignedArchitect && (
                                     <div className="mt-6 pt-4 border-t border-[#2A2B2F] flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <FaUserTie className="text-[#66FCF1] text-xs" />
                                             <div>
                                                 <p className="text-[7px] font-bold text-[#45A29E] uppercase tracking-widest">Assigned Lead</p>
-                                                <p className="text-[10px] text-white font-bold">{req.architectId.name || "SYSTEM ARCHITECT"}</p>
+                                                <p className="text-[10px] text-white font-bold">{req.assignedArchitect.name || "SYSTEM ARCHITECT"}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -134,7 +134,7 @@ const AdminCustomRequests = () => {
 
                             {/* Action Mesh */}
                             <div className="p-6 bg-[#0B0C10] border-t border-[#2A2B2F] flex gap-3">
-                                {req.status === "pending" && (
+                                {req.status === "Pending" && (
                                     <button 
                                         onClick={() => { setSelectedRequest(req); setShowAssignModal(true); }}
                                         className="flex-1 bg-[#66FCF1] text-[#0B0C10] py-2.5 text-[9px] font-bold uppercase tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(102,252,241,0.1)]"
@@ -142,7 +142,7 @@ const AdminCustomRequests = () => {
                                         <FaTools className="text-[10px]" /> ASSIGN LEAD
                                     </button>
                                 )}
-                                {req.status === "completion_requested" && (
+                                {req.status === "Execution Requested" && (
                                     <button 
                                         onClick={() => handleVerify(req._id)}
                                         className="flex-1 bg-emerald-500 text-white py-2.5 text-[9px] font-bold uppercase tracking-widest hover:bg-emerald-400 transition-all flex items-center justify-center gap-2"

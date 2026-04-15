@@ -9,7 +9,8 @@ const {
     requestCompletion,
     verifyCompletion,
     getMyRequests,
-    getArchitectAssignments
+    getArchitectAssignments,
+    getAllCustomRequests
 } = require("../controllers/customPlanController");
 
 // Customer routes
@@ -17,6 +18,7 @@ router.post("/", protect, authorize("customer"), upload.array('attachments', 5),
 router.get("/my-requests", protect, authorize("customer"), getMyRequests);
 
 // Admin routes
+router.get("/all", protect, adminOnly, getAllCustomRequests);
 router.patch("/:id/assign", protect, adminOnly, assignArchitect);
 router.patch("/:id/verify-completion", protect, adminOnly, verifyCompletion);
 

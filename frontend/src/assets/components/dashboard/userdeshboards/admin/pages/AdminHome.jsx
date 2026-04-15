@@ -89,7 +89,7 @@ const AdminHome = () => {
           API.get("/bookings"),
           API.get("/plan-categories"),
           API.get("/construction-plans"),
-          API.get("/messages"),
+          API.get("/messages/admin"),
           API.get("/posts"),
         ]);
 
@@ -98,7 +98,7 @@ const AdminHome = () => {
           bookings: results[1].status === "fulfilled" ? (results[1].value.data?.length || 0) : 0,
           planCategories: results[2].status === "fulfilled" ? (results[2].value.data?.categories?.length || 0) : 0,
           plans: results[3].status === "fulfilled" ? (results[3].value.data?.plans?.length || 0) : 0,
-          messages: results[4].status === "fulfilled" ? (Array.isArray(results[4].value.data) ? results[4].value.data.length : results[4].value.data?.messages?.length || 0) : 0,
+          messages: results[4].status === "fulfilled" ? (results[4].value.data?.messages?.length || 0) : 0,
           posts: results[5].status === "fulfilled" ? (Array.isArray(results[5].value.data) ? results[5].value.data.length : results[5].value.data?.posts?.length || 0) : 0,
         });
       } catch (err) {
