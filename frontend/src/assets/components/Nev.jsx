@@ -102,20 +102,20 @@ const Nev = () => {
       </nav>
 
       {/* ================= MOBILE HEADER ================= */}
-      <div className="md:hidden fixed top-0 w-full h-[64px] bg-[#e5e5e5] border-b-4 border-black z-[100] flex items-center justify-between px-6">
+      <div className="md:hidden fixed top-0 w-full h-[64px] bg-[#e5e5e5] border-b-4 border-black/10 z-[100] flex items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2">
           <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-heading text-xl">STN</div>
-          <span className="text-xs font-black tracking-widest uppercase">STINCHAR_V2</span>
+          <span className="text-xs font-black tracking-widest uppercase text-black/10 ">STINCHAR</span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link to="/cart" className="text-black p-2 border-2 border-black">
-            <ShoppingCart size={20} />
+          <Link to="/cart" className="text-black p-2 bg-black/10 text-white/50 rounded-lg">
+            <ShoppingCart size={18} />
           </Link>
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="p-2 bg-black text-white border-2 border-black"
+            className="p-2 bg-black/10 text-white/50 rounded-lg"
           >
-            <Menu size={24} />
+            <Menu size={18} />
           </button>
         </div>
       </div>
@@ -123,21 +123,21 @@ const Nev = () => {
       {/* MOBILE SIDE DRAWER */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/80 z-[190] backdrop-blur-sm"
+          className="fixed inset-0 bg-black/10 z-[190] backdrop-blur-sm"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
       <div
-        className={`fixed inset-y-0 right-0 w-[85%] max-w-[320px] bg-[#e5e5e5] border-l-4 border-black z-[200] transform transition-transform duration-500 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed inset-y-0 right-0 w-[85%] max-w-[320px] bg-orange-400  z-[200] transform transition-transform duration-500 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        <div className="flex justify-between items-center p-6 border-b-4 border-black bg-black text-white">
+        <div className="flex justify-between items-center p-6  bg-black/20 text-white">
           <span className="font-heading text-xl tracking-tighter">STN.MENU</span>
           <button onClick={() => setMobileMenuOpen(false)}>
-            <X size={28} />
+            <X size={20} />
           </button>
         </div>
 
-        <div className="p-4 space-y-3">
+        <div className="">
           {navLinks.map((link, i) => {
             const path = getPath(link);
             return (
@@ -146,7 +146,7 @@ const Nev = () => {
                 to={path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={({ isActive }) =>
-                  `block px-6 py-5 border-4 border-black font-black uppercase text-sm tracking-widest transition-all ${isActive ? "bg-black text-white translate-x-2" : "hover:bg-[#ff5c00]"}`
+                  `block px-6 py-5  text-white/50 font-black uppercase text-sm tracking-widest transition-all ${isActive ? "bg-white/10 text-white/90  " : "hover:bg-[#ff5c00]"}`
                 }
               >
                 {link.replace("-", " ")}
