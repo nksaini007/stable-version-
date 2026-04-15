@@ -9,6 +9,7 @@ import {
   Store,
   Users,
   HardHat,
+  HatGlasses,
   LogIn,
 } from "lucide-react";
 import logo from "../logo.png";
@@ -162,7 +163,7 @@ const Nev = () => {
       </div>
 
       {/* ================= MOBILE BOTTOM NAVBAR ================= */}
-      <div className="fixed bottom-0 left-0 w-full md:hidden z-[100] bg-[#e5e5e5] border-t-4 border-black">
+      <div className="fixed bottom-0 left-0 w-full md:hidden z-[100] bg-[#e5e5e5]  text-white">
         <div className="flex justify-between items-stretch">
 
           {[
@@ -170,18 +171,18 @@ const Nev = () => {
             { to: "/project-plans", icon: Store, label: "PLANS" },
             { to: "/community", icon: Users, label: "COMM" },
             { to: "/my-construction", icon: HardHat, label: "CONST" },
-            { to: "/services", icon: HardHat, label: "service" },
+            { to: "/services", icon: HatGlasses, label: "service" },
           ].map(({ to, icon: Icon, label }, i) => (
             <NavLink
               key={i}
               to={to}
               className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center h-[68px] border-r-2 border-black/10 transition-all ${isActive ? "bg-black text-[#ff5c00]" : "text-black hover:bg-black/5"
+                `flex-1 flex flex-col items-center justify-center h-[68px]   transition-all ${isActive ? "bg-blue-200 text-[#ffffff]" : "text-black hover:bg-black/5"
                 }`
               }
             >
-              <Icon size={20} />
-              <span className="text-[8px] font-black mt-1 tracking-tighter">{label}</span>
+              <Icon size={15} />
+              <span className="text-[5px] font-century mt-1 tracking-tighter">{label}</span>
             </NavLink>
           ))}
 
@@ -191,7 +192,7 @@ const Nev = () => {
             ) : (
               <NavLink
                 to="/login"
-                className="flex flex-col items-center justify-center w-full h-full bg-[#ff5c00] text-black border-l-2 border-black"
+                className="flex flex-col items-center justify-center w-full h-full bg-orange-300 text-white  border-black"
               >
                 <LogIn size={20} />
                 <span className="text-[8px] font-black mt-1">LOGIN</span>
