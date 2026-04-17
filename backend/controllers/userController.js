@@ -7,7 +7,8 @@ const ArchitectWork = require("../models/ArchitectWork");
 const { ArchitectTask, ArchitectPayment, ArchitectAttendance, ArchitectReview } = require("../models/ArchitectWorkforceModels");
 const path = require("path");
 const fs = require("fs");
-const { deleteImage } = require("../config/cloudinary");
+const { deleteImage, uploadBufferToCloudinary } = require("../config/cloudinary");
+const { optimizeImage } = require("../utils/imageOptimizer");
 const { generateOTP, sendEmailOTP, sendPhoneOTPViaEmail, verifyEmailConfig: checkEmailConfig } = require("../config/otpService");
 
 // ==================== MULTER CONFIG ====================
@@ -332,27 +333,22 @@ const updateMyProfile = async (req, res) => {
     // Profile & Banner images
     if (req.files) {
       if (req.files["profileImage"]?.[0]) {
-        // Delete old profile image if it belongs to Cloudinary
-        if (user.profileImage && user.profileImage.includes('cloudinary')) {
-             // Extract public_id from URL if not stored separately
-             // For now, since we didn't store public_id separately in User model, 
-             // we can rely on dev choosing to always store it or just delete via URL (cloudinary destroy supports public_id)
-        }
-        // Actually, it's safer to just store and delete.
-        // I'll add a quick helper or just update the logic to store public_id if I can, 
-        // but User model doesn't have profileImagePublicId.
-        
-        // I'll skip the complex extraction for now and just update the storage. 
-        // To do it perfectly, I'd need to change the User model. 
-        // But for now, let's just ensure NEW ones are handled better.
-        
-        user.profileImage = req.files["profileImage"][0].path;
+        // Process new profile image through Sharp
+        const buffer = await optimizeImage(req.files["profileImage"][0].buffer);
+        const result = await uploadBufferToCloudinary(buffer, 'stinchar/profiles', 'profileImage');
+        user.profileImage = result.secure_url;
       }
       if (req.files["shopBanner"]?.[0]) {
-        user.shopBanner = req.files["shopBanner"][0].path;
+        // Process new shop banner through Sharp
+        const buffer = await optimizeImage(req.files["shopBanner"][0].buffer);
+        const result = await uploadBufferToCloudinary(buffer, 'stinchar/banners', 'shopBanner');
+        user.shopBanner = result.secure_url;
       }
     } else if (req.file) {
-      user.profileImage = req.file.path;
+      // Handle single profile image upload
+      const buffer = await optimizeImage(req.file.buffer);
+      const result = await uploadBufferToCloudinary(buffer, 'stinchar/profiles', 'profileImage');
+      user.profileImage = result.secure_url;
     }
 
     await user.save();

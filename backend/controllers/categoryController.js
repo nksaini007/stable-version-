@@ -108,14 +108,21 @@
 //   }
 // };
 const Category = require("../models/Category");
+const { uploadBufferToCloudinary } = require("../config/cloudinary");
+const { optimizeImage } = require("../utils/imageOptimizer");
 
 // CREATE CATEGORY (with image)
 exports.createCategory = async (req, res) => {
   try {
     const { name } = req.body;
-    const image = req.files?.categoryImage
-      ? req.files.categoryImage[0].path
-      : null;
+    const file = req.files?.categoryImage ? req.files.categoryImage[0] : null;
+    let image = null;
+
+    if (file) {
+      const buffer = await optimizeImage(file.buffer);
+      const result = await uploadBufferToCloudinary(buffer, 'stinchar/categories', 'categoryImage');
+      image = result.secure_url;
+    }
 
     if (!name) return res.status(400).json({ message: "Category name required" });
 
@@ -144,9 +151,14 @@ exports.updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-    const image = req.files?.categoryImage
-      ? req.files.categoryImage[0].path
-      : undefined;
+    const file = req.files?.categoryImage ? req.files.categoryImage[0] : null;
+    let image = undefined;
+
+    if (file) {
+      const buffer = await optimizeImage(file.buffer);
+      const result = await uploadBufferToCloudinary(buffer, 'stinchar/categories', 'categoryImage');
+      image = result.secure_url;
+    }
 
     const category = await Category.findById(id);
     if (!category) return res.status(404).json({ message: "Category not found" });
@@ -177,9 +189,14 @@ exports.addSubcategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
     const { name } = req.body;
-    const image = req.files?.subcategoryImage
-      ? req.files.subcategoryImage[0].path
-      : null;
+    const file = req.files?.subcategoryImage ? req.files.subcategoryImage[0] : null;
+    let image = null;
+
+    if (file) {
+      const buffer = await optimizeImage(file.buffer);
+      const result = await uploadBufferToCloudinary(buffer, 'stinchar/subcategories', 'subcategoryImage');
+      image = result.secure_url;
+    }
 
     const category = await Category.findById(categoryId);
     if (!category) return res.status(404).json({ message: "Category not found" });
@@ -198,9 +215,14 @@ exports.updateSubcategory = async (req, res) => {
   try {
     const { categoryId, subId } = req.params;
     const { name } = req.body;
-    const image = req.files?.subcategoryImage
-      ? req.files.subcategoryImage[0].path
-      : undefined;
+    const file = req.files?.subcategoryImage ? req.files.subcategoryImage[0] : null;
+    let image = undefined;
+
+    if (file) {
+      const buffer = await optimizeImage(file.buffer);
+      const result = await uploadBufferToCloudinary(buffer, 'stinchar/subcategories', 'subcategoryImage');
+      image = result.secure_url;
+    }
 
     const category = await Category.findById(categoryId);
     if (!category) return res.status(404).json({ message: "Category not found" });

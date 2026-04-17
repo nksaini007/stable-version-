@@ -1,5 +1,5 @@
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -10,37 +10,32 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: async (req, file) => {
-    let folder = 'stinchar'; // Root folder
-    const baseUrl = req.baseUrl || '';
+// Switch to Memory Storage so Sharp can process the file buffer before upload
+const storage = multer.memoryStorage();
 
-    // Categorize by route
-    if (baseUrl.includes('categories')) folder = 'stinchar/categories';
-    else if (baseUrl.includes('products')) folder = 'stinchar/products';
-    else if (baseUrl.includes('users')) folder = 'stinchar/profiles';
-    else if (baseUrl.includes('ads')) folder = 'stinchar/ads';
-    else if (baseUrl.includes('construction')) folder = 'stinchar/construction';
-    else if (baseUrl.includes('posts')) folder = 'stinchar/posts';
-    else if (baseUrl.includes('architect-works')) folder = 'stinchar/architects';
-    else if (baseUrl.includes('services')) folder = 'stinchar/services';
-    
-    // Categorize by fieldname if needed (overrides or additions)
-    if (file.fieldname === 'categoryImage') folder = 'stinchar/categories';
-    if (file.fieldname === 'subcategoryImage') folder = 'stinchar/subcategories';
-    if (file.fieldname === 'profileImage') folder = 'stinchar/profiles';
-    if (file.fieldname === 'shopBanner') folder = 'stinchar/banners';
-    if (file.fieldname === 'postImage') folder = 'stinchar/posts';
-    if (file.fieldname === 'blueprint') folder = 'stinchar/construction/blueprints';
-
-    return {
-      folder: folder,
-      resource_type: 'auto', // Support for images/pdfs
-      public_id: file.fieldname + '_' + Date.now(),
-    };
-  },
-});
+/**
+ * Upload an optimized buffer directly to Cloudinary
+ * @param {Buffer} buffer - The image buffer processed by Sharp
+ * @param {String} folder - Target folder in Cloudinary
+ * @param {String} fieldname - Original field name for ID generation
+ */
+const uploadBufferToCloudinary = (buffer, folder, fieldname) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: folder,
+        resource_type: 'auto',
+        public_id: fieldname + '_' + Date.now(),
+        format: 'webp', // Standardizing on WebP for best performance
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+    uploadStream.end(buffer);
+  });
+};
 
 const deleteImage = async (publicId) => {
   if (!publicId || publicId === 'local' || publicId === 'external') return;
@@ -51,4 +46,4 @@ const deleteImage = async (publicId) => {
   }
 };
 
-module.exports = { cloudinary, storage, deleteImage };
+module.exports = { cloudinary, storage, uploadBufferToCloudinary, deleteImage };

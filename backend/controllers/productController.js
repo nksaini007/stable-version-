@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 const User = require('../models/userModel');
-const { deleteImage } = require('../config/cloudinary');
+const { deleteImage, uploadBufferToCloudinary } = require('../config/cloudinary');
+const { optimizeImage } = require('../utils/imageOptimizer');
 
 // ==============================
 // PUBLIC: Get all products or search
@@ -196,12 +197,17 @@ const createProduct = async (req, res) => {
 
     const uploadedImages = [];
     if (req.files && req.files.images && req.files.images.length > 0) {
-      req.files.images.forEach(file => {
+      for (const file of req.files.images) {
+        // Optimize image with Sharp (resizing, WebP, quality)
+        const optimizedBuffer = await optimizeImage(file.buffer);
+        
+        // Upload optimized buffer to Cloudinary
+        const result = await uploadBufferToCloudinary(optimizedBuffer, 'stinchar/products', 'productImage');
         uploadedImages.push({
-          public_id: file.filename,
-          url: file.path
+          public_id: result.public_id,
+          url: result.secure_url
         });
-      });
+      }
     } else if (imageLink) {
       uploadedImages.push({
         public_id: 'external',
@@ -211,7 +217,9 @@ const createProduct = async (req, res) => {
 
     let finalArModelUrl = arModelUrl;
     if (req.files && req.files.arModelFile) {
-      finalArModelUrl = req.files.arModelFile[0].path;
+      // For AR Models (GLB), we don't use Sharp, but we use the buffer upload helper
+      const modelResult = await uploadBufferToCloudinary(req.files.arModelFile[0].buffer, 'stinchar/construction/models', 'arModel');
+      finalArModelUrl = modelResult.secure_url;
     }
 
     // Convert features from text → array if needed
@@ -294,10 +302,16 @@ const updateProduct = async (req, res) => {
       }
 
       if (hasNewImages) {
-        product.images = req.files.images.map(img => ({
-          public_id: img.filename,
-          url: img.path
-        }));
+        const optimizedImages = [];
+        for (const file of req.files.images) {
+          const buffer = await optimizeImage(file.buffer);
+          const result = await uploadBufferToCloudinary(buffer, 'stinchar/products', 'productImage');
+          optimizedImages.push({
+            public_id: result.public_id,
+            url: result.secure_url
+          });
+        }
+        product.images = optimizedImages;
       } else if (updates.imageLink) {
         product.images = [{
           public_id: 'external',

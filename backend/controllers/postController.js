@@ -8,8 +8,8 @@ const postDir = path.join(__dirname, "..", "uploads", "posts");
 if (!fs.existsSync(postDir)) fs.mkdirSync(postDir, { recursive: true });
 
 // Multer Config for Post Images
-const { storage } = require("../config/cloudinary");
-const uploadPostImage = multer({ storage }).single("image");
+const { uploadBufferToCloudinary } = require("../config/cloudinary");
+const { optimizeImage } = require("../utils/imageOptimizer");
 
 // ==============================
 // CREATE Post (Admin Only)
@@ -21,7 +21,12 @@ const createPost = async (req, res) => {
         let image = null;
 
         if (req.file) {
-            image = req.file.path;
+            // Process the image buffer with Sharp
+            const optimizedBuffer = await optimizeImage(req.file.buffer);
+            
+            // Upload the optimized buffer to Cloudinary
+            const result = await uploadBufferToCloudinary(optimizedBuffer, 'stinchar/posts', 'postImage');
+            image = result.secure_url;
         }
 
         // FormData sends booleans as strings — parse correctly
@@ -192,7 +197,12 @@ const updatePost = async (req, res) => {
         post.blogUrl = isBlogBool ? (blogUrl || post.blogUrl) : null;
 
         if (req.file) {
-            post.image = req.file.path;
+            // Process the new image buffer with Sharp
+            const optimizedBuffer = await optimizeImage(req.file.buffer);
+            
+            // Upload the optimized buffer to Cloudinary
+            const result = await uploadBufferToCloudinary(optimizedBuffer, 'stinchar/posts', 'postImage');
+            post.image = result.secure_url;
         }
 
         const updatedPost = await post.save();
