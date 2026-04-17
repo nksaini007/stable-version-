@@ -168,28 +168,39 @@ const deletePost = async (req, res) => {
 };
 
 // ==============================
-// DELETE COMMENT (Admin Only)
-// DELETE /api/posts/:id/comment/:commentId
+// UPDATE Post (Admin Only)
+// PUT /api/posts/:id
 // ==============================
-const deleteComment = async (req, res) => {
+const updatePost = async (req, res) => {
     try {
-        const { id, commentId } = req.params;
+        const { id } = req.params;
+        const { title, content, isBlog, blogUrl } = req.body;
+        
         const post = await Post.findById(id);
-
         if (!post) return res.status(404).json({ message: "Post not found" });
 
         // Ensure user is admin
         if (req.user.role !== "admin") {
-            return res.status(403).json({ message: "Not authorized to delete comments" });
+            return res.status(403).json({ message: "Not authorized to update posts" });
         }
 
-        post.comments = post.comments.filter(c => c._id.toString() !== commentId);
-        await post.save();
-        await post.populate("comments.user", "name profileImage role");
+        const isBlogBool = isBlog === "true" || isBlog === true;
 
-        res.json(post.comments);
+        post.title = title || post.title;
+        post.content = isBlogBool ? (content || post.content) : content;
+        post.isBlog = isBlogBool;
+        post.blogUrl = isBlogBool ? (blogUrl || post.blogUrl) : null;
+
+        if (req.file) {
+            post.image = req.file.path;
+        }
+
+        const updatedPost = await post.save();
+        await updatedPost.populate("author", "name profileImage role");
+
+        res.json(updatedPost);
     } catch (error) {
-        console.error("Error deleting comment:", error.message);
+        console.error("Error updating post:", error.message);
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
@@ -197,6 +208,7 @@ const deleteComment = async (req, res) => {
 module.exports = {
     uploadPostImage,
     createPost,
+    updatePost,
     getPosts,
     getPostById,
     likePost,

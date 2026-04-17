@@ -5,6 +5,7 @@ const { protect, adminOnly } = require("../middlewares/authMiddleware");
 const {
     uploadPostImage,
     createPost,
+    updatePost,
     getPosts,
     getPostById,
     likePost,
@@ -23,6 +24,7 @@ router.post("/:id/comment", protect, addComment);
 
 // Admin-only routes
 router.post("/", protect, adminOnly, uploadPostImage, createPost);
+router.put("/:id", protect, adminOnly, uploadPostImage, updatePost);
 router.delete("/:id", protect, adminOnly, deletePost);
 router.delete("/:id/comment/:commentId", protect, adminOnly, deleteComment);
 
