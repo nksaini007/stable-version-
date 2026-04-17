@@ -91,7 +91,7 @@ const CustomerLanding = ({ onSearch, searchQuery, setSearchQuery, onCategoryClic
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#e5e5e5] text-black font-mono overflow-hidden flex flex-col pt-20">
+    <div className="relative min-h-screen bg-[#e5e5e5] text-black font-mono overflow-hidden flex flex-col pt-10">
 
       {/* 🏁 INDUSTRIAL GRID OVERLAY (SUBTLE) */}
       <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none"

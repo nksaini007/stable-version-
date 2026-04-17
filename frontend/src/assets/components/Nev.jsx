@@ -49,7 +49,7 @@ const Nev = () => {
     <>
       {/* ================= DESKTOP NAVBAR ================= */}
       <nav className="fixed top-0 w-full z-50 bg-[#e5e5e5]  hidden md:block">
-        <div className="relative max-w-[1600px] mx-auto flex items-stretch h-[72px]">
+        <div className="relative max-w-[1600px] mx-auto flex items-stretch h-[50px]">
 
           {/* LOGO BOX */}
           <Link to="/" className="flex items-center px-8  bg-black text-white hover:bg-[#ff5c00] transition-colors group">
