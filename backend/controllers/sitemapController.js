@@ -1,7 +1,7 @@
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { Readable } = require('stream');
 const Post = require('../models/postModel');
-const Product = require('../models/productModel');
+const Product = require('../models/product');
 
 /**
  * Generate sitemap.xml dynamically
