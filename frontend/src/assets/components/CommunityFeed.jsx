@@ -158,7 +158,7 @@ const CommunityFeed = () => {
                         <p className="text-sm font-black uppercase tracking-[0.3em] text-black/20">NO_ENTRY_DETECTED_IN_SECTOR</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-0 md:gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-0 md:gap-2">
                         {posts.map(post => {
                             const isLikedByMe = user && post.likes.includes(user._id);
                             const showComments = activeCommentId === post._id;
