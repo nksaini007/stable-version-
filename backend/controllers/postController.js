@@ -205,6 +205,33 @@ const updatePost = async (req, res) => {
     }
 };
 
+// ==============================
+// DELETE COMMENT (Admin Only)
+// DELETE /api/posts/:id/comment/:commentId
+// ==============================
+const deleteComment = async (req, res) => {
+    try {
+        const { id, commentId } = req.params;
+        const post = await Post.findById(id);
+
+        if (!post) return res.status(404).json({ message: "Post not found" });
+
+        // Ensure user is admin
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Not authorized to delete comments" });
+        }
+
+        post.comments = post.comments.filter(c => c._id.toString() !== commentId);
+        await post.save();
+        await post.populate("comments.user", "name profileImage role");
+
+        res.json(post.comments);
+    } catch (error) {
+        console.error("Error deleting comment:", error.message);
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
 module.exports = {
     uploadPostImage,
     createPost,
