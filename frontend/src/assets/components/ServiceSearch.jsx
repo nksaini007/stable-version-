@@ -215,7 +215,7 @@ const ServiceSearch = () => {
                         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">No matching personnel found</h3>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
                         {services.map(svc => (
                             <motion.div 
                                 key={svc._id} 
@@ -224,28 +224,28 @@ const ServiceSearch = () => {
                                 className="bg-white border border-slate-100 hover:border-slate-300 transition-all duration-300 group flex flex-col"
                             >
                                 <Link to={`/service/${svc._id}`} className="block flex-1 flex flex-col">
-                                    <div className="h-44 bg-slate-50 relative overflow-hidden">
+                                    <div className="h-32 md:h-44 bg-slate-50 relative overflow-hidden">
                                         {svc.images?.length > 0 ? (
                                             <img src={`${svc.images[0]}`} alt={svc.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-slate-200 uppercase font-black tracking-widest text-[10px]">No Visual</div>
                                         )}
-                                        <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur px-3 py-1 text-[8px] font-bold text-white uppercase tracking-widest">
+                                        <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-slate-900/80 backdrop-blur px-2 md:px-3 py-1 text-[7px] md:text-[8px] font-bold text-white uppercase tracking-widest">
                                             {svc.category}
                                         </div>
                                     </div>
 
-                                    <div className="p-5 flex-1 flex flex-col">
-                                        <h3 className="font-bold text-slate-800 text-sm mb-2 uppercase tracking-tight group-hover:text-slate-900 transition-colors line-clamp-1">{svc.title}</h3>
-                                        <p className="text-slate-400 text-xs font-medium leading-relaxed mb-6 flex-1 line-clamp-2">{svc.description}</p>
+                                    <div className="p-3 md:p-5 flex-1 flex flex-col">
+                                        <h3 className="font-bold text-slate-800 text-[10px] md:text-sm mb-1 md:mb-2 uppercase tracking-tight group-hover:text-slate-900 transition-colors line-clamp-1 leading-tight">{svc.title}</h3>
+                                        <p className="text-slate-400 text-[8px] md:text-xs font-medium leading-relaxed mb-4 md:mb-6 flex-1 line-clamp-2 md:line-clamp-3">{svc.description}</p>
                                     </div>
                                 </Link>
-                                <div className="px-5 pb-5 pt-0">
-                                    <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                                        <div className="text-sm font-bold text-slate-900">₹{svc.price}</div>
+                                <div className="px-3 pb-3 md:px-5 md:pb-5 pt-0">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between pt-3 md:pt-4 border-t border-slate-50 gap-2 md:gap-0">
+                                        <div className="text-xs md:text-sm font-bold text-slate-900">₹{svc.price}</div>
                                         <button 
                                             onClick={() => setBookingService(svc)} 
-                                            className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-colors"
+                                            className="bg-slate-900 hover:bg-slate-800 text-white px-3 md:px-5 py-2 md:py-2.5 text-[8px] md:text-[10px] font-bold uppercase tracking-widest transition-colors w-full md:w-auto"
                                         >
                                             Book Item
                                         </button>

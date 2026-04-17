@@ -88,17 +88,17 @@ const ServiceSubCategories = () => {
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6"
                 >
                     {filteredSubCategories.length > 0 ? (
                         filteredSubCategories.map((sub) => (
                             <motion.div
                                 key={sub._id}
                                 variants={itemVariants}
-                                className="bg-white border border-slate-100 rounded-none overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all duration-300"
+                                className="bg-white border border-slate-100 rounded-none overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all duration-300 flex flex-col"
                             >
-                                <Link to={`/services/${categoryId}/${sub._id}`} className="block group">
-                                    <div className="h-44 overflow-hidden relative">
+                                <Link to={`/services/${categoryId}/${sub._id}`} className="block group flex-1">
+                                    <div className="h-32 md:h-44 overflow-hidden relative">
                                         <img
                                             src={sub.image || "https://images.unsplash.com/photo-1581094794329-c8112a4e5190?w=600"}
                                             alt={sub.name}
@@ -107,15 +107,15 @@ const ServiceSubCategories = () => {
                                         <div className="absolute inset-0 bg-slate-900/5"></div>
                                     </div>
 
-                                    <div className="p-5">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide group-hover:text-slate-900 transition-colors">
+                                    <div className="p-3 md:p-5">
+                                        <div className="flex justify-between items-start mb-1 md:mb-2">
+                                            <h3 className="text-[10px] md:text-sm font-bold text-slate-800 uppercase tracking-tight group-hover:text-slate-900 transition-colors leading-tight">
                                                 {sub.name}
                                             </h3>
-                                            <FaArrowRight size={12} className="text-slate-300 transition-colors group-hover:text-slate-900" />
+                                            <FaArrowRight size={10} className="text-slate-300 transition-colors group-hover:text-slate-900 mt-1 flex-shrink-0" />
                                         </div>
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                                            Specialty Resource
+                                        <p className="text-[8px] md:text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                            Resource Node
                                         </p>
                                     </div>
                                 </Link>

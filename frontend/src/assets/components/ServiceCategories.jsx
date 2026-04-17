@@ -70,38 +70,38 @@ const ServiceCategories = () => {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6"
             >
               {categories.map((cat) => (
                 <motion.div
                   key={cat._id}
                   variants={itemVariants}
-                  className="bg-white border border-slate-100 rounded-none overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all duration-300"
+                  className="bg-white border border-slate-100 rounded-none overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all duration-300 flex flex-col"
                 >
-                  <Link to={`/services/${cat._id}`} className="block group">
+                  <Link to={`/services/${cat._id}`} className="block group flex-1">
                     {/* Image Container */}
-                    <div className="relative h-44 overflow-hidden">
+                    <div className="relative h-32 md:h-44 overflow-hidden">
                       <img
                         src={getOptimizedImage(cat.image, 600)}
                         alt={cat.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         {...lazyImageProps}
                       />
-                      <div className="absolute inset-0 bg-slate-900/10"></div>
+                      <div className="absolute inset-0 bg-slate-900/5"></div>
                     </div>
 
                     {/* Content */}
-                    <div className="p-5">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide group-hover:text-slate-900 transition-colors">
+                    <div className="p-3 md:p-5">
+                      <div className="flex justify-between items-start mb-2 md:mb-4">
+                        <h3 className="text-[10px] md:text-sm font-bold text-slate-800 uppercase tracking-wider group-hover:text-slate-900 transition-colors leading-tight">
                           {cat.name}
                         </h3>
-                        <FaArrowRight size={12} className="text-slate-300 group-hover:text-slate-900 transition-colors" />
+                        <FaArrowRight size={10} className="text-slate-300 group-hover:text-slate-900 transition-colors mt-1 flex-shrink-0" />
                       </div>
                       
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1 md:gap-2">
                         {cat.subcategories?.slice(0, 2).map((sub, idx) => (
-                          <span key={idx} className="text-[10px] text-slate-400 font-bold border border-slate-50 px-2 py-0.5 uppercase">
+                          <span key={idx} className="text-[8px] md:text-[10px] text-slate-400 font-bold border border-slate-50 px-1.5 py-0.5 uppercase">
                             {sub.name}
                           </span>
                         ))}
