@@ -158,7 +158,7 @@ const CommunityFeed = () => {
                         <p className="text-sm font-black uppercase tracking-[0.3em] text-black/20">NO_ENTRY_DETECTED_IN_SECTOR</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-0 md:gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-0 md:gap-6">
                         {posts.map(post => {
                             const isLikedByMe = user && post.likes.includes(user._id);
                             const showComments = activeCommentId === post._id;
@@ -235,7 +235,7 @@ const CommunityFeed = () => {
                                                         <h3 className="text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter line-clamp-2">{post.title}</h3>
                                                         <div className="text-black/60 text-[9px] font-bold leading-relaxed uppercase">
                                                             <p className={`${!isExpanded ? 'line-clamp-3' : ''}`}>
-                                                                {post.content && post.content.includes('<') 
+                                                                {post.content && post.content.includes('<')
                                                                     ? stripHtml(post.content)
                                                                     : renderTextWithLinks(post.content)
                                                                 }
