@@ -8,8 +8,9 @@ const postDir = path.join(__dirname, "..", "uploads", "posts");
 if (!fs.existsSync(postDir)) fs.mkdirSync(postDir, { recursive: true });
 
 // Multer Config for Post Images
-const { uploadBufferToCloudinary } = require("../config/cloudinary");
+const { storage, uploadBufferToCloudinary } = require("../config/cloudinary");
 const { optimizeImage } = require("../utils/imageOptimizer");
+const uploadPostImage = multer({ storage }).single("postImage");
 
 // ==============================
 // CREATE Post (Admin Only)
