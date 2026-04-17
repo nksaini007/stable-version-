@@ -38,7 +38,7 @@ const CommunityPosts = () => {
         'header', 'font', 'size',
         'bold', 'italic', 'underline', 'strike',
         'color', 'background',
-        'script', 'list', 'bullet', 'indent',
+        'script', 'list', 'indent',
         'direction', 'align',
         'link', 'image', 'video'
     ];
