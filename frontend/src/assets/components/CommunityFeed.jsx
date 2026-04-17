@@ -61,6 +61,13 @@ const CommunityFeed = () => {
         });
     };
 
+    // --- Strip HTML for previews ---
+    const stripHtml = (html) => {
+        if (!html) return "";
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || "";
+    };
+
     useEffect(() => {
         fetchPosts();
     }, []);
@@ -228,7 +235,10 @@ const CommunityFeed = () => {
                                                         <h3 className="text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter line-clamp-2">{post.title}</h3>
                                                         <div className="text-black/60 text-[9px] font-bold leading-relaxed uppercase">
                                                             <p className={`${!isExpanded ? 'line-clamp-3' : ''}`}>
-                                                                {renderTextWithLinks(post.content)}
+                                                                {post.content && post.content.includes('<') 
+                                                                    ? stripHtml(post.content)
+                                                                    : renderTextWithLinks(post.content)
+                                                                }
                                                             </p>
                                                             {isLongText && (
                                                                 <button

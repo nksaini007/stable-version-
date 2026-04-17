@@ -157,3 +157,50 @@ html, body {
 .glow-heavy-red {
   display: none; /* Replaced by soft backlight */
 }
+
+/* 📝 GLOBAL RICH TEXT STYLING */
+.rich-text-content {
+  word-wrap: break-word;
+}
+.rich-text-content h1, .rich-text-content h2, .rich-text-content h3 {
+  color: white;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 800;
+  text-transform: none; /* Rich text might want normal casing */
+}
+.rich-text-content h1 { font-size: 2em; }
+.rich-text-content h2 { font-size: 1.5em; }
+.rich-text-content h3 { font-size: 1.25em; }
+.rich-text-content ul, .rich-text-content ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+.rich-text-content ul { list-style-type: disc; }
+.rich-text-content ol { list-style-type: decimal; }
+.rich-text-content a {
+  color: #ff5c00;
+  text-decoration: underline;
+}
+.rich-text-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+}
+.rich-text-content blockquote {
+  border-left: 4px solid #ff5c00;
+  padding-left: 1em;
+  font-style: italic;
+  color: rgba(255,255,255,0.5);
+  margin: 1em 0;
+}
+.rich-text-content p {
+  margin-bottom: 1em;
+}
+.rich-text-content .ql-size-small { font-size: 0.75em; }
+.rich-text-content .ql-size-large { font-size: 1.5em; }
+.rich-text-content .ql-size-huge { font-size: 2.5em; }
+.rich-text-content .ql-align-center { text-align: center; }
+.rich-text-content .ql-align-right { text-align: right; }
+.rich-text-content .ql-align-justify { text-align: justify; }

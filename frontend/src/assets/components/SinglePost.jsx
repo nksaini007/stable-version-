@@ -603,17 +603,18 @@ const SinglePost = () => {
 
                     {/* Post Body */}
                     {post.content ? (
-                        <p style={{
-                            color: 'rgba(255,255,255,0.68)',
-                            fontSize: '16.5px',
-                            lineHeight: '2',
-                            fontWeight: 400,
-                            whiteSpace: 'pre-line',
-                            margin: 0,
-                            letterSpacing: '0.01em',
-                        }}>
-                            {renderTextWithLinks(post.content)}
-                        </p>
+                        <div 
+                            className="rich-text-content"
+                            style={{
+                                color: 'rgba(255,255,255,0.68)',
+                                fontSize: '16.5px',
+                                lineHeight: '2',
+                                fontWeight: 400,
+                                margin: 0,
+                                letterSpacing: '0.01em',
+                            }}
+                            dangerouslySetInnerHTML={{ __html: post.content }}
+                        />
                     ) : (
                         <p style={{ color: 'rgba(255,255,255,0.2)', fontStyle: 'italic', fontSize: '14px', margin: 0 }}>No content provided.</p>
                     )}

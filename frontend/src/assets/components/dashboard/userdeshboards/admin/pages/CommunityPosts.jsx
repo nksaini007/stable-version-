@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { FaPlus, FaTrash, FaImage, FaNewspaper, FaCommentDots, FaHeart, FaTimes } from "react-icons/fa";
 import API from "../../../../../api/api";
 import { toast } from "react-toastify";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const CommunityPosts = () => {
     const [posts, setPosts] = useState([]);
@@ -9,6 +11,32 @@ const CommunityPosts = () => {
     const [form, setForm] = useState({ title: "", content: "", image: null, isBlog: false, blogUrl: "" });
     const [preview, setPreview] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+
+    const modules = {
+        toolbar: [
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'font': [] }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'script': 'sub' }, { 'script': 'super' }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{ 'indent': '-1' }, { 'indent': '+1' }],
+            [{ 'direction': 'rtl' }],
+            [{ 'align': [] }],
+            ['link', 'image', 'video'],
+            ['clean']
+        ],
+    };
+
+    const formats = [
+        'header', 'font', 'size',
+        'bold', 'italic', 'underline', 'strike',
+        'color', 'background',
+        'script', 'list', 'bullet', 'indent',
+        'direction', 'align',
+        'link', 'image', 'video'
+    ];
 
     const fetchPosts = async () => {
         try {
@@ -30,6 +58,10 @@ const CommunityPosts = () => {
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+    };
+
+    const handleContentChange = (content) => {
+        setForm({ ...form, content });
     };
 
     const handleImageChange = (e) => {
@@ -141,16 +173,73 @@ const CommunityPosts = () => {
                             </div>
                         ) : (
                             <div>
-                                <label className="block text-xs font-semibold text-[#8E929C] uppercase mb-1">Content</label>
-                                <textarea
-                                    name="content"
-                                    required
-                                    value={form.content}
-                                    onChange={handleChange}
-                                    rows="5"
-                                    placeholder="What do you want to share with the community?"
-                                    className="w-full border border-[#2A2B2F] focus:border-white focus:ring-1 focus:ring-0 rounded-lg p-3 outline-none transition resize-none"
-                                />
+                                <label className="block text-xs font-semibold text-[#8E929C] uppercase mb-2">Content</label>
+                                <div className="quill-dark-editor border border-[#2A2B2F] rounded-lg overflow-hidden">
+                                    <ReactQuill
+                                        theme="snow"
+                                        value={form.content}
+                                        onChange={handleContentChange}
+                                        modules={modules}
+                                        formats={formats}
+                                        placeholder="What do you want to share with the community?"
+                                    />
+                                </div>
+                                <style>{`
+                                    .quill-dark-editor .ql-toolbar {
+                                        background: #1A1B1E;
+                                        border-color: #2A2B2F !important;
+                                        border-top-left-radius: 8px;
+                                        border-top-right-radius: 8px;
+                                    }
+                                    .quill-dark-editor .ql-container {
+                                        background: #121212;
+                                        border-color: #2A2B2F !important;
+                                        min-height: 250px;
+                                        color: white;
+                                        font-family: inherit;
+                                        border-bottom-left-radius: 8px;
+                                        border-bottom-right-radius: 8px;
+                                    }
+                                    .quill-dark-editor .ql-editor.ql-blank::before {
+                                        color: #8E929C;
+                                        font-style: normal;
+                                    }
+                                    .quill-dark-editor .ql-snow.ql-toolbar button {
+                                        color: #8E929C;
+                                    }
+                                    .quill-dark-editor .ql-snow.ql-toolbar button:hover,
+                                    .quill-dark-editor .ql-snow.ql-toolbar button.ql-active {
+                                        color: white;
+                                    }
+                                    .quill-dark-editor .ql-snow.ql-toolbar button .ql-stroke {
+                                        stroke: #8E929C;
+                                    }
+                                    .quill-dark-editor .ql-snow.ql-toolbar button:hover .ql-stroke,
+                                    .quill-dark-editor .ql-snow.ql-toolbar button.ql-active .ql-stroke {
+                                        stroke: white;
+                                    }
+                                    .quill-dark-editor .ql-snow.ql-toolbar .ql-picker {
+                                        color: #8E929C;
+                                    }
+                                    .quill-dark-editor .ql-snow.ql-toolbar .ql-picker:hover,
+                                    .quill-dark-editor .ql-snow.ql-toolbar .ql-picker.ql-active {
+                                        color: white;
+                                    }
+                                    .quill-dark-editor .ql-snow.ql-toolbar .ql-picker .ql-stroke {
+                                        stroke: #8E929C;
+                                    }
+                                    .quill-dark-editor .ql-snow .ql-picker-options {
+                                        background-color: #1A1B1E;
+                                        border-color: #2A2B2F;
+                                    }
+                                    .quill-dark-editor .ql-snow .ql-picker-item {
+                                        color: #8E929C;
+                                    }
+                                    .quill-dark-editor .ql-snow .ql-picker-item:hover,
+                                    .quill-dark-editor .ql-snow .ql-picker-item.ql-selected {
+                                        color: white;
+                                    }
+                                `}</style>
                             </div>
                         )}
 
@@ -216,9 +305,10 @@ const CommunityPosts = () => {
                                             <FaTrash />
                                         </button>
                                     </div>
-                                    <p className="text-[#8E929C] text-sm mb-4 line-clamp-3 leading-relaxed">
-                                        {post.content}
-                                    </p>
+                                    <div 
+                                        className="text-[#8E929C] text-sm mb-4 line-clamp-3 leading-relaxed rich-text-preview"
+                                        dangerouslySetInnerHTML={{ __html: post.content }}
+                                    />
 
                                     <div className="flex items-center gap-6 mt-4 pt-4 border-t border-[#2A2B2F] text-sm text-[#8E929C]">
                                         <div className="flex items-center gap-2">
