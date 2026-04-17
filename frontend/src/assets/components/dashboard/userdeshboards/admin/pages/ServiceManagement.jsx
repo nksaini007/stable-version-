@@ -16,7 +16,8 @@ const ServiceManagement = () => {
         title: "",
         description: "",
         category: "",
-        price: ""
+        price: "",
+        imageLinks: ""
     });
     const [images, setImages] = useState(null);
     const [submitting, setSubmitting] = useState(false);
@@ -64,6 +65,9 @@ const ServiceManagement = () => {
             data.append("price", formData.price);
             data.append("serviceCategoryId", selectedCategoryId);
             data.append("serviceSubCategoryId", formData.subCategoryId);
+            if (formData.imageLinks) {
+                data.append("imageLinks", formData.imageLinks);
+            }
 
             if (images) {
                 for (let i = 0; i < images.length; i++) {
@@ -77,7 +81,7 @@ const ServiceManagement = () => {
 
             toast.success("Service created successfully!");
             setShowModal(false);
-            setFormData({ title: "", description: "", category: "", price: "" });
+            setFormData({ title: "", description: "", category: "", price: "", imageLinks: "" });
             setImages(null);
             fetchServices();
         } catch (err) {
@@ -280,6 +284,16 @@ const ServiceManagement = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-200 mb-1">Service Images</label>
                                 <input type="file" multiple accept="image/*" onChange={e => setImages(e.target.files)} className="w-full text-sm text-[#8E929C] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100 transition" />
+                                <div className="mt-3">
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-1">OR ENTER IMAGE LINKS (COMMA SEPARATED)</label>
+                                    <input 
+                                        type="text" 
+                                        value={formData.imageLinks} 
+                                        onChange={e => setFormData({ ...formData, imageLinks: e.target.value })} 
+                                        className="w-full border-2 border-[#2A2B2F] p-2.5 rounded-xl focus:border-orange-400 focus:ring-0 outline-none text-xs" 
+                                        placeholder="https://example.com/image.jpg, ..." 
+                                    />
+                                </div>
                             </div>
                             <button type="submit" disabled={submitting} className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold mt-4 transition disabled:opacity-50">
                                 {submitting ? "Creating..." : "Create Service"}

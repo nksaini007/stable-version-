@@ -7,15 +7,18 @@ const AdminServiceCategoryDashboard = () => {
   const [categories, setCategories] = useState([]);
   const [categoryName, setCategoryName] = useState("");
   const [categoryImage, setCategoryImage] = useState(null);
+  const [categoryImageUrl, setCategoryImageUrl] = useState("");
   const [editingCategoryId, setEditingCategoryId] = useState(null);
 
   const [subName, setSubName] = useState("");
   const [subImage, setSubImage] = useState(null);
+  const [subImageUrl, setSubImageUrl] = useState("");
   const [editingSub, setEditingSub] = useState({
     catId: null,
     subId: null,
     name: "",
     image: null,
+    imageUrl: "",
   });
 
   // ================= FETCH =================
@@ -39,6 +42,7 @@ const AdminServiceCategoryDashboard = () => {
     const formData = new FormData();
     formData.append("name", categoryName);
     if (categoryImage) formData.append("categoryImage", categoryImage);
+    if (categoryImageUrl) formData.append("imageUrl", categoryImageUrl);
 
     try {
       if (editingCategoryId) {
@@ -49,6 +53,7 @@ const AdminServiceCategoryDashboard = () => {
       }
       setCategoryName("");
       setCategoryImage(null);
+      setCategoryImageUrl("");
       fetchCategories();
     } catch (err) {
       alert("Operation failed");
@@ -63,6 +68,7 @@ const AdminServiceCategoryDashboard = () => {
 
   const handleEditCategory = (cat) => {
     setCategoryName(cat.name);
+    setCategoryImageUrl(cat.image && cat.image.startsWith("http") ? cat.image : "");
     setEditingCategoryId(cat._id);
   };
 
@@ -73,15 +79,23 @@ const AdminServiceCategoryDashboard = () => {
     const formData = new FormData();
     formData.append("name", subName);
     if (subImage) formData.append("subcategoryImage", subImage);
+    if (subImageUrl) formData.append("imageUrl", subImageUrl);
 
     await API.post(`/service-categories/${catId}/subcategories`, formData);
     setSubName("");
     setSubImage(null);
+    setSubImageUrl("");
     fetchCategories();
   };
 
   const handleEditSubcategory = (catId, sub) => {
-    setEditingSub({ catId, subId: sub._id, name: sub.name, image: null });
+    setEditingSub({ 
+      catId, 
+      subId: sub._id, 
+      name: sub.name, 
+      image: null, 
+      imageUrl: sub.image && sub.image.startsWith("http") ? sub.image : "" 
+    });
   };
 
   const handleSaveSubcategory = async () => {
@@ -91,9 +105,10 @@ const AdminServiceCategoryDashboard = () => {
     const formData = new FormData();
     formData.append("name", name);
     if (image) formData.append("subcategoryImage", image);
+    if (editingSub.imageUrl) formData.append("imageUrl", editingSub.imageUrl);
 
     await API.put(`/service-categories/${catId}/subcategories/${subId}`, formData);
-    setEditingSub({ catId: null, subId: null, name: "", image: null });
+    setEditingSub({ catId: null, subId: null, name: "", image: null, imageUrl: "" });
     fetchCategories();
   };
 
@@ -135,11 +150,21 @@ const AdminServiceCategoryDashboard = () => {
             className="flex-1 p-4 bg-[#121212] border border-[#2A2B2F] rounded-xl text-white focus:ring-1 focus:ring-blue-500 outline-none transition-all"
           />
 
-          <input
-            type="file"
-            onChange={(e) => setCategoryImage(e.target.files[0])}
-            className="border border-[#2A2B2F] bg-[#121212] rounded-xl p-3 text-xs text-[#8E929C]"
-          />
+          <div className="flex flex-col gap-2">
+            <input
+              type="file"
+              onChange={(e) => setCategoryImage(e.target.files[0])}
+              className="border border-[#2A2B2F] bg-[#121212] rounded-xl p-3 text-xs text-[#8E929C]"
+            />
+            <span className="text-[10px] text-gray-500 px-2 uppercase font-bold">OR PASTE LINK</span>
+            <input
+              type="text"
+              placeholder="External Image URL (e.g. Google Drive)"
+              value={categoryImageUrl}
+              onChange={(e) => setCategoryImageUrl(e.target.value)}
+              className="p-3 bg-[#121212] border border-[#2A2B2F] rounded-xl text-xs text-white outline-none"
+            />
+          </div>
 
           <button
             onClick={handleAddOrEditCategory}
@@ -209,15 +234,28 @@ const AdminServiceCategoryDashboard = () => {
                 />
 
                 <div className="flex gap-3 items-center">
-                    <input
-                        type="file"
-                        onChange={(e) =>
-                        editingSub.catId === cat._id
-                            ? setEditingSub({ ...editingSub, image: e.target.files[0] })
-                            : setSubImage(e.target.files[0])
-                        }
-                        className="flex-1 text-[10px] text-[#6B7280] file:hidden"
-                    />
+                    <div className="flex flex-col gap-2 flex-1">
+                        <input
+                            type="file"
+                            onChange={(e) =>
+                            editingSub.catId === cat._id
+                                ? setEditingSub({ ...editingSub, image: e.target.files[0] })
+                                : setSubImage(e.target.files[0])
+                            }
+                            className="text-[10px] text-[#6B7280] file:hidden"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Link (Optional)"
+                            value={editingSub.catId === cat._id ? editingSub.imageUrl : subImageUrl}
+                            onChange={(e) =>
+                                editingSub.catId === cat._id
+                                  ? setEditingSub({ ...editingSub, imageUrl: e.target.value })
+                                  : setSubImageUrl(e.target.value)
+                            }
+                            className="p-2 bg-[#1A1B1E] border border-[#2A2B2F] rounded-lg text-xs text-white outline-none"
+                        />
+                    </div>
 
                     {editingSub.catId === cat._id ? (
                         <div className="flex gap-2">

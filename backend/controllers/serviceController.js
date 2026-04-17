@@ -49,7 +49,7 @@ const createService = async (req, res) => {
             return res.status(403).json({ message: "Only admin can create services" });
         }
 
-        const { title, description, category, price, serviceCategoryId, serviceSubCategoryId } = req.body;
+        const { title, description, category, price, serviceCategoryId, serviceSubCategoryId, imageLinks } = req.body;
 
         const newService = new Service({
             title,
@@ -60,9 +60,16 @@ const createService = async (req, res) => {
             serviceSubCategoryId,
         });
 
+        const imageArray = [];
         if (req.files && req.files.length > 0) {
-            newService.images = req.files.map(file => file.path);
+            req.files.forEach(file => imageArray.push(file.path));
         }
+        if (imageLinks) {
+            // Split by comma and trim
+            const links = imageLinks.split(",").map(l => l.trim()).filter(l => l !== "");
+            imageArray.push(...links);
+        }
+        newService.images = imageArray;
 
         await newService.save();
         res.status(201).json({ message: "Service created successfully", service: newService });
@@ -83,7 +90,7 @@ const updateService = async (req, res) => {
         const service = await Service.findById(req.params.id);
         if (!service) return res.status(404).json({ message: "Service not found" });
 
-        const { title, description, category, price, isActive, serviceCategoryId, serviceSubCategoryId } = req.body;
+        const { title, description, category, price, isActive, serviceCategoryId, serviceSubCategoryId, imageLinks } = req.body;
 
         if (title) service.title = title;
         if (description) service.description = description;
@@ -93,8 +100,22 @@ const updateService = async (req, res) => {
         if (serviceCategoryId) service.serviceCategoryId = serviceCategoryId;
         if (serviceSubCategoryId) service.serviceSubCategoryId = serviceSubCategoryId;
 
+        const imageArray = [...(service.images || [])];
         if (req.files && req.files.length > 0) {
-            service.images = req.files.map(file => file.path);
+            // If new files are uploaded, we typically replace or append. 
+            // For now, let's replace if files are uploaded, or append if desired.
+            // Requirement says "fix broken images", so replacing with new upload/link makes sense.
+            const newFiles = req.files.map(file => file.path);
+            service.images = newFiles; 
+        }
+
+        if (imageLinks) {
+            const links = imageLinks.split(",").map(l => l.trim()).filter(l => l !== "");
+            if (req.files && req.files.length > 0) {
+                service.images.push(...links);
+            } else {
+                service.images = links; // Replace if no files but links provided
+            }
         }
 
         await service.save();

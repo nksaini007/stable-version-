@@ -4,9 +4,9 @@ const ServiceCategory = require("../models/ServiceCategory");
 exports.createServiceCategory = async (req, res) => {
   try {
     const { name } = req.body;
-    const image = req.files?.categoryImage?.[0]
-      ? req.files.categoryImage[0].path
-      : null;
+    const image = (req.files?.categoryImage?.[0]) 
+      ? req.files.categoryImage[0].path 
+      : (req.body.imageUrl || null);
 
     if (!name) return res.status(400).json({ message: "Category name required" });
 
@@ -47,9 +47,9 @@ exports.updateServiceCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-    const image = req.files?.categoryImage?.[0]
+    const image = (req.files?.categoryImage?.[0])
       ? req.files.categoryImage[0].path
-      : undefined;
+      : req.body.imageUrl;
 
     const category = await ServiceCategory.findById(id);
     if (!category) return res.status(404).json({ message: "Category not found" });
@@ -80,9 +80,9 @@ exports.addServiceSubcategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
     const { name } = req.body;
-    const image = req.files?.subcategoryImage?.[0]
+    const image = (req.files?.subcategoryImage?.[0])
       ? req.files.subcategoryImage[0].path
-      : null;
+      : (req.body.imageUrl || null);
 
     const category = await ServiceCategory.findById(categoryId);
     if (!category) return res.status(404).json({ message: "Category not found" });
@@ -101,9 +101,9 @@ exports.updateServiceSubcategory = async (req, res) => {
   try {
     const { categoryId, subId } = req.params;
     const { name } = req.body;
-    const image = req.files?.subcategoryImage?.[0]
+    const image = (req.files?.subcategoryImage?.[0])
       ? req.files.subcategoryImage[0].path
-      : undefined;
+      : req.body.imageUrl;
 
     const category = await ServiceCategory.findById(categoryId);
     if (!category) return res.status(404).json({ message: "Category not found" });
