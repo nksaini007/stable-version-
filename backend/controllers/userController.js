@@ -789,7 +789,8 @@ const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await User.updateOne({ email }, { password: hashedPassword });
 
-    await Otp.deleteOne({ _id: otpDoc._id });
+    // Cleanup verified OTP post-reset
+    await Otp.deleteOne({ email, type: "email" });
 
     res.json({ message: "Password reset successful" });
   } catch (err) {

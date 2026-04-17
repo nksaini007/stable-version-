@@ -10,6 +10,7 @@ function ForgotPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [otpToken, setOtpToken] = useState("");
 
   // OTP State
   const [otpLoading, setOtpLoading] = useState(false);
@@ -60,7 +61,8 @@ function ForgotPassword() {
     if (code.length !== 6) { setOtpError("Enter all 6 digits"); return; }
     setOtpVerifying(true); setOtpError("");
     try {
-      await API.post("/users/verify-otp", { otp: code, type: "email", email });
+      const { data } = await API.post("/users/verify-otp", { otp: code, type: "email", email });
+      setOtpToken(data.otpToken);
       setOtpSuccess(true);
       setTimeout(() => { setStep(3); setOtpSuccess(false); }, 1000);
     } catch (err) {
@@ -81,7 +83,7 @@ function ForgotPassword() {
     if (newPassword.length < 6) { setError("Password must be at least 6 characters"); return; }
     setIsLoading(true); setError("");
     try {
-      await API.post("/users/reset-password", { email, newPassword });
+      await API.post("/users/reset-password", { email, newPassword, otpToken });
       toast.success("Password reset successfully!");
       navigate("/login");
     } catch (err) {
