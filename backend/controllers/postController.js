@@ -93,6 +93,27 @@ const getPostById = async (req, res) => {
 };
 
 // ==============================
+// GET Post by Slug (Public)
+// GET /api/posts/slug/:slug
+// ==============================
+const getPostBySlug = async (req, res) => {
+    try {
+        const post = await Post.findOne({ slug: req.params.slug })
+            .populate("author", "name profileImage role")
+            .populate("comments.user", "name profileImage role");
+
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        res.json(post);
+    } catch (error) {
+        console.error("Error fetching post by slug:", error.message);
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
+// ==============================
 // LIKE / UNLIKE Post
 // PUT /api/posts/:id/like
 // ==============================
@@ -248,6 +269,7 @@ module.exports = {
     updatePost,
     getPosts,
     getPostById,
+    getPostBySlug,
     likePost,
     addComment,
     deletePost,

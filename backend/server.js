@@ -166,6 +166,10 @@ app.use("/api/query", require("./routes/queryRoutes")); // ✅ custom queries an
 app.use("/api/architect-workforce", architectWorkforceRoutes); // ✅ architect workforce
 app.use("/api/custom-plans", customPlanRoutes); // ✅ project customization lifecycle
 
+// ✅ Sitemap Route
+const { generateSitemap } = require("./controllers/sitemapController");
+app.get("/sitemap.xml", generateSitemap);
+
 // ✅ Test & Health Routes
 app.get("/", (req, res) => {
   res.send("✅ API is running...");

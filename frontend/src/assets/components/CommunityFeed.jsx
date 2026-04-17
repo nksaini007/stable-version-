@@ -172,7 +172,7 @@ const CommunityFeed = () => {
                                             ? 'h-auto cursor-pointer'
                                             : isExpanded ? 'z-30 h-auto pb-[60px]' : 'h-auto md:h-[500px]'
                                             }`}
-                                        onClick={post.isBlog ? () => navigate(`/community/post/${post._id}`) : undefined}
+                                        onClick={post.isBlog ? () => navigate(`/community/post/${post.slug || post._id}`) : undefined}
                                     >
                                         <div className="hidden md:block corner-decal decal-tl "></div>
                                         <div className="hidden md:block corner-decal decal-br  opacity-30 group-hover:opacity-100 transition-opacity"></div>
@@ -180,7 +180,7 @@ const CommunityFeed = () => {
                                         {/* Header */}
                                         <div
                                             className="px-6 md:px-5 py-4 flex items-center justify-between  bg-white cursor-pointer group/header relative"
-                                            onClick={() => navigate(`/community/post/${post._id}`)}
+                                            onClick={() => navigate(`/community/post/${post.slug || post._id}`)}
                                         >
                                             <div className="absolute top-1 right-2 text-[6px] font-black opacity-10 uppercase tracking-widest">POST_P_00{post._id.slice(-4)}</div>
                                             <div className="flex items-center gap-3">
@@ -207,7 +207,7 @@ const CommunityFeed = () => {
                                             {post.image && (
                                                 <div
                                                     className="w-full bg-black/5  relative overflow-hidden flex items-center justify-center shrink-0 cursor-pointer group/img"
-                                                    onClick={() => navigate(`/community/post/${post._id}`)}
+                                                    onClick={() => navigate(`/community/post/${post.slug || post._id}`)}
                                                 >
                                                     <img
                                                         src={`${post.image}`}

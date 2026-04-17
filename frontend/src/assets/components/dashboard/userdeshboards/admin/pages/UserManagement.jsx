@@ -130,7 +130,7 @@ const UserManagement = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6 min-h-screen bg-[#0a0f1e]">
+    <div className="p-6 space-y-6 min-h-screen bg-gray-900">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>

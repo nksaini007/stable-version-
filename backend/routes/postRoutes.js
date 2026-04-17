@@ -8,6 +8,7 @@ const {
     updatePost,
     getPosts,
     getPostById,
+    getPostBySlug,
     likePost,
     addComment,
     deletePost,
@@ -16,6 +17,7 @@ const {
 
 // Public routes
 router.get("/", getPosts);
+router.get("/slug/:slug", getPostBySlug);
 router.get("/:id", getPostById);
 
 // Protected routes (Any logged in user)

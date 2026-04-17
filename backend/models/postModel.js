@@ -50,9 +50,56 @@ const postSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        slug: {
+            type: String,
+            unique: true,
+            index: true,
+        },
+        metaDescription: {
+            type: String,
+            default: "",
+        },
+        tags: [
+            {
+                type: String,
+            },
+        ],
     },
     { timestamps: true }
 );
+
+// Pre-save hook to generate slug from title
+postSchema.pre("save", async function (next) {
+    if (!this.isModified("title")) return next();
+    
+    // Generate slug: lower case, replace spaces/special chars with hyphens
+    let baseSlug = this.title
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "") // Remove non-word [a-z0-9_], non-space, non-hyphen
+        .replace(/[\s_-]+/g, "-") // Replace spaces/underscores/hyphens with a single hyphen
+        .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+
+    // Ensure unique slug
+    let slug = baseSlug;
+    let count = 1;
+    while (true) {
+        const existingPost = await mongoose.models.Post.findOne({ slug, _id: { $ne: this._id } });
+        if (!existingPost) break;
+        slug = `${baseSlug}-${count++}`;
+    }
+    
+    this.slug = slug;
+
+    // Auto-generate meta description if empty
+    if (!this.metaDescription && this.content) {
+        // Strip HTML if any and take first 150 chars
+        const plainText = this.content.replace(/<[^>]*>?/gm, '');
+        this.metaDescription = plainText.substring(0, 155).trim() + "...";
+    }
+
+    next();
+});
 
 const Post = mongoose.model("Post", postSchema);
 module.exports = Post;

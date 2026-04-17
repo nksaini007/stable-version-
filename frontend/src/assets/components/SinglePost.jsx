@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import Nev from './Nev';
 
 
@@ -31,7 +32,7 @@ const PixelHeart = ({ filled }) => (
 );
 
 const SinglePost = () => {
-    const { id } = useParams();
+    const { slug } = useParams();
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -52,13 +53,18 @@ const SinglePost = () => {
         });
     };
 
-    useEffect(() => { fetchPost(); window.scrollTo(0, 0); }, [id]);
+    useEffect(() => { fetchPost(); window.scrollTo(0, 0); }, [slug]);
 
     const fetchPost = async () => {
         try {
-            const { data } = await API.get(`/posts/${id}`);
+            // Check if it's an ID (24 chars hex) or a Slug
+            const isId = /^[0-9a-fA-F]{24}$/.test(slug);
+            const endpoint = isId ? `/posts/${slug}` : `/posts/slug/${slug}`;
+            
+            const { data } = await API.get(endpoint);
             setPost(data);
-        } catch {
+        } catch (err) {
+            console.error("Fetch Error:", err);
             toast.error("Post Not Found.");
             navigate('/community');
         } finally { setLoading(false); }
@@ -109,12 +115,59 @@ const SinglePost = () => {
 
     const isLikedByMe = user && post.likes.includes(user._id);
 
+    // Dynamic Meta Tags & Structured Data
+    const pageTitle = `${post.title} | Stinchar Community`;
+    const pageDesc = post.metaDescription || post.content?.substring(0, 155).replace(/<[^>]*>?/gm, '') || "Explore construction and design insights on Stinchar.";
+    const pageUrl = `${window.location.origin}/community/post/${post.slug || post._id}`;
+    const pageImg = post.image || "https://stinchar.com/default-preview.jpg";
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": post.isBlog ? "BlogPosting" : "Article",
+        "headline": post.title,
+        "image": [pageImg],
+        "datePublished": post.createdAt,
+        "dateModified": post.updatedAt,
+        "author": [{
+            "@type": "Person",
+            "name": post.author?.name || "Stinchar Expert",
+            "url": `${window.location.origin}/architect/${post.author?._id}`
+        }]
+    };
+
+    const SEO = (
+        <Helmet>
+            <title>{pageTitle}</title>
+            <meta name="description" content={pageDesc} />
+            <link rel="canonical" href={pageUrl} />
+            
+            {/* Open Graph / Facebook */}
+            <meta property="og:type" content="article" />
+            <meta property="og:title" content={pageTitle} />
+            <meta property="og:description" content={pageDesc} />
+            <meta property="og:image" content={pageImg} />
+            <meta property="og:url" content={pageUrl} />
+
+            {/* Twitter */}
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={pageTitle} />
+            <meta name="twitter:description" content={pageDesc} />
+            <meta name="twitter:image" content={pageImg} />
+
+            {/* JSON-LD Structured Data */}
+            <script type="application/ld+json">
+                {JSON.stringify(jsonLd)}
+            </script>
+        </Helmet>
+    );
+
     // ============================================================
     //  BLOG POST — New Layout: Title Top → Full Iframe → Actions → Comments
     // ============================================================
     if (post.isBlog) {
         return (
             <div style={{ minHeight: '100vh', background: '#0e0e0e', display: 'flex', flexDirection: 'column' }}>
+                {SEO}
                 <Nev />
 
                 {/* ── TOP TITLE BAR ── */}
@@ -455,6 +508,7 @@ const SinglePost = () => {
     // ============================================================
     return (
         <div style={{ minHeight: '100vh', background: '#0e0e0e', display: 'flex', flexDirection: 'column' }}>
+            {SEO}
             <Nev />
 
             {/* ── TOP TITLE BAR ── */}

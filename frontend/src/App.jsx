@@ -127,7 +127,7 @@ function App() {
           <Route path="/project-plans" element={<PlanCategoriesList />} />
 
           <Route path="/community" element={<CommunityFeed />} />
-          <Route path="/community/post/:id" element={<SinglePost />} />
+          <Route path="/community/post/:slug" element={<SinglePost />} />
           <Route path="/services" element={<ServiceCategories />} />
           <Route path="/services/:categoryId" element={<ServiceSubCategories />} />
           <Route path="/services/:categoryId/:subCategoryId" element={<ServiceSearch />} />
