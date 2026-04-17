@@ -9,42 +9,100 @@ const { deleteImage } = require('../config/cloudinary');
 const getProducts = async (req, res) => {
   const { search = '', category, subcategory, type } = req.query;
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = parseInt(req.query.limit) || 12;
   const skip = (page - 1) * limit;
 
   try {
-    // 1. Get all active sellers first to filter products efficiently
+    // 1. Get all active sellers
     const activeSellers = await User.find({ role: 'seller', isActive: true }).select('_id');
     const activeSellerIds = activeSellers.map(s => s._id);
 
-    // Build filter object
-    const filter = {
-      seller: { $in: activeSellerIds },
-      isActive: true // Also ensure the product itself is active
-    };
+    let pipeline = [];
 
-    // Search logic (name or description)
+    // 2. Atlas Search Stage (Must be the first stage)
     if (search) {
-      filter.$and = [
-        {
-          $or: [
-            { name: { $regex: search, $options: 'i' } },
-            { description: { $regex: search, $options: 'i' } },
-          ]
+      pipeline.push({
+        $search: {
+          index: "default", // The name of the index created in Atlas UI
+          compound: {
+            should: [
+              {
+                text: {
+                  query: search,
+                  path: "name",
+                  fuzzy: { maxEdits: 2 },
+                  score: { boost: { value: 3 } } // Boost name matches
+                }
+              },
+              {
+                text: {
+                  query: search,
+                  path: "description",
+                  fuzzy: { maxEdits: 1 }
+                }
+              },
+              {
+                text: {
+                  query: search,
+                  path: "brand",
+                  fuzzy: { maxEdits: 1 }
+                }
+              }
+            ]
+          }
         }
-      ];
+      });
     }
 
-    // Explicit filters
-    if (category) filter.category = { $regex: category, $options: 'i' };
-    if (subcategory) filter.subcategory = { $regex: subcategory, $options: 'i' };
-    if (type) filter.type = { $regex: type, $options: 'i' };
+    // 3. Match filters (Post-search or default filters)
+    const matchStage = {
+      seller: { $in: activeSellerIds },
+      isActive: true
+    };
 
-    const total = await Product.countDocuments(filter);
-    const products = await Product.find(filter)
-      .populate('seller', 'name businessName isActive')
-      .skip(skip)
-      .limit(limit);
+    if (category) matchStage.category = { $regex: category, $options: 'i' };
+    if (subcategory) matchStage.subcategory = { $regex: subcategory, $options: 'i' };
+    if (type) matchStage.type = { $regex: type, $options: 'i' };
+
+    pipeline.push({ $match: matchStage });
+
+    // 4. Add Search Score (if searching) and Sort
+    if (search) {
+      pipeline.push({
+        $addFields: {
+          searchScore: { $meta: "searchScore" }
+        }
+      });
+      pipeline.push({ $sort: { searchScore: -1 } });
+    } else {
+      pipeline.push({ $sort: { createdAt: -1 } });
+    }
+
+    // 5. Pagination & Population
+    const countPipeline = [...pipeline, { $count: "total" }];
+    const countResult = await Product.aggregate(countPipeline);
+    const total = countResult.length > 0 ? countResult[0].total : 0;
+
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limit });
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        localField: "seller",
+        foreignField: "_id",
+        as: "seller"
+      }
+    });
+    pipeline.push({ $unwind: "$seller" });
+    pipeline.push({
+      $project: {
+        "seller.password": 0,
+        "seller.bankAccount": 0,
+        "seller.ifscCode": 0
+      }
+    });
+
+    const products = await Product.aggregate(pipeline);
 
     res.json({
       products,
@@ -54,7 +112,7 @@ const getProducts = async (req, res) => {
       hasMore: page * limit < total,
     });
   } catch (error) {
-    console.error('Error fetching products:', error.message);
+    console.error('Error fetching products with Atlas Search:', error.message);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
