@@ -188,6 +188,7 @@ app.get("/api/health", (req, res) => {
   if (isAdmin) {
     healthData.gmailConfigured = !!(process.env.GMAIL_USER && process.env.GMAIL_PASS);
     healthData.brevoConfigured = !!process.env.BREVO_API_KEY;
+    healthData.cloudflareConfigured = !!process.env.CLOUDFLARE_API_KEY;
   }
 
   res.status(200).json(healthData);
