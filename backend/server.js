@@ -136,6 +136,7 @@ const serviceCategoryRoutes = require("./routes/serviceCategoryRoutes"); // ✅ 
 const followRoutes = require("./routes/followRoutes"); // ✅ follow system
 const architectWorkforceRoutes = require("./routes/architectWorkforceRoutes"); // ✅ architect workforce
 const customPlanRoutes = require("./routes/customPlanRoutes"); // ✅ project customization workflow
+const searchRoutes = require("./routes/searchRoutes"); // ✅ search suggestions
 
 // ✅ Use routes
 app.use("/api/quotations", quotationRoutes); // ✅ quotation routes
@@ -165,6 +166,7 @@ app.use("/api/follow", followRoutes); // ✅ follow system
 app.use("/api/query", require("./routes/queryRoutes")); // ✅ custom queries and charts
 app.use("/api/architect-workforce", architectWorkforceRoutes); // ✅ architect workforce
 app.use("/api/custom-plans", customPlanRoutes); // ✅ project customization lifecycle
+app.use("/api/search", searchRoutes); // ✅ search suggestions
 
 // ✅ Sitemap Route
 const { generateSitemap } = require("./controllers/sitemapController");

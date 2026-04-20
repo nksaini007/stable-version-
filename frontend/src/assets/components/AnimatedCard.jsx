@@ -19,6 +19,10 @@ const AnimatedCard = () => {
   const [error, setError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [isTyping, setIsTyping] = useState(false);
 
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -32,6 +36,57 @@ const AnimatedCard = () => {
       resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [hasSearched, loading]);
+
+  // Handle Suggestions Fetching
+  useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const fetchSuggestions = async () => {
+      setIsTyping(true);
+      try {
+        const res = await API.get(`/search/suggestions?q=${encodeURIComponent(searchQuery)}`);
+        setSuggestions(res.data);
+        setShowSuggestions(res.data.length > 0);
+        setActiveIndex(-1);
+      } catch (err) {
+        console.error("Suggestions error:", err);
+      } finally {
+        setIsTyping(false);
+      }
+    };
+
+    const timeoutId = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion.text);
+    setShowSuggestions(false);
+    performGlobalSearch(suggestion.text);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveIndex(prev => (prev > 0 ? prev - 1 : -1));
+    } else if (e.key === 'Enter') {
+      if (activeIndex >= 0 && suggestions[activeIndex]) {
+        e.preventDefault();
+        handleSuggestionClick(suggestions[activeIndex]);
+      } else {
+        handleSearch();
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  };
 
   const performGlobalSearch = async (query, customFilter = activeFilter) => {
     setLoading(true);
@@ -264,8 +319,9 @@ const AnimatedCard = () => {
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
+                onFocus={() => searchQuery.trim().length >= 2 && setShowSuggestions(true)}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={handleKeyDown}
                 className="w-full bg-transparent border-none outline-none text-gray-800 text-base md:text-lg font-medium placeholder:text-gray-300 tracking-tight"
               />
             </div>
@@ -274,9 +330,58 @@ const AnimatedCard = () => {
               onClick={handleSearch}
               className="ml-2 text-gray-900 transition-all hover:scale-110 active:scale-95 p-1"
             >
-              <FaSearch size={15} className="stroke-[1.5]" />
+              {isTyping ? (
+                <div className="w-4 h-4 border-2 border-gray-200 border-t-gray-800 rounded-full animate-spin"></div>
+              ) : (
+                <FaSearch size={15} className="stroke-[1.5]" />
+              )}
             </button>
           </motion.div>
+
+          {/* Suggestions Dropdown */}
+          <AnimatePresence>
+            {showSuggestions && suggestions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                className="absolute bottom-full mb-4 left-0 right-0 bg-white/90 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl overflow-hidden z-[110]"
+              >
+                <div className="py-2 max-h-[400px] overflow-y-auto no-scrollbar">
+                  {suggestions.map((item, idx) => (
+                    <div
+                      key={item.id || idx}
+                      onClick={() => handleSuggestionClick(item)}
+                      onMouseEnter={() => setActiveIndex(idx)}
+                      className={`px-6 py-3.5 flex items-center gap-4 cursor-pointer transition-all duration-200 ${idx === activeIndex ? 'bg-black text-white' : 'hover:bg-gray-50'}`}
+                    >
+                      <div className={`w-10 h-10 rounded-xl overflow-hidden border border-black/5 flex-shrink-0 bg-gray-100 flex items-center justify-center ${idx === activeIndex ? 'border-white/20' : ''}`}>
+                        {item.image ? (
+                          <img src={item.image} className="w-full h-full object-cover" alt="" />
+                        ) : (
+                          <FaBox size={14} className={idx === activeIndex ? 'text-white' : 'text-gray-400'} />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className={`text-sm font-bold uppercase tracking-tight ${idx === activeIndex ? 'text-white' : 'text-gray-900'}`}>{item.text}</p>
+                        <p className={`text-[10px] font-black uppercase tracking-widest ${idx === activeIndex ? 'text-white/60' : 'text-gray-400'}`}>{item.type}</p>
+                      </div>
+                      <div className={`opacity-0 transition-opacity ${idx === activeIndex ? 'opacity-100' : ''}`}>
+                        <FaArrowRight size={10} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-gray-50 px-6 py-2 border-t border-gray-100 flex justify-between items-center">
+                  <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">STINCHAR_AI_SUGGEST</span>
+                  <div className="flex gap-2">
+                    <span className="text-[8px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500">↑↓ Navigate</span>
+                    <span className="text-[8px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500">↵ Select</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     );
