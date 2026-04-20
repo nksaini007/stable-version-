@@ -66,7 +66,12 @@ app.use(cors({
   exposedHeaders: ["x-rtb-fingerprint-id", "request-id"], // ✅ Allow frontend to read these headers
   optionsSuccessStatus: 200
 }));
-app.use(express.json({ limit: "10kb" }));
+app.use(express.json({ 
+  limit: "10kb",
+  verify: (req, res, buf) => {
+    req.rawBody = buf; // Store raw body for webhook signature verification
+  }
+}));
 
 // ✅ Express 5 compatibility fix for mongoSanitize (req.query is read-only by default in v5)
 app.use((req, res, next) => {

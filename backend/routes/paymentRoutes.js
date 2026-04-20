@@ -12,7 +12,11 @@ const {
     getDeliveryEarnings,
     getCustomerSpending,
     getAdminDeliveryRevenue,
+    handleRazorpayWebhook,
 } = require("../controllers/paymentController");
+
+// ===== WEBHOOK ROUTE (PUBLIC) =====
+router.post("/webhook", handleRazorpayWebhook);
 
 // ===== ADMIN ROUTES =====
 router.get("/admin/stats", protect, authorize("admin"), getAdminStats);

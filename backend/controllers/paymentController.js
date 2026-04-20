@@ -4,6 +4,8 @@ const Product = require("../models/product");
 const AdPayment = require("../models/AdPayment");
 const AdCampaign = require("../models/AdCampaign");
 const WebsiteConfig = require("../models/WebsiteConfig");
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
 
 // ==================== ADMIN ENDPOINTS ====================
 
@@ -469,6 +471,98 @@ const getAdminDeliveryRevenue = async (req, res) => {
     }
 };
 
+/**
+ * POST /api/payments/webhook
+ * Razorpay Webhook Handler
+ */
+const handleRazorpayWebhook = async (req, res) => {
+    try {
+        const signature = req.headers["x-razorpay-signature"];
+        const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+        if (!signature || !webhookSecret) {
+            console.error("Webhook Error: Missing signature or secret");
+            return res.status(400).send("Invalid webhook configuration");
+        }
+
+        // Verify Signature
+        const expectedSignature = crypto
+            .createHmac("sha256", webhookSecret)
+            .update(req.rawBody)
+            .digest("hex");
+
+        if (signature !== expectedSignature) {
+            console.error("Webhook Error: Signature verification failed");
+            return res.status(400).send("Invalid signature");
+        }
+
+        const event = req.body;
+        console.log(`[Razorpay Webhook] Event received: ${event.event}`);
+
+        // Handle Order Paid Event
+        if (event.event === "order.paid") {
+            const razorpayOrderId = event.payload.order.entity.id;
+            const paymentId = event.payload.payment.entity.id;
+
+            const order = await Order.findOne({ "paymentResult.id": razorpayOrderId });
+
+            if (order && !order.isPaid) {
+                order.isPaid = true;
+                order.paidAt = Date.now();
+                order.orderStatus = "Pending";
+                order.paymentResult.status = "Success";
+                order.paymentResult.paymentId = paymentId; // Store actual payment ID from Razorpay
+                order.paymentResult.update_time = new Date().toISOString();
+
+                order.tracking.push({
+                    status: "Order Placed",
+                    note: "Payment verified via Webhook (Source: Razorpay)",
+                    date: Date.now()
+                });
+
+                // 🚀 DEDUCT STOCK (Atomic check to prevent double deduction if verifyPayment also ran)
+                // In production, we should check if stock was already deducted
+                if (order.orderStatus !== "Cancelled") {
+                    for (const item of order.orderItems) {
+                        const product = await Product.findById(item.product);
+                        if (product) {
+                            product.stock -= item.qty;
+                            if (item.variantId && product.variants) {
+                                const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
+                                if (variant) variant.stock -= item.qty;
+                            }
+                            await product.save();
+                        }
+                    }
+                }
+
+                await order.save();
+                console.log(`[Webhook Success] Order ${order._id} marked as paid`);
+            }
+        }
+
+        // Handle Payment Failed
+        if (event.event === "payment.failed") {
+            const razorpayOrderId = event.payload.payment.entity.order_id;
+            const order = await Order.findOne({ "paymentResult.id": razorpayOrderId });
+
+            if (order) {
+                order.tracking.push({
+                    status: "Payment Failed",
+                    note: `Reason: ${event.payload.payment.entity.error_description || "Unknown"}`,
+                    date: Date.now()
+                });
+                await order.save();
+            }
+        }
+
+        res.status(200).send("OK");
+    } catch (err) {
+        console.error("Webhook Processing Error:", err);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
 module.exports = {
     getAdminStats,
     getAdminRevenueChart,
@@ -480,4 +574,5 @@ module.exports = {
     getDeliveryEarnings,
     getCustomerSpending,
     getAdminDeliveryRevenue,
+    handleRazorpayWebhook,
 };

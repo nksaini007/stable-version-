@@ -5,6 +5,7 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const { calculateServerSideDelivery } = require("../utils/deliveryCalculator");
 const mongoose = require("mongoose");
+const WebsiteConfig = require("../models/WebsiteConfig");
 
 // ------------------ CUSTOMER FUNCTIONS ------------------
 
@@ -101,8 +102,11 @@ const createOrder = async (req, res) => {
         );
         const shippingPrice = deliveryResult.totalCharge;
 
-        // 4️⃣ Final Security check: Calculate total price
-        const taxPrice = 0; 
+        // 4️⃣ Secure Tax & Total Calculation
+        const config = await WebsiteConfig.findOne();
+        const taxRate = config?.settings?.taxRate ?? 0; // Default to 0 if not set, or update to standard like 18
+        const taxPrice = Math.round((itemsPrice * taxRate) / 100);
+        
         const totalPrice = itemsPrice + taxPrice + shippingPrice;
 
         // 5️⃣ Create Order in Database
@@ -153,6 +157,8 @@ const createOrder = async (req, res) => {
         }
 
         const createdOrder = await order.save();
+        
+        console.log(`[Order Created] ID: ${createdOrder._id}, Razorpay Order: ${razorpayOrder ? razorpayOrder.id : "N/A"}`);
 
         res.status(201).json({
             ...createdOrder.toObject(),
@@ -191,9 +197,10 @@ const verifyPayment = async (req, res) => {
 
         order.isPaid = true;
         order.paidAt = Date.now();
-        order.orderStatus = "Pending"; // Move to regular pending after payment
+        order.orderStatus = "Pending"; 
         order.paymentResult = {
-            id: razorpay_payment_id,
+            id: order.paymentResult?.id || razorpay_order_id, // Keep Razorpay Order ID
+            paymentId: razorpay_payment_id, // Store Payment ID specifically
             status: "Success",
             update_time: new Date().toISOString(),
         };
@@ -753,6 +760,43 @@ const completeReturn = async (req, res) => {
       date: Date.now(),
       note: `Refund processed for ${item.name}`,
     });
+
+    // 🚀 NEW: AUTOMATED RAZORPAY REFUND
+    if (order.paymentMethod === "Razorpay" && order.isPaid && (item.paymentResult?.paymentId || order.paymentResult?.paymentId)) {
+        try {
+            const razorpay = new Razorpay({
+                key_id: process.env.RAZORPAY_KEY_ID,
+                key_secret: process.env.RAZORPAY_KEY_SECRET,
+            });
+
+            // Razorpay expect amount in paise
+            const refundAmountPaise = Math.round((refundAmount || item.price) * 100);
+            
+            const refund = await razorpay.payments.refund(item.paymentResult?.paymentId || order.paymentResult?.paymentId, {
+                amount: refundAmountPaise,
+                speed: "normal",
+                notes: {
+                   reason: item.returnDetails.reason || "Customer Return",
+                   orderId: order._id.toString(),
+                   productId: item.product.toString()
+                }
+            });
+
+            item.returnDetails.refundId = refund.id;
+            order.notes.push({
+                message: `Automated Refund Processed: ${refund.id}`,
+                addedBy: "System"
+            });
+            console.log(`[Refund Success] ID: ${refund.id} for Order: ${order._id}`);
+        } catch (refundErr) {
+            console.error("Razorpay Refund API Error:", refundErr);
+            order.notes.push({
+                message: `FAILED Automated Refund: ${refundErr.description || refundErr.message}`,
+                addedBy: "System"
+            });
+            // We still proceed with the DB update but the admin will know it failed via notes
+        }
+    }
 
     await order.save();
 
