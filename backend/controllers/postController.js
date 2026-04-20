@@ -10,7 +10,7 @@ if (!fs.existsSync(postDir)) fs.mkdirSync(postDir, { recursive: true });
 // Multer Config for Post Images
 const { storage, uploadBufferToCloudinary } = require("../config/cloudinary");
 const { optimizeImage } = require("../utils/imageOptimizer");
-const uploadPostImage = multer({ storage }).single("postImage");
+const uploadPostImage = multer({ storage }).single("image");
 
 // ==============================
 // CREATE Post (Admin Only)
@@ -49,8 +49,8 @@ const createPost = async (req, res) => {
 
         res.status(201).json(savedPost);
     } catch (error) {
-        console.error("Error creating post:", error.message);
-        res.status(500).json({ message: "Server Error", error: error.message });
+        console.error("🔥 [Post Creation Error]:", error);
+        res.status(500).json({ message: "Post creation failed", error: error.message });
     }
 };
 
@@ -232,8 +232,8 @@ const updatePost = async (req, res) => {
 
         res.json(updatedPost);
     } catch (error) {
-        console.error("Error updating post:", error.message);
-        res.status(500).json({ message: "Server Error", error: error.message });
+        console.error("🔥 [Post Update Error]:", error);
+        res.status(500).json({ message: "Post update failed", error: error.message });
     }
 };
 
