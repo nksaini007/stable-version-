@@ -159,6 +159,21 @@ const createOrder = async (req, res) => {
             console.log(`[Inventory] Stock reserved for COD Order: ${order._id}`);
         }
 
+        // 6️⃣ If Razorpay, create Razorpay Order
+        let razorpayOrder = null;
+        if (paymentMethod === "Razorpay") {
+            const options = {
+                amount: Math.round(totalPrice * 100), // Amount in paise
+                currency: "INR",
+                receipt: `order_rcpt_${Date.now()}`,
+            };
+            razorpayOrder = await razorpay.orders.create(options);
+            order.paymentResult = {
+                id: razorpayOrder.id, // Store Razorpay Order ID
+                status: "Created",
+            };
+        }
+
         const createdOrder = await order.save();
         
         console.log(`[Order Created] ID: ${createdOrder._id}, Razorpay Order: ${razorpayOrder ? razorpayOrder.id : "N/A"}`);
