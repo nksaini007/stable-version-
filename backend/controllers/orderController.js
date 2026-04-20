@@ -141,19 +141,22 @@ const createOrder = async (req, res) => {
         }
 
 
-        // 6️⃣ If Razorpay, create Razorpay Order
-        let razorpayOrder = null;
-        if (paymentMethod === "Razorpay") {
-            const options = {
-                amount: Math.round(totalPrice * 100), // Amount in paise
-                currency: "INR",
-                receipt: `order_rcpt_${Date.now()}`,
-            };
-            razorpayOrder = await razorpay.orders.create(options);
-            order.paymentResult = {
-                id: razorpayOrder.id, // Store Razorpay Order ID
-                status: "Created",
-            };
+        // 6.5 🔥 IMMEDIATE STOCK DEDUCTION FOR COD
+        if (paymentMethod === "COD") {
+            for (const item of verifiedOrderItems) {
+                const product = await Product.findById(item.product);
+                if (product) {
+                    product.stock -= item.qty;
+                    // If product has variants, decrement the specific variant stock
+                    // Note: Front-end provides variantId if applicable
+                    if (item.variantId && product.variants) {
+                        const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
+                        if (variant) variant.stock -= item.qty;
+                    }
+                    await product.save();
+                }
+            }
+            console.log(`[Inventory] Stock reserved for COD Order: ${order._id}`);
         }
 
         const createdOrder = await order.save();
@@ -358,6 +361,17 @@ const updateOrderStatus = async (req, res) => {
     if (!order) return res.status(404).json({ message: "Order not found" });
 
     order.orderStatus = status;
+
+    // 🔥 Auto-mark COD as paid upon manual Admin delivery update
+    if (status === "Delivered" && order.paymentMethod === "COD" && !order.isPaid) {
+        order.isPaid = true;
+        order.paidAt = Date.now();
+        order.notes.push({
+            message: "Manual Status Update: COD marked as PAID upon delivery.",
+            addedBy: "System"
+        });
+    }
+
     await order.save();
     res.json({ message: "Order status updated", order });
   } catch (error) {
@@ -438,6 +452,16 @@ const confirmDelivery = async (req, res) => {
       date: Date.now(),
       note: "Delivered successfully",
     });
+
+    // 🔥 Auto-mark COD as paid upon successful mobile delivery
+    if (order.paymentMethod === "COD" && !order.isPaid) {
+        order.isPaid = true;
+        order.paidAt = Date.now();
+        order.notes.push({
+            message: "Delivery Confirmed: COD marked as PAID upon delivery.",
+            addedBy: "System"
+        });
+    }
 
     // Mark all items as delivered too
     order.orderItems.forEach((item) => {
@@ -557,21 +581,24 @@ const cancelOrder = async (req, res) => {
     });
     await order.save();
 
-    // ✅ NEW: RESTOCK ON CANCELLATION
+    // ✅ REFINED: RESTOCK ON CANCELLATION (Only if stock was previously deducted)
     try {
-      for (const item of order.orderItems) {
-        const product = await Product.findById(item.product);
-        if (product) {
-          product.stock += item.qty;
-          
-          if (item.variantId && product.variants) {
-            const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
-            if (variant) {
-              variant.stock += item.qty;
+      if (order.paymentMethod === "COD" || order.isPaid) {
+        for (const item of order.orderItems) {
+          const product = await Product.findById(item.product);
+          if (product) {
+            product.stock += item.qty;
+            
+            if (item.variantId && product.variants) {
+              const variant = product.variants.find(v => v._id.toString() === item.variantId.toString());
+              if (variant) {
+                variant.stock += item.qty;
+              }
             }
+            await product.save();
           }
-          await product.save();
         }
+        console.log(`[Inventory] Stock restored for Cancelled Order: ${order._id}`);
       }
     } catch (restockErr) {
       console.error("Restock Error:", restockErr);

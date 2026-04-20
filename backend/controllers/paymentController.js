@@ -10,11 +10,44 @@ const crypto = require("crypto");
 // ==================== ADMIN ENDPOINTS ====================
 
 /**
+ * Helper: Cleanup stale 'Payment Pending' orders older than 60 minutes
+ * Marks them as 'Cancelled' to prevent dashboard clutter.
+ */
+const cleanupAbandonedOrders = async () => {
+    try {
+        const expiryTime = new Date(Date.now() - 60 * 60 * 1000); // 60 minutes ago
+        
+        const staleOrders = await Order.find({
+            orderStatus: "Payment Pending",
+            createdAt: { $lt: expiryTime }
+        });
+
+        if (staleOrders.length > 0) {
+            console.log(`[Reaper] Found ${staleOrders.length} stale orders for cleanup.`);
+            for (const order of staleOrders) {
+                order.orderStatus = "Cancelled";
+                order.tracking.push({
+                    status: "Cancelled",
+                    note: "Terminated automatically due to payment inactivity (Abandoned Checkout)",
+                    date: Date.now()
+                });
+                await order.save();
+            }
+        }
+    } catch (err) {
+        console.error("Cleanup Error:", err);
+    }
+};
+
+/**
  * GET /api/payments/admin/stats
  * Dashboard overview stats — users, products, orders, revenue
  */
 const getAdminStats = async (req, res) => {
     try {
+        // 🔥 Trigger Cleanup before calculating stats
+        await cleanupAbandonedOrders();
+
         const [usersCount, productsCount, ordersCount, orders] = await Promise.all([
             User.countDocuments(),
             Product.countDocuments(),
@@ -22,9 +55,12 @@ const getAdminStats = async (req, res) => {
             Order.find({}, "totalPrice isPaid orderStatus"),
         ]);
 
-        const totalRevenue = orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
-        const paidRevenue = orders.filter((o) => o.isPaid).reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+        // 📊 Logic Update: Ignore Cancelled orders for Revenue Calculation
+        const activeOrders = orders.filter((o) => o.orderStatus !== "Cancelled");
+        const totalRevenue = activeOrders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+        const paidRevenue = activeOrders.filter((o) => o.isPaid).reduce((sum, o) => sum + (o.totalPrice || 0), 0);
         const pendingRevenue = totalRevenue - paidRevenue;
+        
         const deliveredOrders = orders.filter((o) => o.orderStatus === "Delivered").length;
         const cancelledOrders = orders.filter((o) => o.orderStatus === "Cancelled").length;
 
@@ -80,6 +116,7 @@ const getAdminRevenueChart = async (req, res) => {
  */
 const getAdminPayments = async (req, res) => {
     try {
+        await cleanupAbandonedOrders();
         const orders = await Order.find()
             .populate("user", "name email phone")
             .populate("deliveryPerson", "name")
