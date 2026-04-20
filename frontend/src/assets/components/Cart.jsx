@@ -52,6 +52,8 @@ const Cart = () => {
   const [config, setConfig] = useState({ settings: { minCartValue: 500, maxCartValue: 50000 } });
   const [showQuotationModal, setShowQuotationModal] = useState(false);
   const [customerNote, setCustomerNote] = useState("");
+  const [showOrderConfirm, setShowOrderConfirm] = useState(false);
+  const [confirmationText, setConfirmationText] = useState("");
 
   const itemsTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const totalWeightKg = cartItems.reduce((sum, item) => {
@@ -100,7 +102,16 @@ const Cart = () => {
     setShippingAddress((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
+    if (cartItems.length === 0) return setMessage("SYSTEM_ERROR: Cart is empty");
+    if (deliveryData?.error || !deliveryData) return setMessage("LOGISTICS_ERROR: Pincode verification pending");
+    if (!shippingAddress.address || !shippingAddress.phone) return setMessage("SYSTEM_ERROR: Shipping details incomplete");
+    
+    setConfirmationText("");
+    setShowOrderConfirm(true);
+  };
+
+  const processOrder = async () => {
     if (cartItems.length === 0) return setMessage("SYSTEM_ERROR: Cart is empty");
     if (deliveryData?.error || !deliveryData) return setMessage("LOGISTICS_ERROR: Pincode verification pending");
 
@@ -498,6 +509,71 @@ const Cart = () => {
 
                </div>
             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      
+      {/* 🧾 FINAL PROTOCOL CONFIRMATION MANTLE */}
+      <AnimatePresence>
+        {showOrderConfirm && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-[#064e3b]/80 backdrop-blur-[40px] overflow-hidden">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.8, rotateX: 20 }} 
+               animate={{ opacity: 1, scale: 1, rotateX: 0 }} 
+               exit={{ opacity: 0, scale: 0.8, rotateX: 20 }} 
+               className="bg-white rounded-[4.5rem] shadow-[0_50px_100px_-20px_rgba(6,78,59,0.4)] max-w-lg w-full p-16 relative overflow-hidden"
+             >
+                <div className="w-24 h-24 bg-[#064e3b] rounded-[2.8rem] flex items-center justify-center mb-10 text-white shadow-2xl shadow-emerald-900/40">
+                   <ShieldCheck size={48} />
+                </div>
+                
+                <h3 className="text-4xl font-black text-slate-900 tracking-tighter mb-4 leading-none">Final <span className="text-emerald-700 italic">Authorization</span></h3>
+                <p className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest mb-12 flex items-center gap-3">
+                   <AlertCircle size={14} className="text-emerald-600" /> Fiscal Security Protocol Active
+                </p>
+
+                <div className="bg-emerald-50/50 border border-emerald-100 rounded-[2.5rem] p-10 mb-12">
+                   <div className="flex justify-between items-center mb-4">
+                      <span className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest">Total Valuation</span>
+                      <span className="text-2xl font-black text-emerald-900 tracking-tighter">₹{total.toLocaleString()}</span>
+                   </div>
+                   <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-black text-emerald-900/40 uppercase tracking-widest">Asset Count</span>
+                      <span className="text-lg font-black text-slate-900">{cartItems.length} Managed Units</span>
+                   </div>
+                </div>
+
+                <div className="space-y-4 mb-14">
+                   <label className="text-[11px] font-black uppercase text-slate-900 block ml-4 tracking-widest">Type <span className="text-emerald-600 italic">"yes"</span> to verify intent</label>
+                   <input
+                     autoFocus
+                     type="text"
+                     placeholder="Confirm sequence..."
+                     value={confirmationText}
+                     onChange={(e) => setConfirmationText(e.target.value)}
+                     className="w-full bg-slate-100 border-2 border-slate-100 rounded-[2.2rem] py-6 px-10 text-center text-lg font-black text-slate-900 focus:bg-white focus:border-emerald-300 outline-none transition-all shadow-inner"
+                   />
+                </div>
+
+                <div className="flex flex-col gap-5">
+                   <button 
+                     onClick={() => {
+                        setShowOrderConfirm(false);
+                        processOrder();
+                     }} 
+                     disabled={confirmationText.toLowerCase() !== 'yes'}
+                     className="w-full py-7 bg-[#064e3b] text-white font-black rounded-[2.2rem] shadow-2xl shadow-emerald-900/40 hover:scale-[1.02] active:scale-95 transition-all uppercase text-[12px] tracking-[0.25em] disabled:opacity-30 disabled:scale-100 disabled:grayscale"
+                   >
+                     Initialize Execution
+                   </button>
+                   <button 
+                      onClick={() => setShowOrderConfirm(false)} 
+                      className="w-full py-5 bg-white text-slate-400 font-extrabold rounded-[1.8rem] hover:text-slate-900 transition-all uppercase text-[9px] tracking-widest"
+                   >
+                      De-authorize & Return
+                   </button>
+                </div>
+             </motion.div>
           </div>
         )}
       </AnimatePresence>
