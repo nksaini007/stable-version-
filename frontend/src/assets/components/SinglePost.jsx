@@ -135,6 +135,13 @@ const SinglePost = () => {
         }]
     };
 
+    const decodeHTMLEntities = (text) => {
+        if (!text) return "";
+        const textarea = document.createElement("textarea");
+        textarea.innerHTML = text;
+        return textarea.value;
+    };
+
     const SEO = (
         <Helmet>
             <title>{pageTitle}</title>
@@ -513,7 +520,8 @@ const SinglePost = () => {
         let match;
         while ((match = headingRegex.exec(post.content)) !== null) {
             const tag = match[1];
-            const text = match[2].replace(/<[^>]*>?/gm, ''); // Clean HTML
+            const rawText = match[2].replace(/<[^>]*>?/gm, ''); // Clean HTML
+            const text = decodeHTMLEntities(rawText); // Clean Entities (like &nbsp;)
             const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
             tocItems.push({ id, text, level: tag === 'h2' ? 0 : 1 });
         }
@@ -521,7 +529,7 @@ const SinglePost = () => {
 
     // Inject IDs into content for TOC scrolling
     const contentWithIds = post.content?.replace(/<(h[23])>(.*?)<\/h[23]>/g, (match, tag, text) => {
-        const id = text.replace(/<[^>]*>?/gm, '').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+        const id = decodeHTMLEntities(text.replace(/<[^>]*>?/gm, '')).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
         return `<${tag} id="${id}">${text}</${tag}>`;
     });
 
@@ -629,18 +637,18 @@ const SinglePost = () => {
                 flex: 1,
                 background: '#111',
                 borderTop: post.image ? '1px solid rgba(255,255,255,0.06)' : 'none',
-                padding: '60px 0'
+                padding: '80px 0'
             }}>
-                <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'minmax(0, 300px) minmax(0, 720px) minmax(0, 50px)', gap: '60px' }}>
+                <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 40px', display: 'grid', gridTemplateColumns: 'minmax(0, 280px) minmax(0, 760px) minmax(0, 40px)', gap: '80px' }}>
                     
                     {/* LEFT SIDEBAR (TOC + SHARE) */}
-                    <aside style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                    <aside>
                         {tocItems.length > 0 && (
                             <div className="toc-container">
-                                <h4 className="toc-title">Table of Contents</h4>
+                                <h4 className="toc-title">On this page</h4>
                                 <nav>
                                     {tocItems.map((item, idx) => (
-                                        <a key={idx} href={`#${item.id}`} className="toc-item" style={{ paddingLeft: item.level * 20 }}>
+                                        <a key={idx} href={`#${item.id}`} className="toc-item" style={{ paddingLeft: item.level * 16 }}>
                                             {item.text}
                                         </a>
                                     ))}
@@ -648,11 +656,11 @@ const SinglePost = () => {
                             </div>
                         )}
                         
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <p style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Share Post</p>
-                            <div style={{ display: 'flex', gap: '10px' }}>
+                        <div style={{ marginTop: '40px', paddingTop: '32px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <p style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.15)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Spread the Word</p>
+                            <div style={{ display: 'flex', gap: '12px' }}>
                                 {[ FaCommentDots, FaShareAlt ].map((Icon, i) => (
-                                    <button key={i} onClick={i===1 ? handleShare : () => document.getElementById('post-comments')?.scrollIntoView({ behavior: 'smooth' })} style={{ width: 40, height: 40, borderRadius: '12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                                    <button key={i} onClick={i===1 ? handleShare : () => document.getElementById('post-comments')?.scrollIntoView({ behavior: 'smooth' })} style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#ff5c00'; e.currentTarget.style.color = '#fff'; }}>
                                         <Icon size={14} />
                                     </button>
                                 ))}
@@ -662,57 +670,56 @@ const SinglePost = () => {
 
                     {/* MAIN CONTENT AREA */}
                     <motion.div
-                        initial={{ opacity: 0, y: 16 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1, duration: 0.45 }}
+                        transition={{ duration: 0.6 }}
                     >
                         {/* Breadcrumbs */}
                         <div className="post-breadcrumbs">
                             <span className="breadcrumb-link" onClick={() => navigate('/')}>Home</span>
-                            <span className="breadcrumb-sep">&gt;</span>
+                            <span className="breadcrumb-sep">/</span>
                             <span className="breadcrumb-link" onClick={() => navigate('/community')}>Community</span>
                             {post.category && (
                                 <>
-                                    <span className="breadcrumb-sep">&gt;</span>
+                                    <span className="breadcrumb-sep">/</span>
                                     <span className="breadcrumb-link">{post.category}</span>
                                 </>
                             )}
-                            <span className="breadcrumb-sep">&gt;</span>
-                            <span style={{ color: 'rgba(255,255,255,0.8)' }}>{post.title}</span>
                         </div>
 
                         {/* Title */}
                         <h2 style={{
-                            fontSize: '36px', fontWeight: 900,
-                            color: '#fff', margin: '0 0 24px 0',
-                            lineHeight: '1.2', letterSpacing: '-0.03em',
+                            fontSize: '44px', fontWeight: 800,
+                            color: '#fff', margin: '0 0 32px 0',
+                            lineHeight: '1.2', letterSpacing: '-0.04em',
+                            fontFamily: '"Unbounded", sans-serif',
                         }}>
                             {post.title}
                         </h2>
 
                         {/* Author + Date */}
                         <div style={{
-                            display: 'flex', alignItems: 'center', gap: '12px',
-                            marginBottom: '40px',
-                            paddingBottom: '32px',
-                            borderBottom: '1px solid rgba(255,255,255,0.08)',
+                            display: 'flex', alignItems: 'center', gap: '16px',
+                            marginBottom: '50px',
+                            paddingBottom: '40px',
+                            borderBottom: '1px solid rgba(255,255,255,0.06)',
                         }}>
                             <div style={{
-                                width: 42, height: 42, borderRadius: '50%',
-                                background: 'rgba(124,58,237,0.15)',
-                                border: '1px solid rgba(124,58,237,0.3)',
+                                width: 48, height: 48, borderRadius: '50%',
+                                background: 'rgba(255,92,0,0.1)',
+                                border: '1px solid rgba(255,92,0,0.2)',
                                 overflow: 'hidden', flexShrink: 0,
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                             }}>
                                 {post.author?.profileImage
                                     ? <img src={post.author.profileImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    : <span style={{ fontSize: '14px', fontWeight: 900, color: '#a78bfa' }}>{post.author?.name?.charAt(0) || 'A'}</span>
+                                    : <span style={{ fontSize: '15px', fontWeight: 900, color: '#ff5c00' }}>{post.author?.name?.charAt(0) || 'A'}</span>
                                 }
                             </div>
                             <div>
-                                <p style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: 'rgba(255,255,255,0.95)' }}>{post.author?.name || 'Stinchar Expert'}</p>
-                                <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
-                                    {new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#fff', letterSpacing: '0.02em' }}>{post.author?.name || 'Stinchar Editorial'}</p>
+                                <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', fontWeight: 600 }}>
+                                    Published on {new Date(post.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
                                 </p>
                             </div>
                         </div>
@@ -724,7 +731,7 @@ const SinglePost = () => {
                                 dangerouslySetInnerHTML={{ __html: contentWithIds }}
                             />
                         ) : (
-                            <p style={{ color: 'rgba(255,255,255,0.2)', fontStyle: 'italic', fontSize: '14px', margin: 0 }}>No content provided.</p>
+                            <p style={{ color: 'rgba(255,255,255,0.2)', fontStyle: 'italic', fontSize: '14px', margin: 0 }}>The requested article content is currently unavailable.</p>
                         )}
                     </motion.div>
                 </div>

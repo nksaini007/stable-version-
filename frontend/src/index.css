@@ -231,35 +231,43 @@ html, body {
 
 /* 🏛️ TABLE OF CONTENTS & SIDEBAR UTILITIES */
 .toc-container {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 24px;
   position: sticky;
   top: 100px;
+  padding: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.04);
+  padding-left: 24px;
 }
 
 .toc-title {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 900;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.2);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  letter-spacing: 0.2em;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toc-title::before {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background: #ff5c00;
+  opacity: 0.6;
 }
 
 .toc-item {
   display: block;
   font-size: 13px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
   text-decoration: none;
-  padding: 8px 0;
-  line-height: 1.4;
-  transition: all 0.2s;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 12px 0;
+  line-height: 1.5;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .toc-item:last-child {
@@ -275,25 +283,27 @@ html, body {
 .post-breadcrumbs {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.35);
+  gap: 12px;
+  margin-bottom: 32px;
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.25);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .breadcrumb-link {
-  color: inherit;
+  color: rgba(255, 255, 255, 0.5);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
 .breadcrumb-link:hover {
-  color: #ff5c00;
+  color: #fff;
 }
 
 .breadcrumb-sep {
-  opacity: 0.3;
-  font-size: 10px;
+  opacity: 0.15;
+  font-size: 8px;
 }
 
