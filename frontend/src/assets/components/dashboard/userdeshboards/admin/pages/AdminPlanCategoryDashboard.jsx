@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes, FaLayerGroup } from "react-icons/fa";
 import { motion } from "framer-motion";
 import API from "../../../../../api/api";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 
 const AdminPlanCategoryDashboard = () => {
     const [categories, setCategories] = useState([]);
@@ -115,11 +116,7 @@ const AdminPlanCategoryDashboard = () => {
         }
     };
 
-    const getImageUrl = (img) => {
-        if (!img) return null;
-        if (img.startsWith("http")) return img;
-        return `${img}`;
-    };
+    // Handled by global utility
 
     return (
         <div className="p-6 md:p-8">
@@ -194,7 +191,7 @@ const AdminPlanCategoryDashboard = () => {
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-4">
                                     {cat.image ? (
-                                        <img src={getImageUrl(cat.image)} alt={cat.name} className="w-14 h-14 rounded-xl object-cover bg-[#121212]" />
+                                        <img src={getOptimizedImage(cat.image)} alt={cat.name} className="w-14 h-14 rounded-xl object-cover bg-[#121212]" />
                                     ) : (
                                         <div className="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-blue-300">
                                             <FaLayerGroup className="text-2xl" />

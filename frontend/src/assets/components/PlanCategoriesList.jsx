@@ -6,6 +6,7 @@ import API from "../api/api";
 import Nev from "./Nev";
 import Footer from "./Footer";
 import blueprintBg from "../images/blueprint_bg.png"; 
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const PlanCategoriesList = () => {
     const [categories, setCategories] = useState([]);
@@ -26,12 +27,7 @@ const PlanCategoriesList = () => {
         fetchCategories();
     }, []);
 
-    const getImageUrl = (img) => {
-        if (!img) return null;
-        if (img.startsWith("http")) return img;
-        const normalizedPath = img.replace(/\\/g, '/');
-        return normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`;
-    };
+    // Simplified getImageUrl to use global utility
 
     const filteredCategories = categories.filter(c => 
         c.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -122,8 +118,9 @@ const PlanCategoriesList = () => {
                                         <div className="absolute inset-x-3 top-3 bottom-1/3 overflow-hidden rounded-[2rem] bg-gray-50">
                                             {category.image ? (
                                                 <img
-                                                    src={getImageUrl(category.image)}
+                                                    src={getOptimizedImage(category.image, 600)}
                                                     alt={category.name}
+                                                    {...lazyImageProps}
                                                     className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
                                                 />
                                             ) : (

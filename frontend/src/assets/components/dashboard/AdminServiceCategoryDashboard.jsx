@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes, FaLayerGroup } from "react-icons/fa";
 import { motion } from "framer-motion";
 import API from "../../api/api";
+import { getOptimizedImage } from "../../utils/imageUtils";
 
 const AdminServiceCategoryDashboard = () => {
   const [categories, setCategories] = useState([]);
@@ -118,11 +119,7 @@ const AdminServiceCategoryDashboard = () => {
     fetchCategories();
   };
 
-  const getImageUrl = (img) => {
-    if (!img) return null;
-    if (img.startsWith("http")) return img;
-    return `${img}`;
-  };
+    // Handled by global utility
 
   return (
     <div className="bg-[#121212] min-h-screen py-6 px-4">
@@ -197,7 +194,7 @@ const AdminServiceCategoryDashboard = () => {
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-4">
                 {cat.image && (
-                  <img src={getImageUrl(cat.image)} alt="" className="w-16 h-16 rounded-2xl object-cover border border-[#2A2B2F]" />
+                  <img src={getOptimizedImage(cat.image)} alt="" className="w-16 h-16 rounded-2xl object-cover border border-[#2A2B2F]" />
                 )}
                 <div>
                     <h4 className="font-bold text-lg text-white capitalize tracking-tight">{cat.name}</h4>
@@ -279,7 +276,7 @@ const AdminServiceCategoryDashboard = () => {
             <div className="flex flex-wrap gap-2 overflow-y-auto max-h-48 p-1">
               {cat.subcategories?.map((sub) => (
                 <div key={sub._id} className="bg-[#121212] border border-[#2A2B2F] px-4 py-2 rounded-2xl text-xs flex gap-3 items-center shadow-sm group hover:border-blue-500/40 transition-colors">
-                  {sub.image && <img src={getImageUrl(sub.image)} className="w-6 h-6 rounded-lg object-cover border border-[#2A2B2F]" />}
+                  {sub.image && <img src={getOptimizedImage(sub.image)} className="w-6 h-6 rounded-lg object-cover border border-[#2A2B2F]" />}
                   <span className="font-medium text-[#8E929C] group-hover:text-blue-400 transition-colors">{sub.name}</span>
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-auto">
                     <button onClick={() => handleEditSubcategory(cat._id, sub)} className="text-blue-500 hover:scale-110 transition-transform">

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import API from "../api/api";
 import Nev from "./Nev";
 import Footer from "./Footer";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const PlanTypesList = () => {
     const { categoryName } = useParams();
@@ -30,12 +31,7 @@ const PlanTypesList = () => {
         fetchPlanTypes();
     }, [categoryName]);
 
-    const getImageUrl = (img) => {
-        if (!img) return null;
-        if (img.startsWith("http")) return img;
-        const normalizedPath = img.replace(/\\/g, '/');
-        return normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`;
-    };
+    // Simplified getImageUrl to use global utility
 
     return (
         <div className="bg-[#FAF9F6] min-h-screen flex flex-col font-sans selection:bg-[#C5A059]/10 selection:text-[#C5A059] overflow-hidden relative">
@@ -102,8 +98,9 @@ const PlanTypesList = () => {
                                         <div className="aspect-[5/4] bg-[#FAF9F6] rounded-[2rem] overflow-hidden relative">
                                             {type.image ? (
                                                 <img
-                                                    src={getImageUrl(type.image)}
+                                                    src={getOptimizedImage(type.image, 600)}
                                                     alt={type.name}
+                                                    {...lazyImageProps}
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 grayscale group-hover:grayscale-0"
                                                 />
                                             ) : (
