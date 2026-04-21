@@ -729,6 +729,7 @@ const SinglePost = () => {
                             color: '#fff', margin: '0 0 32px 0',
                             lineHeight: '1.2', letterSpacing: '-0.04em',
                             fontFamily: '"Unbounded", sans-serif',
+                            wordBreak: 'break-word', overflowWrap: 'break-word'
                         }}>
                             {post.title}
                         </h2>
@@ -866,6 +867,50 @@ const SinglePost = () => {
                 @keyframes spin { to { transform: rotate(360deg); } }
                 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
                 html { scroll-behavior: smooth; }
+
+                /* Mobile Optimizations for Regular Post Layout */
+                @media (max-width: 1024px) {
+                    .post-layout-wrapper { padding: 40px 0 !important; }
+                    .post-content-inner { 
+                        display: flex !important; 
+                        flex-direction: column !important;
+                        padding: 0 16px !important; 
+                    }
+                    .post-content-inner aside { 
+                        display: none !important; 
+                    }
+                    /* Ensure main content takes full width when flexed */
+                    .post-content-inner > div { width: 100% !important; max-width: 100% !important; }
+                    
+                    .post-content-inner h2 { 
+                        font-size: 30px !important; 
+                        line-height: 1.3 !important;
+                        margin-bottom: 24px !important; 
+                        word-break: break-word !important;
+                        overflow-wrap: break-word !important;
+                        hyphens: auto;
+                    }
+                    .rich-text-content {
+                        font-size: 16px !important;
+                        line-height: 1.8 !important;
+                        overflow-wrap: break-word !important;
+                    }
+                    .rich-text-content img {
+                        width: 100vw !important;
+                        margin-left: -16px !important;
+                        max-width: none !important;
+                        border-radius: 0 !important;
+                    }
+                    .post-breadcrumbs {
+                        margin-bottom: 20px !important;
+                    }
+                }
+
+                @media (max-width: 640px) {
+                    .post-content-inner { padding: 0 12px !important; }
+                    .post-content-inner h2 { font-size: 24px !important; }
+                    .rich-text-content img { margin-left: -12px !important; }
+                }
             `}</style>
         </div>
     );
