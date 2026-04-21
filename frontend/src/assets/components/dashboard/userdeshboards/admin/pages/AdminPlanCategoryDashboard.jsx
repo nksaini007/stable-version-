@@ -8,12 +8,14 @@ const AdminPlanCategoryDashboard = () => {
     const [categories, setCategories] = useState([]);
     const [categoryName, setCategoryName] = useState("");
     const [categoryImage, setCategoryImage] = useState(null);
+    const [categoryImageUrl, setCategoryImageUrl] = useState("");
     const [editingCategoryId, setEditingCategoryId] = useState(null);
 
     // Subcategory (Plan Types) State
     const [typeName, setTypeName] = useState("");
     const [typeImage, setTypeImage] = useState(null);
-    const [editingType, setEditingType] = useState({ catId: null, typeId: null, name: "", image: null });
+    const [typeImageUrl, setTypeImageUrl] = useState("");
+    const [editingType, setEditingType] = useState({ catId: null, typeId: null, name: "", image: null, imageUrl: "" });
 
     // ================= FETCH =================
     const fetchCategories = async () => {
@@ -35,20 +37,30 @@ const AdminPlanCategoryDashboard = () => {
 
         const formData = new FormData();
         formData.append("name", categoryName);
-        if (categoryImage) formData.append("categoryImage", categoryImage);
+        if (categoryImage) {
+            formData.append("categoryImage", categoryImage);
+        } else if (categoryImageUrl) {
+            formData.append("categoryImage", categoryImageUrl);
+        }
 
         try {
+            const config = {
+                headers: { "Content-Type": "multipart/form-data" }
+            };
+
             if (editingCategoryId) {
-                await API.put(`/plan-categories/${editingCategoryId}`, formData);
+                await API.put(`/plan-categories/${editingCategoryId}`, formData, config);
                 setEditingCategoryId(null);
             } else {
-                await API.post("/plan-categories", formData);
+                await API.post("/plan-categories", formData, config);
             }
             setCategoryName("");
             setCategoryImage(null);
+            setCategoryImageUrl("");
             fetchCategories();
         } catch (err) {
-            alert("Operation failed");
+            console.error(err);
+            alert(err.response?.data?.message || "Operation failed. Check file size (max 5MB) or duplicate name.");
         }
     };
 
@@ -64,6 +76,7 @@ const AdminPlanCategoryDashboard = () => {
 
     const handleEditCategory = (cat) => {
         setCategoryName(cat.name);
+        setCategoryImageUrl(cat.image && (cat.image.startsWith("http") || cat.image.startsWith("https")) ? cat.image : "");
         setEditingCategoryId(cat._id);
     };
 
@@ -73,36 +86,57 @@ const AdminPlanCategoryDashboard = () => {
 
         const formData = new FormData();
         formData.append("name", typeName);
-        if (typeImage) formData.append("subcategoryImage", typeImage);
+        if (typeImage) {
+            formData.append("subcategoryImage", typeImage);
+        } else if (typeImageUrl) {
+            formData.append("subcategoryImage", typeImageUrl);
+        }
 
         try {
-            await API.post(`/plan-categories/${categoryId}/plan-types`, formData);
+            const config = {
+                headers: { "Content-Type": "multipart/form-data" }
+            };
+            await API.post(`/plan-categories/${categoryId}/plan-types`, formData, config);
             setTypeName("");
             setTypeImage(null);
+            setTypeImageUrl("");
             fetchCategories();
         } catch (err) {
-            alert("Operation failed");
+            alert(err.response?.data?.message || "Operation failed");
         }
     };
 
     const handleEditPlanType = (catId, pType) => {
-        setEditingType({ catId, typeId: pType._id, name: pType.name, image: null });
+        setEditingType({ 
+            catId, 
+            typeId: pType._id, 
+            name: pType.name, 
+            image: null, 
+            imageUrl: pType.image && (pType.image.startsWith("http") || pType.image.startsWith("https")) ? pType.image : "" 
+        });
     };
 
     const handleSavePlanType = async () => {
-        const { catId, typeId, name, image } = editingType;
+        const { catId, typeId, name, image, imageUrl } = editingType;
         if (!name.trim()) return;
 
         const formData = new FormData();
         formData.append("name", name);
-        if (image) formData.append("subcategoryImage", image);
+        if (image) {
+            formData.append("subcategoryImage", image);
+        } else if (imageUrl) {
+            formData.append("subcategoryImage", imageUrl);
+        }
 
         try {
-            await API.put(`/plan-categories/${catId}/plan-types/${typeId}`, formData);
-            setEditingType({ catId: null, typeId: null, name: "", image: null });
+            const config = {
+                headers: { "Content-Type": "multipart/form-data" }
+            };
+            await API.put(`/plan-categories/${catId}/plan-types/${typeId}`, formData, config);
+            setEditingType({ catId: null, typeId: null, name: "", image: null, imageUrl: "" });
             fetchCategories();
         } catch (err) {
-            alert("Operation failed");
+            alert(err.response?.data?.message || "Operation failed");
         }
     };
 
@@ -150,15 +184,25 @@ const AdminPlanCategoryDashboard = () => {
                             className="flex-1 p-3 border border-[#2A2B2F] rounded-xl focus:ring-2 focus:ring-blue-200 outline-none"
                         />
 
-                        <input
-                            type="file"
-                            onChange={(e) => setCategoryImage(e.target.files[0])}
-                            className="border border-[#2A2B2F] rounded-xl p-2 bg-[#121212] text-sm"
-                        />
+                        <div className="flex flex-col gap-2">
+                            <input
+                                type="file"
+                                onChange={(e) => setCategoryImage(e.target.files[0])}
+                                className="border border-[#2A2B2F] rounded-xl p-2 bg-[#121212] text-sm text-[#8E929C]"
+                            />
+                            <span className="text-[10px] text-gray-500 px-2 uppercase font-bold text-center">OR PASTE LINK</span>
+                            <input
+                                type="text"
+                                placeholder="External Image URL"
+                                value={categoryImageUrl}
+                                onChange={(e) => setCategoryImageUrl(e.target.value)}
+                                className="p-3 bg-[#121212] border border-[#2A2B2F] rounded-xl text-xs text-white outline-none"
+                            />
+                        </div>
 
                         <button
                             onClick={handleAddOrEditCategory}
-                            className="bg-white text-black hover:bg-gray-200 text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2  font-medium transition-colors"
+                            className="bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-colors"
                         >
                             {editingCategoryId ? <FaSave /> : <FaPlus />}
                             {editingCategoryId ? "Save Changes" : "Create"}
@@ -232,22 +276,35 @@ const AdminPlanCategoryDashboard = () => {
                                         className="w-full mb-2 p-2.5 border border-blue-100 rounded-lg text-sm outline-none focus:border-blue-300"
                                     />
 
-                                    <input
-                                        type="file"
-                                        onChange={(e) =>
-                                            editingType.catId === cat._id
-                                                ? setEditingType({ ...editingType, image: e.target.files[0] })
-                                                : setTypeImage(e.target.files[0])
-                                        }
-                                        className="w-full mb-2 text-xs"
-                                    />
+                                    <div className="flex flex-col gap-2 mb-3">
+                                        <input
+                                            type="file"
+                                            onChange={(e) =>
+                                                editingType.catId === cat._id
+                                                    ? setEditingType({ ...editingType, image: e.target.files[0] })
+                                                    : setTypeImage(e.target.files[0])
+                                            }
+                                            className="w-full text-[10px] text-[#8E929C]"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Paste Image URL fallback"
+                                            value={editingType.catId === cat._id ? editingType.imageUrl : typeImageUrl}
+                                            onChange={(e) =>
+                                                editingType.catId === cat._id
+                                                    ? setEditingType({ ...editingType, imageUrl: e.target.value })
+                                                    : setTypeImageUrl(e.target.value)
+                                            }
+                                            className="w-full p-2 bg-[#1A1B1E] border border-blue-100/50 rounded-lg text-[10px] text-black outline-none"
+                                        />
+                                    </div>
 
                                     {editingType.catId === cat._id ? (
                                         <div className="flex gap-2">
                                             <button onClick={handleSavePlanType} className="bg-green-600 text-white px-3 py-1.5 text-sm font-medium rounded-lg flex-1 flex justify-center items-center gap-1">
                                                 <FaSave /> Save
                                             </button>
-                                            <button onClick={() => setEditingType({ catId: null, typeId: null, name: "", image: null })} className="bg-[#2A2B2F] text-gray-200 px-3 py-1.5 text-sm font-medium rounded-lg flex-1 flex justify-center items-center gap-1">
+                                            <button onClick={() => setEditingType({ catId: null, typeId: null, name: "", image: null, imageUrl: "" })} className="bg-[#2A2B2F] text-gray-200 px-3 py-1.5 text-sm font-medium rounded-lg flex-1 flex justify-center items-center gap-1">
                                                 <FaTimes /> Cancel
                                             </button>
                                         </div>

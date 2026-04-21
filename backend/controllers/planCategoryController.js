@@ -11,8 +11,10 @@ const createPlanCategory = async (req, res) => {
         if (req.file) {
             image = req.file.path;
         } else if (req.body.image) {
-            // fallback if passed as string URL
             image = req.body.image;
+        } else if (req.body.categoryImage && typeof req.body.categoryImage === 'string') {
+             // handle case where its passed as a string or link in categoryImage field
+            image = req.body.categoryImage;
         }
 
         const categoryExists = await PlanCategory.findOne({ name });
@@ -60,6 +62,8 @@ const updatePlanCategory = async (req, res) => {
             updateData.image = req.file.path;
         } else if (req.body.image) {
             updateData.image = req.body.image;
+        } else if (req.body.categoryImage && typeof req.body.categoryImage === 'string') {
+            updateData.image = req.body.categoryImage;
         }
 
         category = await PlanCategory.findByIdAndUpdate(req.params.id, updateData, {
@@ -108,6 +112,8 @@ const addPlanType = async (req, res) => {
             image = req.file.path;
         } else if (req.body.image) {
             image = req.body.image;
+        } else if (req.body.subcategoryImage && typeof req.body.subcategoryImage === 'string') {
+            image = req.body.subcategoryImage;
         }
 
         category.planTypes.push({ name, image });
@@ -139,6 +145,8 @@ const updatePlanType = async (req, res) => {
             planType.image = req.file.path;
         } else if (req.body.image) {
             planType.image = req.body.image;
+        } else if (req.body.subcategoryImage && typeof req.body.subcategoryImage === 'string') {
+            planType.image = req.body.subcategoryImage;
         }
 
         await category.save();
