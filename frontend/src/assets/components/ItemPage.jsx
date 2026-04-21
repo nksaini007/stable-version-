@@ -45,10 +45,10 @@ const ItemPage = () => {
         newProducts.forEach((item) => {
           const typeKey = item.type?.toLowerCase();
           if (typeKey && !uniqueTypesMap.has(typeKey)) {
-            const imageUrl = item.images?.[0]?.url;
+            const imageUrl = item.images?.[0]?.url || item.images?.[0];
             uniqueTypesMap.set(typeKey, {
               type: item.type,
-              image: imageUrl ? (imageUrl.startsWith("http") ? imageUrl : `${imageUrl}`) : null,
+              image: getOptimizedImage(imageUrl, 500),
             });
           }
         });

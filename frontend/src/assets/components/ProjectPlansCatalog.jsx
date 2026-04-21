@@ -6,6 +6,7 @@ import { FaMap, FaSearch, FaRulerCombined, FaTag, FaChevronLeft, FaCompass, FaCu
 import Nev from "./Nev";
 import Footer from "./Footer";
 import blueprintBg from "../images/blueprint_bg.png"; 
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const ProjectPlansCatalog = () => {
     const { categoryName, planTypeName } = useParams();
@@ -40,12 +41,7 @@ const ProjectPlansCatalog = () => {
         return matchesSearch;
     });
 
-    const getImageUrl = (img) => {
-        if (!img) return null;
-        if (img.startsWith("http")) return img;
-        const normalizedPath = img.replace(/\\/g, '/');
-        return normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`;
-    };
+    // Removed local getImageUrl in favor of global utility
 
     return (
         <div className="bg-[#FAF9F6] min-h-screen flex flex-col font-sans selection:bg-[#C5A059]/10 selection:text-[#C5A059] overflow-hidden relative">
@@ -141,8 +137,9 @@ const ProjectPlansCatalog = () => {
                                             <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-gray-50 border border-gray-50">
                                                 {plan.images && plan.images.length > 0 ? (
                                                     <img 
-                                                        src={getImageUrl(plan.images[0])} 
+                                                        src={getOptimizedImage(plan.images[0], 800)} 
                                                         alt={plan.title} 
+                                                        {...lazyImageProps}
                                                         className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110" 
                                                     />
                                                 ) : (

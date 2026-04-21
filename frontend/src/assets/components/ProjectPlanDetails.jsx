@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 import Nev from "./Nev";
 import Footer from "./Footer";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const ProjectPlanDetails = () => {
     const { id } = useParams();
@@ -156,7 +157,7 @@ const ProjectPlanDetails = () => {
                             >
                                 <div className="w-full h-full rounded-[2rem] overflow-hidden bg-gray-50">
                                     {plan.images && plan.images.length > 0 ? (
-                                        <img src={plan.images[activeImage]} alt={plan.title} className="w-full h-full object-cover" />
+                                        <img src={getOptimizedImage(plan.images[activeImage], 1200)} alt={plan.title} className="w-full h-full object-cover" {...lazyImageProps} />
                                     ) : (
                                         <div className="w-full h-full flex justify-center items-center text-gray-200">
                                             <FaBuilding className="text-9xl opacity-20" />
@@ -181,7 +182,7 @@ const ProjectPlanDetails = () => {
                                         onClick={() => setActiveImage(idx)}
                                         className={`w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 shadow-sm ${activeImage === idx ? "border-[#C5A059] scale-105" : "border-white opacity-40 hover:opacity-100"}`}
                                     >
-                                        <img src={img} alt="thumbnail" className="w-full h-full object-cover" />
+                                        <img src={getOptimizedImage(img, 300)} alt="thumbnail" className="w-full h-full object-cover" {...lazyImageProps} />
                                     </button>
                                 ))}
                             </div>
@@ -387,7 +388,7 @@ const ProjectPlanDetails = () => {
                                     <div className="relative z-10">
                                         <div className="flex items-center gap-4 mb-6">
                                             <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#C5A059]/30 p-1 bg-white/5 shadow-inner">
-                                                <img src={plan.architectId.profileImage || "https://static.vecteezy.com/system/resources/previews/005/544/718/original/yesterday-concept-icon-past-events-recollection-flashback-idea-thin-line-illustration-history-bygone-times-time-passing-isolated-outline-drawing-editable-stroke-vector.jpg"} alt="Architect" className="w-full h-full object-cover rounded-xl" />
+                                                <img src={getOptimizedImage(plan.architectId.profileImage, 200) || "https://static.vecteezy.com/system/resources/previews/005/544/718/original/yesterday-concept-icon-past-events-recollection-flashback-idea-thin-line-illustration-history-bygone-times-time-passing-isolated-outline-drawing-editable-stroke-vector.jpg"} alt="Architect" className="w-full h-full object-cover rounded-xl" />
                                             </div>
                                             <div>
                                                 <p className="text-[8px] font-black uppercase tracking-[0.3em] text-[#C5A059] mb-1">Lead Architect</p>
@@ -418,7 +419,7 @@ const ProjectPlanDetails = () => {
                                         {plan.linkedProducts.slice(0,3).map((prod, i) => (
                                             <Link to={`/product/${prod._id}`} key={i} className="flex items-center gap-4 group p-1.5 rounded-xl hover:bg-[#FAF9F6] transition-colors">
                                                 <div className="w-14 h-14 bg-[#FAF9F6] rounded-xl overflow-hidden flex-shrink-0 p-1 shadow-sm">
-                                                    <img src={prod.images?.[0]?.url} alt={prod.name} className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform" />
+                                                    <img src={getOptimizedImage(prod.images?.[0]?.url || prod.images?.[0], 200)} alt={prod.name} className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform" />
                                                 </div>
                                                 <div className="flex-grow">
                                                     <h5 className="text-[11px] font-black text-[#1A1B1E] line-clamp-1 lowercase">{prod.name}</h5>

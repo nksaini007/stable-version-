@@ -53,16 +53,16 @@ const ProductPage = () => {
                 const { data } = await API.get(`/products/${productId}`);
 
                 const normalizedImages = (data.images || []).map((img) =>
-                    img.url?.startsWith("http") ? img.url : `${img.url}`
+                    getOptimizedImage(img.url || img)
                 );
-
-                setSelectedImage(getOptimizedImage(normalizedImages[0]));
-                if (data.arModelUrl) setShowAR(true); // Default to AR
+                
+                setSelectedImage(normalizedImages[0]);
+                if (data.arModelUrl) setShowAR(true); 
                 if (data.variants && data.variants.length > 0) setSelectedVariant(data.variants[0]);
                 
                 setProductInfo({
                     ...data,
-                    images: normalizedImages.map(url => getOptimizedImage(url))
+                    images: normalizedImages
                 });
 
                 // Set Dynamic Title

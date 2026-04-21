@@ -8,6 +8,7 @@ import {
     FaCheckCircle, FaExclamationTriangle, FaHardHat
 } from "react-icons/fa";
 import logo from "../logo.png";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const PublicProjectPage = () => {
     const { id } = useParams();
@@ -77,8 +78,9 @@ const PublicProjectPage = () => {
                         <div className="mb-10">
                             <div className="relative rounded-3xl overflow-hidden bg-[#1e293b] border border-white/10 shadow-2xl" style={{ height: "clamp(300px, 50vw, 500px)" }}>
                                 <img
-                                    src={work.images[activeImage].startsWith('http') ? work.images[activeImage] : `${work.images[activeImage]}`}
+                                    src={getOptimizedImage(work.images[activeImage], 1200)}
                                     alt={work.title}
+                                    {...lazyImageProps}
                                     className="w-full h-full object-cover transition-all duration-500"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1c]/80 via-transparent to-transparent"></div>
@@ -111,9 +113,10 @@ const PublicProjectPage = () => {
                                                 }`}
                                         >
                                             <img
-                                                src={img.startsWith('http') ? img : `${img}`}
+                                                src={getOptimizedImage(img, 300)}
                                                 alt=""
                                                 className="w-full h-full object-cover"
+                                                {...lazyImageProps}
                                             />
                                         </button>
                                     ))}
@@ -211,13 +214,12 @@ const PublicProjectPage = () => {
                                     <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-6">Architect</h2>
 
                                     <div className="flex items-center gap-4 mb-6">
-                                        {work.architectInfo.profileImage ? (
                                             <img
-                                                src={`${work.architectInfo.profileImage}`}
+                                                src={getOptimizedImage(work.architectInfo.profileImage, 200)}
                                                 alt={work.architectInfo.name}
                                                 className="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-500/30"
+                                                {...lazyImageProps}
                                             />
-                                        ) : (
                                             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                                                 {work.architectInfo.name?.charAt(0) || "A"}
                                             </div>

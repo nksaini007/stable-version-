@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import Nev from './Nev';
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 
 const PixelHeart = ({ filled }) => (
@@ -119,7 +120,7 @@ const SinglePost = () => {
     const pageTitle = `${post.title} | Stinchar Community`;
     const pageDesc = post.metaDescription || post.content?.substring(0, 155).replace(/<[^>]*>?/gm, '') || "Explore construction and design insights on Stinchar.";
     const pageUrl = `${window.location.origin}/community/post/${post.slug || post._id}`;
-    const pageImg = post.image || "https://stinchar.com/default-preview.jpg";
+    const pageImg = getOptimizedImage(post.image) || "https://stinchar.com/default-preview.jpg";
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -612,8 +613,9 @@ const SinglePost = () => {
                         transform: 'scale(1.1)',
                     }} />
                     <motion.img
-                        src={post.image}
+                        src={getOptimizedImage(post.image, 1400)}
                         alt={post.title}
+                        {...lazyImageProps}
                         initial={{ opacity: 0, scale: 0.97 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5 }}
@@ -712,7 +714,7 @@ const SinglePost = () => {
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                             }}>
                                 {post.author?.profileImage
-                                    ? <img src={post.author.profileImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ? <img src={getOptimizedImage(post.author.profileImage, 200)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} {...lazyImageProps} />
                                     : <span style={{ fontSize: '15px', fontWeight: 900, color: '#ff5c00' }}>{post.author?.name?.charAt(0) || 'A'}</span>
                                 }
                             </div>
@@ -796,7 +798,7 @@ const SinglePost = () => {
                                 <motion.div key={comment._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px' }}>
                                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
                                         <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {comment.user?.profileImage ? <img src={comment.user.profileImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)' }}>{comment.user?.name?.charAt(0) || 'U'}</span>}
+                                            {comment.user?.profileImage ? <img src={getOptimizedImage(comment.user.profileImage, 100)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} {...lazyImageProps} /> : <span style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)' }}>{comment.user?.name?.charAt(0) || 'U'}</span>}
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>

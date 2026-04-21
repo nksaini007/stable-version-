@@ -5,6 +5,7 @@ import API from "../api/api";
 import { motion } from "framer-motion";
 import { FaCalendarAlt, FaArrowLeft, FaShieldAlt } from "react-icons/fa";
 import Nev from "./Nev";
+import { getOptimizedImage, lazyImageProps } from "../utils/imageUtils";
 
 const ServiceDetails = () => {
     const { id } = useParams();
@@ -104,7 +105,7 @@ const ServiceDetails = () => {
         );
     }
 
-    const mainImage = service.images?.[0] || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800";
+    const mainImage = getOptimizedImage(service.images?.[0] || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800", 1200);
 
     return (
         <div className="min-h-screen bg-[#FDFDFD] text-slate-900 flex flex-col pt-24 pb-20">
@@ -136,7 +137,7 @@ const ServiceDetails = () => {
                         <div className="grid grid-cols-4 gap-4">
                             {service.images.slice(1, 5).map((img, idx) => (
                                 <div key={idx} className="border border-slate-100 overflow-hidden group cursor-pointer aspect-square">
-                                    <img src={img} alt={`service-${idx}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    <img src={getOptimizedImage(img, 300)} alt={`service-${idx}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" {...lazyImageProps} />
                                 </div>
                             ))}
                         </div>
