@@ -214,12 +214,14 @@ const PublicProjectPage = () => {
                                     <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-6">Architect</h2>
 
                                     <div className="flex items-center gap-4 mb-6">
+                                        {work.architectInfo.profileImage ? (
                                             <img
                                                 src={getOptimizedImage(work.architectInfo.profileImage, 200)}
                                                 alt={work.architectInfo.name}
                                                 className="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-500/30"
                                                 {...lazyImageProps}
                                             />
+                                        ) : (
                                             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                                                 {work.architectInfo.name?.charAt(0) || "A"}
                                             </div>
