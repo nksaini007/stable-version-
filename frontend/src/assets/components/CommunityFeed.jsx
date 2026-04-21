@@ -142,7 +142,7 @@ const CommunityFeed = () => {
             <Nev />
             <div className="scanline"></div>
 
-            <div className="flex-1 max-w-[2000px] mx-auto py-12 md:py-20 px-0 md:px-6 w-full relative z-10">
+            <div className="flex-1 max-w-[2000px] mx-auto py-8 md:py-20 px-0 md:px-6 w-full relative z-10">
                 <div className="mb-12 md:mb-16 flex items-end gap-6 overflow-hidden px-6 md:px-0">
                     <div className="flex flex-col">
                         <span className="text-[#ff5c00] font-black text-[10px] tracking-[0.5em] mb-2 uppercase select-none font-mono">//_COMM_SYNC_V3.1_NODE</span>
@@ -168,7 +168,7 @@ const CommunityFeed = () => {
                             return (
                                 <div key={post._id} className="relative group">
                                     <div
-                                        className={`bg-white md:shadow-none md:shadow-[10px_10px_0px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-500 relative flex flex-col mb-4 md:mb-0 border border-black/5 ${post.isBlog
+                                        className={`bg-white md:shadow-none md:shadow-[10px_10px_0px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-500 relative flex flex-col mb-2 md:mb-0 border-b md:border border-black/5 ${post.isBlog
                                             ? 'h-auto cursor-pointer'
                                             : isExpanded ? 'z-30 h-auto pb-[60px]' : 'h-auto md:h-[500px]'
                                             }`}
@@ -179,7 +179,7 @@ const CommunityFeed = () => {
 
                                         {/* Header */}
                                         <div
-                                            className="px-6 md:px-5 py-4 flex items-center justify-between  bg-white cursor-pointer group/header relative"
+                                            className="px-3 md:px-5 py-4 flex items-center justify-between bg-white cursor-pointer group/header relative"
                                             onClick={() => navigate(`/community/post/${post.slug || post._id}`)}
                                         >
                                             <div className="absolute top-1 right-2 text-[6px] font-black opacity-10 uppercase tracking-widest">POST_P_00{post._id.slice(-4)}</div>
@@ -219,7 +219,7 @@ const CommunityFeed = () => {
                                             )}
 
                                             {/* Title & Body */}
-                                            <div className="px-6 md:px-5 py-6 space-y-3">
+                                            <div className="px-3 md:px-5 py-5 space-y-3">
                                                 {post.isBlog ? (
                                                     <>
                                                         <div className="flex items-center gap-2">
@@ -232,9 +232,9 @@ const CommunityFeed = () => {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <h3 className="text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter line-clamp-2">{post.title}</h3>
-                                                        <div className="text-black/60 text-[9px] font-bold leading-relaxed uppercase">
-                                                            <p className={`${!isExpanded ? 'line-clamp-3' : ''}`}>
+                                                        <h3 className="text-xl md:text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter line-clamp-3 md:line-clamp-2">{post.title}</h3>
+                                                        <div className="text-black/70 text-[13px] md:text-[9px] font-bold leading-relaxed uppercase">
+                                                            <p className={`${!isExpanded ? 'line-clamp-4 md:line-clamp-3' : ''}`}>
                                                                 {post.content && post.content.includes('<')
                                                                     ? stripHtml(post.content)
                                                                     : renderTextWithLinks(post.content)

@@ -505,6 +505,41 @@ const SinglePost = () => {
                 <style>{`
                     @keyframes spin { to { transform: rotate(360deg); } }
                     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+                    /* Mobile Optimizations for SinglePost */
+                    @media (max-width: 1024px) {
+                        .post-layout-wrapper { padding: 40px 0 !important; }
+                        .post-content-inner { 
+                            display: block !important; 
+                            padding: 0 12px !important; 
+                        }
+                        .post-content-inner aside { 
+                            display: none !important; 
+                        }
+                        .post-content-inner h2 { 
+                            font-size: 32px !important; 
+                            margin-bottom: 24px !important; 
+                        }
+                        .rich-text-content {
+                            font-size: 16px !important;
+                            line-height: 1.8 !important;
+                        }
+                        .rich-text-content img {
+                            width: 100vw !important;
+                            margin-left: -12px !important;
+                            max-width: none !important;
+                            border-radius: 0 !important;
+                        }
+                        .post-breadcrumbs {
+                            margin-bottom: 20px !important;
+                        }
+                    }
+
+                    @media (max-width: 640px) {
+                        .post-content-inner { padding: 0 10px !important; }
+                        .post-content-inner h2 { font-size: 26px !important; }
+                        .rich-text-content img { margin-left: -10px !important; }
+                    }
                 `}</style>
             </div>
         );
@@ -634,14 +669,13 @@ const SinglePost = () => {
                 </div>
             )}
 
-            {/* ── TWO-COLUMN CONTENT LAYOUT ── */}
-            <div style={{
+            <div className="post-layout-wrapper" style={{
                 flex: 1,
                 background: '#111',
                 borderTop: post.image ? '1px solid rgba(255,255,255,0.06)' : 'none',
                 padding: '80px 0'
             }}>
-                <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 40px', display: 'grid', gridTemplateColumns: 'minmax(0, 280px) minmax(0, 760px) minmax(0, 40px)', gap: '80px' }}>
+                <div className="post-content-inner" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 40px', display: 'grid', gridTemplateColumns: 'minmax(0, 280px) minmax(0, 760px) minmax(0, 40px)', gap: '80px' }}>
                     
                     {/* LEFT SIDEBAR (TOC + SHARE) */}
                     <aside>
