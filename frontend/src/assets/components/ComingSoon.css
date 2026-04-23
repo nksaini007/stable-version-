@@ -1,23 +1,35 @@
 .coming-soon-container {
   width: 100%;
-  padding: 6rem 1rem;
+  padding: 0;
   background-color: #f8f9fa; /* Light grey/off-white backdrop */
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   position: relative;
-  min-height: 80vh;
+  min-height: 100vh;
 }
 
 .coming-soon-cards {
   position: relative;
-  width: 100%;
-  max-width: 1100px;
-  height: 650px;
+  width: 100vw;
+  height: 100vh; /* Fill the whole section */
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
+}
+
+.overlay-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* Optional: slightly darken or add gradient to focus center */
+  background: radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(248,249,250,0.4) 100%);
+  pointer-events: none;
+  z-index: 100;
 }
 
 .card {
@@ -37,7 +49,7 @@
 
 .card:hover {
   transform: scale(1.05) translateZ(0) !important;
-  z-index: 10 !important;
+  z-index: 200 !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
 }
 
@@ -85,89 +97,104 @@
   line-height: 1.4;
 }
 
-/* Card Positioning and rotation mimicking a random pile */
-.card-1 {
-  top: 40px;
-  left: 5%;
-  transform: rotate(-18deg);
-  z-index: 3;
-}
+/* 45 Card Positioning and rotation filling the whole page randomly */
+.card-1 { top: -3%; left: -5%; transform: rotate(-3deg); z-index: 7; }
+.card-2 { top: -5%; left: 5%; transform: rotate(8deg); z-index: 25; }
+.card-3 { top: -8%; left: 18%; transform: rotate(-5deg); z-index: 14; }
+.card-4 { top: -9%; left: 31%; transform: rotate(23deg); z-index: 4; }
+.card-5 { top: -5%; left: 39%; transform: rotate(-18deg); z-index: 23; }
+.card-6 { top: -7%; left: 56%; transform: rotate(-6deg); z-index: 13; }
+.card-7 { top: -8%; left: 68%; transform: rotate(-13deg); z-index: 29; }
+.card-8 { top: -6%; left: 81%; transform: rotate(-12deg); z-index: 24; }
+.card-9 { top: -7%; left: 89%; transform: rotate(15deg); z-index: 20; }
+.card-10 { top: 16%; left: -7%; transform: rotate(18deg); z-index: 20; }
+.card-11 { top: 13%; left: 4%; transform: rotate(21deg); z-index: 10; }
+.card-12 { top: 13%; left: 17%; transform: rotate(1deg); z-index: 15; }
+.card-13 { top: 16%; left: 32%; transform: rotate(-17deg); z-index: 1; }
+.card-14 { top: 19%; left: 43%; transform: rotate(-18deg); z-index: 9; }
+.card-15 { top: 18%; left: 58%; transform: rotate(-7deg); z-index: 12; }
+.card-16 { top: 14%; left: 64%; transform: rotate(18deg); z-index: 18; }
+.card-17 { top: 17%; left: 77%; transform: rotate(16deg); z-index: 29; }
+.card-18 { top: 18%; left: 89%; transform: rotate(15deg); z-index: 28; }
+.card-19 { top: 36%; left: -5%; transform: rotate(-23deg); z-index: 11; }
+.card-20 { top: 40%; left: 4%; transform: rotate(-6deg); z-index: 24; }
+.card-21 { top: 37%; left: 21%; transform: rotate(3deg); z-index: 26; }
+.card-22 { top: 38%; left: 29%; transform: rotate(7deg); z-index: 21; }
+.card-23 { top: 38%; left: 42%; transform: rotate(20deg); z-index: 16; }
+.card-24 { top: 42%; left: 51%; transform: rotate(5deg); z-index: 3; }
+.card-25 { top: 35%; left: 64%; transform: rotate(9deg); z-index: 6; }
+.card-26 { top: 41%; left: 81%; transform: rotate(-7deg); z-index: 3; }
+.card-27 { top: 38%; left: 94%; transform: rotate(6deg); z-index: 24; }
+.card-28 { top: 61%; left: -8%; transform: rotate(10deg); z-index: 16; }
+.card-29 { top: 63%; left: 4%; transform: rotate(9deg); z-index: 0; }
+.card-30 { top: 62%; left: 15%; transform: rotate(16deg); z-index: 17; }
+.card-31 { top: 63%; left: 28%; transform: rotate(8deg); z-index: 26; }
+.card-32 { top: 63%; left: 44%; transform: rotate(-25deg); z-index: 25; }
+.card-33 { top: 57%; left: 51%; transform: rotate(-9deg); z-index: 20; }
+.card-34 { top: 58%; left: 67%; transform: rotate(16deg); z-index: 10; }
+.card-35 { top: 60%; left: 78%; transform: rotate(-4deg); z-index: 12; }
+.card-36 { top: 63%; left: 92%; transform: rotate(11deg); z-index: 28; }
+.card-37 { top: 79%; left: -4%; transform: rotate(-3deg); z-index: 16; }
+.card-38 { top: 85%; left: 3%; transform: rotate(4deg); z-index: 3; }
+.card-39 { top: 86%; left: 16%; transform: rotate(18deg); z-index: 14; }
+.card-40 { top: 83%; left: 31%; transform: rotate(-15deg); z-index: 12; }
+.card-41 { top: 80%; left: 39%; transform: rotate(10deg); z-index: 8; }
+.card-42 { top: 80%; left: 53%; transform: rotate(16deg); z-index: 12; }
+.card-43 { top: 83%; left: 68%; transform: rotate(-19deg); z-index: 21; }
+.card-44 { top: 86%; left: 82%; transform: rotate(4deg); z-index: 14; }
+.card-45 { top: 79%; left: 91%; transform: rotate(4deg); z-index: 1; }
 
-.card-2 {
-  top: 180px;
-  left: 28%;
-  transform: rotate(8deg);
-  z-index: 5;
-}
-
-.card-3 {
-  top: 20px;
-  right: 18%;
-  transform: rotate(22deg);
-  z-index: 2;
-}
-
-.card-4 {
-  bottom: 40px;
-  left: 15%;
-  transform: rotate(-28deg);
-  z-index: 1;
-}
-
-.card-5 {
-  bottom: 30px;
-  right: 8%;
-  transform: rotate(-12deg);
-  z-index: 4;
-}
 
 /* Responsive adjustments */
-@media (max-width: 992px) {
-  .coming-soon-cards {
-    height: 500px;
+@media (max-width: 900px) {
+  .card {
+    width: 320px;
+    height: 230px;
+    padding: 2rem;
   }
-  .card-1 { left: 0%; }
-  .card-3 { right: 0%; }
-  .card-5 { right: 0%; }
+  .card .title {
+    font-size: 3rem;
+  }
 }
 
 @media (max-width: 768px) {
   .coming-soon-container {
-    min-height: 60vh;
-    padding: 3rem 1rem;
-    overflow: hidden;
-  }
-  .coming-soon-cards {
-    height: 450px;
+    min-height: 100vh;
+    padding: 0;
   }
   .card {
-    width: 300px;
-    height: 220px;
-    padding: 2rem;
+    width: 250px;
+    height: 180px;
+    padding: 1.5rem;
   }
   .card .title {
-    font-size: 2.8rem;
+    font-size: 2.2rem;
+  }
+  .card .subtitle {
+    font-size: 0.65rem;
   }
   .card .handle {
-    top: 2rem;
-    right: -2rem;
+    top: 1.5rem;
+    right: -1.5rem;
   }
   .card .branding, .card .description {
-    bottom: 1.5rem;
-    left: 1.5rem;
+    bottom: 1rem;
+    left: 1rem;
   }
-  .card .description { left: auto; right: 1.5rem; }
-  
-  .card-1 { top: 0; left: -20px; transform: rotate(-12deg); }
-  .card-2 { top: 120px; left: 15%; transform: rotate(5deg); z-index: 5; }
-  .card-3 { top: -20px; right: -20px; transform: rotate(15deg); }
-  .card-4 { display: none; } /* Hide some to prevent cluttering on small screens */
-  .card-5 { bottom: 0; right: -10px; transform: rotate(-10deg); }
+  .card .description { left: auto; right: 1rem; }
 }
 
 @media (max-width: 480px) {
-  .card-1 { left: -40px; transform: rotate(-15deg); }
-  .card-2 { left: 5%; }
-  .card-3 { right: -50px; }
-  .card-5 { right: -30px; }
+  .card {
+    width: 200px;
+    height: 140px;
+    padding: 1rem;
+  }
+  .card .title {
+    font-size: 1.8rem;
+  }
+  .card .handle {
+    top: 1rem;
+    right: -1rem;
+  }
 }

@@ -21,7 +21,7 @@ const Home = () => {
       <Banners />
 
       {/* Trending Products from Admin Config */}
-      <TrendingItems />
+      {/* <TrendingItems /> */}
 
       <ComingSoon />
 
