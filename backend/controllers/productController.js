@@ -10,7 +10,8 @@ const { optimizeImage } = require('../utils/imageOptimizer');
 const getProducts = async (req, res) => {
   const { search = '', category, subcategory, type } = req.query;
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 12;
+  let limit = parseInt(req.query.limit) || 12;
+  if (limit > 100) limit = 100;
   const skip = (page - 1) * limit;
 
   try {
@@ -125,10 +126,25 @@ const getProducts = async (req, res) => {
 // ==============================
 const getAdminProducts = async (req, res) => {
   try {
-    console.log("admin products hit");
-    const products = await Product.find({}).populate('seller', 'name email role');
-    console.log("products found: ", products.length);
-    res.json(products);
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 20;
+    if (limit > 100) limit = 100;
+    const skip = (page - 1) * limit;
+
+    const total = await Product.countDocuments({});
+    const products = await Product.find({})
+      .populate('seller', 'name email role')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.json({
+      products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      hasMore: page * limit < total,
+    });
   } catch (error) {
     console.error('Error fetching admin products:', error.message);
     res.status(500).json({ message: 'Server Error' });
@@ -144,17 +160,34 @@ const getSellerProducts = async (req, res) => {
   try {
     const search = req.query.search || '';
     const sellerId = req.user._id;
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 20;
+    if (limit > 100) limit = 100;
+    const skip = (page - 1) * limit;
 
-    const products = await Product.find({
+    const query = {
       seller: sellerId,
       $or: [
         { name: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
         { category: { $regex: search, $options: 'i' } },
       ],
-    }).populate('seller', 'name email');
+    };
 
-    res.json(products);
+    const total = await Product.countDocuments(query);
+    const products = await Product.find(query)
+      .populate('seller', 'name email')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.json({
+      products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      hasMore: page * limit < total,
+    });
   } catch (error) {
     console.error('Error fetching seller products:', error.message);
     res.status(500).json({ message: 'Server Error', error: error.message });

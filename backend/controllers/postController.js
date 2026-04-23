@@ -10,7 +10,7 @@ if (!fs.existsSync(postDir)) fs.mkdirSync(postDir, { recursive: true });
 // Multer Config for Post Images
 const { storage, uploadBufferToCloudinary } = require("../config/cloudinary");
 const { optimizeImage } = require("../utils/imageOptimizer");
-const uploadPostImage = multer({ storage }).single("image");
+const uploadPostImage = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }).single("image");
 
 // ==============================
 // CREATE Post (Admin Only)
@@ -62,7 +62,8 @@ const getPosts = async (req, res) => {
     try {
         if (req.query.page || req.query.limit) {
             const page = parseInt(req.query.page, 10) || 1;
-            const limit = parseInt(req.query.limit, 10) || 10;
+            let limit = parseInt(req.query.limit, 10) || 10;
+            if (limit > 100) limit = 100;
             const skip = (page - 1) * limit;
 
             const total = await Post.countDocuments();

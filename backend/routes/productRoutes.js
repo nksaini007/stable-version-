@@ -22,8 +22,8 @@ const { protect, sellerOnly, adminOnly } = require("../middlewares/authMiddlewar
 /* ============================================================
    📦 Multer Setup for Image Upload
 ============================================================ */
-const upload = multer({ storage });
-const uploadCSV = multer({ dest: "uploads/" });
+const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
+const uploadCSV = multer({ dest: "uploads/", limits: { fileSize: 50 * 1024 * 1024 } });
 
 /* ============================================================
    🔓 Public Routes (Anyone can access)

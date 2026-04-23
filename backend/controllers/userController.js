@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const User = require("../models/userModel");
 const Otp = require("../models/otpModel");
+const Product = require("../models/product");
 const ArchitectWork = require("../models/ArchitectWork");
 const { ArchitectTask, ArchitectPayment, ArchitectAttendance, ArchitectReview } = require("../models/ArchitectWorkforceModels");
 const path = require("path");
@@ -401,20 +402,43 @@ const getUsers = async (req, res) => {
   try {
     const { role } = req.query;
     const query = role ? { role } : {};
-    const users = await User.find(query).select("-password").sort({ createdAt: -1 });
     
-    // Always get total counts across all roles for admin dashboard context
-    const allUsersCountList = await User.find().select("role");
-    const counts = {
-      total: allUsersCountList.length,
-      customer: allUsersCountList.filter(u => u.role === "customer").length,
-      seller: allUsersCountList.filter(u => u.role === "seller").length,
-      delivery: allUsersCountList.filter(u => u.role === "delivery").length,
-      provider: allUsersCountList.filter(u => u.role === "provider").length,
-      admin: allUsersCountList.filter(u => u.role === "admin").length,
-      architect: allUsersCountList.filter(u => u.role === "architect").length,
-    };
-    res.json({ users, counts });
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 20;
+    if (limit > 100) limit = 100;
+    const skip = (page - 1) * limit;
+
+    const totalUsers = await User.countDocuments(query);
+    const users = await User.find(query)
+      .select("-password")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    // Efficiently count roles using aggregation instead of loading all users into memory
+    const roleCountsArray = await User.aggregate([
+      { $group: { _id: "$role", count: { $sum: 1 } } }
+    ]);
+    
+    let totalAll = 0;
+    const counts = { total: 0, customer: 0, seller: 0, delivery: 0, provider: 0, admin: 0, architect: 0 };
+    
+    roleCountsArray.forEach(roleData => {
+      if (roleData._id) {
+        counts[roleData._id] = roleData.count;
+        totalAll += roleData.count;
+      }
+    });
+    counts.total = totalAll;
+
+    res.json({ 
+      users, 
+      counts,
+      total: totalUsers,
+      page,
+      totalPages: Math.ceil(totalUsers / limit),
+      hasMore: page * limit < totalUsers
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -473,7 +497,37 @@ const deleteUser = async (req, res) => {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) return res.status(404).json({ message: "User not found" });
 
-    // Cascading Delete: if user was an ArchitectPartner or had tasks, remove them
+    // 1️⃣ Delete User's Cloudinary Images
+    const imagesToDelete = [];
+    if (deletedUser.profileImage && deletedUser.profileImage.includes("cloudinary.com")) {
+      // Extract public ID from Cloudinary URL (assuming typical format)
+      const parts = deletedUser.profileImage.split("/");
+      const filename = parts[parts.length - 1].split(".")[0];
+      const folder = parts[parts.length - 2];
+      imagesToDelete.push(`${folder}/${filename}`);
+    }
+    if (deletedUser.shopBanner && deletedUser.shopBanner.includes("cloudinary.com")) {
+      const parts = deletedUser.shopBanner.split("/");
+      const filename = parts[parts.length - 1].split(".")[0];
+      const folder = parts[parts.length - 2];
+      imagesToDelete.push(`${folder}/${filename}`);
+    }
+    if (deletedUser.verificationDocuments && deletedUser.verificationDocuments.length > 0) {
+      deletedUser.verificationDocuments.forEach(doc => {
+        if (doc.includes("cloudinary.com")) {
+          const parts = doc.split("/");
+          const filename = parts[parts.length - 1].split(".")[0];
+          const folder = parts[parts.length - 2];
+          imagesToDelete.push(`${folder}/${filename}`);
+        }
+      });
+    }
+
+    if (imagesToDelete.length > 0) {
+      await Promise.allSettled(imagesToDelete.map(id => deleteImage(id)));
+    }
+
+    // 2️⃣ Cascading Delete: if user was an ArchitectPartner or had tasks, remove them
     if (deletedUser.role === 'architectPartner') {
         const pId = deletedUser._id;
         await ArchitectTask.deleteMany({ partnerId: pId });
@@ -482,12 +536,37 @@ const deleteUser = async (req, res) => {
         await ArchitectReview.deleteMany({ partnerId: pId });
     } else if (deletedUser.role === 'architect') {
         const aId = deletedUser._id;
+        
+        // Cascading Delete: Delete Architect Portfolios (Works) and their Cloudinary images
+        const architectWorks = await ArchitectWork.find({ architectId: aId });
+        for (const work of architectWorks) {
+          if (work.images && work.images.length > 0) {
+            const workImagesToDelete = work.images.map(imgUrl => {
+              const parts = imgUrl.split("/");
+              const filename = parts[parts.length - 1].split(".")[0];
+              const folder = parts[parts.length - 2];
+              return `${folder}/${filename}`;
+            });
+            await Promise.allSettled(workImagesToDelete.map(id => deleteImage(id)));
+          }
+        }
+        await ArchitectWork.deleteMany({ architectId: aId });
+
         await ArchitectTask.deleteMany({ architectId: aId });
         await ArchitectPayment.deleteMany({ architectId: aId });
         await ArchitectAttendance.deleteMany({ architectId: aId });
         await ArchitectReview.deleteMany({ architectId: aId });
         // Also remove partners who explicitly work only for this architect
         await User.deleteMany({ employerArchitect: aId, role: 'architectPartner' });
+    } else if (deletedUser.role === 'seller') {
+        // 3️⃣ Cascading Delete: Delete all products and their Cloudinary images
+        const sellerProducts = await Product.find({ seller: deletedUser._id });
+        for (const product of sellerProducts) {
+          if (product.images && product.images.length > 0) {
+            await Promise.allSettled(product.images.map(img => deleteImage(img.public_id)));
+          }
+        }
+        await Product.deleteMany({ seller: deletedUser._id });
     }
 
     res.json({ message: "User and related workflow records deleted successfully" });

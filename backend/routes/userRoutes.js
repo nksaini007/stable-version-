@@ -57,7 +57,7 @@ router.put("/me/password", protect, changePassword);
 ============================================================ */
 router.get("/all", protect, adminOnly, getUsers);
 router.get("/providers", protect, adminOnly, getProviders);
-router.get("/:id", protect, getUserById);
+router.get("/:id", protect, adminOnly, getUserById);
 router.put("/:id", protect, adminOnly, updateUser);
 router.delete("/:id", protect, adminOnly, deleteUser);
 router.put("/:id/toggle-active", protect, adminOnly, toggleUserActive);

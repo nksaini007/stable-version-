@@ -8,9 +8,9 @@ const path = require("path");
 const fs = require("fs");
 
 // Multer config for project update images
-const uploadUpdateImages = multer({ storage }).array("images", 5);
-const uploadTaskImages = multer({ storage }).array("images", 5);
-const uploadBlueprintDoc = multer({ storage }).single("blueprint");
+const uploadUpdateImages = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } }).array("images", 5);
+const uploadTaskImages = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } }).array("images", 5);
+const uploadBlueprintDoc = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } }).single("blueprint");
 
 // Note: Ensure your authMiddleware adds req.user and req.user.role if you plan to do role-based checks.
 

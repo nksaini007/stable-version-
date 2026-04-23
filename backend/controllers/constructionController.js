@@ -75,6 +75,13 @@ exports.getProjectDetails = async (req, res) => {
             
         if (!project) return res.status(404).json({ success: false, message: "Registry not found" });
 
+        // Security Check: Only admin, assigned architect, or assigned customer can view
+        if (req.user.role !== "admin" && 
+            String(project.customerId) !== String(req.user._id) && 
+            String(project.architectId) !== String(req.user._id)) {
+            return res.status(403).json({ success: false, message: "Not authorized to view this project" });
+        }
+
         // Aggregate Tasks
         const tasks = await ProjectTask.find({ projectId }).populate("assignedTo", "name profileImage");
         
@@ -185,6 +192,17 @@ exports.createTask = async (req, res) => {
 exports.getProjectTasks = async (req, res) => {
     try {
         const { projectId } = req.params;
+        
+        const project = await ConstructionProject.findById(projectId);
+        if (!project) return res.status(404).json({ success: false, message: "Project not found" });
+
+        // Security Check: Only admin, assigned architect, or assigned customer can view tasks
+        if (req.user.role !== "admin" && 
+            String(project.customerId) !== String(req.user._id) && 
+            String(project.architectId) !== String(req.user._id)) {
+            return res.status(403).json({ success: false, message: "Not authorized to view tasks for this project" });
+        }
+
         const tasks = await ProjectTask.find({ projectId }).populate("assignedTo", "name email");
         res.status(200).json({ success: true, tasks });
     } catch (error) {
@@ -330,6 +348,17 @@ exports.createProjectUpdate = async (req, res) => {
 exports.getProjectUpdates = async (req, res) => {
     try {
         const { projectId } = req.params;
+        
+        const project = await ConstructionProject.findById(projectId);
+        if (!project) return res.status(404).json({ success: false, message: "Project not found" });
+
+        // Security Check: Only admin, assigned architect, or assigned customer can view updates
+        if (req.user.role !== "admin" && 
+            String(project.customerId) !== String(req.user._id) && 
+            String(project.architectId) !== String(req.user._id)) {
+            return res.status(403).json({ success: false, message: "Not authorized to view updates for this project" });
+        }
+
         const updates = await ProjectUpdate.find({ projectId })
             .populate("authorId", "name email profileImage")
             .sort({ createdAt: -1 });

@@ -8,7 +8,7 @@ const path = require("path");
 const fs = require("fs");
 
 // Multer config for architect work images
-const upload = multer({ storage }).array("images", 10);
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }).array("images", 10);
 
 // ─── PUBLIC ROUTE (no auth — QR code landing) ───
 router.get("/public/:id", controller.getPublicWork);

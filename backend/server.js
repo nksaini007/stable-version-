@@ -110,6 +110,8 @@ app.set("trust proxy", 1);
 app.use("/api/users/login", authLimiter);
 app.use("/api/users/signup", authLimiter);
 app.use("/api/users/reset-password", authLimiter);
+app.use("/api/users/send-otp", authLimiter); // ✅ Prevent OTP Spam
+app.use("/api/users/verify-otp", authLimiter); // ✅ Prevent OTP Brute Force
 app.use("/api/users/x-admin-auth", authLimiter); // ✅ Protected hidden admin login
 app.use("/api/", apiLimiter);
 

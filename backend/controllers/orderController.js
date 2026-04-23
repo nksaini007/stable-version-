@@ -40,6 +40,11 @@ const createOrder = async (req, res) => {
         const verifiedOrderItems = [];
 
         for (const item of clientItems) {
+            // 🛡️ SECURITY: Prevent Negative Quantity Exploit
+            if (!item.qty || item.qty <= 0 || !Number.isInteger(item.qty)) {
+                return res.status(400).json({ message: "Invalid quantity specified." });
+            }
+
             const dbProduct = await Product.findById(item.product || item._id).populate("seller", "name email phone businessName");
             if (!dbProduct) {
                 return res.status(404).json({ message: `Product not found: ${item.name}` });
@@ -212,6 +217,11 @@ const verifyPayment = async (req, res) => {
         // Update Order in DB
         const order = await Order.findById(orderId);
         if (!order) return res.status(404).json({ message: "Order not found" });
+
+        // 🛡️ SECURITY: Prevent Replay Attacks
+        if (order.isPaid) {
+            return res.status(400).json({ success: false, message: "Order is already paid" });
+        }
 
         order.isPaid = true;
         order.paidAt = Date.now();

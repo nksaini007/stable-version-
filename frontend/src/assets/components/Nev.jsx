@@ -52,8 +52,12 @@ const Nev = () => {
         <div className="relative max-w-[1600px] mx-auto flex items-stretch h-[50px]">
 
           {/* LOGO BOX */}
-          <Link to="/" className="flex items-center px-8  bg-black text-white hover:bg-[#ff5c00] transition-colors group">
-            <span className="text-3xl font-heading tracking-tighter">STN.</span>
+          <Link to="/" className="flex items-center justify-center w-20 px-4 bg-transparent transition-colors group">
+            <img 
+              src={logo} 
+              alt="STINCHAR House" 
+              className="h-10 w-auto drop-shadow-[0_10px_10px_rgba(0,0,0,0.3)] transition-all group-hover:scale-105" 
+            />
           </Link>
 
           {/* LINKS GRID */}
@@ -104,8 +108,12 @@ const Nev = () => {
       {/* ================= MOBILE HEADER ================= */}
       <div className="md:hidden fixed top-0 w-full h-[64px] bg-[#e5e5e5] border-b-4 border-black/10 z-[100] flex items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-heading text-xl">STN</div>
-          <span className="text-xs font-black tracking-widest uppercase text-black/10 ">STINCHAR</span>
+          <img 
+            src={logo} 
+            alt="STINCHAR House" 
+            className="w-10 h-10 drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)]" 
+          />
+          <span className="text-xs font-black tracking-widest uppercase text-black/40">STINCHAR</span>
         </Link>
         <div className="flex items-center gap-4">
           <Link to="/cart" className="text-black p-2 bg-black/10 text-white/50 rounded-lg">
