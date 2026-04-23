@@ -8,7 +8,7 @@ import logo from "../../../../logo.png";
 const menuItems = [
     { name: "Dashboard", path: "/architect", icon: <FaHome /> },
     { name: "My Catalog", path: "/architect/work", icon: <FaPalette /> },
-    { name: "Shop Components", path: "/categories", icon: <FaCubes /> },
+    // { name: "Shop Components", path: "/categories", icon: <FaCubes /> },
     { name: "My Orders", path: "/architect/orders", icon: <FaChartLine /> },
     { name: "Quotations", path: "/architect/quotations", icon: <FaFileAlt /> },
     { name: "Custom Requests", path: "/architect/custom-requests", icon: <FaFileAlt /> },
@@ -97,10 +97,10 @@ const ArchitectSidebar = ({ collapsed, setCollapsed }) => {
                     <div className="flex items-center gap-3 px-3 py-2">
                         <div className="w-9 h-9 rounded-full bg-[#1A1A1C] border border-white/5 flex items-center justify-center text-gray-400 text-xs font-bold uppercase overflow-hidden shadow-inner">
                             {user.profileImg ? (
-                                <img 
-                                    src={user.profileImg} 
-                                    alt={user.name} 
-                                    className="w-full h-full object-cover grayscale opacity-80" 
+                                <img
+                                    src={user.profileImg}
+                                    alt={user.name}
+                                    className="w-full h-full object-cover grayscale opacity-80"
                                     onError={(e) => {
                                         e.target.onerror = null;
                                         e.target.src = "";

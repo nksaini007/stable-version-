@@ -55,6 +55,7 @@ const menuGroups = [
       { name: "Services", path: "/admin/services", icon: <FaBox /> },
       { name: "Bookings", path: "/admin/bookings", icon: <FaClipboardList /> },
       { name: "Project Registry", path: "/admin/projects", icon: <FaHardHat /> },
+      { name: "Plan Alterations", path: "/admin/custom-requests", icon: <FaLayerGroup /> },
       { name: "Plan Categories", path: "/admin/plan-categories", icon: <FaLayerGroup /> },
       { name: "Plans Catalog", path: "/admin/plans", icon: <FaMap /> },
       { name: "Materials", path: "/admin/materials", icon: <FaCubes /> },

@@ -6,7 +6,7 @@ import Banners from './Banners';
 import Footer from './Footer';
 import TrendingItems from './TrendingItems';
 import Categories from './Categories';
-
+import ComingSoon from './ComingSoon';
 
 const Home = () => {
   return (
@@ -23,7 +23,7 @@ const Home = () => {
       {/* Trending Products from Admin Config */}
       <TrendingItems />
 
-      <Categories />
+      <ComingSoon />
 
       <Footer />
     </div>

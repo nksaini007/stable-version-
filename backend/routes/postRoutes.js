@@ -13,10 +13,12 @@ const {
     addComment,
     deletePost,
     deleteComment,
+    getPostSeoPreview,
 } = require("../controllers/postController");
 
 // Public routes
 router.get("/", getPosts);
+router.get("/seo-preview/:slug", getPostSeoPreview);
 router.get("/slug/:slug", getPostBySlug);
 router.get("/:id", getPostById);
 

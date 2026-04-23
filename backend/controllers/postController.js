@@ -60,12 +60,34 @@ const createPost = async (req, res) => {
 // ==============================
 const getPosts = async (req, res) => {
     try {
-        const posts = await Post.find()
-            .populate("author", "name profileImage role")
-            .populate("comments.user", "name profileImage role")
-            .sort({ createdAt: -1 });
+        if (req.query.page || req.query.limit) {
+            const page = parseInt(req.query.page, 10) || 1;
+            const limit = parseInt(req.query.limit, 10) || 10;
+            const skip = (page - 1) * limit;
 
-        res.json(posts);
+            const total = await Post.countDocuments();
+            const posts = await Post.find()
+                .populate("author", "name profileImage role")
+                .populate("comments.user", "name profileImage role")
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit);
+
+            return res.json({
+                posts,
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
+                hasMore: skip + posts.length < total,
+                total
+            });
+        } else {
+            const posts = await Post.find()
+                .populate("author", "name profileImage role")
+                .populate("comments.user", "name profileImage role")
+                .sort({ createdAt: -1 });
+
+            res.json(posts);
+        }
     } catch (error) {
         console.error("Error fetching posts:", error.message);
         res.status(500).json({ message: "Server Error", error: error.message });
@@ -264,6 +286,71 @@ const deleteComment = async (req, res) => {
     }
 };
 
+// ==============================
+// GET Post SEO Preview (Bots Only)
+// GET /api/posts/seo-preview/:slug
+// ==============================
+const getPostSeoPreview = async (req, res) => {
+    try {
+        const post = await Post.findOne({ slug: req.params.slug })
+            .populate("author", "name profileImage role");
+
+        if (!post) {
+            return res.status(404).send("<h1>404 Not Found</h1>");
+        }
+
+        const decodeHTMLEntities = (text) => {
+            if (!text) return "";
+            return text.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+        };
+
+        const pageTitle = `${post.title} | Stinchar Community`;
+        const rawDesc = post.metaDescription || post.content?.substring(0, 155).replace(/<[^>]*>?/gm, '') || "Explore construction and design insights on Stinchar.";
+        const pageDesc = decodeHTMLEntities(rawDesc);
+        
+        let pageImg = "https://stinchar.com/default-preview.jpg";
+        if (post.image) {
+            const rawImg = post.image;
+            pageImg = rawImg.startsWith('http') ? rawImg : `https://stinchar.com${rawImg.startsWith('/') ? '' : '/'}${rawImg}`;
+        }
+        
+        const pageUrl = `https://stinchar.com/community/post/${post.slug || post._id}`;
+
+        const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>${pageTitle}</title>
+    <meta name="description" content="${pageDesc}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="${pageTitle}" />
+    <meta property="og:description" content="${pageDesc}" />
+    <meta property="og:image" content="${pageImg}" />
+    <meta property="og:url" content="${pageUrl}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${pageTitle}" />
+    <meta name="twitter:description" content="${pageDesc}" />
+    <meta name="twitter:image" content="${pageImg}" />
+    <link rel="canonical" href="${pageUrl}" />
+    <!-- Bot SEO Redirect -->
+    <meta http-equiv="refresh" content="0;url=${pageUrl}" />
+</head>
+<body>
+    <h1>${pageTitle}</h1>
+    <p>${pageDesc}</p>
+    <script>
+        window.location.replace("${pageUrl}");
+    </script>
+</body>
+</html>`;
+
+        res.send(html);
+    } catch (error) {
+        console.error("Error generating SEO preview:", error.message);
+        res.status(500).send("<h1>Server Error</h1>");
+    }
+};
+
 module.exports = {
     uploadPostImage,
     createPost,
@@ -275,4 +362,5 @@ module.exports = {
     addComment,
     deletePost,
     deleteComment,
+    getPostSeoPreview,
 };

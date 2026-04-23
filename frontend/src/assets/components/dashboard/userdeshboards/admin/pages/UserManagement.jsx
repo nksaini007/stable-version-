@@ -130,17 +130,17 @@ const UserManagement = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6 min-h-screen bg-gray-900">
+    <div className="p-4 sm:p-6 space-y-6 min-h-screen bg-gray-900">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-3">
-            <FaUserCheck className="text-blue-400" /> User Management
+          <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
+            <FaUserCheck className="text-blue-500" /> User Management
           </h1>
-          <p className="text-[#6B7280] text-sm mt-1">Manage all users, partners, and document verification</p>
+          <p className="text-[#6B7280] text-sm mt-1">Manage users, partners, roles and verify specialized documents.</p>
         </div>
         {msg && (
-          <div className={`px-4 py-2 rounded-xl text-sm font-medium border ${msg.startsWith("✅") ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400"}`}>
+          <div className={`px-4 py-2 rounded-xl text-sm font-bold border ${msg.startsWith("✅") ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400"}`}>
             {msg}
           </div>
         )}
@@ -150,48 +150,50 @@ const UserManagement = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setRoleFilter(t.key)}
-            className={`relative rounded-2xl p-3 text-left transition-all border ${roleFilter === t.key ? "border-white/20 bg-[#1A1B1E] border border-[#2A2B2F]/10 " : "border-white/5 bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] hover:bg-[#1A1B1E] border border-[#2A2B2F]/[0.06]"}`}>
-            {roleFilter === t.key && (
-              <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${t.color} opacity-10`} />
-            )}
+            className={`relative rounded-xl p-3 text-left transition-all border ${roleFilter === t.key ? "border-white/20 bg-[#1A1B1E] shadow-lg" : "border-white/5 bg-[#1A1B1E]/60 hover:bg-[#1A1B1E]"}`}>
+            {roleFilter === t.key && <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${t.color} opacity-10`} />}
             <p className="text-xl font-black text-white">{t.count}</p>
-            <p className="text-[10px] text-[#6B7280] mt-0.5 uppercase tracking-wider">{t.label}</p>
+            <p className="text-[11px] text-[#8E929C] uppercase tracking-wider mt-0.5">{t.label}</p>
           </button>
         ))}
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-60">
-          <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8E929C] text-xs" />
-          <input placeholder="Search name, email, phone, business..."
+      <div className="flex flex-wrap gap-3 items-center bg-[#1A1B1E] border border-white/5 p-2 rounded-xl">
+        <div className="relative flex-1 min-w-[200px] sm:min-w-[300px]">
+          <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8E929C] text-sm" />
+          <input placeholder="Search user by name, email, phone, business..."
             value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-[#1A1B1E] border border-[#2A2B2F]/[0.04] border border-white/10 rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-white/40" />
+            className="w-full pl-10 pr-4 py-2 bg-transparent text-white text-sm placeholder-[#8E929C] focus:outline-none" />
         </div>
-        <div className="flex items-center gap-2 bg-[#1A1B1E] border border-[#2A2B2F]/[0.04] border border-white/10 rounded-xl px-3 py-2">
-          <FaSortAmountDown className="text-[#8E929C] text-xs" />
+        <div className="w-px h-6 bg-white/10 hidden sm:block"></div>
+        <div className="flex items-center gap-2 px-3">
+          <FaSortAmountDown className="text-[#8E929C] text-sm" />
           <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-            className="bg-transparent text-sm text-gray-300 focus:outline-none">
-            <option value="newest" className="bg-[#0a0f1e]">Newest First</option>
-            <option value="oldest" className="bg-[#0a0f1e]">Oldest First</option>
-            <option value="name" className="bg-[#0a0f1e]">Name A–Z</option>
+            className="bg-transparent text-sm text-gray-300 font-semibold focus:outline-none cursor-pointer">
+            <option value="newest" className="bg-[#1A1B1E]">Newest First</option>
+            <option value="oldest" className="bg-[#1A1B1E]">Oldest First</option>
+            <option value="name" className="bg-[#1A1B1E]">Name A-Z</option>
           </select>
         </div>
-        <span className="text-[#8E929C] text-sm">{filtered.length} user{filtered.length !== 1 ? "s" : ""}</span>
+        <div className="w-px h-6 bg-white/10 hidden sm:block"></div>
+        <div className="px-3">
+          <span className="text-white bg-blue-500/20 text-blue-400 text-xs font-bold px-2 py-1 rounded border border-blue-500/20">{filtered.length} Users</span>
+        </div>
       </div>
 
-      {/* User Cards Grid */}
+      {/* Modern List View */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 text-[#8E929C]">
-          <FaUser className="text-5xl mx-auto mb-4 opacity-20" />
-          <p>No users found</p>
+           <FaUser className="mx-auto text-4xl mb-3 opacity-20"/>
+          <p className="text-sm font-semibold tracking-wide">No users found based on current filters.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="flex flex-col gap-2">
           {filtered.map(u => {
             const rc = roleConfig[u.role] || roleConfig.customer;
             const isPending = u.isApproved === false && u.role !== "customer" && u.role !== "admin";
@@ -199,94 +201,65 @@ const UserManagement = () => {
             const hasLegalDocs = u.gstNumber || u.panNumber || u.aadhaarNumber || u.licenseNumber || u.coaRegistration;
 
             return (
-              <div key={u._id}
-                className={`group bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border rounded-2xl p-4 transition-all hover:bg-[#1A1B1E] border border-[#2A2B2F]/[0.06] hover: hover:-black/30 cursor-pointer ${isPending ? "border-yellow-500/30" : "border-white/5"}`}
-                onClick={() => setSelected(u)}>
-                {/* Card Header */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${rc.color} flex items-center justify-center text-white text-lg font-bold shrink-0 `}>
-                      {u.profileImage ? (
-                        <img src={u.profileImage.startsWith("http") ? u.profileImage : `${API_BASE}${u.profileImage}`}
-                          alt="" className="w-full h-full object-cover rounded-xl" />
-                      ) : (
-                        <span>{u.name?.[0]?.toUpperCase() || "?"}</span>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-white font-bold truncate">{u.name}</p>
-                      <p className="text-[#6B7280] text-xs truncate">{u.email}</p>
-                      {u.businessName && <p className="text-orange-400 text-xs truncate">{u.businessName}</p>}
-                    </div>
+              <div key={u._id} onClick={() => setSelected(u)}
+                className={`group flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-[#1A1B1E] hover:bg-[#2A2B2F]/80 border border-white/5 hover:border-white/10 rounded-xl cursor-pointer transition-all gap-4 sm:gap-6 ${isPending ? "border-l-2 border-l-yellow-500 bg-yellow-500/[0.02]" : ""}`}>
+                
+                {/* Identity */}
+                <div className="flex items-center gap-4 sm:w-1/3 min-w-0">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg font-black shrink-0 bg-gradient-to-br ${rc.color} shadow-lg`}>
+                    {u.profileImage ? <img src={u.profileImage.startsWith("http") ? u.profileImage : `${API_BASE}${u.profileImage}`} className="w-full h-full object-cover rounded-lg" /> : <span>{u.name?.[0]?.toUpperCase()}</span>}
                   </div>
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${rc.badge}`}>
-                      {rc.label}
-                    </span>
-                    {isPending && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
-                        Pending
-                      </span>
-                    )}
-                    {u.isActive === false && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/20">
-                        Inactive
-                      </span>
-                    )}
+                  <div className="min-w-0 flex flex-col">
+                    <span className="text-sm text-white font-bold truncate leading-tight">{u.name}</span>
+                    <span className="text-xs text-[#8E929C] truncate leading-tight mt-0.5">{u.email}</span>
+                    {u.businessName && <span className="text-[10px] text-orange-400 font-bold uppercase tracking-wide truncate mt-1">{u.businessName}</span>}
                   </div>
                 </div>
 
-                {/* Meta */}
-                <div className="mt-3 flex flex-wrap gap-2 text-[10px] text-[#8E929C]">
-                  {u.phone && <span className="flex items-center gap-1"><FaPhone />{u.phone}</span>}
-                  {u.location?.city && <span className="flex items-center gap-1"><FaMapMarkerAlt />{u.location.city}</span>}
-                  <span className="flex items-center gap-1"><FaClock />{new Date(u.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
+                {/* Role & Status */}
+                <div className="flex items-center gap-2 sm:w-1/4 flex-wrap shrink-0">
+                  <span className={`px-2 py-1 rounded text-[10px] font-bold border uppercase tracking-widest ${rc.badge}`}>{rc.label}</span>
+                  {isPending && <span className="px-2 py-1 rounded text-[10px] font-bold bg-yellow-500/15 text-yellow-400 border border-yellow-500/20 uppercase tracking-widest">Pending</span>}
+                  {u.isActive === false && <span className="px-2 py-1 rounded text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/20 uppercase tracking-widest">Inactive</span>}
                 </div>
 
-                {/* Indicators */}
-                <div className="mt-3 flex items-center justify-between">
-                  <div className="flex gap-1.5">
-                    {hasLegalDocs && (
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-500/10 text-blue-400 flex items-center gap-1">
-                        <FaIdCard className="text-[8px]" /> Docs
-                      </span>
-                    )}
-                    {docCount > 0 && (
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-purple-500/10 text-purple-400 flex items-center gap-1">
-                        <FaFileAlt className="text-[8px]" /> {docCount} file{docCount !== 1 ? "s" : ""}
-                      </span>
-                    )}
+                {/* Contact */}
+                <div className="flex flex-col sm:w-1/4 text-xs text-[#8E929C] shrink-0">
+                   <span className="truncate flex items-center gap-2"><FaPhone className="text-[10px] text-[#6B7280]"/> {u.phone || "No Phone"}</span>
+                   <span className="truncate flex items-center gap-2 mt-1"><FaMapMarkerAlt className="text-[10px] text-[#6B7280]"/> {u.location?.city || u.pincode ? `${u.location?.city || ''} ${u.pincode || ''}` : "No Location Details"}</span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center justify-between sm:justify-end gap-4 sm:w-[15%] shrink-0">
+                  <div className="flex items-center gap-2">
+                    {hasLegalDocs && <FaIdCard className="text-blue-400 text-xs" title="Has Legal Identifiers" />}
+                    {docCount > 0 && <FaFileAlt className="text-purple-400 text-xs" title={`${docCount} verified documents`} />}
                   </div>
-                  <div className="flex gap-1.5" onClick={e => e.stopPropagation()}>
+                  
+                  <div className="flex gap-2" onClick={e => e.stopPropagation()}>
                     {isPending && (
-                      <button onClick={() => handleApprove(u._id)} disabled={actionLoading}
-                        className="px-2 py-1 bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg text-[10px] font-bold hover:bg-green-500/30 transition-all">
-                        Approve
-                      </button>
+                      <button onClick={() => handleApprove(u._id)} disabled={actionLoading} className="px-3 py-1.5 bg-green-500/20 hover:bg-green-500/40 text-green-400 rounded-lg text-xs font-bold transition-all border border-green-500/30">Approve</button>
                     )}
-                    <button onClick={() => handleToggle(u._id)} disabled={actionLoading}
-                      className={`p-1.5 rounded-lg transition-all text-sm ${u.isActive !== false ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20" : "bg-gray-500/10 text-[#8E929C] hover:bg-gray-500/20"}`}
-                      title={u.isActive !== false ? "Deactivate" : "Activate"}>
-                      {u.isActive !== false ? <FaToggleOn /> : <FaToggleOff />}
+                    <button onClick={() => handleToggle(u._id)} disabled={actionLoading} className={`p-2 rounded-lg transition-all flex items-center justify-center border ${u.isActive !== false ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/30 border-emerald-500/20" : "bg-gray-500/10 text-[#8E929C] hover:bg-gray-500/30 border-gray-500/20"}`} title={u.isActive !== false ? "Deactivate User" : "Activate User"}>
+                      {u.isActive !== false ? <FaToggleOn className="text-lg"/> : <FaToggleOff className="text-lg"/>}
                     </button>
                   </div>
                 </div>
+
               </div>
-            );
+            )
           })}
         </div>
       )}
 
-      {/* ─── DETAIL MODAL ──────────────────────────────────────── */}
+      {/* ─── DETAILED COMPREHENSIVE MODAL ─────────────────────────────────────── */}
       {selected && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0d1225] border border-white/10 rounded-3xl w-full max-w-3xl  my-8" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[#1A1B1E] border border-white/10 rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
             {(() => {
               const u = selected;
               const rc = roleConfig[u.role] || roleConfig.customer;
               const isPending = u.isApproved === false && u.role !== "customer" && u.role !== "admin";
-
-              // collect all docs
               const docs = [];
               if (u.shopBanner) docs.push({ label: "Shop Banner", url: u.shopBanner });
               if (u.verificationDocuments?.length) {
@@ -294,169 +267,190 @@ const UserManagement = () => {
               }
 
               return (
-                <>
-                  {/* Modal Header */}
-                  <div className={`relative rounded-t-3xl p-6 bg-gradient-to-br ${rc.color} overflow-hidden`}>
-                    <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_top_right,white,transparent)]" />
-                    <div className="relative flex items-start justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-[#1A1B1E] border border-[#2A2B2F]/20 flex items-center justify-center text-white text-2xl font-black border border-white/30 overflow-hidden">
-                          {u.profileImage ? (
-                            <img src={u.profileImage.startsWith("http") ? u.profileImage : `${API_BASE}${u.profileImage}`} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            <span>{u.name?.[0]?.toUpperCase()}</span>
-                          )}
-                        </div>
-                        <div>
-                          <h2 className="text-xl font-black text-white">{u.name}</h2>
-                          {u.businessName && <p className="text-white/80 text-sm">{u.businessName}</p>}
-                          <div className="flex gap-2 mt-1 flex-wrap">
-                            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#1A1B1E] border border-[#2A2B2F]/20 text-white">{rc.label}</span>
-                            {isPending && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-400/30 text-yellow-100">Pending Approval</span>}
-                            {u.isActive === false && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/40 text-red-100">Inactive</span>}
-                            {u.isApproved && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-green-400/30 text-green-100">Verified</span>}
-                          </div>
+                <div className="flex flex-col h-full">
+                  {/* Detailed Standard Header */}
+                  <div className={`shrink-0 relative p-6 bg-gradient-to-r ${rc.color} flex items-center justify-between`}>
+                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_bottom_left,white,transparent)]" />
+                    <div className="relative flex items-center gap-5">
+                      <div className="w-16 h-16 rounded-2xl bg-[#1A1B1E] flex items-center justify-center text-white text-2xl font-black border-2 border-white/20 overflow-hidden shadow-xl">
+                        {u.profileImage ? <img src={u.profileImage.startsWith("http") ? u.profileImage : `${API_BASE}${u.profileImage}`} className="w-full h-full object-cover" /> : <span>{u.name?.[0]?.toUpperCase()}</span>}
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-black text-white leading-tight">{u.name}</h2>
+                        {u.businessName && <p className="text-white/90 text-sm font-semibold tracking-wide">{u.businessName}</p>}
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-black/30 border border-white/20 text-white uppercase tracking-wider">{rc.label}</span>
+                          {isPending && <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-yellow-400/90 text-black uppercase tracking-wider shadow-sm">Pending Approval</span>}
+                          {u.isActive === false && <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-red-500/90 text-white uppercase tracking-wider shadow-sm">Account Deactivated</span>}
                         </div>
                       </div>
-                      <button onClick={() => setSelected(null)} className="w-8 h-8 rounded-xl bg-[#1A1B1E] border border-[#2A2B2F]/20 flex items-center justify-center text-white hover:bg-[#1A1B1E] border border-[#2A2B2F]/30 transition-all shrink-0">
-                        <FaTimes />
-                      </button>
                     </div>
+                    <button onClick={() => setSelected(null)} className="relative w-10 h-10 rounded-xl bg-black/20 hover:bg-black/40 border border-white/20 flex items-center justify-center text-white transition-all text-lg shrink-0">
+                      <FaTimes />
+                    </button>
                   </div>
 
-                  <div className="p-6 space-y-6">
-                    {/* Action Bar */}
-                    <div className="flex flex-wrap gap-2">
-                      {isPending && (
-                        <button onClick={() => handleApprove(u._id)} disabled={actionLoading}
-                          className="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-60">
-                          <FaUserCheck /> Approve Partner
-                        </button>
-                      )}
-                      <button onClick={() => handleToggle(u._id)} disabled={actionLoading}
-                        className={`flex items-center gap-2 px-4 py-2.5 font-bold rounded-xl text-sm transition-all disabled:opacity-60 ${u.isActive !== false ? "bg-orange-500/20 text-orange-400 border border-orange-500/30 hover:bg-orange-500/30" : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"}`}>
-                        {u.isActive !== false ? <><FaBan /> Deactivate</> : <><FaToggleOn /> Activate</>}
-                      </button>
-                      <div className="flex items-center gap-2 bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl px-3 py-2">
-                        <span className="text-xs text-[#6B7280]">Role:</span>
+                  {/* Body Content */}
+                  <div className="overflow-y-auto p-6 space-y-6">
+                    
+                    {/* Floating Controls */}
+                    <div className="flex flex-wrap items-center gap-3 p-3 bg-[#0a0f1e]/50 border border-white/5 rounded-xl">
+                      <div className="flex items-center gap-3 bg-[#1A1B1E] border border-white/10 rounded-lg px-3 py-2 sm:max-w-xs w-full sm:w-auto">
+                        <span className="text-xs text-[#6B7280] font-bold uppercase tracking-wider">Role Matrix:</span>
                         <select value={u.role} onChange={e => handleRoleChange(u._id, e.target.value)}
-                          className="bg-transparent text-sm text-white focus:outline-none" disabled={actionLoading}>
+                          className="bg-transparent text-sm font-bold text-white focus:outline-none w-full cursor-pointer uppercase tracking-wide" disabled={actionLoading}>
                           {["customer", "seller", "delivery", "provider", "architect", "admin"].map(r => (
-                            <option key={r} value={r} className="bg-[#0d1225] capitalize">{r}</option>
+                            <option key={r} value={r} className="bg-[#1A1B1E] text-white">{r}</option>
                           ))}
                         </select>
                       </div>
+                      
+                      {isPending && (
+                        <button onClick={() => handleApprove(u._id)} disabled={actionLoading}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-400 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-green-500/20 flex-1 sm:flex-none justify-center">
+                          <FaUserCheck /> Approve
+                        </button>
+                      )}
+                      
+                      <button onClick={() => handleToggle(u._id)} disabled={actionLoading}
+                        className={`flex items-center gap-2 px-4 py-2 font-bold rounded-lg text-sm transition-all border flex-1 sm:flex-none justify-center ${u.isActive !== false ? "bg-orange-500/10 text-orange-400 border-orange-500/30 hover:bg-orange-500/20" : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20"}`}>
+                        {u.isActive !== false ? <><FaBan /> Deactivate</> : <><FaToggleOn /> Activate</>}
+                      </button>
+
                       <button onClick={() => handleDelete(u._id)} disabled={actionLoading}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 font-bold rounded-xl text-sm transition-all ml-auto disabled:opacity-60">
-                        <FaTrash /> Delete
+                        className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 font-bold rounded-lg text-sm transition-all sm:ml-auto w-full sm:w-auto justify-center">
+                        <FaTrash /> Delete Permanently
                       </button>
                     </div>
 
-                    {/* Grid: Contact + Account */}
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {/* Contact Info */}
-                      <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider flex items-center gap-2"><FaUser /> Contact Info</h3>
-                        <InfoRow icon={<FaEnvelope />} label="Email" value={u.email} />
-                        <InfoRow icon={<FaPhone />} label="Phone" value={u.phone} />
-                        <InfoRow icon={<FaMapMarkerAlt />} label="Address" value={u.address} />
-                        <InfoRow icon={<FaMapMarkerAlt />} label="Pincode" value={u.pincode} />
-                        {u.location?.city && <InfoRow icon={<FaMapMarkerAlt />} label="City" value={u.location.city} />}
-                        {u.bio && <InfoRow icon={<FaUser />} label="Bio" value={u.bio} />}
+                    {/* Information Grids */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      
+                      {/* Identity Group */}
+                      <div className="bg-[#0a0f1e]/30 border border-white/5 rounded-xl p-5">
+                         <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-widest flex items-center gap-2 mb-4"><FaUser /> Basics & Contact</h3>
+                         <div className="space-y-4">
+                            <InfoRow icon={<FaEnvelope />} label="Email Address" value={u.email} />
+                            <InfoRow icon={<FaPhone />} label="Phone Number" value={u.phone} />
+                            <InfoRow icon={<FaMapMarkerAlt />} label="Address" value={u.address} />
+                            <InfoRow icon={<FaMapMarkerAlt />} label="City / Region" value={u.location?.city || u.pincode ? `${u.location?.city || ''} ${u.pincode || ''}` : null} />
+                         </div>
                       </div>
 
-                      {/* Account Info */}
-                      <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider flex items-center gap-2"><FaChartBar /> Account Info</h3>
-                        <InfoRow icon={<FaClock />} label="Joined" value={new Date(u.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} />
-                        <InfoRow icon={<FaShieldAlt />} label="Status" value={u.isActive !== false ? "Active" : "Inactive"} />
-                        <InfoRow icon={<FaCheckCircle />} label="Approval" value={u.isApproved ? "Approved ✅" : "Pending ⏳"} />
-                        {u.aadhaarNumber && <InfoRow icon={<FaIdCard />} label="Aadhaar" value={`****${u.aadhaarNumber.slice(-4)}`} />}
-                      </div>
+                      {/* Specialist Group */}
+                      {(u.role === "seller" || u.role === "delivery" || u.role === "provider" || u.role === "architect") ? (
+                        <div className={`bg-gradient-to-br ${rc.color} hover:bg-opacity-10 bg-opacity-5 border border-white/10 rounded-xl p-5 relative overflow-hidden transition-all`}>
+                          <div className="absolute inset-0 bg-[#0a0f1e]/80" />
+                          <div className="relative">
+                            <h3 className={`text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-4 text-${rc.color.split("-")[1]}-400`}>
+                              {rc.icon} Professional Details
+                            </h3>
+                            <div className="space-y-4">
+                              {u.role === "seller" && (
+                                <>
+                                  <InfoRow icon={<FaBuilding />} label="Business Legal Name" value={u.businessName} />
+                                  <InfoRow icon={<FaBuilding />} label="Business Category" value={u.businessCategory} />
+                                  <InfoRow icon={<FaIdCard />} label="GSTIN Number" value={u.gstNumber} />
+                                  <InfoRow icon={<FaIdCard />} label="PAN Number" value={u.panNumber} />
+                                  <InfoRow icon={<FaIdCard />} label="Trade / FSSAI License" value={u.tradeLicenseNumber || u.fssaiLicense ? `${u.tradeLicenseNumber || 'N/A'} / ${u.fssaiLicense || 'N/A'}` : null} />
+                                  <InfoRow icon={<FaUniversity />} label="Banking Info (IFSC)" value={u.ifscCode ? `Bank A/C Linked (IFSC: ${u.ifscCode})` : null} />
+                                </>
+                              )}
+                              {u.role === "delivery" && (
+                                <>
+                                  <InfoRow icon={<FaCar />} label="Registered Vehicle" value={u.vehicleType} />
+                                  <InfoRow icon={<FaIdCard />} label="Driving License" value={u.licenseNumber} />
+                                  <InfoRow icon={<FaIdCard />} label="RC Book Reference" value={u.rcBookNumber} />
+                                  <InfoRow icon={<FaMapMarkerAlt />} label="Service Area Pincode" value={u.deliveryAreaPincode} />
+                                </>
+                              )}
+                              {u.role === "provider" && (
+                                <>
+                                  <InfoRow icon={<FaWrench />} label="Service Category" value={u.serviceCategory} />
+                                  <InfoRow icon={<FaChartBar />} label="Experience Level" value={u.experience} />
+                                  <InfoRow icon={<FaBuilding />} label="Service Description" value={u.serviceDescription} />
+                                </>
+                              )}
+                              {u.role === "architect" && (
+                                <>
+                                  <InfoRow icon={<FaIdCard />} label="COA Registration Number" value={u.coaRegistration} />
+                                  <InfoRow icon={<FaPhone />} label="Professional Contact" value={u.contactInfo} />
+                                  <InfoRow icon={<FaWrench />} label="Specialized Skills" value={u.skills?.join(", ")} />
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-[#0a0f1e]/30 border border-white/5 rounded-xl p-5">
+                           <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-widest flex items-center gap-2 mb-4"><FaChartBar /> Additional Context</h3>
+                           <div className="space-y-4">
+                             <InfoRow icon={<FaShieldAlt />} label="Account Standing" value={u.isActive !== false ? "Active ✅" : "Suspended ❌"} />
+                             <InfoRow icon={<FaUser />} label="Personal Bio" value={u.bio} />
+                             {u.aadhaarNumber && <InfoRow icon={<FaIdCard />} label="Aadhaar Info" value={`Masked: **** **** ${u.aadhaarNumber.slice(-4)}`} />}
+                           </div>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Role-specific: Seller */}
-                    {u.role === "seller" && (
-                      <div className="bg-emerald-500/5 border border-emerald-500/15 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2"><FaStore /> Seller / Business Info</h3>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                          <InfoRow icon={<FaBuilding />} label="Business Name" value={u.businessName} />
-                          <InfoRow icon={<FaBuilding />} label="Business Category" value={u.businessCategory} />
-                          <InfoRow icon={<FaBuilding />} label="Business Address" value={u.businessAddress} />
-                          <InfoRow icon={<FaIdCard />} label="GST Number" value={u.gstNumber} />
-                          <InfoRow icon={<FaIdCard />} label="PAN Number" value={u.panNumber} />
-                          <InfoRow icon={<FaIdCard />} label="Company Reg. No." value={u.companyRegistrationNumber} />
-                          <InfoRow icon={<FaIdCard />} label="Trade License" value={u.tradeLicenseNumber} />
-                          <InfoRow icon={<FaIdCard />} label="FSSAI License" value={u.fssaiLicense} />
-                          <InfoRow icon={<FaUniversity />} label="Bank Account" value={u.bankAccount ? `****${u.bankAccount.slice(-4)}` : null} />
-                          <InfoRow icon={<FaUniversity />} label="IFSC Code" value={u.ifscCode} />
-                        </div>
-                      </div>
-                    )}
+                    {/* Metadata Strip */}
+                    <div className="bg-[#0a0f1e]/30 border border-white/5 rounded-xl p-5 flex flex-wrap gap-8 items-center">
+                       <div>
+                         <p className="text-[10px] text-[#8E929C] uppercase tracking-wider mb-1 flex items-center gap-1.5"><FaClock /> Registration Date</p>
+                         <p className="text-sm font-semibold text-gray-200">{new Date(u.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", hour: '2-digit', minute:'2-digit' })}</p>
+                       </div>
+                       
+                       {/* Do not show Approval for Customers and Admins since they aren't bound to vetting workflows */}
+                       {(u.role !== 'customer' && u.role !== 'admin') && (
+                         <div>
+                           <p className="text-[10px] text-[#8E929C] uppercase tracking-wider mb-1 flex items-center gap-1.5"><FaCheckCircle className={u.isApproved ? "text-green-500" : "text-yellow-500"} /> Vetting Status</p>
+                           <p className={`text-sm font-semibold ${u.isApproved ? "text-green-400" : "text-yellow-400"}`}>{u.isApproved ? "Approved ✅" : "Pending Evaluation ⏳"}</p>
+                         </div>
+                       )}
 
-                    {/* Role-specific: Delivery */}
-                    {u.role === "delivery" && (
-                      <div className="bg-blue-500/5 border border-blue-500/15 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2"><FaTruck /> Delivery Partner Info</h3>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                          <InfoRow icon={<FaCar />} label="Vehicle Type" value={u.vehicleType} />
-                          <InfoRow icon={<FaIdCard />} label="License Number" value={u.licenseNumber} />
-                          <InfoRow icon={<FaIdCard />} label="RC Book Number" value={u.rcBookNumber} />
-                          <InfoRow icon={<FaMapMarkerAlt />} label="Delivery Area Pincode" value={u.deliveryAreaPincode} />
-                        </div>
-                      </div>
-                    )}
+                       <div>
+                         <p className="text-[10px] text-[#8E929C] uppercase tracking-wider mb-1 flex items-center gap-1.5"><FaIdCard /> System UUID</p>
+                         <p className="text-xs font-mono text-gray-400 bg-black/40 px-2 py-1 rounded">{u._id}</p>
+                       </div>
+                    </div>
 
-                    {/* Role-specific: Provider */}
-                    {u.role === "provider" && (
-                      <div className="bg-purple-500/5 border border-purple-500/15 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2"><FaWrench /> Service Provider Info</h3>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                          <InfoRow icon={<FaWrench />} label="Service Category" value={u.serviceCategory} />
-                          <InfoRow icon={<FaChartBar />} label="Experience" value={u.experience} />
-                          <InfoRow icon={<FaBuilding />} label="Description" value={u.serviceDescription} />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Role-specific: Architect */}
-                    {u.role === "architect" && (
-                      <div className="bg-pink-500/5 border border-pink-500/15 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-pink-400 uppercase tracking-wider flex items-center gap-2"><FaHardHat /> Architect Info</h3>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                          <InfoRow icon={<FaIdCard />} label="COA Registration" value={u.coaRegistration} />
-                          <InfoRow icon={<FaPhone />} label="Contact Info" value={u.contactInfo} />
-                          <InfoRow icon={<FaWrench />} label="Skills" value={u.skills?.join(", ")} />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Submitted Documents */}
-                    {docs.length > 0 && (
-                      <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 rounded-2xl p-4 space-y-3">
-                        <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-wider flex items-center gap-2">
-                          <FaFileAlt /> Uploaded Documents ({docs.length})
+                    {/* Regulatory Documents */}
+                    {docs.length > 0 ? (
+                      <div className="bg-[#0a0f1e]/30 border border-white/5 rounded-xl p-5">
+                        <h3 className="text-xs font-bold text-[#6B7280] uppercase tracking-widest flex items-center gap-2 mb-4">
+                          <FaFileAlt /> Provided Records ({docs.length})
                         </h3>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                          {docs.map((d, i) => <DocCard key={i} label={d.label} url={d.url} />)}
+                        {/* Enhanced Docs Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {docs.map((d, i) => (
+                            <div key={i} className="flex items-center gap-3 bg-[#1A1B1E] border border-white/10 rounded-lg p-3 group">
+                              <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center shrink-0">
+                                <FaFileAlt className="text-blue-500 text-lg" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <span className="text-sm font-bold text-gray-200 block truncate">{d.label}</span>
+                                <span className="text-[10px] text-gray-500">Encrypted Asset</span>
+                              </div>
+                              <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <a href={d.url.startsWith("http") ? d.url : `${API_BASE}${d.url}`} target="_blank" rel="noreferrer" className="p-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white rounded"><FaEye className="text-[10px]"/></a>
+                                <a href={d.url.startsWith("http") ? d.url : `${API_BASE}${d.url}`} download className="p-1.5 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white rounded"><FaDownload className="text-[10px]"/></a>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        {isPending && (
-                          <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
-                            <p className="text-yellow-400 text-xs font-semibold">⚠️ Verify documents above before approving this partner account.</p>
-                          </div>
-                        )}
                       </div>
+                    ) : (
+                      (u.role !== "customer" && u.role !== "admin") && (
+                        <div className="bg-orange-500/5 border border-orange-500/20 border-dashed rounded-xl p-6 text-center">
+                          <FaFileAlt className="text-3xl text-orange-500/50 mx-auto mb-2" />
+                          <p className="text-orange-400 text-xs font-bold uppercase tracking-widest">No Legal Identifiers/Documents Present</p>
+                          <p className="text-[#8E929C] text-xs mt-1">This user has not completed uploading physical verification items.</p>
+                        </div>
+                      )
                     )}
 
-                    {/* No docs placeholder for partners */}
-                    {docs.length === 0 && u.role !== "customer" && u.role !== "admin" && (
-                      <div className="bg-[#1A1B1E] border border-[#2A2B2F]/[0.03] border border-white/5 border-dashed rounded-2xl p-6 text-center">
-                        <FaFileAlt className="text-3xl text-[#8E929C] mx-auto mb-2" />
-                        <p className="text-[#8E929C] text-sm">No documents submitted by this partner</p>
-                      </div>
-                    )}
                   </div>
-                </>
+                </div>
               );
             })()}
           </div>

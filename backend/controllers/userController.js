@@ -52,6 +52,15 @@ const createUser = async (req, res) => {
     } = req.body;
     const email = req.body.email?.toLowerCase();
 
+    if (!name || !email || !password || !phone) {
+        return res.status(400).json({ message: "Name, email, password, and phone number are strictly required for security." });
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({ message: "Weak Password. Must be at least 8 characters, include an uppercase, a lowercase, a number, and a special character." });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "Email already registered" });
 

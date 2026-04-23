@@ -116,11 +116,28 @@ const SinglePost = () => {
 
     const isLikedByMe = user && post.likes.includes(user._id);
 
+    const decodeHTMLEntities = (text) => {
+        if (!text) return "";
+        const textarea = document.createElement("textarea");
+        textarea.innerHTML = text;
+        return textarea.value;
+    };
+
     // Dynamic Meta Tags & Structured Data
     const pageTitle = `${post.title} | Stinchar Community`;
-    const pageDesc = post.metaDescription || post.content?.substring(0, 155).replace(/<[^>]*>?/gm, '') || "Explore construction and design insights on Stinchar.";
+    
+    // Clean description & decode HTML entities
+    const rawDesc = post.metaDescription || post.content?.substring(0, 155).replace(/<[^>]*>?/gm, '') || "Explore construction and design insights on Stinchar.";
+    const pageDesc = decodeHTMLEntities(rawDesc);
+    
     const pageUrl = `${window.location.origin}/community/post/${post.slug || post._id}`;
-    const pageImg = getOptimizedImage(post.image) || "https://stinchar.com/default-preview.jpg";
+    
+    // Ensure accurate absolute image URL
+    const rawImg = getOptimizedImage(post.image);
+    let pageImg = "https://stinchar.com/default-preview.jpg";
+    if (rawImg) {
+        pageImg = rawImg.startsWith('http') ? rawImg : `${window.location.origin}${rawImg.startsWith('/') ? '' : '/'}${rawImg}`;
+    }
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -136,16 +153,36 @@ const SinglePost = () => {
         }]
     };
 
-    const decodeHTMLEntities = (text) => {
-        if (!text) return "";
-        const textarea = document.createElement("textarea");
-        textarea.innerHTML = text;
-        return textarea.value;
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": window.location.origin
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Community",
+                "item": `${window.location.origin}/community`
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": post.title,
+                "item": pageUrl
+            }
+        ]
     };
 
     const SEO = (
         <Helmet>
+            {/* Meta Title */}
             <title>{pageTitle}</title>
+            <meta name="title" content={pageTitle} />
             <meta name="description" content={pageDesc} />
             <link rel="canonical" href={pageUrl} />
             
@@ -164,7 +201,7 @@ const SinglePost = () => {
 
             {/* JSON-LD Structured Data */}
             <script type="application/ld+json">
-                {JSON.stringify(jsonLd)}
+                {JSON.stringify([jsonLd, breadcrumbJsonLd])}
             </script>
         </Helmet>
     );
@@ -292,7 +329,7 @@ const SinglePost = () => {
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                             }}>
                                 {post.author?.profileImage
-                                    ? <img src={post.author.profileImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ? <img src={post.author.profileImage} alt={`${post.author?.name ? post.author.name + "'s Profile" : "Author Profile"}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     : <span style={{ fontSize: '13px', fontWeight: 900, color: 'rgba(255,255,255,0.4)' }}>{post.author?.name?.charAt(0) || 'A'}</span>
                                 }
                             </div>
@@ -459,7 +496,7 @@ const SinglePost = () => {
                                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             }}>
                                                 {comment.user?.profileImage
-                                                    ? <img src={comment.user.profileImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    ? <img src={comment.user.profileImage} alt={`${comment.user?.name ? comment.user.name + "'s avatar" : "User avatar"}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                     : <span style={{ fontSize: '11px', fontWeight: 900, color: 'rgba(255,255,255,0.35)' }}>{comment.user?.name?.charAt(0) || 'U'}</span>
                                                 }
                                             </div>
@@ -749,7 +786,7 @@ const SinglePost = () => {
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                             }}>
                                 {post.author?.profileImage
-                                    ? <img src={getOptimizedImage(post.author.profileImage, 200)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} {...lazyImageProps} />
+                                    ? <img src={getOptimizedImage(post.author.profileImage, 200)} alt={`${post.author?.name ? post.author.name + "'s avatar" : "Author avatar"}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} {...lazyImageProps} />
                                     : <span style={{ fontSize: '15px', fontWeight: 900, color: '#ff5c00' }}>{post.author?.name?.charAt(0) || 'A'}</span>
                                 }
                             </div>
@@ -833,7 +870,7 @@ const SinglePost = () => {
                                 <motion.div key={comment._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '20px' }}>
                                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
                                         <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {comment.user?.profileImage ? <img src={getOptimizedImage(comment.user.profileImage, 100)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} {...lazyImageProps} /> : <span style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)' }}>{comment.user?.name?.charAt(0) || 'U'}</span>}
+                                            {comment.user?.profileImage ? <img src={getOptimizedImage(comment.user.profileImage, 100)} alt={`${comment.user?.name ? comment.user.name + "'s avatar" : "User avatar"}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} {...lazyImageProps} /> : <span style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)' }}>{comment.user?.name?.charAt(0) || 'U'}</span>}
                                         </div>
                                         <div style={{ flex: 1 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>

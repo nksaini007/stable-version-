@@ -98,8 +98,11 @@ function Signup() {
 
   const nextStep = () => {
     if (step === 1 && !isEmailVerified) { setError("Please verify your email to continue."); return; }
+    if (step === 1 && !form.phone) { setError("Phone number is strictly required."); return; }
+    if (step === 1 && form.phone.length < 10) { setError("Please enter a valid 10-digit phone number."); return; }
     if (step === 2 && (!form.name || !form.password)) { setError("Name and password are required."); return; }
-    if (step === 2 && form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (step === 2 && !passwordRegex.test(form.password)) { setError("Password must be at least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char."); return; }
     setError(""); setStep(step + 1);
   };
   const prevStep = () => { setError(""); setStep(step - 1); };
@@ -185,7 +188,7 @@ function Signup() {
               )}
 
               <div className="flex flex-col mt-2">
-                <input name="phone" placeholder="Phone Number (optional)" value={form.phone} onChange={handleChange} maxLength={10} className={inputCls} />
+                <input name="phone" placeholder="Phone Number *" value={form.phone} onChange={(e) => setForm({...form, phone: e.target.value.replace(/\D/g,'').substring(0,10)})} maxLength={10} required className={inputCls} />
               </div>
             </>
           )}
@@ -203,7 +206,7 @@ function Signup() {
                 <input name="name" type="text" placeholder="Full Name *" value={form.name} onChange={handleChange} required className={inputCls} />
               </div>
               <div className="flex flex-col">
-                <input name="password" type="password" placeholder="Password (Min 6 chars) *" value={form.password} onChange={handleChange} required minLength={6} className={inputCls} />
+                <input name="password" type="password" placeholder="Strong Password (Min 8 chars, 1 Uppercase, 1 Symbol) *" value={form.password} onChange={handleChange} required minLength={8} className={inputCls} />
               </div>
             </>
           )}

@@ -1,6 +1,17 @@
 {
   "rewrites": [
     {
+      "source": "/community/post/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(bot|whatsapp|facebookexternalhit|twitter|linkedin|skype|slack|preview).*"
+        }
+      ],
+      "destination": "https://stinchar-backend.onrender.com/api/posts/seo-preview/:slug"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "https://stinchar-backend.onrender.com/api/$1"
     },

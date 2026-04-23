@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import API from '../api/api';
 import { AuthContext } from '../context/AuthContext';
 import { FaCrosshairs, FaCommentDots, FaShareAlt, FaPaperPlane, FaTrash } from 'react-icons/fa';
@@ -30,6 +31,9 @@ const PixelHeart = ({ filled }) => (
 const CommunityFeed = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const { user } = useContext(AuthContext);
     const [activeCommentId, setActiveCommentId] = useState(null);
     const [expandedPostId, setExpandedPostId] = useState(null);
@@ -69,17 +73,42 @@ const CommunityFeed = () => {
     };
 
     useEffect(() => {
-        fetchPosts();
+        fetchPosts(1);
     }, []);
 
-    const fetchPosts = async () => {
+    const fetchPosts = async (pageNum = 1) => {
         try {
-            const { data } = await API.get('/posts');
-            setPosts(data);
+            if (pageNum === 1) setLoading(true);
+            else setLoadingMore(true);
+
+            const { data } = await API.get(`/posts?page=${pageNum}&limit=10`);
+            
+            if (pageNum === 1) {
+                setPosts(data.posts || data);
+            } else {
+                if (data.posts) {
+                    setPosts(prev => [...prev, ...data.posts]);
+                }
+            }
+
+            if (data.hasMore !== undefined) {
+                setHasMore(data.hasMore);
+            } else {
+                setHasMore(false);
+            }
         } catch (error) {
             console.error("Error loading posts", error);
         } finally {
             setLoading(false);
+            setLoadingMore(false);
+        }
+    };
+
+    const loadMore = () => {
+        if (!loadingMore && hasMore) {
+            const nextPage = page + 1;
+            setPage(nextPage);
+            fetchPosts(nextPage);
         }
     };
 
@@ -139,6 +168,15 @@ const CommunityFeed = () => {
 
     return (
         <div className="bg-[#e5e5e5] min-h-screen flex flex-col font-mono selection:bg-[#ff5c00] selection:text-black tech-grid">
+            <Helmet>
+                <title>Community & Insights | Stinchar</title>
+                <meta name="title" content="Community & Insights | Stinchar" />
+                <meta name="description" content="Explore construction insights, architectural blogs, and daily community updates on the Stinchar Community platform." />
+                <meta property="og:title" content="Community & Insights | Stinchar" />
+                <meta property="og:description" content="Explore construction insights, architectural blogs, and daily community updates on the Stinchar Community platform." />
+                <meta name="twitter:title" content="Community & Insights | Stinchar" />
+                <meta name="twitter:description" content="Explore construction insights, architectural blogs, and daily community updates on the Stinchar Community platform." />
+            </Helmet>
             <Nev />
             <div className="scanline"></div>
 
@@ -186,7 +224,7 @@ const CommunityFeed = () => {
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10  flex items-center justify-center font-heading text-xl bg-black text-white shrink-0 overflow-hidden">
                                                     {post.author?.profileImage ? (
-                                                        <img src={`${post.author.profileImage}`} alt="author" className="w-full h-full object-cover" />
+                                                        <img src={`${post.author.profileImage}`} alt={`${post.author?.name ? post.author.name + "'s avatar" : "Author avatar"}`} className="w-full h-full object-cover" />
                                                     ) : (
                                                         post.author?.name ? post.author.name.charAt(0).toUpperCase() : "S"
                                                     )}
@@ -205,9 +243,9 @@ const CommunityFeed = () => {
                                         <div className="flex-1 flex flex-col overflow-hidden">
                                             {/* Image */}
                                             {post.image && (
-                                                <div
-                                                    className="w-full bg-black/5  relative overflow-hidden flex items-center justify-center shrink-0 cursor-pointer group/img"
-                                                    onClick={() => navigate(`/community/post/${post.slug || post._id}`)}
+                                                <Link
+                                                    to={`/community/post/${post.slug || post._id}`}
+                                                    className="w-full bg-black/5  relative overflow-hidden flex items-center justify-center shrink-0 group/img focus:outline-none block"
                                                 >
                                                     <img
                                                         src={`${post.image}`}
@@ -215,7 +253,7 @@ const CommunityFeed = () => {
                                                         className={`w-full object-cover transition-all duration-700 group-hover/img:scale-105 h-auto md:h-56`}
                                                     />
                                                     <div className="hidden md:block absolute inset-0  border-white/5 pointer-events-none"></div>
-                                                </div>
+                                                </Link>
                                             )}
 
                                             {/* Title & Body */}
@@ -225,14 +263,18 @@ const CommunityFeed = () => {
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-[7px] font-black bg-purple-600 text-white px-2.5 py-1 tracking-widest uppercase rounded-full">BLOG</span>
                                                         </div>
-                                                        <h3 className="text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter">{post.title}</h3>
-                                                        <div className="mt-3 flex items-center gap-2 text-[8px] font-black text-[#ff5c00] uppercase tracking-widest border-b border-[#ff5c00]/40 w-fit pb-0.5">
+                                                        <Link to={`/community/post/${post.slug || post._id}`} className="block focus:outline-none">
+                                                            <h3 className="text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter hover:text-[#ff5c00] transition-colors">{post.title}</h3>
+                                                        </Link>
+                                                        <Link to={`/community/post/${post.slug || post._id}`} className="mt-3 flex items-center gap-2 text-[8px] font-black text-[#ff5c00] uppercase tracking-widest border-b border-[#ff5c00]/40 w-fit pb-0.5 hover:border-[#ff5c00]">
                                                             READ FULL BLOG →
-                                                        </div>
+                                                        </Link>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <h3 className="text-xl md:text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter line-clamp-3 md:line-clamp-2">{post.title}</h3>
+                                                        <Link to={`/community/post/${post.slug || post._id}`} className="block focus:outline-none">
+                                                            <h3 className="text-xl md:text-lg font-heading font-black text-black leading-[1.1] uppercase tracking-tighter line-clamp-3 md:line-clamp-2 hover:text-[#ff5c00] transition-colors">{post.title}</h3>
+                                                        </Link>
                                                         <div className="text-black/70 text-[13px] md:text-[9px] font-bold leading-relaxed uppercase">
                                                             <p className={`${!isExpanded ? 'line-clamp-4 md:line-clamp-3' : ''}`}>
                                                                 {post.content && post.content.includes('<')
@@ -338,6 +380,26 @@ const CommunityFeed = () => {
                                 </div>
                             );
                         })}
+                    </div>
+                )}
+
+                {/* --- Pagination Load More --- */}
+                {posts.length > 0 && hasMore && (
+                    <div className="flex justify-center mt-12 mb-8">
+                        <button
+                            onClick={loadMore}
+                            disabled={loadingMore}
+                            className="bg-black hover:bg-[#ff5c00] text-white px-8 py-3 font-mono text-[10px] font-black tracking-widest uppercase transition-colors flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {loadingMore ? (
+                                <>
+                                    <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                    FETCHING_LOGS...
+                                </>
+                            ) : (
+                                "LOAD_MORE_LOGS"
+                            )}
+                        </button>
                     </div>
                 )}
             </div>

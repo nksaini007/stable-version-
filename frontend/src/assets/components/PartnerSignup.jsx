@@ -81,7 +81,9 @@ function PartnerSignup() {
 
     const validateStep1 = () => {
         if (!form.name || !form.email || !form.password || !form.phone || !form.address || !form.pincode) { setError("All fields are required."); return false; }
-        if (form.password.length < 6) { setError("Password must be at least 6 characters."); return false; }
+        if (form.phone.length < 10) { setError("Please enter a valid 10-digit phone number."); return false; }
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(form.password)) { setError("Password must be at least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char."); return false; }
         if (!isEmailVerified) { setError("Please verify your email to continue."); return false; }
         setError(""); return true;
     };
@@ -221,7 +223,7 @@ function PartnerSignup() {
                                 <input value={form.phone} onChange={e => setForm({...form, phone: e.target.value.replace(/\D/g,'').substring(0,10)})} placeholder="10-digit Phone *" className={inp} required />
                             </div>
                             <div className="flex flex-col">
-                                <input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} placeholder="Password (Min. 6) *" className={inp} required minLength={6} />
+                                <input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} placeholder="Strong Password (Min 8 chars, 1 Uppercase, 1 Symbol) *" className={inp} required minLength={8} />
                             </div>
                             <div className="flex flex-col">
                                 <input value={form.pincode} onChange={e => setForm({...form, pincode: e.target.value.replace(/\D/g,'').substring(0,6)})} placeholder="Locality Pincode *" className={inp} required />
