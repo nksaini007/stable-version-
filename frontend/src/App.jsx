@@ -92,6 +92,8 @@ const ServiceSubCategories = React.lazy(() => import("./assets/components/Servic
 const ServiceSearch = React.lazy(() => import("./assets/components/ServiceSearch"));
 const ServiceDetails = React.lazy(() => import("./assets/components/ServiceDetails"));
 
+import ComingSoon from "./assets/components/ComingSoon";
+
 function App() {
   return (
     <AuthProvider>
@@ -112,30 +114,41 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/customer-landing" element={<CustomerLanding />} />
-          <Route path="/my-construction" element={<CustomerConstruction />} />
+          {/* <Route path="/customer-landing" element={<CustomerLanding />} /> */}
+          <Route path="/customer-landing" element={<ComingSoon />} />
+          {/* <Route path="/my-construction" element={<CustomerConstruction />} /> */}
+          <Route path="/my-construction" element={<ComingSoon />} />
           <Route path="/my-inquiries" element={<CustomerInquiries />} />
           <Route path="/support" element={<CustomerSupport />} />
 
           {/* Construction Plans 3-Step Funnel */}
-          <Route path="/project-categories" element={<PlanCategoriesList />} />
+          {/* <Route path="/project-categories" element={<PlanCategoriesList />} />
           <Route path="/project-categories/:categoryName" element={<PlanTypesList />} />
           <Route path="/project-categories/:categoryName/:planTypeName" element={<ProjectPlansCatalog />} />
-          <Route path="/project-plans/:id" element={<ProjectPlanDetails />} />
+          <Route path="/project-plans/:id" element={<ProjectPlanDetails />} /> */}
+          <Route path="/project-categories" element={<ComingSoon />} />
+          <Route path="/project-categories/:categoryName" element={<ComingSoon />} />
+          <Route path="/project-categories/:categoryName/:planTypeName" element={<ComingSoon />} />
+          <Route path="/project-plans/:id" element={<ComingSoon />} />
 
           {/* Default old route mapped to the start of funnel just in case */}
-          <Route path="/project-plans" element={<PlanCategoriesList />} />
+          {/* <Route path="/project-plans" element={<PlanCategoriesList />} /> */}
+          <Route path="/project-plans" element={<ComingSoon />} />
 
           <Route path="/community" element={<CommunityFeed />} />
           <Route path="/community/post/:slug" element={<SinglePost />} />
-          <Route path="/services" element={<ServiceCategories />} />
+          {/* <Route path="/services" element={<ServiceCategories />} />
           <Route path="/services/:categoryId" element={<ServiceSubCategories />} />
           <Route path="/services/:categoryId/:subCategoryId" element={<ServiceSearch />} />
-          <Route path="/service/:id" element={<ServiceDetails />} />
+          <Route path="/service/:id" element={<ServiceDetails />} /> */}
+          <Route path="/services" element={<ComingSoon />} />
+          <Route path="/services/:categoryId" element={<ComingSoon />} />
+          <Route path="/services/:categoryId/:subCategoryId" element={<ComingSoon />} />
+          <Route path="/service/:id" element={<ComingSoon />} />
           <Route path="/project-showcase/:id" element={<PublicProjectPage />} />
 
           {/* Product / Category */}
-          <Route path="/category/:categoryName" element={<CategoryPage />} />
+          {/* <Route path="/category/:categoryName" element={<CategoryPage />} />
           <Route path="/category/:categoryName/:itemName" element={<ItemPage />} />
           <Route
             path="/category/:categoryName/:itemName/:itemList"
@@ -145,7 +158,18 @@ function App() {
             path="/category/:categoryName/:itemName/:itemList/:productId"
             element={<ProductPage />}
           />
-          <Route path="/product/:productId" element={<ProductPage />} />
+          <Route path="/product/:productId" element={<ProductPage />} /> */}
+          <Route path="/category/:categoryName" element={<ComingSoon />} />
+          <Route path="/category/:categoryName/:itemName" element={<ComingSoon />} />
+          <Route
+            path="/category/:categoryName/:itemName/:itemList"
+            element={<ComingSoon />}
+          />
+          <Route
+            path="/category/:categoryName/:itemName/:itemList/:productId"
+            element={<ComingSoon />}
+          />
+          <Route path="/product/:productId" element={<ComingSoon />} />
 
           {/* Product Shop Routes */}
           <Route path="/shop/:id" element={<SellerShop />} />
