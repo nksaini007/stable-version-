@@ -121,7 +121,7 @@ const ArchitectDashboard = () => {
         try {
             setUpdatesLoading(true);
             const res = await WebAPI.get(`/construction/project/${projectId}/updates`);
-            setProjectUpdates(res.data.updates);
+            setProjectUpdates(Array.isArray(res.data.updates) ? res.data.updates : []);
         } catch (error) {
             console.error("Error fetching updates:", error);
         } finally {
@@ -828,13 +828,13 @@ const ArchitectDashboard = () => {
                                             {/* Existing Updates List */}
                                             {updatesLoading ? (
                                                 <p className="text-gray-500 text-sm">Loading updates...</p>
-                                            ) : projectUpdates.length === 0 ? (
+                                            ) : (Array.isArray(projectUpdates) ? projectUpdates : []).length === 0 ? (
                                                 <div className="bg-[#1e293b]/30 border border-white/5 border-dashed rounded-2xl p-8 text-center text-gray-500 text-sm">
                                                     No updates posted yet. Share progress with your client!
                                                 </div>
                                             ) : (
                                                 <div className="space-y-4">
-                                                    {projectUpdates.map(upd => (
+                                                    {(Array.isArray(projectUpdates) ? projectUpdates : []).map(upd => (
                                                         <div key={upd._id} className="bg-[#1e293b]/40 p-5 rounded-2xl border border-white/5">
                                                             <div className="flex items-start justify-between gap-3 mb-2">
                                                                 <h4 className="font-bold text-white text-sm">{upd.title}</h4>

@@ -69,8 +69,11 @@ const SellerProducts = () => {
     const fetchProducts = async () => {
         try {
             const { data } = await API.get("/products");
-            setProducts(data || []);
-        } catch (err) { console.error(err); }
+            setProducts(Array.isArray(data) ? data : []);
+        } catch (err) { 
+            console.error(err);
+            setProducts([]);
+        }
         finally { setLoading(false); }
     };
 
@@ -190,7 +193,7 @@ const SellerProducts = () => {
         try { await API.delete(`/products/${id}`); fetchProducts(); } catch (err) { alert("Delete failed"); }
     };
 
-    const filtered = products.filter((p) => {
+    const filtered = (Array.isArray(products) ? products : []).filter((p) => {
         const matchesSearch = !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.category?.toLowerCase().includes(search.toLowerCase());
         const matchesStock = !stockFilter || 
             (stockFilter === "out_of_stock" && (!p.stock || p.stock === 0)) ||

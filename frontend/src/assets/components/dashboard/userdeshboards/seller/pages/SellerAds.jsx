@@ -67,21 +67,28 @@ export default function SellerAds() {
     const fetchMyProducts = async () => {
         try {
             const { data } = await API.get(`/products`);
-            setMyProducts(data);
-        } catch (err) { console.error(err); }
+            setMyProducts(Array.isArray(data) ? data : []);
+        } catch (err) { 
+            console.error(err);
+            setMyProducts([]);
+        }
     };
 
     const fetchCampaigns = async () => {
         try {
             const { data } = await API.get(`/ads/mine`);
-            setCampaigns(data);
-        } catch { }
+            setCampaigns(Array.isArray(data) ? data : []);
+        } catch { 
+            setCampaigns([]);
+        }
     };
     const fetchPayments = async () => {
         try {
             const { data } = await API.get(`/ads/my-payments`);
-            setMyPayments(data);
-        } catch { }
+            setMyPayments(Array.isArray(data) ? data : []);
+        } catch { 
+            setMyPayments([]);
+        }
     };
 
     const handleCreate = async (e) => {
@@ -119,8 +126,8 @@ export default function SellerAds() {
         } finally { setLoading(false); }
     };
 
-    const totalBudget = campaigns.reduce((s, c) => s + (c.budget || 0), 0);
-    const activeCampaigns = campaigns.filter((c) => c.status === "active").length;
+    const totalBudget = (Array.isArray(campaigns) ? campaigns : []).reduce((s, c) => s + (c.budget || 0), 0);
+    const activeCampaigns = (Array.isArray(campaigns) ? campaigns : []).filter((c) => c.status === "active").length;
 
     return (
         <div className="space-y-8">
@@ -142,7 +149,7 @@ export default function SellerAds() {
                     { label: t.ads, val: campaigns.length, icon: <FaBullhorn />, color: "text-orange-500 bg-orange-500/10" },
                     { label: t.active_campaigns, val: activeCampaigns, icon: <FaRocket />, color: "text-emerald-500 bg-emerald-500/10" },
                     { label: t.total_budget, val: `₹${totalBudget.toLocaleString()}`, icon: <FaMoneyBillWave />, color: "text-blue-500 bg-blue-500/10" },
-                    { label: t.customer_reach, val: campaigns.reduce((s, c) => s + (c.clicks || 0), 0), icon: <FaChartLine />, color: "text-violet-500 bg-violet-500/10" },
+                    { label: t.customer_reach, val: (Array.isArray(campaigns) ? campaigns : []).reduce((s, c) => s + (c.clicks || 0), 0), icon: <FaChartLine />, color: "text-violet-500 bg-violet-500/10" },
                 ].map((s, i) => (
                     <div key={i} className="premium-card p-6 border-b-2 border-b-transparent hover:border-b-white/10 transition-all group">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${s.color}`}>
@@ -175,7 +182,7 @@ export default function SellerAds() {
             {/* CAMPAIGNS HUB */}
             {tab === "campaigns" && (
                 <div className="grid gap-6">
-                    {campaigns.length === 0 ? (
+                    {(Array.isArray(campaigns) ? campaigns : []).length === 0 ? (
                         <div className="premium-card py-24 text-center">
                             <FaBullhorn className="text-6xl mx-auto mb-6 opacity-5" />
                             <p className="text-gray-600 font-bold uppercase tracking-widest text-[12px]">{t.no_campaigns_hub}</p>
@@ -333,7 +340,7 @@ export default function SellerAds() {
                                                 className="premium-input w-full bg-[#0a0a0a]"
                                                 disabled={!form.targetCategory}>
                                                 <option value="" className="bg-black text-gray-500">{!form.targetCategory ? "Await Category Select..." : t.catalog_focus}</option>
-                                                {myProducts.filter(p => !form.targetCategory || p.category === form.targetCategory).map(p => (
+                                                {(Array.isArray(myProducts) ? myProducts : []).filter(p => !form.targetCategory || p.category === form.targetCategory).map(p => (
                                                     <option key={p._id} value={p._id} className="bg-black">{p.name}</option>
                                                 ))}
                                             </select>

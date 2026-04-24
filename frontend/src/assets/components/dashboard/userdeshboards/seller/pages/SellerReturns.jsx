@@ -16,10 +16,11 @@ const SellerReturns = () => {
     const fetchReturns = async () => {
         try {
             setLoading(true);
-            const { data } = await API.get("/orders/seller");
+            const { data } = await API.get("/orders/seller/orders");
+            const dataArray = Array.isArray(data) ? data : (data.orders || []);
             // Filter orders that have at least one 'Returned' or 'Refunded' item
-            const returnOrders = data.filter(order => 
-                order.orderItems.some(item => ["Returned", "Refunded"].includes(item.itemStatus))
+            const returnOrders = dataArray.filter(order => 
+                order.orderItems && Array.isArray(order.orderItems) && order.orderItems.some(item => ["Returned", "Refunded", "Return Requested"].includes(item.itemStatus))
             );
             setOrders(returnOrders);
         } catch (err) {
@@ -47,9 +48,9 @@ const SellerReturns = () => {
         }
     };
 
-    const filtered = orders.filter(o => 
-        o._id.toLowerCase().includes(search.toLowerCase()) ||
-        o.shippingAddress.fullName.toLowerCase().includes(search.toLowerCase())
+    const filtered = (orders || []).filter(o => 
+        (o._id && o._id.toLowerCase().includes(search.toLowerCase())) ||
+        (o.shippingAddress?.fullName && o.shippingAddress.fullName.toLowerCase().includes(search.toLowerCase()))
     );
 
     return (
@@ -94,7 +95,7 @@ const SellerReturns = () => {
                     <div className="divide-y divide-[#262626]">
                         {filtered.map(order => (
                             <React.Fragment key={order._id}>
-                                {order.orderItems.filter(item => ["Returned", "Refunded"].includes(item.itemStatus)).map((item, idx) => (
+                                {(order.orderItems || []).filter(item => ["Returned", "Refunded", "Return Requested"].includes(item.itemStatus)).map((item, idx) => (
                                     <div key={`${order._id}-${idx}`} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center px-6 py-5 hover:bg-[#1a1a1a] transition-colors group">
                                         <div className="col-span-5 flex items-center gap-4">
                                             <div className="w-14 h-14 rounded-xl overflow-hidden bg-black/40 border border-[#262626] flex-shrink-0">

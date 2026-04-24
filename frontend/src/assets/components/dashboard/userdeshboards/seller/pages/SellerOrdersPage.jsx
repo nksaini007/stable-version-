@@ -35,7 +35,8 @@ const SellerOrdersPage = () => {
             const sid = decoded?.id || decoded?._id;
             setSellerId(sid);
             const { data } = await API.get("/orders/seller/orders");
-            const filteredData = (data.orders || data || []).filter(o => o.orderItems.some(i => i.seller === sid || i.seller?._id === sid));
+            const ordersArray = Array.isArray(data) ? data : (data.orders || []);
+            const filteredData = ordersArray.filter(o => o.orderItems && Array.isArray(o.orderItems) && o.orderItems.some(i => i.seller === sid || i.seller?._id === sid));
             setOrders(filteredData);
         } catch (err) { console.error(err); }
         finally { setLoading(false); }
@@ -52,14 +53,23 @@ const SellerOrdersPage = () => {
         finally { setUpdating(null); }
     };
 
-    const getSellerTotal = (order) => order.orderItems.filter(i => i.seller === sellerId || i.seller?._id === sellerId).reduce((s, i) => s + i.price * i.qty, 0);
+    const getSellerTotal = (order) => {
+        if (!order.orderItems || !Array.isArray(order.orderItems)) return 0;
+        return order.orderItems.filter(i => i.seller === sellerId || i.seller?._id === sellerId).reduce((s, i) => s + i.price * i.qty, 0);
+    };
 
     const counts = { all: orders.length, Pending: 0, Shipped: 0, Delivered: 0, Cancelled: 0 };
     orders.forEach(o => { const s = o.orderStatus; if (counts[s] !== undefined) counts[s]++; });
 
     const filtered = orders
         .filter(o => filter === "all" || o.orderStatus === filter)
-        .filter(o => { if (!search) return true; const s = search.toLowerCase(); return o._id.toLowerCase().includes(s) || o.user?.name?.toLowerCase().includes(s) || o.orderItems.some(i => i.name?.toLowerCase().includes(s)); });
+        .filter(o => { 
+            if (!search) return true; 
+            const s = search.toLowerCase(); 
+            return (o._id && o._id.toLowerCase().includes(s)) || 
+                   (o.user?.name && o.user.name.toLowerCase().includes(s)) || 
+                   (o.orderItems && Array.isArray(o.orderItems) && o.orderItems.some(i => i.name?.toLowerCase().includes(s))); 
+        });
 
     return (
         <div className="space-y-8">
@@ -108,7 +118,7 @@ const SellerOrdersPage = () => {
             ) : (
                 <div className="space-y-6">
                     {filtered.map(order => {
-                        const sellerItems = order.orderItems.filter(i => i.seller === sellerId || i.seller?._id === sellerId);
+                        const sellerItems = (order.orderItems || []).filter(i => i.seller === sellerId || i.seller?._id === sellerId);
                         return (
                             <div key={order._id} className="premium-card overflow-hidden group hover:border-gray-700 transition-colors">
                                 {/* Header */}

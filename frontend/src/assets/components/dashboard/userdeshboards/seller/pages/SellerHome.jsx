@@ -34,7 +34,7 @@ const SellerHome = () => {
                     API.get("/products"),
                 ]);
                 setRevenue(revRes.data);
-                setProducts(prodRes.data || []);
+                setProducts(Array.isArray(prodRes.data) ? prodRes.data : []);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -83,8 +83,8 @@ const SellerHome = () => {
     ];
 
     // Filter for alerts
-    const outOfStock = products.filter(p => !p.stock || p.stock === 0);
-    const lowStock = products.filter(p => p.stock > 0 && p.stock <= 10);
+    const outOfStock = (products || []).filter(p => !p.stock || p.stock === 0);
+    const lowStock = (products || []).filter(p => p.stock > 0 && p.stock <= 10);
 
     // Chart Interval State
     const chartData = revenue?.[`${chartInterval}Chart`] || [];

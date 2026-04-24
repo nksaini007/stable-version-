@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import API from "../../../api/api";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
@@ -44,8 +45,9 @@ const SellerOrders = () => {
         }
       );
 
-      const filtered = (data.orders || data).filter((order) =>
-        order.orderItems.some(
+      const ordersArray = Array.isArray(data) ? data : (data.orders || []);
+      const filtered = ordersArray.filter((order) =>
+        order.orderItems && Array.isArray(order.orderItems) && order.orderItems.some(
           (item) =>
             item.seller === currentSellerId ||
             item.seller?._id === currentSellerId
@@ -104,6 +106,7 @@ const SellerOrders = () => {
 
   /* ---------------- SELLER TOTAL ---------------- */
   const getSellerOrderTotal = (order) => {
+    if (!order.orderItems || !Array.isArray(order.orderItems)) return 0;
     return order.orderItems
       .filter(
         (item) =>
@@ -204,7 +207,7 @@ const SellerOrders = () => {
 
                   {/* ITEMS */}
                   <div className="space-y-4">
-                    {order.orderItems
+                    {(order.orderItems || [])
                       .filter(
                         (item) =>
                           item.seller === sellerId ||
