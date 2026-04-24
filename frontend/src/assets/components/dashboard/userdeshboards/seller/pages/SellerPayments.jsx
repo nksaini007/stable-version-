@@ -118,10 +118,18 @@ export default function SellerPayments() {
         ${statement.transactions.map((t) => `
           <tr>
             <td style="color:#888;">${new Date(t.date).toLocaleDateString("en-IN")}</td>
-            <td style="font-weight:700; font-size:10px; text-transform:uppercase;">${t.type === "sale" ? "Inventory Sale" : "Marketing Cost"}</td>
-            <td>${t.type === "sale" ? t.customer + " (" + (t.items?.length || 0) + " items)" : t.campaignTitle}</td>
-            <td style="text-align:right;" class="${t.type === "sale" ? "sale" : "ad"}">${t.type === "sale" ? "+" : "-"}₹${Math.abs(t.amount)?.toLocaleString()}</td>
-            <td style="font-size:10px; font-weight:700; color:${t.isPaid ? "#059669" : "#666"}; text-transform:uppercase;">${t.isPaid ? "Settled" : t.type === "sale" ? "Processing" : "Deducted"}</td>
+            <td style="font-weight:700; font-size:10px; text-transform:uppercase;">
+              ${t.type === "sale" ? "Inventory Sale" : t.type === "cancellation" ? "Order Reverse" : "Marketing Cost"}
+            </td>
+            <td>
+              ${t.type === "sale" ? t.customer + " (" + (t.items?.length || 0) + " items)" : t.type === "cancellation" ? "Reversal: " + t.orderId.slice(-6).toUpperCase() : t.campaignTitle}
+            </td>
+            <td style="text-align:right;" class="${t.amount >= 0 ? "sale" : "ad"}">
+              ${t.amount >= 0 ? "+" : "-"}₹${Math.abs(t.amount)?.toLocaleString()}
+            </td>
+            <td style="font-size:10px; font-weight:700; color:${t.status === "Cancelled" || t.status === "Reversed" ? "#dc2626" : t.isPaid ? "#059669" : "#666"}; text-transform:uppercase;">
+              ${t.status === "Cancelled" ? "Cancelled" : t.status === "Reversed" ? "Reversed" : t.isPaid ? "Settled" : "Processing"}
+            </td>
           </tr>`).join("")}
       </tbody>
     </table>
@@ -284,8 +292,14 @@ export default function SellerPayments() {
                                                         {new Date(t_item.date).toLocaleDateString("en-IN")}
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter ${t_item.type === "sale" ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-red-500/10 text-red-500 border border-red-500/20"}`}>
-                                                            {t_item.type === "sale" ? t.inventory_sale : t.marketing_cost}
+                                                        <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter ${
+                                                            t_item.type === "sale" 
+                                                                ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" 
+                                                                : t_item.type === "cancellation"
+                                                                    ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                                                                    : "bg-red-500/10 text-red-500 border border-red-500/20"
+                                                        }`}>
+                                                            {t_item.type === "sale" ? t.inventory_sale : t_item.type === "cancellation" ? "Cancellation" : t.marketing_cost}
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4 text-[13px] font-bold text-gray-300 max-w-xs truncate">
@@ -294,12 +308,12 @@ export default function SellerPayments() {
                                                             : <span>{t_item.campaignTitle} <span className="text-gray-600 font-medium lowercase text-[11px] ml-1">({t_item.adType})</span></span>
                                                         }
                                                     </td>
-                                                    <td className={`px-6 py-4 text-right text-[15px] font-black ${t_item.type === "sale" ? "text-white" : "text-red-500"}`}>
-                                                        {t_item.type === "sale" ? "+" : "-"}₹{Math.abs(t_item.amount)?.toLocaleString()}
+                                                    <td className={`px-6 py-4 text-right text-[15px] font-black ${t_item.amount >= 0 ? "text-white" : "text-red-500"}`}>
+                                                        {t_item.amount >= 0 ? "+" : "-"}₹{Math.abs(t_item.amount)?.toLocaleString()}
                                                     </td>
                                                     <td className="px-6 py-4 text-center">
-                                                        <span className={`text-[11px] font-bold uppercase tracking-widest ${t_item.isPaid ? "text-emerald-500" : "text-gray-600"}`}>
-                                                            {t_item.isPaid ? t.verified : t.pending}
+                                                        <span className={`text-[11px] font-bold uppercase tracking-widest ${t_item.status === "Cancelled" || t_item.status === "Reversed" ? "text-red-500" : t_item.isPaid ? "text-emerald-500" : "text-gray-600"}`}>
+                                                            {t_item.status === "Cancelled" ? "Cancelled" : t_item.status === "Reversed" ? "Reversed" : t_item.isPaid ? t.verified : t.pending}
                                                         </span>
                                                     </td>
                                                 </tr>

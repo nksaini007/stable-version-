@@ -417,9 +417,14 @@ const getSellerStatement = async (req, res) => {
             if (!sellerItems.length) return;
 
             const orderTotal = sellerItems.reduce((sum, item) => sum + item.price * item.qty, 0);
-            grossSales += orderTotal;
-            totalItemsSold += sellerItems.reduce((sum, item) => sum + item.qty, 0);
+            
+            // ✅ Only add to aggregates if NOT cancelled
+            if (order.orderStatus !== "Cancelled") {
+                grossSales += orderTotal;
+                totalItemsSold += sellerItems.reduce((sum, item) => sum + item.qty, 0);
+            }
 
+            // Push original sale transaction record
             transactions.push({
                 type: "sale",
                 orderId: order._id,
@@ -431,6 +436,20 @@ const getSellerStatement = async (req, res) => {
                 status: order.orderStatus,
                 date: order.createdAt,
             });
+
+            // ✅ If cancelled, add a NEW balancing transaction record
+            if (order.orderStatus === "Cancelled") {
+                transactions.push({
+                    type: "cancellation",
+                    orderId: order._id,
+                    customer: order.user?.name || "Unknown",
+                    amount: -orderTotal,
+                    paymentMethod: order.paymentMethod,
+                    status: "Reversed",
+                    date: order.updatedAt || order.createdAt,
+                    note: "Order Cancelled - Balance Adjusted"
+                });
+            }
         });
 
         // Ad spend in the period
