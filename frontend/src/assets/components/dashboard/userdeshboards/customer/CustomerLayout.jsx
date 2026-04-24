@@ -15,14 +15,26 @@ const CustomerLayout = () => {
     // Protection logic
     if (!user || (user.role !== "customer" && user.role !== "user")) {
         // Many systems use "user" as the default role for customers
-        // return <Navigate to="/login" replace />;
+        return <Navigate to="/login" replace />;
     }
 
     useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 10);
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        // Enforce no body padding/scrolling for the dashboard layout to fix the "white strip" issue
+        const originalPadding = document.body.style.paddingBottom;
+        const originalOverflow = document.body.style.overflow;
+        
+        document.body.style.paddingBottom = "0px";
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.paddingBottom = originalPadding;
+            document.body.style.overflow = originalOverflow;
+        };
     }, []);
+
+    const handleContentScroll = (e) => {
+        setScrolled(e.target.scrollTop > 10);
+    };
 
     // Helper to get Page Title from location
     const getPageTitle = () => {
@@ -32,7 +44,24 @@ const CustomerLayout = () => {
     };
 
     return (
-        <div className="h-screen flex bg-[#fbfcfd] overflow-hidden font-sans">
+        <div className="h-screen flex bg-[#FAFAFA] text-zinc-900 overflow-hidden font-sans customer-theme">
+            {/* Global Overrides for Premium Dashboard Theme */}
+            <style>{`
+                .customer-theme h1, .customer-theme h2, .customer-theme h3, .customer-theme h4 {
+                    font-family: 'Outfit', sans-serif !important;
+                    text-transform: none !important;
+                    letter-spacing: normal !important;
+                    font-weight: inherit !important;
+                }
+                .customer-theme .force-uppercase {
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.1em !important;
+                }
+                .flex-1.overflow-y-auto {
+                    background-color: #FAFAFA !important;
+                }
+            `}</style>
+            
             {/* Overlay for mobile sidebar */}
             <AnimatePresence>
                 {mobileOpen && (
@@ -62,32 +91,32 @@ const CustomerLayout = () => {
                 >
                     <div className="flex items-center gap-4">
                         <button
-                            className="md:hidden p-2 text-gray-500 hover:text-orange-500 transition-colors"
+                            className="md:hidden p-2 text-zinc-500 hover:text-zinc-900 transition-colors"
                             onClick={() => setMobileOpen(true)}
                         >
                             <FaBars size={22} />
                         </button>
                         <div>
-                            <h2 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">{getPageTitle()}</h2>
-                            <p className="text-[10px] sm:text-xs text-gray-400 hidden sm:block uppercase tracking-widest font-semibold mt-0.5">Customer Workspace</p>
+                            <h2 className="text-lg sm:text-xl font-medium text-zinc-900 tracking-tight">{getPageTitle()}</h2>
+                            <p className="text-[9px] sm:text-[10px] text-zinc-400 hidden sm:block uppercase tracking-widest font-medium mt-0.5">Customer Workspace</p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-4">
                         {/* Search Bar (Desktop) */}
-                        <div className="hidden lg:flex items-center bg-gray-100/80 border border-gray-200/50 rounded-2xl px-4 py-2 w-64 group focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-100 transition-all">
-                            <FaSearch size={14} className="text-gray-400 group-focus-within:text-orange-500" />
+                        <div className="hidden lg:flex items-center bg-zinc-50/80 border border-zinc-200/50 rounded-2xl px-4 py-2 w-64 group focus-within:bg-white focus-within:ring-1 focus-within:ring-zinc-300 transition-all">
+                            <FaSearch size={14} className="text-zinc-400 group-focus-within:text-zinc-900" />
                             <input
                                 type="text"
                                 placeholder="Search everything..."
-                                className="bg-transparent border-none outline-none text-sm ml-3 w-full placeholder:text-gray-400"
+                                className="bg-transparent border-none outline-none text-[13px] ml-3 w-full placeholder:text-zinc-400"
                             />
                         </div>
 
                         {/* Notifications */}
-                        <button className="relative p-2.5 sm:p-3 text-gray-500 hover:text-orange-500 hover:bg-orange-50 rounded-2xl transition-all">
-                            <FaBell size={20} />
-                            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
+                        <button className="relative p-2.5 sm:p-3 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-2xl transition-all">
+                            <FaBell size={18} />
+                            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-red-500 border-2 border-white rounded-full"></span>
                         </button>
 
                         {/* Profile Area */}
@@ -110,35 +139,38 @@ const CustomerLayout = () => {
                 </header>
 
                 {/* Page Content */}
-                <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-4 sm:py-6 scroll-smooth">
+                <div 
+                    className="flex-1 overflow-y-auto px-4 sm:px-8 py-4 sm:py-6 scroll-smooth pb-24 bg-[#FAFAFA]"
+                    onScroll={handleContentScroll}
+                >
                     <div className="max-w-7xl mx-auto pb-10">
                         <Outlet />
                     </div>
                 </div>
 
                 {/* Mobile Bottom Nav - Clean & Simple */}
-                <div className="md:hidden h-16 bg-white/95 backdrop-blur-md border-t border-gray-100 flex items-center justify-around px-2 z-30">
-                    <Link to="/customer" className={`flex flex-col items-center gap-1 ${location.pathname === '/customer' ? 'text-orange-600' : 'text-gray-400'}`}>
-                        <FaThLarge size={18} />
-                        <span className="text-[9px] font-bold uppercase tracking-tighter">Home</span>
+                <div className="md:hidden fixed bottom-0 left-0 right-0 h-14 bg-white/95 backdrop-blur-md border-t border-zinc-100 flex items-center justify-around px-2 z-50">
+                    <Link to="/dashboard/customer" className={`flex flex-col items-center gap-1 ${location.pathname === '/dashboard/customer' ? 'text-zinc-900' : 'text-zinc-400'}`}>
+                        <FaThLarge size={14} />
+                        <span className="text-[7px] font-medium uppercase tracking-widest mt-0.5">Home</span>
                     </Link>
-                    <Link to="/customer/orders" className={`flex flex-col items-center gap-1 ${location.pathname === '/customer/orders' ? 'text-orange-600' : 'text-gray-400'}`}>
-                        <FaShoppingBag size={18} />
-                        <span className="text-[9px] font-bold uppercase tracking-tighter">Orders</span>
+                    <Link to="/dashboard/customer/orders" className={`flex flex-col items-center gap-1 ${location.pathname === '/dashboard/customer/orders' ? 'text-zinc-900' : 'text-zinc-400'}`}>
+                        <FaShoppingBag size={14} />
+                        <span className="text-[7px] font-medium uppercase tracking-widest mt-0.5">Orders</span>
                     </Link>
-                    <Link to="/project-categories" className="flex flex-col items-center gap-1 text-gray-400">
-                        <div className="p-3 bg-gray-900 text-white rounded-xl -mt-8 shadow-lg shadow-gray-900/20">
-                            <FaBars size={18} />
+                    <Link to="/project-categories" className="flex flex-col items-center gap-0.5 text-zinc-400">
+                        <div className="p-2.5 bg-zinc-900 text-white rounded-xl -mt-6 shadow-md shadow-zinc-900/10">
+                            <FaBars size={14} />
                         </div>
-                        <span className="text-[9px] font-bold uppercase tracking-tighter">Explore</span>
+                        <span className="text-[7px] font-medium uppercase tracking-widest mt-1">Explore</span>
                     </Link>
-                    <Link to="/my-construction" className={`flex flex-col items-center gap-1 ${location.pathname === '/my-construction' ? 'text-orange-600' : 'text-gray-400'}`}>
-                        <FaHammer size={18} />
-                        <span className="text-[9px] font-bold uppercase tracking-tighter">Status</span>
+                    <Link to="/my-construction" className={`flex flex-col items-center gap-1 ${location.pathname === '/my-construction' ? 'text-zinc-900' : 'text-zinc-400'}`}>
+                        <FaHammer size={14} />
+                        <span className="text-[7px] font-medium uppercase tracking-widest mt-0.5">Status</span>
                     </Link>
-                    <Link to="/profile" className={`flex flex-col items-center gap-1 ${location.pathname === '/profile' ? 'text-orange-600' : 'text-gray-400'}`}>
-                        <FaUserCircle size={18} />
-                        <span className="text-[9px] font-bold uppercase tracking-tighter">Account</span>
+                    <Link to="/profile" className={`flex flex-col items-center gap-1 ${location.pathname === '/profile' ? 'text-zinc-900' : 'text-zinc-400'}`}>
+                        <FaUserCircle size={14} />
+                        <span className="text-[7px] font-medium uppercase tracking-widest mt-0.5">Account</span>
                     </Link>
                 </div>
             </main>

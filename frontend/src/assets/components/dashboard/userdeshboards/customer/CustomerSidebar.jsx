@@ -24,7 +24,7 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
     { name: "My Quotations", icon: <FaFileInvoice />, path: "/dashboard/customer/quotations" },
     { name: "Wishlist", icon: <FaHeart />, path: "/dashboard/customer/wishlist" },
     { name: "My Construction", icon: <FaHammer />, path: "/my-construction" },
-    { name: "Profile", icon: <FaUser />, path: "/profile" },
+    { name: "Profile", icon: <FaUser />, path: "/dashboard/customer/profile" },
     { name: "Support", icon: <FaHeadset />, path: "/dashboard/customer/support" },
   ];
 
@@ -75,8 +75,8 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
               className={({ isActive }) => `
                 flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200 group relative
                 ${isActive
-                  ? "bg-orange-600 text-white font-bold shadow-md shadow-orange-600/20"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"}
+                  ? "bg-zinc-900 text-white font-medium shadow-sm shadow-zinc-900/10"
+                  : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"}
               `}
             >
               <div className={`text-lg transition-transform duration-200 group-hover:scale-110`}>
@@ -106,15 +106,15 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
         </nav>
 
         {/* User Role Badge / Bottom Action */}
-        <div className="p-4 border-t border-gray-100 mt-auto">
-          <div className={`bg-gray-50 rounded-2xl p-3 flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-400 to-amber-300 flex items-center justify-center text-white text-xs font-bold shadow-inner">
+        <div className="p-4 border-t border-zinc-100 mt-auto">
+          <div className={`bg-zinc-50 rounded-2xl p-3 flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+            <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white text-[10px] font-medium shadow-sm">
               C
             </div>
             {!collapsed && (
               <div className="overflow-hidden">
-                <p className="text-sm font-semibold text-gray-800 truncate">Customer</p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-wider">Premium Account</p>
+                <p className="text-[13px] font-medium text-zinc-800 truncate">Customer</p>
+                <p className="text-[9px] text-zinc-500 uppercase tracking-widest">Premium Account</p>
               </div>
             )}
           </div>
@@ -160,8 +160,8 @@ const CustomerSidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen })
                     className={({ isActive }) => `
                       flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all
                       ${isActive
-                        ? "bg-orange-600 text-white font-bold shadow-lg shadow-orange-600/20"
-                        : "text-gray-500 hover:bg-gray-50"}
+                        ? "bg-zinc-900 text-white font-medium shadow-md shadow-zinc-900/10"
+                        : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"}
                     `}
                   >
                     <span className="text-xl">{item.icon}</span>

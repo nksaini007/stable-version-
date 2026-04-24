@@ -1,4 +1,3 @@
-
 import React, { useContext, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
@@ -47,21 +46,31 @@ const Nev = () => {
 
   return (
     <>
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
+          .nav-theme {
+            font-family: 'Outfit', sans-serif !important;
+          }
+        `}
+      </style>
+
       {/* ================= DESKTOP NAVBAR ================= */}
-      <nav className="fixed top-0 w-full z-50 bg-[#e5e5e5]  hidden md:block">
-        <div className="relative max-w-[1600px] mx-auto flex items-stretch h-[50px]">
+      <div className="hidden md:block relative w-full z-50 bg-white border-b border-zinc-100 nav-theme">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-10 flex items-center justify-between h-[70px]">
 
           {/* LOGO BOX */}
-          <Link to="/" className="flex items-center justify-center w-20 px-4 bg-transparent transition-colors group">
-            <img 
-              src={logo} 
-              alt="STINCHAR House" 
-              className="h-10 w-auto drop-shadow-[0_10px_10px_rgba(0,0,0,0.3)] transition-all group-hover:scale-105" 
+          <Link to="/" className="flex items-center gap-3 transition-transform hover:scale-[1.02]">
+            <img
+              src={logo}
+              alt="STINCHAR"
+              className="h-9 w-auto drop-shadow-sm rounded-lg"
             />
+            <span className="text-zinc-900 font-semibold tracking-tight text-lg">Stinchar</span>
           </Link>
 
           {/* LINKS GRID */}
-          <div className="flex-1 flex">
+          <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link, i) => {
               const path = getPath(link);
               return (
@@ -69,61 +78,69 @@ const Nev = () => {
                   key={i}
                   to={path}
                   className={({ isActive }) =>
-                    `flex items-center px-6 xl:px-8   text-[12px] font-black uppercase tracking-widest transition-all ${isActive
-                      ? "bg-blue-200 text-white"
-                      : "hover:bg-black/5 text-black"
+                    `text-[13px] font-medium tracking-wide transition-all duration-300 relative ${isActive
+                      ? "text-zinc-900"
+                      : "text-zinc-500 hover:text-zinc-900"
                     }`
                   }
                 >
-                  {link.replace("-", " ")}
+                  {({ isActive }) => (
+                    <>
+                      {link.replace("-", " ")}
+                      {isActive && (
+                        <span className="absolute -bottom-6 left-0 w-full h-[2px] bg-zinc-900 rounded-t-full"></span>
+                      )}
+                    </>
+                  )}
                 </NavLink>
               );
             })}
           </div>
 
           {/* RIGHT ACTIONS */}
-          <div className="flex items-stretch  ml-auto">
-            <Link to="/cart" className="flex items-center px-8  hover:bg-black hover:text-white transition-all group relative">
-              <ShoppingCart size={22} />
-              <span className="absolute top-2 right-4 text-[10px] font-bold">🛒</span>
+          <div className="flex items-center gap-6">
+            <Link to="/cart" className="relative text-zinc-600 hover:text-zinc-900 transition-colors p-2 hover:bg-zinc-50 rounded-full">
+              <ShoppingCart size={10} strokeWidth={1.5} />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-zinc-900 rounded-full border border-white"></span>
             </Link>
 
             {!user ? (
               <Link
                 to="/login"
-                className="flex items-center px-10 bg-orange-400 text-orange-200 font-black text-sm uppercase hover:bg-black hover:text-white transition-all"
+                className="flex items-center px-6 py-2.5 bg-zinc-900 text-white font-medium text-[13px] rounded-full hover:bg-black transition-all shadow-sm active:scale-95"
               >
-                _LOGIN_PORTAL
+                Sign In
               </Link>
             ) : (
-              <div className="flex items-center px-6">
+              <div className="flex items-center">
                 <ProfileDropdown user={user} logout={logout} />
               </div>
             )}
           </div>
 
         </div>
-      </nav>
+      </div>
 
       {/* ================= MOBILE HEADER ================= */}
-      <div className="md:hidden fixed top-0 w-full h-[64px] bg-[#e5e5e5] border-b-4 border-black/10 z-[100] flex items-center justify-between px-6">
+      <div className="md:hidden relative w-full h-[60px] bg-white border-b border-zinc-100 z-[100] flex items-center justify-between px-5 nav-theme">
         <Link to="/" className="flex items-center gap-2">
-          <img 
-            src={logo} 
-            alt="STINCHAR House" 
-            className="w-10 h-10 drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)]" 
+          <img
+            src={logo}
+            alt="STINCHAR"
+            className="w-8 h-8 rounded-md"
           />
-          <span className="text-xs font-black tracking-widest uppercase text-black/40">STINCHAR</span>
+          <span className="text-[15px] font-semibold text-zinc-900 tracking-tight">Stinchar</span>
         </Link>
-        <div className="flex items-center gap-4">
-          <Link to="/cart" className="text-black p-2 bg-black/10 text-white/50 rounded-lg">
-            <ShoppingCart size={18} />
+        <div className="flex items-center gap-3">
+          <Link to="/cart" className="text-zinc-600 p-2 hover:bg-zinc-50 rounded-full relative">
+            <ShoppingCart size={20} strokeWidth={1.5} />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-zinc-900 rounded-full border border-white"></span>
           </Link>
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="p-2 bg-black/10 text-white/50 rounded-lg"
+            className="p-2 text-zinc-600 hover:bg-zinc-50 rounded-full"
           >
-            <Menu size={18} />
+            <Menu size={22} strokeWidth={1.5} />
           </button>
         </div>
       </div>
@@ -131,21 +148,21 @@ const Nev = () => {
       {/* MOBILE SIDE DRAWER */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/10 z-[190] backdrop-blur-sm"
+          className="fixed inset-0 bg-zinc-900/40 z-[190] backdrop-blur-sm md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
       <div
-        className={`fixed inset-y-0 right-0 w-[85%] max-w-[320px] bg-orange-400  z-[200] transform transition-transform duration-500 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed inset-y-0 right-0 w-[80%] max-w-[300px] bg-white z-[200] transform transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden flex flex-col shadow-2xl nav-theme ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        <div className="flex justify-between items-center p-6  bg-black/20 text-white">
-          <span className="font-heading text-xl tracking-tighter">STN.MENU</span>
-          <button onClick={() => setMobileMenuOpen(false)}>
+        <div className="flex justify-between items-center px-6 py-5 border-b border-zinc-100">
+          <span className="font-medium text-lg tracking-tight text-zinc-900">Menu</span>
+          <button onClick={() => setMobileMenuOpen(false)} className="p-2 -mr-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-full transition-colors">
             <X size={20} />
           </button>
         </div>
 
-        <div className="">
+        <div className="flex-1 overflow-y-auto py-4 px-3">
           {navLinks.map((link, i) => {
             const path = getPath(link);
             return (
@@ -154,7 +171,10 @@ const Nev = () => {
                 to={path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={({ isActive }) =>
-                  `block px-6 py-5  text-white/50 font-black uppercase text-sm tracking-widest transition-all ${isActive ? "bg-white/10 text-white/90  " : "hover:bg-[#ff5c00]"}`
+                  `block px-4 py-3.5 mb-1 rounded-xl text-[14px] font-medium tracking-wide transition-all ${isActive
+                    ? "bg-zinc-50 text-zinc-900"
+                    : "text-zinc-600 hover:bg-zinc-50/50 hover:text-zinc-900"
+                  }`
                 }
               >
                 {link.replace("-", " ")}
@@ -163,51 +183,72 @@ const Nev = () => {
           })}
         </div>
 
-        <div className="absolute bottom-0 w-full p-6 bg-black text-white">
-          <span className="text-[10px] font-mono opacity-50 uppercase tracking-[0.3em]">
-            Ref_system_stinchar_v2.0.4
-          </span>
+        <div className="p-6 border-t border-zinc-100 bg-zinc-50/50">
+          {!user && (
+            <Link
+              to="/login"
+              className="w-full flex items-center justify-center py-3 bg-zinc-900 text-white font-medium text-[13px] rounded-xl hover:bg-black transition-all shadow-sm"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
 
       {/* ================= MOBILE BOTTOM NAVBAR ================= */}
-      <div className="fixed bottom-0 left-0 w-full md:hidden z-[100] bg-[#e5e5e5]  text-white">
-        <div className="flex justify-between items-stretch">
-
+      <div className="fixed bottom-0 left-0 w-full md:hidden z-[100] bg-white/90 backdrop-blur-md border-t border-zinc-200/80 nav-theme pb-safe">
+        <div className="flex justify-between items-stretch h-[65px] px-1">
           {[
-            { to: "/", icon: Home, label: "HOME" },
-            { to: "/project-plans", icon: Store, label: "PLANS" },
-            { to: "/community", icon: Users, label: "COMM" },
-            { to: "/my-construction", icon: HardHat, label: "CONST" },
-            { to: "/services", icon: HatGlasses, label: "service" },
+            { to: "/", icon: Home, label: "Home" },
+            { to: "/project-plans", icon: Store, label: "Plans" },
+            { to: "/community", icon: Users, label: "Social" },
+            { to: "/my-construction", icon: HardHat, label: "Build" },
+            { to: "/services", icon: HatGlasses, label: "Services" },
           ].map(({ to, icon: Icon, label }, i) => (
             <NavLink
               key={i}
               to={to}
               className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center h-[68px]   transition-all ${isActive ? "bg-blue-200 text-[#ffffff]" : "text-black hover:bg-black/5"
+                `flex-1 flex flex-col items-center justify-center gap-1 transition-all ${isActive
+                  ? "text-zinc-900"
+                  : "text-zinc-400 hover:text-zinc-600"
                 }`
               }
             >
-              <Icon size={15} />
-              <span className="text-[5px] font-century mt-1 tracking-tighter">{label}</span>
+              {({ isActive }) => (
+                <>
+                  <Icon size={12} strokeWidth={isActive ? 2 : 1.5} />
+                  <span className="text-[10px] font-medium tracking-wide">{label}</span>
+                </>
+              )}
             </NavLink>
           ))}
 
-          <div className="flex-1 flex items-center justify-center bg-black">
+          <div className="flex-1 flex items-center justify-center">
             {user ? (
-              <ProfileDropdown user={user} logout={logout} mobile />
+              <div className="transform scale-90">
+                <ProfileDropdown user={user} logout={logout} mobile />
+              </div>
             ) : (
               <NavLink
                 to="/login"
-                className="flex flex-col items-center justify-center w-full h-full bg-orange-300 text-white  border-black"
+                className={({ isActive }) =>
+                  `flex-1 flex flex-col w-full h-full items-center justify-center gap-1 transition-all ${isActive
+                    ? "text-zinc-900"
+                    : "text-zinc-400 hover:text-zinc-600"
+                  }`
+                }
               >
-                <LogIn size={20} />
-                <span className="text-[8px] font-black mt-1">LOGIN</span>
+                {({ isActive }) => (
+                  <>
+                    <LogIn size={10} strokeWidth={isActive ? 2 : 1.5} />
+                    <span className="text-[10px] font-medium tracking-wide">Login</span>
+                  </>
+                )}
               </NavLink>
             )}
           </div>
-
         </div>
       </div>
     </>
