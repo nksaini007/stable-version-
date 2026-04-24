@@ -257,39 +257,6 @@ const CustomerLanding = () => {
         </div>
       </main>
 
-      {/* 🌑 FOOTER / VISION */}
-      <footer className="bg-zinc-950 text-white py-32 px-6 sm:px-12 lg:px-20 overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-zinc-900 rounded-full blur-[200px] -mr-96 -mt-96 opacity-50"></div>
-
-        <div className="relative z-10 max-w-[1600px] mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
-            <div>
-              <h2 className="text-6xl sm:text-8xl font-thin tracking-tighter text-glow mb-8">BUILD <br />WITH <br />PRIDE.</h2>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-zinc-950">
-                  <FaPlay size={12} className="ml-1" />
-                </div>
-                <p className="text-sm font-medium tracking-wide">Watch the Stinchar Vision</p>
-              </div>
-            </div>
-
-            <div className="max-w-xs text-right hidden md:block">
-              <p className="text-zinc-500 text-sm leading-relaxed mb-6 italic">"Our mission is to empower the building industry through a unified ecosystem of excellence and innovation."</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest">Neeraj Kumar Saini</p>
-              <p className="text-[9px] text-zinc-600 uppercase tracking-widest">Founder, Stinchar Group</p>
-            </div>
-          </div>
-
-          <div className="mt-32 pt-12 border-t border-white/5 flex justify-between items-center text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
-            <p>© 2024 Stinchar Infrastructure</p>
-            <div className="flex gap-8">
-              <Link to="/contact" className="hover:text-white transition-colors">Privacy</Link>
-              <Link to="/contact" className="hover:text-white transition-colors">Terms</Link>
-              <Link to="/contact" className="hover:text-white transition-colors">X_STN</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
