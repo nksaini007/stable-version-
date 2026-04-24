@@ -173,7 +173,7 @@ const CustomerLanding = () => {
           </div>
 
           {/* RIGHT: ANIMATED HERO IMAGE / STREAM */}
-          <div className="w-full lg:w-[30%] relative flex items-center justify-center bg-zinc-950 overflow-hidden lg:rounded-[2rem] shadow-[-20px_0_50px_rgba(0,0,0,0.2)]">
+          <div className="w-full lg:h-[25%] lg:w-[40%] relative flex items-center justify-center bg-zinc-950 overflow-hidden lg:rounded-[2rem] shadow-[-20px_0_50px_rgba(0,0,0,0.2)]">
             <motion.div
               initial={{ scale: 1.1, opacity: 0 }} animate={{ scale: 1, opacity: 0.6 }} transition={{ duration: 2 }}
               className="absolute inset-0"

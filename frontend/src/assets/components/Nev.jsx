@@ -227,9 +227,7 @@ const Nev = () => {
 
           <div className="flex-1 flex items-center justify-center">
             {user ? (
-              <div className="transform scale-90">
-                <ProfileDropdown user={user} logout={logout} mobile />
-              </div>
+              <ProfileDropdown user={user} logout={logout} mobile />
             ) : (
               <NavLink
                 to="/login"
