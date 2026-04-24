@@ -8,7 +8,9 @@ import {
   FaTruck,
   FaUser,
   FaClipboardList,
+  FaFileInvoice
 } from "react-icons/fa";
+import { generateInvoice } from "../../../utils/invoiceGenerator";
 
 const statusSteps = ["Pending", "Processing", "Shipped", "Delivered"];
 
@@ -297,9 +299,18 @@ const SellerOrders = () => {
                       {order.shippingAddress?.country}
                     </div>
 
-                    <div className="flex items-center gap-1 text-lg font-bold text-green-600">
-                      <FaRupeeSign />
-                      {getSellerOrderTotal(order).toFixed(2)}
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); generateInvoice(order); }}
+                        className="p-2.5 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-zinc-900 hover:text-white transition-all flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest border border-zinc-200 shadow-sm"
+                        title="Download Invoice"
+                      >
+                        <FaFileInvoice size={12} /> Invoice
+                      </button>
+                      <div className="flex items-center gap-1 text-lg font-bold text-green-600">
+                        <FaRupeeSign />
+                        {getSellerOrderTotal(order).toFixed(2)}
+                      </div>
                     </div>
                   </footer>
                 </motion.div>

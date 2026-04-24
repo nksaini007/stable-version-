@@ -24,7 +24,7 @@ router.get("/project/:projectId/details", authMiddleware.protect, constructionCo
 router.put("/project/:projectId/assign", authMiddleware.protect, constructionController.assignRolesToProject);
 router.put("/project/:projectId/phases", authMiddleware.protect, constructionController.updateProjectPhases);
 router.post("/task", authMiddleware.protect, constructionController.createTask);
-router.get("/project/:projectId/tasks", constructionController.getProjectTasks);
+router.get("/project/:projectId/tasks", authMiddleware.protect, constructionController.getProjectTasks);
 
 // ---------------------------
 // ARCHITECT ROUTES

@@ -197,9 +197,10 @@ exports.getProjectTasks = async (req, res) => {
         if (!project) return res.status(404).json({ success: false, message: "Project not found" });
 
         // Security Check: Only admin, assigned architect, or assigned customer can view tasks
+        const userId = req.user.id;
         if (req.user.role !== "admin" && 
-            String(project.customerId) !== String(req.user._id) && 
-            String(project.architectId) !== String(req.user._id)) {
+            String(project.customerId) !== userId && 
+            String(project.architectId) !== userId) {
             return res.status(403).json({ success: false, message: "Not authorized to view tasks for this project" });
         }
 
@@ -353,9 +354,10 @@ exports.getProjectUpdates = async (req, res) => {
         if (!project) return res.status(404).json({ success: false, message: "Project not found" });
 
         // Security Check: Only admin, assigned architect, or assigned customer can view updates
+        const userId = req.user.id;
         if (req.user.role !== "admin" && 
-            String(project.customerId) !== String(req.user._id) && 
-            String(project.architectId) !== String(req.user._id)) {
+            String(project.customerId) !== userId && 
+            String(project.architectId) !== userId) {
             return res.status(403).json({ success: false, message: "Not authorized to view updates for this project" });
         }
 

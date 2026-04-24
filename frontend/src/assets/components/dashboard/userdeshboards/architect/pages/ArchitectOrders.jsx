@@ -13,9 +13,11 @@ import {
   FaChevronDown,
   FaMapMarkerAlt,
   FaCalendarAlt,
-  FaUndoAlt
+  FaUndoAlt,
+  FaFileInvoice
 } from "react-icons/fa";
 import ReturnRequestModal from "../../../order/ReturnRequestModal";
+import { generateInvoice } from "../../../../../utils/invoiceGenerator";
 
 const STATUS_CONFIG = {
   pending: { label: "Pending", color: "text-amber-600", bg: "bg-amber-50", icon: <FaClock /> },
@@ -171,8 +173,11 @@ const OrderRow = ({ order, isExpanded, onToggle, onCancel, onRequestReturn }) =>
                       Cancel Requisition
                     </button>
                   )}
-                  <button className="px-5 py-2.5 rounded-xl bg-orange-600 text-black text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all">
-                    Download Invoice
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); generateInvoice(order); }}
+                    className="px-5 py-2.5 rounded-xl bg-orange-600 text-black text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all flex items-center gap-2"
+                  >
+                    <FaFileInvoice size={12} /> Download Invoice
                   </button>
                </div>
             </div>

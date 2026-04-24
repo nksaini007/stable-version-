@@ -44,11 +44,20 @@ const ArchitectDashboard = () => {
             setLoading(true);
             const res = await WebAPI.get("/construction/architect/projects");
 
-            const projectsData = res.data.projects;
+            const projectsData = res.data.projects || [];
+            if (!Array.isArray(projectsData)) {
+                setProjects([]);
+                return;
+            }
 
             const projectsWithTasks = await Promise.all(projectsData.map(async (p) => {
-                const tRes = await WebAPI.get(`/construction/project/${p._id}/tasks`);
-                return { ...p, tasks: tRes.data.tasks };
+                try {
+                    const tRes = await WebAPI.get(`/construction/project/${p._id}/tasks`);
+                    return { ...p, tasks: tRes.data.tasks || [] };
+                } catch (err) {
+                    console.error(`Error fetching tasks for project ${p._id}:`, err);
+                    return { ...p, tasks: [] };
+                }
             }));
 
             setProjects(projectsWithTasks);
