@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaPlus, FaTrash, FaImage, FaNewspaper, FaCommentDots, FaHeart, FaTimes, FaEdit, FaChevronUp } from "react-icons/fa";
 import API from "../../../../../api/api";
 import { toast } from "react-toastify";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -336,7 +337,7 @@ const CommunityPosts = () => {
                                 {/* Thumbnail */}
                                 <div className="w-full md:w-48 h-32 flex-shrink-0 bg-black rounded-xl overflow-hidden relative border border-white/5">
                                     {post.image ? (
-                                        <img src={`${post.image}`} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                        <img src={getOptimizedImage(post.image)} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-white/5">
                                             <FaNewspaper className="text-4xl" />
@@ -355,7 +356,7 @@ const CommunityPosts = () => {
                                             <div className="flex items-center gap-1.5">
                                                 <div className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
                                                     {post.author?.profileImage ? (
-                                                        <img src={`${post.author.profileImage}`} alt="author" className="w-full h-full object-cover" />
+                                                        <img src={getOptimizedImage(post.author.profileImage)} alt="author" className="w-full h-full object-cover" />
                                                     ) : (
                                                         <span className="text-[8px]">{post.author?.name ? post.author.name.charAt(0) : "A"}</span>
                                                     )}

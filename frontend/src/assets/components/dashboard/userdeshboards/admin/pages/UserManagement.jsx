@@ -9,6 +9,7 @@ import {
   FaUserCheck, FaUserTimes, FaEllipsisV, FaFilter, FaSortAmountDown,
   FaClock, FaChartBar,
 } from "react-icons/fa";
+import { getOptimizedImage } from "../../../../../utils/imageUtils";
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 const roleConfig = {
@@ -32,7 +33,7 @@ const InfoRow = ({ icon, label, value }) => (
 
 const DocCard = ({ label, url }) => {
   if (!url) return null;
-  const fullUrl = url.startsWith("http") ? url : `${API_BASE}${url}`;
+  const fullUrl = getOptimizedImage(url);
   const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
   return (
     <div className="bg-[#1A1B1E] border border-[#2A2B2F]/5 border border-white/10 rounded-xl p-3 flex items-center gap-3">
@@ -207,7 +208,7 @@ const UserManagement = () => {
                 {/* Identity */}
                 <div className="flex items-center gap-4 sm:w-1/3 min-w-0">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg font-black shrink-0 bg-gradient-to-br ${rc.color} shadow-lg`}>
-                    {u.profileImage ? <img src={u.profileImage.startsWith("http") ? u.profileImage : `${API_BASE}${u.profileImage}`} className="w-full h-full object-cover rounded-lg" /> : <span>{u.name?.[0]?.toUpperCase()}</span>}
+                    {u.profileImage ? <img src={getOptimizedImage(u.profileImage)} className="w-full h-full object-cover rounded-lg" /> : <span>{u.name?.[0]?.toUpperCase()}</span>}
                   </div>
                   <div className="min-w-0 flex flex-col">
                     <span className="text-sm text-white font-bold truncate leading-tight">{u.name}</span>
@@ -273,7 +274,7 @@ const UserManagement = () => {
                     <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_bottom_left,white,transparent)]" />
                     <div className="relative flex items-center gap-5">
                       <div className="w-16 h-16 rounded-2xl bg-[#1A1B1E] flex items-center justify-center text-white text-2xl font-black border-2 border-white/20 overflow-hidden shadow-xl">
-                        {u.profileImage ? <img src={u.profileImage.startsWith("http") ? u.profileImage : `${API_BASE}${u.profileImage}`} className="w-full h-full object-cover" /> : <span>{u.name?.[0]?.toUpperCase()}</span>}
+                        {u.profileImage ? <img src={getOptimizedImage(u.profileImage)} className="w-full h-full object-cover" /> : <span>{u.name?.[0]?.toUpperCase()}</span>}
                       </div>
                       <div>
                         <h2 className="text-2xl font-black text-white leading-tight">{u.name}</h2>
@@ -432,8 +433,8 @@ const UserManagement = () => {
                                 <span className="text-[10px] text-gray-500">Encrypted Asset</span>
                               </div>
                               <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <a href={d.url.startsWith("http") ? d.url : `${API_BASE}${d.url}`} target="_blank" rel="noreferrer" className="p-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white rounded"><FaEye className="text-[10px]"/></a>
-                                <a href={d.url.startsWith("http") ? d.url : `${API_BASE}${d.url}`} download className="p-1.5 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white rounded"><FaDownload className="text-[10px]"/></a>
+                                <a href={getOptimizedImage(d.url)} target="_blank" rel="noreferrer" className="p-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white rounded"><FaEye className="text-[10px]"/></a>
+                                <a href={getOptimizedImage(d.url)} download className="p-1.5 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white rounded"><FaDownload className="text-[10px]"/></a>
                               </div>
                             </div>
                           ))}

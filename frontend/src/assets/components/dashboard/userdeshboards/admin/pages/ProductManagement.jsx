@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import API from '../../../../../api/api';
 import { FaTrash, FaSearch, FaBox, FaStore, FaLayerGroup } from 'react-icons/fa';
 import AdminCategoryDashboard from '../../../AdminCategoryDashboard';
+import { getOptimizedImage } from '../../../../utils/imageUtils';
 
 const AdminProductTable = () => {
   const [products, setProducts] = useState([]);
@@ -12,7 +13,7 @@ const AdminProductTable = () => {
     try {
       setLoading(true);
       const res = await API.get('/products/admin-all');
-      setProducts(res.data);
+      setProducts(res.data.products || []);
     } catch (error) {
       console.error("Error fetching all products:", error);
     } finally {
@@ -90,7 +91,7 @@ const AdminProductTable = () => {
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-lg bg-[#121212] overflow-hidden flex-shrink-0 border border-[#2A2B2F]">
                           {product.images?.[0]?.url ? (
-                            <img src={product.images[0].url} alt="" className="w-full h-full object-cover" />
+                            <img src={getOptimizedImage(product.images[0].url)} alt="" className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-gray-300"><FaBox /></div>
                           )}
