@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import API from '../../../../../api/api';
 import { FaTrash, FaSearch, FaBox, FaStore, FaLayerGroup } from 'react-icons/fa';
 import AdminCategoryDashboard from '../../../AdminCategoryDashboard';
-import { getOptimizedImage } from '../../../../utils/imageUtils';
+import { getOptimizedImage } from '../../../../../utils/imageUtils';
 
 const AdminProductTable = () => {
   const [products, setProducts] = useState([]);
